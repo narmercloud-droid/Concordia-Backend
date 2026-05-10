@@ -1,0 +1,193 @@
+{
+  "categories": [
+    {
+      "category_id": 1,
+      "admin_name_en": "Pizzas",
+      "customer_name_de": "Pizzen",
+      "visible": true,
+      "sort_order": 1
+    },
+    {
+      "category_id": 2,
+      "admin_name_en": "Burgers",
+      "customer_name_de": "Burger",
+      "visible": true,
+      "sort_order": 2
+    },
+    {
+      "category_id": 3,
+      "admin_name_en": "Drinks",
+      "customer_name_de": "Getränke",
+      "visible": true,
+      "sort_order": 3
+    }
+  ],
+
+  "items": [
+    {
+      "item_id": 1001,
+      "admin_name_en": "Margherita Pizza",
+      "customer_name_de": "Pizza Margherita",
+      "description_de": "Klassische Pizza mit Tomaten und Mozzarella",
+      "visible": true,
+      "available": true,
+      "sort_order": 1,
+      "manual_number": 11
+    },
+    {
+      "item_id": 1002,
+      "admin_name_en": "Pepperoni Pizza",
+      "customer_name_de": "Pizza Pepperoni",
+      "description_de": "Pizza mit würziger Salami",
+      "visible": true,
+      "available": true,
+      "sort_order": 2,
+      "manual_number": 12
+    },
+    {
+      "item_id": 2001,
+      "admin_name_en": "Cheeseburger",
+      "customer_name_de": "Cheeseburger",
+      "description_de": "Saftiger Burger mit Käse",
+      "visible": true,
+      "available": true,
+      "sort_order": 1,
+      "manual_number": 21
+    },
+    {
+      "item_id": 3001,
+      "admin_name_en": "Cola",
+      "customer_name_de": "Cola",
+      "description_de": "Erfrischungsgetränk",
+      "visible": true,
+      "available": true,
+      "sort_order": 1,
+      "manual_number": 31
+    }
+  ],
+
+  "variants": [
+    {
+      "variant_id": 1,
+      "admin_name_en": "Small",
+      "customer_name_de": "Klein",
+      "visible": true,
+      "available": true,
+      "sort_order": 1
+    },
+    {
+      "variant_id": 2,
+      "admin_name_en": "Medium",
+      "customer_name_de": "Mittel",
+      "visible": true,
+      "available": true,
+      "sort_order": 2
+    },
+    {
+      "variant_id": 3,
+      "admin_name_en": "Large",
+      "customer_name_de": "Groß",
+      "visible": true,
+      "available": true,
+      "sort_order": 3
+    }
+  ],
+
+  "toppings": [
+    {
+      "topping_id": 1,
+      "admin_name_en": "Extra Cheese",
+      "customer_name_de": "Extra Käse",
+      "category": "Pizza",
+      "visible": true,
+      "sort_order": 1
+    },
+    {
+      "topping_id": 2,
+      "admin_name_en": "Olives",
+      "customer_name_de": "Oliven",
+      "category": "Pizza",
+      "visible": true,
+      "sort_order": 2
+    },
+    {
+      "topping_id": 3,
+      "admin_name_en": "Bacon",
+      "customer_name_de": "Speck",
+      "category": "Burger",
+      "visible": true,
+      "sort_order": 1
+    }
+  ],
+
+  "extras": [
+    {
+      "extra_id": 1,
+      "admin_name_en": "Ketchup",
+      "customer_name_de": "Ketchup",
+      "visible": true,
+      "sort_order": 1
+    },
+    {
+      "extra_id": 2,
+      "admin_name_en": "Garlic Dip",
+      "customer_name_de": "Knoblauchdip",
+      "visible": true,
+      "sort_order": 2
+    }
+  ],
+
+  "relations": [
+    {
+      "item_id": 1001,
+      "category_id": 1,
+      "variant_ids": [1, 2, 3],
+      "topping_ids": [1, 2],
+      "extra_ids": [2]
+    },
+    {
+      "item_id": 1002,
+      "category_id": 1,
+      "variant_ids": [2, 3],
+      "topping_ids": [1, 2],
+      "extra_ids": [2]
+    },
+    {
+      "item_id": 2001,
+      "category_id": 2,
+      "variant_ids": [],
+      "topping_ids": [3],
+      "extra_ids": [1]
+    },
+    {
+      "item_id": 3001,
+      "category_id": 3,
+      "variant_ids": [],
+      "topping_ids": [],
+      "extra_ids": []
+    }
+  ],
+
+  "deals": [
+    {
+      "deal_id": 1,
+      "admin_name_en": "Pizza Combo",
+      "customer_name_de": "Pizza Angebot",
+      "description_de": "2 Pizzen + 1 Getränk",
+      "visible": true,
+      "available": true,
+      "sort_order": 1,
+      "items_included": [1001, 1002, 3001]
+    },
+    {
+      "deal_id": 2,
+      "admin_name_en": "Burger Meal",
+      "customer_name_de": "Burger Menü",
+      "description_de": "Burger + Getränk",
+      "visible": true,
+      "available": true,
+      "sort_order": 2,
+      "items_included": [2001, 3001]
+    }
+  ]
+}

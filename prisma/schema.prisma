@@ -1,0 +1,462 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+//
+// -----------------------------------------------------
+// ENUMS
+// -----------------------------------------------------
+enum OrderStatus {
+  pending
+  assigned
+  accepted
+  preparing
+  ready
+  completed
+  rejected
+}
+
+//
+// -----------------------------------------------------
+// ADMIN USER
+// -----------------------------------------------------
+model AdminUser {
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  password  String
+  name      String?
+  role      String    @default("admin")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+//
+// -----------------------------------------------------
+// BRANCH SYSTEM
+// -----------------------------------------------------
+model Branch {
+  id          Int      @id @default(autoincrement())
+  branch_code String   @unique
+  name        String
+  address     String?
+  phone       String?
+  active      Boolean  @default(true)
+
+  zones              BranchZone[]
+  itemOverrides      BranchItemOverride[]
+  variantOverrides   BranchVariantOverride[]
+  toppingOverrides   BranchToppingOverride[]
+  extraOverrides     BranchExtraOverride[]
+
+  orders             Order[]
+  terminals          Terminal[]
+  settings           BranchSettings?
+  branchTerminals    BranchTerminal[]
+  kitchenDisplays    KitchenDisplay[]
+}
+
+model Terminal {
+  id               Int      @id @default(autoincrement())
+  name             String
+  activation_token String   @unique
+  branch_id        Int
+  createdAt        DateTime @default(now())
+
+  branch Branch @relation(fields: [branch_id], references: [id])
+}
+
+model BranchSettings {
+  id        Int      @id @default(autoincrement())
+  branch_id Int      @unique
+  config    Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  branch Branch @relation(fields: [branch_id], references: [id])
+}
+
+model BranchTerminal {
+  id             Int      @id @default(autoincrement())
+  branch_id      Int
+  name           String
+  status         String   @default("active")
+  last_seen      DateTime?
+  is_online      Boolean  @default(false)
+  terminal_token String   @unique
+  createdAt      DateTime @default(now())
+
+  branch Branch @relation(fields: [branch_id], references: [id])
+  orders Order[]
+}
+
+model BranchZone {
+  id        Int     @id @default(autoincrement())
+  branch_id Int
+  name      String
+  radius_km Float
+
+  branch Branch @relation(fields: [branch_id], references: [id])
+}
+
+//
+// -----------------------------------------------------
+// CATEGORY
+// -----------------------------------------------------
+model Category {
+  id               Int     @id @default(autoincrement())
+  category_id      Int     @unique
+  admin_name_en    String
+  customer_name_de String
+  visible          Boolean
+  sort_order       Int
+
+  items     Item[]
+  relations Relation[]
+}
+
+//
+// -----------------------------------------------------
+// ITEM
+// -----------------------------------------------------
+model Item {
+  id               Int     @id @default(autoincrement())
+  item_id          Int     @unique
+  admin_name_en    String
+  customer_name_de String
+  description_de   String
+  visible          Boolean
+  available        Boolean
+  sort_order       Int
+  manual_number    Int
+
+  category_id Int?
+  category    Category? @relation(fields: [category_id], references: [category_id])
+
+  relations      Relation[]
+  dealItems      DealItem[]
+  branchOverrides BranchItemOverride[]
+
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+}
+
+model BranchItemOverride {
+  id         Int     @id @default(autoincrement())
+  branch_id  Int
+  item_id    Int
+  price      Float?
+  available  Boolean?
+
+  branch Branch @relation(fields: [branch_id], references: [id])
+  item   Item   @relation(fields: [item_id], references: [item_id])
+}
+
+//
+// -----------------------------------------------------
+// VARIANT
+// -----------------------------------------------------
+model Variant {
+  id               Int     @id @default(autoincrement())
+  variant_id       Int     @unique
+  admin_name_en    String
+  customer_name_de String
+  visible          Boolean
+  available        Boolean
+  sort_order       Int
+
+  relations       RelationVariant[]
+  branchOverrides BranchVariantOverride[]
+
+  cartVariants  CartItemVariant[]
+  orderVariants OrderItemVariant[]
+}
+
+model BranchVariantOverride {
+  id         Int     @id @default(autoincrement())
+  branch_id  Int
+  variant_id Int
+  price      Float?
+  available  Boolean?
+
+  branch  Branch  @relation(fields: [branch_id], references: [id])
+  variant Variant @relation(fields: [variant_id], references: [variant_id])
+}
+
+//
+// -----------------------------------------------------
+// TOPPING
+// -----------------------------------------------------
+model Topping {
+  id               Int     @id @default(autoincrement())
+  topping_id       Int     @unique
+  admin_name_en    String
+  customer_name_de String
+  category         String
+  visible          Boolean
+  sort_order       Int
+
+  relations       RelationTopping[]
+  branchOverrides BranchToppingOverride[]
+
+  cartToppings  CartItemTopping[]
+  orderToppings OrderItemTopping[]
+}
+
+model BranchToppingOverride {
+  id         Int     @id @default(autoincrement())
+  branch_id  Int
+  topping_id Int
+  price      Float?
+  available  Boolean?
+
+  branch  Branch  @relation(fields: [branch_id], references: [id])
+  topping Topping @relation(fields: [topping_id], references: [topping_id])
+}
+
+//
+// -----------------------------------------------------
+// EXTRA
+// -----------------------------------------------------
+model Extra {
+  id               Int     @id @default(autoincrement())
+  extra_id         Int     @unique
+  admin_name_en    String
+  customer_name_de String
+  visible          Boolean
+  sort_order       Int
+
+  relations       RelationExtra[]
+  branchOverrides BranchExtraOverride[]
+
+  cartExtras  CartItemExtra[]
+  orderExtras OrderItemExtra[]
+}
+
+model BranchExtraOverride {
+  id        Int     @id @default(autoincrement())
+  branch_id Int
+  extra_id  Int
+  price     Float?
+  available Boolean?
+
+  branch Branch @relation(fields: [branch_id], references: [id])
+  extra  Extra  @relation(fields: [extra_id], references: [extra_id])
+}
+
+//
+// -----------------------------------------------------
+// RELATION (item → category + variants + toppings + extras)
+// -----------------------------------------------------
+model Relation {
+  id          Int @id @default(autoincrement())
+  item_id     Int
+  category_id Int
+
+  item     Item     @relation(fields: [item_id], references: [item_id])
+  category Category @relation(fields: [category_id], references: [category_id])
+
+  variants RelationVariant[]
+  toppings RelationTopping[]
+  extras   RelationExtra[]
+}
+
+model RelationVariant {
+  id          Int @id @default(autoincrement())
+  relation_id Int
+  variant_id  Int
+
+  relation Relation @relation(fields: [relation_id], references: [id])
+  variant  Variant  @relation(fields: [variant_id], references: [variant_id])
+}
+
+model RelationTopping {
+  id          Int @id @default(autoincrement())
+  relation_id Int
+  topping_id  Int
+
+  relation Relation @relation(fields: [relation_id], references: [id])
+  topping  Topping  @relation(fields: [topping_id], references: [topping_id])
+}
+
+model RelationExtra {
+  id          Int @id @default(autoincrement())
+  relation_id Int
+  extra_id    Int
+
+  relation Relation @relation(fields: [relation_id], references: [id])
+  extra    Extra    @relation(fields: [extra_id], references: [extra_id])
+}
+
+//
+// -----------------------------------------------------
+// DEAL
+// -----------------------------------------------------
+model Deal {
+  id               Int     @id @default(autoincrement())
+  deal_id          Int     @unique
+  admin_name_en    String
+  customer_name_de String
+  description_de   String
+  visible          Boolean
+  available        Boolean
+  sort_order       Int
+
+  items_included DealItem[]
+}
+
+model DealItem {
+  id      Int @id @default(autoincrement())
+  deal_id Int
+  item_id Int
+
+  deal Deal @relation(fields: [deal_id], references: [deal_id])
+  item Item @relation(fields: [item_id], references: [item_id])
+}
+
+//
+// -----------------------------------------------------
+// CART SYSTEM
+// -----------------------------------------------------
+model Cart {
+  id        Int      @id @default(autoincrement())
+  cart_id   String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  items CartItem[]
+}
+
+model CartItem {
+  id       Int    @id @default(autoincrement())
+  cart_id  String
+  item_id  Int
+  quantity Int    @default(1)
+
+  cart Cart @relation(fields: [cart_id], references: [cart_id])
+  item Item @relation(fields: [item_id], references: [item_id])
+
+  variant  CartItemVariant?
+  toppings CartItemTopping[]
+  extras   CartItemExtra[]
+}
+
+model CartItemVariant {
+  id           Int @id @default(autoincrement())
+  cart_item_id Int @unique
+  variant_id   Int
+
+  cartItem CartItem @relation(fields: [cart_item_id], references: [id])
+  variant  Variant  @relation(fields: [variant_id], references: [variant_id])
+}
+
+model CartItemTopping {
+  id           Int @id @default(autoincrement())
+  cart_item_id Int
+  topping_id   Int
+
+  cartItem CartItem @relation(fields: [cart_item_id], references: [id])
+  topping  Topping  @relation(fields: [topping_id], references: [topping_id])
+}
+
+model CartItemExtra {
+  id           Int @id @default(autoincrement())
+  cart_item_id Int
+  extra_id     Int
+
+  cartItem CartItem @relation(fields: [cart_item_id], references: [id])
+  extra    Extra    @relation(fields: [extra_id], references: [extra_id])
+}
+
+//
+// -----------------------------------------------------
+// ORDER SYSTEM
+// -----------------------------------------------------
+model Order {
+  id             Int         @id @default(autoincrement())
+  order_id       String      @unique
+  cart_id        String
+  branch_id      Int
+  terminal_id    Int?
+  status         OrderStatus @default(pending)
+  subtotal       Float
+  total          Float
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime?   @updatedAt
+
+  customer_name  String
+  customer_phone String
+  customer_email String
+  tracking_token String      @unique
+
+  estimated_time Int?
+  deliveryType   String?
+
+  branch   Branch          @relation(fields: [branch_id], references: [id])
+  terminal BranchTerminal? @relation(fields: [terminal_id], references: [id])
+  items    OrderItem[]
+}
+
+model OrderItem {
+  id          Int    @id @default(autoincrement())
+  order_id    String
+  item_id     Int
+  quantity    Int
+  base_price  Float
+  total_price Float
+
+  order Order @relation(fields: [order_id], references: [order_id])
+  item  Item  @relation(fields: [item_id], references: [item_id])
+
+  variant  OrderItemVariant?
+  toppings OrderItemTopping[]
+  extras   OrderItemExtra[]
+}
+
+model OrderItemVariant {
+  id            Int   @id @default(autoincrement())
+  order_item_id Int   @unique
+  variant_id    Int
+  price         Float
+
+  orderItem OrderItem @relation(fields: [order_item_id], references: [id])
+  variant   Variant   @relation(fields: [variant_id], references: [variant_id])
+}
+
+model OrderItemTopping {
+  id            Int   @id @default(autoincrement())
+  order_item_id Int
+  topping_id    Int
+  price         Float
+
+  orderItem OrderItem @relation(fields: [order_item_id], references: [id])
+  topping   Topping   @relation(fields: [topping_id], references: [topping_id])
+}
+
+model OrderItemExtra {
+  id            Int   @id @default(autoincrement())
+  order_item_id Int
+  extra_id      Int
+  price         Float
+
+  orderItem OrderItem @relation(fields: [order_item_id], references: [id])
+  extra     Extra     @relation(fields: [extra_id], references: [extra_id])
+}
+
+//
+// -----------------------------------------------------
+// KITCHEN DISPLAY SYSTEM
+// -----------------------------------------------------
+model KitchenDisplay {
+  id          Int      @id @default(autoincrement())
+  name        String
+  branch_id   Int
+  kds_token   String   @unique
+  is_online   Boolean  @default(false)
+  last_seen   DateTime @updatedAt
+  branch      Branch   @relation(fields: [branch_id], references: [id])
+}
