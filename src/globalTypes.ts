@@ -9,20 +9,6 @@ declare global {
 }
 
 // ------------------------------------------------------
-// Express Request Augmentation
-// ------------------------------------------------------
-declare module "express" {
-  interface Request {
-    user?: {
-      id: string;
-      role: string;
-      branchId: string;
-    };
-    app?: any;
-  }
-}
-
-// ------------------------------------------------------
 // AuthenticatedRequest Type
 // ------------------------------------------------------
 export type AuthenticatedRequest = Request;
