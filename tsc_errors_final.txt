@@ -1,0 +1,276 @@
+﻿src/controllers/analytics.controller.ts(7,56): error TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+  Type 'ParsedQs' is not assignable to type 'string'.
+src/controllers/analytics.controller.ts(16,56): error TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+  Type 'ParsedQs' is not assignable to type 'string'.
+src/controllers/analytics.controller.ts(25,60): error TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+  Type 'ParsedQs' is not assignable to type 'string'.
+src/controllers/analytics.controller.ts(52,56): error TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+  Type 'ParsedQs' is not assignable to type 'string'.
+src/controllers/driverController.ts(5,8): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean '../services/driverService.js'?
+src/controllers/managerDashboard.controller.ts(20,61): error TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+  Type 'ParsedQs' is not assignable to type 'string'.
+src/controllers/menu.controller.ts(55,37): error TS2339: Property 'createAddOnGroup' does not exist on type 'MenuService'.
+src/controllers/menu.controller.ts(60,37): error TS2339: Property 'updateAddOnGroup' does not exist on type 'MenuService'.
+src/controllers/menu.controller.ts(65,37): error TS2339: Property 'deleteAddOnGroup' does not exist on type 'MenuService'.
+src/controllers/menu.controller.ts(71,37): error TS2339: Property 'createAddOn' does not exist on type 'MenuService'.
+src/controllers/menu.controller.ts(76,37): error TS2339: Property 'updateAddOn' does not exist on type 'MenuService'.
+src/controllers/menu.controller.ts(81,37): error TS2339: Property 'deleteAddOn' does not exist on type 'MenuService'.
+src/controllers/menu.controller.ts(97,37): error TS2551: Property 'setAddOnAvailability' does not exist on type 'MenuService'. Did you mean 'setVariantAvailability'?
+src/controllers/order/orderLifecycle.controller.ts(9,8): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean '../../events/terminalEvents.js'?
+src/controllers/search.controller.ts(10,40): error TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+  Type 'ParsedQs' is not assignable to type 'string'.
+src/controllers/search.controller.ts(12,54): error TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+  Type 'ParsedQs' is not assignable to type 'string'.
+src/controllers/search.controller.ts(22,40): error TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+  Type 'ParsedQs' is not assignable to type 'string'.
+src/controllers/search.controller.ts(23,58): error TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+  Type 'ParsedQs' is not assignable to type 'string'.
+src/controllers/search.controller.ts(33,40): error TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+  Type 'ParsedQs' is not assignable to type 'string'.
+src/controllers/search.controller.ts(34,60): error TS2345: Argument of type 'string | ParsedQs | (string | ParsedQs)[]' is not assignable to parameter of type 'string'.
+  Type 'ParsedQs' is not assignable to type 'string'.
+src/controllers/terminal/terminal.controller.ts(79,13): error TS2339: Property 'terminal_id' does not exist on type 'User'.
+src/controllers/terminal/terminal.controller.ts(93,13): error TS2339: Property 'terminal_id' does not exist on type 'User'.
+src/controllers/terminal/terminal.controller.ts(107,13): error TS2339: Property 'terminal_id' does not exist on type 'User'.
+src/controllers/terminal/terminal.controller.ts(121,13): error TS2339: Property 'terminal_id' does not exist on type 'User'.
+src/controllers/terminal/terminal.controller.ts(134,13): error TS2339: Property 'terminal_id' does not exist on type 'User'.
+src/events/driverEvents.ts(2,31): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean './eventTypes.js'?
+src/events/driverEvents.ts(3,20): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean '../utils/logger.js'?
+src/events/index.ts(2,38): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean './driverEvents.js'?
+src/events/index.ts(3,40): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean './terminalEvents.js'?
+src/events/index.ts(4,37): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean './adminEvents.js'?
+src/events/index.ts(5,35): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean './kdsEvents.js'?
+src/events/terminalEvents.ts(24,38): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean '../lib/socket.js'?
+src/events/terminalEvents.ts(55,22): error TS2339: Property 'branchTerminal' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/index.ts(9,25): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean './routes/admin.js'?
+src/index.ts(10,24): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean './routes/auth.js'?
+src/index.ts(11,27): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean './middleware/adminAuth.js'?
+src/index.ts(13,24): error TS2307: Cannot find module './routes/menu.routes' or its corresponding type declarations.
+src/index.ts(14,33): error TS2307: Cannot find module './routes/admin/category.routes' or its corresponding type declarations.
+src/index.ts(15,29): error TS2307: Cannot find module './routes/admin/item.routes' or its corresponding type declarations.
+src/index.ts(16,32): error TS2307: Cannot find module './routes/admin/variant.routes' or its corresponding type declarations.
+src/index.ts(17,32): error TS2307: Cannot find module './routes/admin/topping.routes' or its corresponding type declarations.
+src/index.ts(18,30): error TS2307: Cannot find module './routes/admin/extra.routes' or its corresponding type declarations.
+src/index.ts(19,33): error TS2307: Cannot find module './routes/admin/relation.routes' or its corresponding type declarations.
+src/index.ts(20,29): error TS2307: Cannot find module './routes/admin/deal.routes' or its corresponding type declarations.
+src/index.ts(21,33): error TS2307: Cannot find module './routes/admin/terminalAdmin.routes' or its corresponding type declarations.
+src/index.ts(22,34): error TS2307: Cannot find module './routes/admin/terminalStatus.routes' or its corresponding type declarations.
+src/index.ts(23,32): error TS2307: Cannot find module './routes/admin/orderMonitor.routes' or its corresponding type declarations.
+src/index.ts(25,29): error TS2307: Cannot find module './routes/analytics.routes' or its corresponding type declarations.
+src/index.ts(26,38): error TS2307: Cannot find module './routes/behaviorPrediction.routes' or its corresponding type declarations.
+src/index.ts(27,34): error TS2307: Cannot find module './routes/decisionEngine.routes' or its corresponding type declarations.
+src/index.ts(28,34): error TS2307: Cannot find module './routes/dynamicPricing.routes' or its corresponding type declarations.
+src/index.ts(29,31): error TS2307: Cannot find module './routes/forecasting.routes' or its corresponding type declarations.
+src/index.ts(30,32): error TS2307: Cannot find module './routes/intelligence.routes' or its corresponding type declarations.
+src/index.ts(31,34): error TS2307: Cannot find module './routes/knowledgeGraph.routes' or its corresponding type declarations.
+src/index.ts(32,24): error TS2307: Cannot find module './routes/ltml.routes' or its corresponding type declarations.
+src/index.ts(33,28): error TS2307: Cannot find module './routes/ltvChurn.routes' or its corresponding type declarations.
+src/index.ts(34,36): error TS2307: Cannot find module './routes/menuOptimization.routes' or its corresponding type declarations.
+src/index.ts(35,24): error TS2307: Cannot find module './routes/nlae.routes' or its corresponding type declarations.
+src/index.ts(36,36): error TS2307: Cannot find module './routes/optimizationLoop.routes' or its corresponding type declarations.
+src/index.ts(37,33): error TS2307: Cannot find module './routes/orchestration.routes' or its corresponding type declarations.
+src/index.ts(38,34): error TS2307: Cannot find module './routes/conversational.routes' or its corresponding type declarations.
+src/index.ts(39,36): error TS2307: Cannot find module './routes/managerDashboard.routes' or its corresponding type declarations.
+src/index.ts(41,24): error TS2307: Cannot find module './routes/cart/cart.routes' or its corresponding type declarations.
+src/index.ts(42,25): error TS2307: Cannot find module './routes/order/order.routes' or its corresponding type declarations.
+src/index.ts(43,34): error TS2307: Cannot find module './routes/order/orderLifecycle.routes' or its corresponding type declarations.
+src/index.ts(44,25): error TS2307: Cannot find module './routes/print/print.routes' or its corresponding type declarations.
+src/index.ts(45,28): error TS2307: Cannot find module './routes/terminal.routes' or its corresponding type declarations.
+src/index.ts(49,32): error TS2834: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Consider adding an extension to the import path.
+src/index.ts(50,23): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean './lib/socket.js'?
+src/index.ts(137,26): error TS2307: Cannot find module './routes/public.routes' or its corresponding type declarations.
+src/middleware/adminAuth.ts(2,49): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean '../utils/jwt.js'?
+src/middleware/customerAuth.ts(2,61): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean '../utils/jwt.js'?
+src/middleware/errorHandler.ts(3,20): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean '../utils/logger.js'?
+src/middleware/requestLogger.ts(2,20): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean '../utils/logger.js'?
+src/middleware/requireAuth.ts(2,61): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean '../utils/jwt.js'?
+src/middleware/terminalAuth.ts(22,27): error TS2551: Property 'branch_id' does not exist on type '{ id: string; name: string; branchId: string; createdAt: Date; activation_token: string; isOnline: boolean; lastSeen: Date; }'. Did you mean 'branchId'?
+src/routes/admin/terminalAdmin.routes.ts(4,43): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean '../../schemas/adminTerminalSchemas.js'?
+src/routes/admin/terminalStatus.routes.ts(4,41): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean '../../schemas/adminTerminalSchemas.js'?
+src/routes/categories.routes.ts(11,75): error TS2339: Property 'delete' does not exist on type 'typeof CategoryController'.
+src/routes/drivers.ts(5,8): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean '../controllers/driverController.js'?
+src/routes/order/order.routes.ts(6,60): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean '../../schemas/orderSchemas.js'?
+src/routes/public.routes.ts(12,7): error TS2322: Type '{ tracking_token: string; }' is not assignable to type 'OrderWhereUniqueInput'.
+  Type '{ tracking_token: string; }' is not assignable to type '{ id: string; } & { id?: string; AND?: OrderWhereInput | OrderWhereInput[]; OR?: OrderWhereInput[]; NOT?: OrderWhereInput | OrderWhereInput[]; ... 23 more ...; OrderRiskEvent?: OrderRiskEventListRelationFilter; }'.
+    Property 'id' is missing in type '{ tracking_token: string; }' but required in type '{ id: string; }'.
+src/routes/public.routes.ts(38,28): error TS2551: Property 'customer' does not exist on type '{ id: string; customerId: string; branchId: string; createdAt: Date; updatedAt: Date; isGuest: boolean; paymentMethod: string; paymentStatus: string; paymentIntentId: string; paypalOrderId: string; ... 7 more ...; terminal_id: string; }'. Did you mean 'customerId'?
+src/routes/public.routes.ts(39,29): error TS2551: Property 'customer' does not exist on type '{ id: string; customerId: string; branchId: string; createdAt: Date; updatedAt: Date; isGuest: boolean; paymentMethod: string; paymentStatus: string; paymentIntentId: string; paypalOrderId: string; ... 7 more ...; terminal_id: string; }'. Did you mean 'customerId'?
+src/routes/public.routes.ts(40,29): error TS2551: Property 'customer' does not exist on type '{ id: string; customerId: string; branchId: string; createdAt: Date; updatedAt: Date; isGuest: boolean; paymentMethod: string; paymentStatus: string; paymentIntentId: string; paypalOrderId: string; ... 7 more ...; terminal_id: string; }'. Did you mean 'customerId'?
+src/routes/public.routes.ts(41,20): error TS2339: Property 'items' does not exist on type '{ id: string; customerId: string; branchId: string; createdAt: Date; updatedAt: Date; isGuest: boolean; paymentMethod: string; paymentStatus: string; paymentIntentId: string; paypalOrderId: string; ... 7 more ...; terminal_id: string; }'.
+src/routes/terminal.routes.ts(5,85): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean '../schemas/terminalSchemas.js'?
+src/routes/terminal.routes.ts(6,73): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean '../schemas/orderWorkflowSchemas.js'?
+src/routes/webhooks.routes.ts(2,20): error TS2307: Cannot find module 'stripe' or its corresponding type declarations.
+src/scripts/createAdmin.ts(11,5): error TS2322: Type '{ email: string; password: string; }' is not assignable to type '(Without<AdminUserCreateInput, AdminUserUncheckedCreateInput> & AdminUserUncheckedCreateInput) | (Without<...> & AdminUserCreateInput)'.
+  Type '{ email: string; password: string; }' is not assignable to type 'Without<AdminUserUncheckedCreateInput, AdminUserCreateInput> & AdminUserCreateInput'.
+    Property 'role' is missing in type '{ email: string; password: string; }' but required in type 'AdminUserCreateInput'.
+src/services/admin/deal.service.ts(6,18): error TS2353: Object literal may only specify known properties, and 'sort_order' does not exist in type 'DealOrderByWithRelationInput | DealOrderByWithRelationInput[]'.
+src/services/admin/deal.service.ts(17,16): error TS2353: Object literal may only specify known properties, and 'deal_id' does not exist in type 'DealWhereUniqueInput'.
+src/services/admin/deal.service.ts(32,16): error TS2353: Object literal may only specify known properties, and 'deal_id' does not exist in type 'DealWhereUniqueInput'.
+src/services/admin/deal.service.ts(39,16): error TS2353: Object literal may only specify known properties, and 'deal_id' does not exist in type 'DealWhereUniqueInput'.
+src/services/admin/deal.service.ts(45,19): error TS2339: Property 'dealItem' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/services/admin/deal.service.ts(55,19): error TS2339: Property 'dealItem' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/services/admin/extra.service.ts(6,18): error TS2353: Object literal may only specify known properties, and 'sort_order' does not exist in type 'ExtraOrderByWithRelationInput | ExtraOrderByWithRelationInput[]'.
+src/services/admin/extra.service.ts(12,16): error TS2353: Object literal may only specify known properties, and 'extra_id' does not exist in type 'ExtraWhereUniqueInput'.
+src/services/admin/extra.service.ts(22,16): error TS2353: Object literal may only specify known properties, and 'extra_id' does not exist in type 'ExtraWhereUniqueInput'.
+src/services/admin/extra.service.ts(29,16): error TS2353: Object literal may only specify known properties, and 'extra_id' does not exist in type 'ExtraWhereUniqueInput'.
+src/services/admin/item.service.ts(5,19): error TS2339: Property 'item' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/services/admin/item.service.ts(20,19): error TS2339: Property 'item' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/services/admin/item.service.ts(35,19): error TS2339: Property 'item' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/services/admin/item.service.ts(39,19): error TS2339: Property 'item' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/services/admin/item.service.ts(46,19): error TS2339: Property 'item' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/services/admin/orderMonitor.service.ts(9,9): error TS2561: Object literal may only specify known properties, but 'terminalId' does not exist in type 'OrderSelect<DefaultArgs>'. Did you mean to write 'terminal_id'?
+src/services/admin/orderMonitor.service.ts(19,26): error TS2551: Property 'terminalId' does not exist on type '{ id: string; customerId: string; branchId: string; createdAt: Date; updatedAt: Date; isGuest: boolean; paymentMethod: string; paymentStatus: string; paymentIntentId: string; paypalOrderId: string; ... 7 more ...; terminal_id: string; }'. Did you mean 'terminal_id'?
+src/services/admin/relation.service.ts(6,19): error TS2339: Property 'item' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/services/admin/relation.service.ts(22,19): error TS2339: Property 'relationVariant' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/services/admin/relation.service.ts(32,19): error TS2339: Property 'relationTopping' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/services/admin/relation.service.ts(42,19): error TS2339: Property 'relationExtra' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/services/admin/relation.service.ts(52,19): error TS2339: Property 'relationVariant' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/services/admin/relation.service.ts(59,19): error TS2339: Property 'relationTopping' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/services/admin/relation.service.ts(66,19): error TS2339: Property 'relationExtra' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/services/admin/terminalAdmin.service.ts(5,25): error TS2339: Property 'branchTerminal' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/services/admin/terminalAdmin.service.ts(26,36): error TS2339: Property 'branchTerminal' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/services/admin/terminalStatus.service.ts(5,36): error TS2339: Property 'branchTerminal' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/services/admin/topping.service.ts(6,18): error TS2353: Object literal may only specify known properties, and 'sort_order' does not exist in type 'ToppingOrderByWithRelationInput | ToppingOrderByWithRelationInput[]'.
+src/services/admin/topping.service.ts(12,16): error TS2353: Object literal may only specify known properties, and 'topping_id' does not exist in type 'ToppingWhereUniqueInput'.
+src/services/admin/topping.service.ts(22,16): error TS2353: Object literal may only specify known properties, and 'topping_id' does not exist in type 'ToppingWhereUniqueInput'.
+src/services/admin/topping.service.ts(29,16): error TS2353: Object literal may only specify known properties, and 'topping_id' does not exist in type 'ToppingWhereUniqueInput'.
+src/services/admin/variant.service.ts(6,18): error TS2353: Object literal may only specify known properties, and 'sort_order' does not exist in type 'VariantOrderByWithRelationInput | VariantOrderByWithRelationInput[]'.
+src/services/admin/variant.service.ts(12,16): error TS2353: Object literal may only specify known properties, and 'variant_id' does not exist in type 'VariantWhereUniqueInput'.
+src/services/admin/variant.service.ts(22,16): error TS2353: Object literal may only specify known properties, and 'variant_id' does not exist in type 'VariantWhereUniqueInput'.
+src/services/admin/variant.service.ts(29,16): error TS2353: Object literal may only specify known properties, and 'variant_id' does not exist in type 'VariantWhereUniqueInput'.
+src/services/cart.service.ts(2,36): error TS2307: Cannot find module './deliveryFee.service' or its corresponding type declarations.
+src/services/cart.service.ts(3,32): error TS2307: Cannot find module './loyalty.service' or its corresponding type declarations.
+src/services/cart/cart.service.ts(9,18): error TS2353: Object literal may only specify known properties, and 'cart_id' does not exist in type 'CartWhereUniqueInput'.
+src/services/cart/cart.service.ts(16,15): error TS2353: Object literal may only specify known properties, and 'cart_id' does not exist in type '(Without<CartCreateInput, CartUncheckedCreateInput> & CartUncheckedCreateInput) | (Without<...> & CartCreateInput)'.
+src/services/cart/cart.service.ts(23,16): error TS2353: Object literal may only specify known properties, and 'cart_id' does not exist in type 'CartWhereUniqueInput'.
+src/services/cart/cart.service.ts(28,13): error TS2353: Object literal may only specify known properties, and 'variant' does not exist in type 'CartItemInclude<DefaultArgs>'.
+src/services/cart/cart.service.ts(41,9): error TS2561: Object literal may only specify known properties, but 'cart_id' does not exist in type '(Without<CartItemCreateInput, CartItemUncheckedCreateInput> & CartItemUncheckedCreateInput) | (Without<...> & CartItemCreateInput)'. Did you mean to write 'cartId'?
+src/services/cart/cart.service.ts(50,19): error TS2339: Property 'cartItemVariant' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/services/cart/cart.service.ts(60,19): error TS2339: Property 'cartItemTopping' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/services/cart/cart.service.ts(70,19): error TS2339: Property 'cartItemExtra' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/services/cart/cart.service.ts(81,16): error TS2322: Type 'number' is not assignable to type 'string'.
+src/services/cart/cart.service.ts(89,16): error TS2322: Type 'number' is not assignable to type 'string'.
+src/services/cart/pricing.service.ts(9,31): error TS2339: Property 'item' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/services/cart/pricing.service.ts(20,18): error TS2353: Object literal may only specify known properties, and 'variant_id' does not exist in type 'VariantWhereUniqueInput'.
+src/services/cart/pricing.service.ts(24,26): error TS2339: Property 'sort_order' does not exist on type '{ id: string; name: string; price: number; visible: boolean; }'.
+src/services/cart/pricing.service.ts(31,18): error TS2353: Object literal may only specify known properties, and 'topping_id' does not exist in type 'ToppingWhereUniqueInput'.
+src/services/cart/pricing.service.ts(35,20): error TS2339: Property 'sort_order' does not exist on type '{ id: string; name: string; price: number; visible: boolean; }'.
+src/services/cart/pricing.service.ts(42,18): error TS2353: Object literal may only specify known properties, and 'extra_id' does not exist in type 'ExtraWhereUniqueInput'.
+src/services/cart/pricing.service.ts(46,20): error TS2339: Property 'sort_order' does not exist on type '{ id: string; name: string; price: number; visible: boolean; }'.
+src/services/courierTracking.service.ts(53,18): error TS2353: Object literal may only specify known properties, and 'courier' does not exist in type 'OrderInclude<DefaultArgs>'.
+src/services/courierTracking.service.ts(58,35): error TS2339: Property 'courierId' does not exist on type '{ id: string; customerId: string; branchId: string; createdAt: Date; updatedAt: Date; isGuest: boolean; paymentMethod: string; paymentStatus: string; paymentIntentId: string; paypalOrderId: string; ... 7 more ...; terminal_id: string; }'.
+src/services/courierTracking.service.ts(60,37): error TS2339: Property 'courierId' does not exist on type '{ id: string; customerId: string; branchId: string; createdAt: Date; updatedAt: Date; isGuest: boolean; paymentMethod: string; paymentStatus: string; paymentIntentId: string; paypalOrderId: string; ... 7 more ...; terminal_id: string; }'.
+src/services/dashboard.service.ts(54,5): error TS2741: Property '_sum' is missing in type 'GetOrderAggregateType<{ where: { paymentStatus: string; }; _sum: { total: boolean; }; }>' but required in type 'RevenueData'.
+src/services/dashboard.service.ts(56,7): error TS2322: Type '{ total: true; }' is not assignable to type 'never'.
+src/services/dashboard.service.ts(62,5): error TS2741: Property '_sum' is missing in type 'GetOrderAggregateType<{ where: { branchId: string; paymentStatus: string; }; _sum: { total: boolean; }; }>' but required in type 'RevenueData'.
+src/services/dashboard.service.ts(64,7): error TS2322: Type '{ total: true; }' is not assignable to type 'never'.
+src/services/dashboard.service.ts(80,37): error TS2345: Argument of type '{ by: "itemId"[]; _sum: { quantity: true; }; orderBy: { _sum: { quantity: "desc"; }; }; where: { order: { branchId: string; }; } | {}; }' is not assignable to parameter of type '{ by: "itemId"[]; _sum: { quantity: true; }; orderBy: { _sum: { quantity: "desc"; }; }; where: { order: { branchId: string; }; } | {}; } & { orderBy?: OrderItemOrderByWithAggregationInput | OrderItemOrderByWithAggregationInput[]; } & MenuPerformanceData[]'.
+  Type '{ by: "itemId"[]; _sum: { quantity: true; }; orderBy: { _sum: { quantity: "desc"; }; }; where: { order: { branchId: string; }; } | {}; }' is missing the following properties from type 'MenuPerformanceData[]': length, pop, push, concat, and 29 more.
+src/services/dashboard.service.ts(90,12): error TS2615: Type of property 'AND' circularly references itself in mapped type '{ [K in keyof { AND?: OrderScalarWhereWithAggregatesInput | OrderScalarWhereWithAggregatesInput[]; OR?: OrderScalarWhereWithAggregatesInput[]; ... 18 more ...; updatedAt?: string | ... 1 more ... | DateTimeWithAggregatesFilter<...>; }]: Or<...> extends 1 ? { ...; }[K] extends infer TK ? GetHavingFields<...> : never ...'.
+src/services/dashboard.service.ts(90,12): error TS2615: Type of property 'NOT' circularly references itself in mapped type '{ [K in keyof { AND?: OrderScalarWhereWithAggregatesInput | OrderScalarWhereWithAggregatesInput[]; OR?: OrderScalarWhereWithAggregatesInput[]; ... 18 more ...; updatedAt?: string | ... 1 more ... | DateTimeWithAggregatesFilter<...>; }]: Or<...> extends 1 ? { ...; }[K] extends infer TK ? GetHavingFields<...> : never ...'.
+src/services/dashboard.service.ts(90,12): error TS2615: Type of property 'OR' circularly references itself in mapped type '{ [K in keyof { AND?: OrderScalarWhereWithAggregatesInput | OrderScalarWhereWithAggregatesInput[]; OR?: OrderScalarWhereWithAggregatesInput[]; ... 18 more ...; updatedAt?: string | ... 1 more ... | DateTimeWithAggregatesFilter<...>; }]: Or<...> extends 1 ? { ...; }[K] extends infer TK ? GetHavingFields<...> : never ...'.
+src/services/dashboard.service.ts(91,7): error TS2322: Type '"courierId"[]' is not assignable to type 'OrderScalarFieldEnum | OrderScalarFieldEnum[]'.
+  Type '"courierId"[]' is not assignable to type 'OrderScalarFieldEnum[]'.
+    Type '"courierId"' is not assignable to type 'OrderScalarFieldEnum'.
+src/services/dashboard.service.ts(99,37): error TS2345: Argument of type '{ by: "query"[]; _count: { query: true; }; orderBy: { _count: { query: "desc"; }; }; take: number; }' is not assignable to parameter of type '{ by: "query"[]; _count: { query: true; }; orderBy: { _count: { query: "desc"; }; }; take: number; } & { orderBy: SearchLogOrderByWithAggregationInput | SearchLogOrderByWithAggregationInput[]; } & SearchAnalyticsData[]'.
+  Type '{ by: "query"[]; _count: { query: true; }; orderBy: { _count: { query: "desc"; }; }; take: number; }' is missing the following properties from type 'SearchAnalyticsData[]': length, pop, push, concat, and 29 more.
+src/services/decisionEngine.service.ts(95,17): error TS2304: Cannot find name 'dynamicPricingService'.
+src/services/decisionEngine.service.ts(113,28): error TS2304: Cannot find name 'forecastingService'.
+src/services/decisionEngine.service.ts(133,24): error TS2304: Cannot find name 'staffingPrepService'.
+src/services/decisionEngine.service.ts(170,27): error TS2304: Cannot find name 'ltvChurnService'.
+src/services/dynamicPricing.service.ts(7,24): error TS2353: Object literal may only specify known properties, and 'createdAt' does not exist in type 'OrderItemWhereInput'.
+src/services/dynamicPricing.service.ts(66,61): error TS2353: Object literal may only specify known properties, and 'branchId' does not exist in type 'MenuItemWhereInput'.
+src/services/forecasting.service.ts(63,16): error TS2353: Object literal may only specify known properties, and 'branchId' does not exist in type 'MenuItemWhereInput'.
+src/services/forecasting.service.ts(68,29): error TS2339: Property 'orderItems' does not exist on type '{ id: string; name: string; price: number; description: string; tags: string[]; stock: number; lowStockThreshold: number; autoDisable: boolean; categoryId: string; }'.
+src/services/forecasting.service.ts(81,16): error TS2353: Object literal may only specify known properties, and 'branchId' does not exist in type 'MenuItemWhereInput'.
+src/services/forecasting.service.ts(88,31): error TS2339: Property 'orderItems' does not exist on type '{ id: string; name: string; price: number; description: string; tags: string[]; stock: number; lowStockThreshold: number; autoDisable: boolean; categoryId: string; }'.
+src/services/fraud.service.ts(16,15): error TS2339: Property 'total' does not exist on type '{ customer: { id: string; name: string; email: string; phone: string; }; } & { id: string; customerId: string; branchId: string; createdAt: Date; updatedAt: Date; isGuest: boolean; paymentMethod: string; ... 10 more ...; terminal_id: string; }'.
+src/services/fraud.service.ts(51,9): error TS2353: Object literal may only specify known properties, and 'promoCode' does not exist in type 'OrderWhereInput'.
+src/services/fraud.service.ts(61,15): error TS2339: Property 'loyaltyPointsUsed' does not exist on type '{ customer: { id: string; name: string; email: string; phone: string; }; } & { id: string; customerId: string; branchId: string; createdAt: Date; updatedAt: Date; isGuest: boolean; paymentMethod: string; ... 10 more ...; terminal_id: string; }'.
+src/services/loyalty.service.ts(22,11): error TS2304: Cannot find name 'notificationsService'.
+src/services/managerDashboard.service.ts(22,15): error TS2353: Object literal may only specify known properties, and 'available' does not exist in type '(Without<MenuItemUpdateManyMutationInput, MenuItemUncheckedUpdateManyInput> & MenuItemUncheckedUpdateManyInput) | (Without<...> & MenuItemUpdateManyMutationInput)'.
+src/services/managerDashboard.service.ts(36,9): error TS2353: Object literal may only specify known properties, and 'courier' does not exist in type 'OrderInclude<DefaultArgs>'.
+src/services/menu.service.ts(82,15): error TS2353: Object literal may only specify known properties, and 'available' does not exist in type '(Without<MenuItemUpdateInput, MenuItemUncheckedUpdateInput> & MenuItemUncheckedUpdateInput) | (Without<...> & MenuItemUpdateInput)'.
+src/services/nlae.service.ts(7,39): error TS2307: Cannot find module './decisionEngine.service' or its corresponding type declarations.
+src/services/nlae.service.ts(40,28): error TS2304: Cannot find name 'forecastingService'.
+src/services/nlae.service.ts(46,25): error TS2304: Cannot find name 'forecastingService'.
+src/services/nlae.service.ts(56,28): error TS2304: Cannot find name 'ltvChurnService'.
+src/services/nlae.service.ts(64,23): error TS2304: Cannot find name 'menuOptimizationService'.
+src/services/nlae.service.ts(70,28): error TS2304: Cannot find name 'knowledgeGraphService'.
+src/services/notifications.service.ts(2,29): error TS2307: Cannot find module './push.service' or its corresponding type declarations.
+src/services/notifications.service.ts(3,28): error TS2307: Cannot find module './sms.service' or its corresponding type declarations.
+src/services/notifications.service.ts(17,38): error TS2339: Property 'deviceToken' does not exist on type '{ id: string; name: string; email: string; phone: string; }'.
+src/services/notifications.service.ts(19,18): error TS2339: Property 'deviceToken' does not exist on type '{ id: string; name: string; email: string; phone: string; }'.
+src/services/notifications.service.ts(38,38): error TS2339: Property 'deviceToken' does not exist on type '{ id: string; name: string; email: string; phone: string; }'.
+src/services/notifications.service.ts(40,18): error TS2339: Property 'deviceToken' does not exist on type '{ id: string; name: string; email: string; phone: string; }'.
+src/services/optimizationLoop.service.ts(2,36): error TS2307: Cannot find module './forecasting.service' or its corresponding type declarations.
+src/services/optimizationLoop.service.ts(3,33): error TS2307: Cannot find module './ltvChurn.service' or its corresponding type declarations.
+src/services/optimizationLoop.service.ts(4,43): error TS2307: Cannot find module './behaviorPrediction.service' or its corresponding type declarations.
+src/services/orchestration.service.ts(2,36): error TS2307: Cannot find module './forecasting.service' or its corresponding type declarations.
+src/services/orchestration.service.ts(3,39): error TS2307: Cannot find module './dynamicPricing.service' or its corresponding type declarations.
+src/services/orchestration.service.ts(4,41): error TS2307: Cannot find module './menuOptimization.service' or its corresponding type declarations.
+src/services/orchestration.service.ts(5,37): error TS2307: Cannot find module './staffingPrep.service' or its corresponding type declarations.
+src/services/orchestration.service.ts(6,33): error TS2307: Cannot find module './ltvChurn.service' or its corresponding type declarations.
+src/services/orchestration.service.ts(7,43): error TS2307: Cannot find module './behaviorPrediction.service' or its corresponding type declarations.
+src/services/orchestration.service.ts(8,39): error TS2307: Cannot find module './knowledgeGraph.service' or its corresponding type declarations.
+src/services/orchestration.service.ts(9,39): error TS2307: Cannot find module './decisionEngine.service' or its corresponding type declarations.
+src/services/orchestration.service.ts(10,41): error TS2307: Cannot find module './optimizationLoop.service' or its corresponding type declarations.
+src/services/order/order.service.ts(2,29): error TS2307: Cannot find module '../../socket/order.socket' or its corresponding type declarations.
+src/services/order/order.service.ts(90,47): error TS2307: Cannot find module '../../printers/print.service' or its corresponding type declarations.
+src/services/payments.service.ts(2,20): error TS2307: Cannot find module 'stripe' or its corresponding type declarations.
+src/services/payments.service.ts(4,38): error TS2307: Cannot find module './notifications.service' or its corresponding type declarations.
+src/services/print/print.service.ts(2,30): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean '../../printers/sunmiPrinter.js'?
+src/services/print/print.service.ts(10,16): error TS2353: Object literal may only specify known properties, and 'order_id' does not exist in type 'OrderWhereUniqueInput'.
+src/services/print/print.service.ts(15,13): error TS2353: Object literal may only specify known properties, and 'variant' does not exist in type 'OrderItemInclude<DefaultArgs>'.
+src/services/print/print.service.ts(27,65): error TS2339: Property 'order_id' does not exist on type '{ id: string; customerId: string; branchId: string; createdAt: Date; updatedAt: Date; isGuest: boolean; paymentMethod: string; paymentStatus: string; paymentIntentId: string; paypalOrderId: string; ... 7 more ...; terminal_id: string; }'.
+src/services/recommendation.service.ts(29,9): error TS2353: Object literal may only specify known properties, and 'available' does not exist in type 'MenuItemWhereInput'.
+src/services/recommendation.service.ts(66,9): error TS2353: Object literal may only specify known properties, and 'available' does not exist in type 'MenuItemWhereInput'.
+src/services/recommendation.service.ts(87,9): error TS2353: Object literal may only specify known properties, and 'available' does not exist in type 'MenuItemWhereInput'.
+src/services/staffingPrep.service.ts(2,36): error TS2307: Cannot find module './forecasting.service' or its corresponding type declarations.
+src/services/terminal/terminal.service.ts(2,40): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean '../../utils/jwt.js'?
+src/services/terminal/terminal.service.ts(11,16): error TS2353: Object literal may only specify known properties, and 'branch_code' does not exist in type 'BranchWhereUniqueInput'.
+src/services/terminal/terminal.service.ts(20,27): error TS2339: Property 'branch_code' does not exist on type '{ id: string; lat: number; lng: number; name: string; address: string; phone: string; cuisine: string; active: boolean; }'.
+src/services/terminal/terminal.service.ts(54,35): error TS2339: Property 'branchTerminal' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/services/terminal/terminal.service.ts(67,9): error TS2561: Object literal may only specify known properties, but 'branch_id' does not exist in type '(Without<TerminalCreateInput, TerminalUncheckedCreateInput> & TerminalUncheckedCreateInput) | (Without<...> & TerminalCreateInput)'. Did you mean to write 'branchId'?
+src/services/terminal/terminal.service.ts(78,35): error TS2339: Property 'branchTerminal' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/services/terminal/terminal.service.ts(94,16): error TS2561: Object literal may only specify known properties, but 'branch_id' does not exist in type 'OrderWhereInput'. Did you mean to write 'branchId'?
+src/services/terminal/terminal.service.ts(100,13): error TS2353: Object literal may only specify known properties, and 'variant' does not exist in type 'OrderItemInclude<DefaultArgs>'.
+src/services/terminal/terminal.service.ts(117,18): error TS2339: Property 'branchTerminal' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/services/terminal/terminal.service.ts(131,60): error TS2353: Object literal may only specify known properties, and 'order_id' does not exist in type 'OrderWhereUniqueInput'.
+src/services/terminal/terminal.service.ts(138,16): error TS2353: Object literal may only specify known properties, and 'order_id' does not exist in type 'OrderWhereUniqueInput'.
+src/services/terminal/terminal.service.ts(141,9): error TS2322: Type 'number' is not assignable to type 'string | NullableStringFieldUpdateOperationsInput'.
+src/services/terminal/terminal.service.ts(147,13): error TS2353: Object literal may only specify known properties, and 'variant' does not exist in type 'OrderItemInclude<DefaultArgs>'.
+src/services/terminal/terminal.service.ts(162,35): error TS2339: Property 'branchTerminal' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/services/terminal/terminal.service.ts(171,16): error TS2353: Object literal may only specify known properties, and 'order_id' does not exist in type 'OrderWhereUniqueInput'.
+src/services/terminal/terminal.service.ts(183,16): error TS2353: Object literal may only specify known properties, and 'order_id' does not exist in type 'OrderWhereUniqueInput'.
+src/services/terminal/terminal.service.ts(185,9): error TS2322: Type 'number' is not assignable to type 'string | NullableStringFieldUpdateOperationsInput'.
+src/services/terminal/terminal.service.ts(192,13): error TS2353: Object literal may only specify known properties, and 'variant' does not exist in type 'OrderItemInclude<DefaultArgs>'.
+src/services/terminal/terminal.service.ts(201,36): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean '../../lib/socket.js'?
+src/services/terminal/terminal.service.ts(203,30): error TS2339: Property 'order_id' does not exist on type '{ id: string; customerId: string; branchId: string; createdAt: Date; updatedAt: Date; isGuest: boolean; paymentMethod: string; paymentStatus: string; paymentIntentId: string; paypalOrderId: string; ... 7 more ...; terminal_id: string; }'.
+src/services/terminal/terminal.service.ts(206,31): error TS2551: Property 'branch_id' does not exist on type '{ id: string; customerId: string; branchId: string; createdAt: Date; updatedAt: Date; isGuest: boolean; paymentMethod: string; paymentStatus: string; paymentIntentId: string; paypalOrderId: string; ... 7 more ...; terminal_id: string; }'. Did you mean 'branchId'?
+src/services/terminal/terminal.service.ts(209,39): error TS2551: Property 'branch_id' does not exist on type '{ id: string; customerId: string; branchId: string; createdAt: Date; updatedAt: Date; isGuest: boolean; paymentMethod: string; paymentStatus: string; paymentIntentId: string; paypalOrderId: string; ... 7 more ...; terminal_id: string; }'. Did you mean 'branchId'?
+src/services/terminal/terminal.service.ts(212,43): error TS2307: Cannot find module '../order/order.service' or its corresponding type declarations.
+src/services/terminal/terminal.service.ts(222,35): error TS2339: Property 'branchTerminal' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/services/terminal/terminal.service.ts(231,16): error TS2353: Object literal may only specify known properties, and 'order_id' does not exist in type 'OrderWhereUniqueInput'.
+src/services/terminal/terminal.service.ts(239,16): error TS2353: Object literal may only specify known properties, and 'order_id' does not exist in type 'OrderWhereUniqueInput'.
+src/services/terminal/terminal.service.ts(241,9): error TS2322: Type 'number' is not assignable to type 'string | NullableStringFieldUpdateOperationsInput'.
+src/services/terminal/terminal.service.ts(248,13): error TS2353: Object literal may only specify known properties, and 'variant' does not exist in type 'OrderItemInclude<DefaultArgs>'.
+src/services/terminal/terminal.service.ts(264,16): error TS2353: Object literal may only specify known properties, and 'order_id' does not exist in type 'OrderWhereUniqueInput'.
+src/services/terminal/terminal.service.ts(271,9): error TS2367: This comparison appears to be unintentional because the types 'string' and 'number' have no overlap.
+src/services/terminal/terminal.service.ts(276,16): error TS2353: Object literal may only specify known properties, and 'order_id' does not exist in type 'OrderWhereUniqueInput'.
+src/services/terminal/terminal.service.ts(282,13): error TS2353: Object literal may only specify known properties, and 'variant' does not exist in type 'OrderItemInclude<DefaultArgs>'.
+src/services/terminal/terminal.service.ts(291,36): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean '../../lib/socket.js'?
+src/services/terminal/terminal.service.ts(293,30): error TS2339: Property 'order_id' does not exist on type '{ id: string; customerId: string; branchId: string; createdAt: Date; updatedAt: Date; isGuest: boolean; paymentMethod: string; paymentStatus: string; paymentIntentId: string; paypalOrderId: string; ... 7 more ...; terminal_id: string; }'.
+src/services/terminal/terminal.service.ts(296,31): error TS2551: Property 'branch_id' does not exist on type '{ id: string; customerId: string; branchId: string; createdAt: Date; updatedAt: Date; isGuest: boolean; paymentMethod: string; paymentStatus: string; paymentIntentId: string; paypalOrderId: string; ... 7 more ...; terminal_id: string; }'. Did you mean 'branchId'?
+src/services/terminal/terminal.service.ts(299,39): error TS2551: Property 'branch_id' does not exist on type '{ id: string; customerId: string; branchId: string; createdAt: Date; updatedAt: Date; isGuest: boolean; paymentMethod: string; paymentStatus: string; paymentIntentId: string; paypalOrderId: string; ... 7 more ...; terminal_id: string; }'. Did you mean 'branchId'?
+src/services/terminal/terminal.service.ts(302,43): error TS2307: Cannot find module '../order/order.service' or its corresponding type declarations.
+src/services/terminal/terminal.service.ts(313,16): error TS2353: Object literal may only specify known properties, and 'order_id' does not exist in type 'OrderWhereUniqueInput'.
+src/services/terminal/terminal.service.ts(320,9): error TS2367: This comparison appears to be unintentional because the types 'string' and 'number' have no overlap.
+src/services/terminal/terminal.service.ts(325,16): error TS2353: Object literal may only specify known properties, and 'order_id' does not exist in type 'OrderWhereUniqueInput'.
+src/services/terminal/terminal.service.ts(334,13): error TS2353: Object literal may only specify known properties, and 'variant' does not exist in type 'OrderItemInclude<DefaultArgs>'.
+src/services/terminal/terminal.service.ts(343,36): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean '../../lib/socket.js'?
+src/services/terminal/terminal.service.ts(345,30): error TS2339: Property 'order_id' does not exist on type '{ id: string; customerId: string; branchId: string; createdAt: Date; updatedAt: Date; isGuest: boolean; paymentMethod: string; paymentStatus: string; paymentIntentId: string; paypalOrderId: string; ... 7 more ...; terminal_id: string; }'.
+src/services/terminal/terminal.service.ts(348,31): error TS2551: Property 'branch_id' does not exist on type '{ id: string; customerId: string; branchId: string; createdAt: Date; updatedAt: Date; isGuest: boolean; paymentMethod: string; paymentStatus: string; paymentIntentId: string; paypalOrderId: string; ... 7 more ...; terminal_id: string; }'. Did you mean 'branchId'?
+src/services/terminal/terminal.service.ts(351,39): error TS2551: Property 'branch_id' does not exist on type '{ id: string; customerId: string; branchId: string; createdAt: Date; updatedAt: Date; isGuest: boolean; paymentMethod: string; paymentStatus: string; paymentIntentId: string; paypalOrderId: string; ... 7 more ...; terminal_id: string; }'. Did you mean 'branchId'?
+src/services/terminal/terminal.service.ts(354,43): error TS2307: Cannot find module '../order/order.service' or its corresponding type declarations.
+tests/prisma.test.ts(1,24): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean '../src/prisma/client.js'?

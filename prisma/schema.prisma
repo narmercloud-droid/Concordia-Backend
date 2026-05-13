@@ -7,456 +7,534 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-//
-// -----------------------------------------------------
-// ENUMS
-// -----------------------------------------------------
-enum OrderStatus {
-  pending
-  assigned
-  accepted
-  preparing
-  ready
-  completed
-  rejected
-}
-
-//
-// -----------------------------------------------------
-// ADMIN USER
-// -----------------------------------------------------
-model AdminUser {
-  id        Int       @id @default(autoincrement())
-  email     String    @unique
-  password  String
-  name      String?
-  role      String    @default("admin")
-  createdAt DateTime  @default(now())
-  updatedAt DateTime? @updatedAt
-}
-
-//
-// -----------------------------------------------------
-// BRANCH SYSTEM
-// -----------------------------------------------------
-model Branch {
-  id          Int      @id @default(autoincrement())
-  branch_code String   @unique
-  name        String
-  address     String?
-  phone       String?
-  active      Boolean  @default(true)
-
-  zones              BranchZone[]
-  itemOverrides      BranchItemOverride[]
-  variantOverrides   BranchVariantOverride[]
-  toppingOverrides   BranchToppingOverride[]
-  extraOverrides     BranchExtraOverride[]
-
-  orders             Order[]
-  terminals          Terminal[]
-  settings           BranchSettings?
-  branchTerminals    BranchTerminal[]
-  kitchenDisplays    KitchenDisplay[]
-}
-
-model Terminal {
-  id               Int      @id @default(autoincrement())
-  name             String
-  activation_token String   @unique
-  branch_id        Int
-  createdAt        DateTime @default(now())
-
-  branch Branch @relation(fields: [branch_id], references: [id])
-}
-
-model BranchSettings {
-  id        Int      @id @default(autoincrement())
-  branch_id Int      @unique
-  config    Json?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  branch Branch @relation(fields: [branch_id], references: [id])
-}
-
-model BranchTerminal {
-  id             Int      @id @default(autoincrement())
-  branch_id      Int
-  name           String
-  status         String   @default("active")
-  last_seen      DateTime?
-  is_online      Boolean  @default(false)
-  terminal_token String   @unique
-  createdAt      DateTime @default(now())
-
-  branch Branch @relation(fields: [branch_id], references: [id])
-  orders Order[]
-}
-
-model BranchZone {
-  id        Int     @id @default(autoincrement())
-  branch_id Int
-  name      String
-  radius_km Float
-
-  branch Branch @relation(fields: [branch_id], references: [id])
-}
-
-//
-// -----------------------------------------------------
-// CATEGORY
-// -----------------------------------------------------
-model Category {
-  id               Int     @id @default(autoincrement())
-  category_id      Int     @unique
-  admin_name_en    String
-  customer_name_de String
-  visible          Boolean
-  sort_order       Int
-
-  items     Item[]
-  relations Relation[]
-}
-
-//
-// -----------------------------------------------------
-// ITEM
-// -----------------------------------------------------
-model Item {
-  id               Int     @id @default(autoincrement())
-  item_id          Int     @unique
-  admin_name_en    String
-  customer_name_de String
-  description_de   String
-  visible          Boolean
-  available        Boolean
-  sort_order       Int
-  manual_number    Int
-
-  category_id Int?
-  category    Category? @relation(fields: [category_id], references: [category_id])
-
-  relations      Relation[]
-  dealItems      DealItem[]
-  branchOverrides BranchItemOverride[]
-
-  cartItems  CartItem[]
-  orderItems OrderItem[]
-}
-
-model BranchItemOverride {
-  id         Int     @id @default(autoincrement())
-  branch_id  Int
-  item_id    Int
-  price      Float?
-  available  Boolean?
-
-  branch Branch @relation(fields: [branch_id], references: [id])
-  item   Item   @relation(fields: [item_id], references: [item_id])
-}
-
-//
-// -----------------------------------------------------
-// VARIANT
-// -----------------------------------------------------
-model Variant {
-  id               Int     @id @default(autoincrement())
-  variant_id       Int     @unique
-  admin_name_en    String
-  customer_name_de String
-  visible          Boolean
-  available        Boolean
-  sort_order       Int
-
-  relations       RelationVariant[]
-  branchOverrides BranchVariantOverride[]
-
-  cartVariants  CartItemVariant[]
-  orderVariants OrderItemVariant[]
-}
-
-model BranchVariantOverride {
-  id         Int     @id @default(autoincrement())
-  branch_id  Int
-  variant_id Int
-  price      Float?
-  available  Boolean?
-
-  branch  Branch  @relation(fields: [branch_id], references: [id])
-  variant Variant @relation(fields: [variant_id], references: [variant_id])
-}
-
-//
-// -----------------------------------------------------
-// TOPPING
-// -----------------------------------------------------
-model Topping {
-  id               Int     @id @default(autoincrement())
-  topping_id       Int     @unique
-  admin_name_en    String
-  customer_name_de String
-  category         String
-  visible          Boolean
-  sort_order       Int
-
-  relations       RelationTopping[]
-  branchOverrides BranchToppingOverride[]
-
-  cartToppings  CartItemTopping[]
-  orderToppings OrderItemTopping[]
-}
-
-model BranchToppingOverride {
-  id         Int     @id @default(autoincrement())
-  branch_id  Int
-  topping_id Int
-  price      Float?
-  available  Boolean?
-
-  branch  Branch  @relation(fields: [branch_id], references: [id])
-  topping Topping @relation(fields: [topping_id], references: [topping_id])
-}
-
-//
-// -----------------------------------------------------
-// EXTRA
-// -----------------------------------------------------
-model Extra {
-  id               Int     @id @default(autoincrement())
-  extra_id         Int     @unique
-  admin_name_en    String
-  customer_name_de String
-  visible          Boolean
-  sort_order       Int
-
-  relations       RelationExtra[]
-  branchOverrides BranchExtraOverride[]
-
-  cartExtras  CartItemExtra[]
-  orderExtras OrderItemExtra[]
-}
-
-model BranchExtraOverride {
-  id        Int     @id @default(autoincrement())
-  branch_id Int
-  extra_id  Int
-  price     Float?
-  available Boolean?
-
-  branch Branch @relation(fields: [branch_id], references: [id])
-  extra  Extra  @relation(fields: [extra_id], references: [extra_id])
-}
-
-//
-// -----------------------------------------------------
-// RELATION (item → category + variants + toppings + extras)
-// -----------------------------------------------------
-model Relation {
-  id          Int @id @default(autoincrement())
-  item_id     Int
-  category_id Int
-
-  item     Item     @relation(fields: [item_id], references: [item_id])
-  category Category @relation(fields: [category_id], references: [category_id])
-
-  variants RelationVariant[]
-  toppings RelationTopping[]
-  extras   RelationExtra[]
-}
-
-model RelationVariant {
-  id          Int @id @default(autoincrement())
-  relation_id Int
-  variant_id  Int
-
-  relation Relation @relation(fields: [relation_id], references: [id])
-  variant  Variant  @relation(fields: [variant_id], references: [variant_id])
-}
-
-model RelationTopping {
-  id          Int @id @default(autoincrement())
-  relation_id Int
-  topping_id  Int
-
-  relation Relation @relation(fields: [relation_id], references: [id])
-  topping  Topping  @relation(fields: [topping_id], references: [topping_id])
-}
-
-model RelationExtra {
-  id          Int @id @default(autoincrement())
-  relation_id Int
-  extra_id    Int
-
-  relation Relation @relation(fields: [relation_id], references: [id])
-  extra    Extra    @relation(fields: [extra_id], references: [extra_id])
-}
-
-//
-// -----------------------------------------------------
-// DEAL
-// -----------------------------------------------------
-model Deal {
-  id               Int     @id @default(autoincrement())
-  deal_id          Int     @unique
-  admin_name_en    String
-  customer_name_de String
-  description_de   String
-  visible          Boolean
-  available        Boolean
-  sort_order       Int
-
-  items_included DealItem[]
-}
-
-model DealItem {
-  id      Int @id @default(autoincrement())
-  deal_id Int
-  item_id Int
-
-  deal Deal @relation(fields: [deal_id], references: [deal_id])
-  item Item @relation(fields: [item_id], references: [item_id])
-}
-
-//
-// -----------------------------------------------------
-// CART SYSTEM
-// -----------------------------------------------------
-model Cart {
-  id        Int      @id @default(autoincrement())
-  cart_id   String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  items CartItem[]
-}
-
-model CartItem {
-  id       Int    @id @default(autoincrement())
-  cart_id  String
-  item_id  Int
-  quantity Int    @default(1)
-
-  cart Cart @relation(fields: [cart_id], references: [cart_id])
-  item Item @relation(fields: [item_id], references: [item_id])
-
-  variant  CartItemVariant?
-  toppings CartItemTopping[]
-  extras   CartItemExtra[]
-}
-
-model CartItemVariant {
-  id           Int @id @default(autoincrement())
-  cart_item_id Int @unique
-  variant_id   Int
-
-  cartItem CartItem @relation(fields: [cart_item_id], references: [id])
-  variant  Variant  @relation(fields: [variant_id], references: [variant_id])
-}
-
-model CartItemTopping {
-  id           Int @id @default(autoincrement())
-  cart_item_id Int
-  topping_id   Int
-
-  cartItem CartItem @relation(fields: [cart_item_id], references: [id])
-  topping  Topping  @relation(fields: [topping_id], references: [topping_id])
-}
-
-model CartItemExtra {
-  id           Int @id @default(autoincrement())
-  cart_item_id Int
-  extra_id     Int
-
-  cartItem CartItem @relation(fields: [cart_item_id], references: [id])
-  extra    Extra    @relation(fields: [extra_id], references: [extra_id])
-}
-
-//
-// -----------------------------------------------------
-// ORDER SYSTEM
-// -----------------------------------------------------
 model Order {
-  id             Int         @id @default(autoincrement())
-  order_id       String      @unique
-  cart_id        String
-  branch_id      Int
-  terminal_id    Int?
-  status         OrderStatus @default(pending)
-  subtotal       Float
-  total          Float
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime?   @updatedAt
+  id         String  @id @default(uuid())
+  branchId   String
+  customerId String?
+  isGuest    Boolean @default(false)
 
-  customer_name  String
-  customer_phone String
-  customer_email String
-  tracking_token String      @unique
+  paymentMethod String // "cash" | "online"
+  paymentStatus String @default("pending") // pending, paid, failed
 
-  estimated_time Int?
-  deliveryType   String?
+  paymentIntentId String?
+  paypalOrderId   String?
+  paypalCaptureId String?
 
-  branch   Branch          @relation(fields: [branch_id], references: [id])
-  terminal BranchTerminal? @relation(fields: [terminal_id], references: [id])
-  items    OrderItem[]
+  status String @default("pending") // pending, accepted, preparing, ready_for_pickup, picked_up, delivered, cancelled
+
+  scheduledFor          DateTime?
+  courierToken          String?
+  courierTokenExpiresAt DateTime?
+  courierStatus         String? // accepted, picked_up, delivered
+
+  tracking_token String?
+  terminal_id    String?
+
+  items OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  branch             Branch               @relation(fields: [branchId], references: [id])
+  customer           Customer?            @relation(fields: [customerId], references: [id])
+  OrderTrackingEvent OrderTrackingEvent[]
+  Review             Review?
+  RiskScore          RiskScore?
+  OrderRiskEvent     OrderRiskEvent[]
 }
 
 model OrderItem {
-  id          Int    @id @default(autoincrement())
-  order_id    String
-  item_id     Int
-  quantity    Int
-  base_price  Float
-  total_price Float
+  id        String   @id @default(uuid())
+  orderId   String
+  itemId    String
+  variantId String
+  addOnIds  String[] @default([])
+  quantity  Int      @default(1)
+  notes     String?
 
-  order Order @relation(fields: [order_id], references: [order_id])
-  item  Item  @relation(fields: [item_id], references: [item_id])
+  price Float
 
-  variant  OrderItemVariant?
-  toppings OrderItemTopping[]
-  extras   OrderItemExtra[]
+  order      Order       @relation(fields: [orderId], references: [id])
+  item       MenuItem   @relation(fields: [itemId], references: [id])
+  ItemRating ItemRating?
 }
 
-model OrderItemVariant {
-  id            Int   @id @default(autoincrement())
-  order_item_id Int   @unique
-  variant_id    Int
-  price         Float
+model Branch {
+  id      String  @id @default(uuid())
+  name    String
+  address String?
+  phone   String?
+  lat     Float?
+  lng     Float?
+  cuisine String?
+  active  Boolean @default(true)
 
-  orderItem OrderItem @relation(fields: [order_item_id], references: [id])
-  variant   Variant   @relation(fields: [variant_id], references: [variant_id])
+  orders         Order[]
+  deliveryZone   DeliveryZone?
+  BranchSchedule BranchSchedule[]
+  Review         Review[]
+  terminals      Terminal[]
+  kitchenDisplays KitchenDisplay[]
+  couriers       Courier[]
 }
 
-model OrderItemTopping {
-  id            Int   @id @default(autoincrement())
-  order_item_id Int
-  topping_id    Int
-  price         Float
+model Terminal {
+  id               String   @id @default(uuid())
+  name             String
+  activation_token String   @unique
+  branchId         String
+  isOnline         Boolean  @default(false)
+  lastSeen         DateTime?
+  createdAt        DateTime @default(now())
 
-  orderItem OrderItem @relation(fields: [order_item_id], references: [id])
-  topping   Topping   @relation(fields: [topping_id], references: [topping_id])
+  branch Branch @relation(fields: [branchId], references: [id])
 }
 
-model OrderItemExtra {
-  id            Int   @id @default(autoincrement())
-  order_item_id Int
-  extra_id      Int
-  price         Float
+model Customer {
+  id    String  @id @default(uuid())
+  name  String
+  email String  @unique
+  phone String?
 
-  orderItem OrderItem @relation(fields: [order_item_id], references: [id])
-  extra     Extra     @relation(fields: [extra_id], references: [extra_id])
+  orders                 Order[]
+  notificationPreference NotificationPreference?
+  loyaltyPoints          LoyaltyPoints?
+  referral               Referral?
+  favorites              Favorite[]
+  addresses              Address[]
+  Review                 Review[]
 }
 
-//
-// -----------------------------------------------------
-// KITCHEN DISPLAY SYSTEM
-// -----------------------------------------------------
-model KitchenDisplay {
-  id          Int      @id @default(autoincrement())
+model Courier {
+  id      String  @id @default(uuid())
+  name    String
+  email   String  @unique
+  phone   String
+  vehicle String?
+  active  Boolean @default(true)
+  branchId String
+  branch   Branch @relation(fields: [branchId], references: [id])
+
+  locations CourierLocation[]
+}
+
+model Admin {
+  id       String @id @default(uuid())
+  email    String @unique
+  password String
+  role     String // "admin" | "manager"
+  branchId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model NotificationPreference {
+  id         String  @id @default(uuid())
+  customerId String  @unique
+  allowPush  Boolean @default(true)
+  allowSMS   Boolean @default(false)
+
+  customer Customer @relation(fields: [customerId], references: [id])
+}
+
+model LoyaltyPoints {
+  id         String @id @default(uuid())
+  customerId String @unique
+  points     Int    @default(0)
+
+  customer Customer @relation(fields: [customerId], references: [id])
+}
+
+model Reward {
+  id          String  @id @default(uuid())
+  title       String
+  description String?
+  costPoints  Int
+  discount    Float? // percentage discount (0.1 = 10%)
+  amountOff   Float? // fixed discount
+  freeItemId  String? // optional free item reward
+
+  createdAt DateTime @default(now())
+}
+
+model PromoCode {
+  id        String    @id @default(uuid())
+  code      String    @unique
+  discount  Float? // percentage
+  amountOff Float? // fixed amount
+  expiresAt DateTime?
+  maxUses   Int?
+  usedCount Int       @default(0)
+
+  createdAt DateTime @default(now())
+}
+
+model Referral {
+  id            String @id @default(uuid())
+  customerId    String @unique
+  code          String @unique
+  referredCount Int    @default(0)
+
+  customer Customer @relation(fields: [customerId], references: [id])
+}
+
+model MenuItem {
+  id                String   @id @default(uuid())
+  name              String
+  description       String?
+  price             Float
+  tags              String[] @default([])
+  stock             Int?     @default(999999)
+  lowStockThreshold Int?     @default(5)
+  autoDisable       Boolean  @default(true)
+
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id])
+  favorites    Favorite[]
+  PriceHistory PriceHistory[]
+  orderItems  OrderItem[]
+  relations   Relation[]
+  cartItems   CartItem[]
+}
+
+model Favorite {
+  id         String   @id @default(uuid())
+  customerId String
+  itemId     String
+  createdAt  DateTime @default(now())
+
+  customer Customer @relation(fields: [customerId], references: [id])
+  item     MenuItem @relation(fields: [itemId], references: [id])
+
+  @@unique([customerId, itemId])
+}
+
+model Address {
+  id           String  @id @default(uuid())
+  customerId   String
+  label        String
+  street       String
+  city         String
+  postalCode   String
+  lat          Float?
+  lng          Float?
+  instructions String?
+  isDefault    Boolean @default(false)
+
+  customer Customer @relation(fields: [customerId], references: [id])
+}
+
+model DeliveryZone {
+  id                    String @id @default(uuid())
+  branchId              String @unique
+  maxDistanceKm         Float
+  baseFee               Float
+  perKmFee              Float
+  freeDeliveryThreshold Float?
+  minimumOrderAmount    Float?
+
+  branch Branch @relation(fields: [branchId], references: [id])
+}
+
+model Category {
+  id          String  @id @default(uuid())
+  name        String  @unique
+  description String?
+  position    Int     @default(0)
+  items       MenuItem[]
+}
+
+model Deal {
+  id          String  @id @default(uuid())
   name        String
-  branch_id   Int
-  kds_token   String   @unique
-  is_online   Boolean  @default(false)
-  last_seen   DateTime @updatedAt
-  branch      Branch   @relation(fields: [branch_id], references: [id])
+  description String?
+  price       Float
+  visible     Boolean @default(true)
+}
+
+model Extra {
+  id          String  @id @default(uuid())
+  name        String
+  price       Float
+  visible     Boolean @default(true)
+}
+
+model Topping {
+  id          String  @id @default(uuid())
+  name        String
+  price       Float
+  visible     Boolean @default(true)
+}
+
+model Variant {
+  id          String  @id @default(uuid())
+  name        String
+  price       Float
+  visible     Boolean @default(true)
+}
+
+model Relation {
+  id          String  @id @default(uuid())
+  itemId      String
+  variantId   String?
+  toppingId   String?
+  extraId     String?
+  item        MenuItem @relation(fields: [itemId], references: [id])
+}
+
+model Cart {
+  id         String     @id @default(uuid())
+  customerId String?
+  items      CartItem[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+}
+
+model CartItem {
+  id        String  @id @default(uuid())
+  cartId    String
+  itemId    String
+  quantity  Int     @default(1)
+  cart      Cart    @relation(fields: [cartId], references: [id])
+  item      MenuItem @relation(fields: [itemId], references: [id])
+}
+
+model SearchLog {
+  id        String   @id @default(uuid())
+  query     String
+  createdAt DateTime @default(now())
+}
+
+model BranchSchedule {
+  id        String @id @default(uuid())
+  branchId  String
+  day       Int // 0 = Monday, 6 = Sunday
+  openTime  String
+  closeTime String
+
+  branch Branch @relation(fields: [branchId], references: [id])
+}
+
+model AdminUser {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  role      String   // "owner" | "superadmin"
+  refreshToken String? @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CourierLocation {
+  id        String   @id @default(uuid())
+  courierId String   @unique
+  lat       Float
+  lng       Float
+  speed     Float?
+  heading   Float?
+  updatedAt DateTime @updatedAt
+
+  courier Courier @relation(fields: [courierId], references: [id])
+}
+
+model OrderTrackingEvent {
+  id        String   @id @default(uuid())
+  orderId   String
+  status    String // accepted, preparing, picked_up, en_route, delivered
+  timestamp DateTime @default(now())
+
+  order Order @relation(fields: [orderId], references: [id])
+}
+
+model Review {
+  id         String   @id @default(uuid())
+  orderId    String   @unique
+  customerId String
+  branchId   String
+  rating     Int
+  comment    String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  order    Order    @relation(fields: [orderId], references: [id])
+  customer Customer @relation(fields: [customerId], references: [id])
+  branch   Branch   @relation(fields: [branchId], references: [id])
+}
+
+model ItemRating {
+  id          String @id @default(uuid())
+  orderItemId String @unique
+  rating      Int
+
+  orderItem OrderItem @relation(fields: [orderItemId], references: [id])
+}
+
+model RiskScore {
+  id        String   @id @default(uuid())
+  orderId   String   @unique
+  score     Int
+  level     String // low, medium, high, extreme
+  createdAt DateTime @default(now())
+
+  order Order @relation(fields: [orderId], references: [id])
+}
+
+model FraudFlag {
+  id         String   @id @default(uuid())
+  customerId String?
+  orderId    String?
+  reason     String
+  createdAt  DateTime @default(now())
+}
+
+model OrderRiskEvent {
+  id        String   @id @default(uuid())
+  orderId   String
+  event     String
+  createdAt DateTime @default(now())
+
+  order Order @relation(fields: [orderId], references: [id])
+}
+
+model PriceHistory {
+  id        String   @id @default(uuid())
+  itemId    String
+  oldPrice  Float
+  newPrice  Float
+  reason    String
+  createdAt DateTime @default(now())
+
+  item MenuItem @relation(fields: [itemId], references: [id])
+}
+
+model DynamicPriceRule {
+  id         String   @id @default(uuid())
+  branchId   String
+  itemId     String?
+  ruleType   String // demand, inventory, time, surge, discount
+  multiplier Float?
+  amount     Float?
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+}
+
+model InsightLog {
+  id          String   @id @default(uuid())
+  branchId    String
+  type        String // pattern, anomaly, correlation
+  description String
+  confidence  Float
+  impact      String // low, medium, high
+  createdAt   DateTime @default(now())
+}
+
+model DecisionLog {
+  id          String   @id @default(uuid())
+  branchId    String
+  actionType  String // pricing, marketing, inventory, staffing, retention, fraud
+  description String
+  confidence  Float
+  impact      String // low, medium, high
+  autoApplied Boolean
+  createdAt   DateTime @default(now())
+}
+
+model AutomationSettings {
+  id        String  @id @default(uuid())
+  branchId  String  @unique
+  pricing   Boolean @default(false)
+  marketing Boolean @default(false)
+  inventory Boolean @default(false)
+  staffing  Boolean @default(false)
+  retention Boolean @default(false)
+  fraud     Boolean @default(false)
+}
+
+model AnalyticsQueryLog {
+  id        String   @id @default(uuid())
+  branchId  String
+  question  String
+  answer    String
+  createdAt DateTime @default(now())
+}
+
+model OptimizationLog {
+  id        String   @id @default(uuid())
+  branchId  String
+  module    String // pricing, forecasting, churn, behavior, staffing, inventory
+  parameter String
+  oldValue  Float?
+  newValue  Float?
+  reason    String
+  createdAt DateTime @default(now())
+}
+
+model OptimizationParameters {
+  id                 String @id @default(uuid())
+  branchId           String @unique
+  pricingMultiplier  Float  @default(1.0)
+  forecastWeight     Float  @default(1.0)
+  churnThreshold     Float  @default(0.5)
+  behaviorConfidence Float  @default(0.7)
+  staffingRatio      Float  @default(3.0)
+  inventoryThreshold Float  @default(2.0)
+}
+
+model OrchestrationLog {
+  id        String   @id @default(uuid())
+  branchId  String
+  cycleType String // scheduled, event-triggered, manual
+  summary   String
+  createdAt DateTime @default(now())
+}
+
+model MemoryRecord {
+  id        String   @id @default(uuid())
+  branchId  String
+  module    String // forecasting, pricing, churn, behavior, staffing, insights, decisions
+  key       String
+  value     Json
+  createdAt DateTime @default(now())
+}
+
+model TrendRecord {
+  id        String   @id @default(uuid())
+  branchId  String
+  category  String // demand, pricing, churn, behavior, inventory
+  summary   String
+  createdAt DateTime @default(now())
+}
+
+model IntelligenceReport {
+  id        String   @id @default(uuid())
+  branchId  String
+  summary   String
+  details   Json
+  createdAt DateTime @default(now())
+}
+
+model DashboardViewLog {
+  id        String   @id @default(uuid())
+  branchId  String
+  section   String
+  createdAt DateTime @default(now())
+}
+
+model ConversationLog {
+  id        String   @id @default(uuid())
+  branchId  String
+  message   String
+  response  String
+  createdAt DateTime @default(now())
+}
+
+model KitchenDisplay {
+  id        String   @id @default(uuid())
+  name      String
+  apiKey    String   @unique
+  branchId  String
+  createdAt DateTime @default(now())
+
+  branch Branch @relation(fields: [branchId], references: [id])
 }

@@ -2,8 +2,17 @@ import { z } from "zod";
 
 export const createOrderSchema = z.object({
   body: z.object({
-    cartId: z.string(),
-    branch_id: z.number().int().positive(),
+    items: z.array(z.object({
+      itemId: z.string(),
+      variantId: z.string(),
+      addOnIds: z.array(z.string()),
+      quantity: z.number().int().positive(),
+      notes: z.string().optional(),
+      price: z.number().positive()
+    })).min(1),
+    paymentMethod: z.enum(["cash", "online"]),
+    customerId: z.string().optional(),
+    isGuest: z.boolean().optional()
   }),
 });
 
@@ -16,8 +25,10 @@ export const updateOrderStatusSchema = z.object({
       "pending",
       "accepted",
       "preparing",
-      "ready",
+      "ready_for_pickup",
+      "picked_up",
       "delivered",
+      "cancelled",
     ]),
     estimated_time: z.number().optional(),
   }),

@@ -1,14 +1,10 @@
-import { prisma } from "../../prisma/client";
-import { signToken, verifyToken } from "../../utils/jwt";
-import crypto from "crypto";
+import { prisma } from "../../prisma/client.js";
+import { signToken, verifyToken } from "../../utils/jwt.js";
 
 export class TerminalService {
-  // -----------------------------------------------------
-  // ACTIVATE TERMINAL
-  // -----------------------------------------------------
-  static async activateTerminal(branch_code: string) {
+  static async activateTerminal(branchId: string) {
     const branch = await prisma.branch.findUnique({
-      where: { branch_code },
+      where: { id: branchId },
     });
 
     if (!branch) {
@@ -16,15 +12,11 @@ export class TerminalService {
     }
 
     return signToken({
-      branch_id: branch.id,
-      branch_code: branch.branch_code,
+      branchId: branch.id,
       type: "terminal_activation",
     });
   }
 
-  // -----------------------------------------------------
-  // REGISTER TERMINAL
-  // -----------------------------------------------------
   static async registerTerminal(activation_token: string, terminal_name: string) {
     const payload = verifyToken(activation_token) as any;
 
@@ -33,7 +25,7 @@ export class TerminalService {
     }
 
     const branch = await prisma.branch.findUnique({
-      where: { id: payload.branch_id },
+      where: { id: payload.branchId },
     });
 
     if (!branch) {
@@ -48,35 +40,18 @@ export class TerminalService {
       throw new Error("Terminal has already been registered");
     }
 
-    // Generate secure random token
-    const terminal_token = crypto.randomBytes(32).toString("hex");
-
-    const terminal = await prisma.branchTerminal.create({
-      data: {
-        name: terminal_name,
-        terminal_token,
-        branch_id: branch.id,
-      },
-    });
-
-    // Still create the Terminal record for activation tracking
-    await prisma.terminal.create({
+    return prisma.terminal.create({
       data: {
         name: terminal_name,
         activation_token,
-        branch_id: branch.id,
+        branchId: branch.id,
       },
     });
-
-    return { ...terminal, terminal_token };
   }
 
-  // -----------------------------------------------------
-  // LOGIN TERMINAL
-  // -----------------------------------------------------
   static async loginTerminal(terminal_token: string) {
-    const terminal = await prisma.branchTerminal.findUnique({
-      where: { terminal_token },
+    const terminal = await prisma.terminal.findUnique({
+      where: { activation_token: terminal_token },
     });
 
     if (!terminal) {
@@ -86,56 +61,39 @@ export class TerminalService {
     return terminal;
   }
 
-  // -----------------------------------------------------
-  // GET BRANCH ORDERS
-  // -----------------------------------------------------
-  static async getBranchOrders(branch_id: number) {
+  static async getBranchOrders(branch_id: string) {
     return prisma.order.findMany({
-      where: { branch_id },
+      where: { branchId: branch_id },
       orderBy: { createdAt: "asc" },
       include: {
         items: {
           include: {
             item: true,
-            variant: true,
-            toppings: {
-              include: { topping: true },
-            },
-            extras: {
-              include: { extra: true },
-            },
           },
         },
       },
     });
   }
 
-  // -----------------------------------------------------
-  // UPDATE TERMINAL HEARTBEAT
-  // -----------------------------------------------------
-  static async updateHeartbeat(terminal_id: number) {
-    await prisma.branchTerminal.update({
+  static async updateHeartbeat(terminal_id: string) {
+    await prisma.terminal.update({
       where: { id: terminal_id },
       data: {
-        last_seen: new Date(),
-        is_online: true,
+        lastSeen: new Date(),
+        isOnline: true,
       },
     });
-    console.log(`Terminal ${terminal_id} marked online via heartbeat`);
   }
 
-  // -----------------------------------------------------
-  // ACKNOWLEDGE ORDER
-  // -----------------------------------------------------
-  static async acknowledgeOrder(order_id: string, terminal_id: number) {
-    const order = await prisma.order.findUnique({ where: { order_id } });
+  static async acknowledgeOrder(order_id: string, terminal_id: string) {
+    const order = await prisma.order.findUnique({ where: { id: order_id } });
 
     if (!order) {
       throw new Error("Order not found");
     }
 
-    const updatedOrder = await prisma.order.update({
-      where: { order_id },
+    return prisma.order.update({
+      where: { id: order_id },
       data: {
         status: "acknowledged",
         terminal_id,
@@ -144,22 +102,14 @@ export class TerminalService {
         items: {
           include: {
             item: true,
-            variant: true,
-            toppings: { include: { topping: true } },
-            extras: { include: { extra: true } },
           },
         },
       },
     });
-
-    return updatedOrder;
   }
 
-  // -----------------------------------------------------
-  // ASSIGN ORDER TO TERMINAL
-  // -----------------------------------------------------
-  static async assignOrder(order_id: string, terminal_id: number) {
-    const terminal = await prisma.branchTerminal.findUnique({
+  static async assignOrder(order_id: string, terminal_id: string) {
+    const terminal = await prisma.terminal.findUnique({
       where: { id: terminal_id },
     });
 
@@ -168,7 +118,7 @@ export class TerminalService {
     }
 
     const order = await prisma.order.findUnique({
-      where: { order_id },
+      where: { id: order_id },
     });
 
     if (!order) {
@@ -180,7 +130,7 @@ export class TerminalService {
     }
 
     const updatedOrder = await prisma.order.update({
-      where: { order_id },
+      where: { id: order_id },
       data: {
         terminal_id,
         status: "assigned",
@@ -189,79 +139,30 @@ export class TerminalService {
         items: {
           include: {
             item: true,
-            variant: true,
-            toppings: { include: { topping: true } },
-            extras: { include: { extra: true } },
           },
         },
       },
     });
 
-    // Emit socket event
-    const { getIO } = await import("../../lib/socket");
+    const { getIO } = await import("../../lib/socket.js");
     const payload = {
-      order_id: updatedOrder.order_id,
+      order_id: updatedOrder.id,
       terminal_id: updatedOrder.terminal_id,
       status: updatedOrder.status,
-      branch_id: updatedOrder.branch_id
+      branch_id: updatedOrder.branchId,
     };
     getIO().to(`terminal_${terminal_id}`).emit("order_assigned", payload);
-    getIO().to(`branch_${updatedOrder.branch_id}`).emit("order_assigned", payload);
+    getIO().to(`branch_${updatedOrder.branchId}`).emit("order_assigned", payload);
 
-    // Emit order status to branch
-    const { OrderService } = await import("../order/order.service");
+    const { OrderService } = await import("../order/order.service.js");
     OrderService.emitOrderStatus(updatedOrder);
 
     return updatedOrder;
   }
 
-  // -----------------------------------------------------
-  // ASSIGN ORDER TO TERMINAL (LEGACY)
-  // -----------------------------------------------------
-  static async assignOrderToTerminal(order_id: string, terminal_id: number) {
-    const terminal = await prisma.branchTerminal.findUnique({
-      where: { id: terminal_id },
-    });
-
-    if (!terminal) {
-      throw new Error("Terminal not found");
-    }
-
+  static async acceptOrder(order_id: string, terminal_id: string) {
     const order = await prisma.order.findUnique({
-      where: { order_id },
-    });
-
-    if (!order) {
-      throw new Error("Order not found");
-    }
-
-    const updatedOrder = await prisma.order.update({
-      where: { order_id },
-      data: {
-        terminal_id,
-        status: "assigned",
-      },
-      include: {
-        items: {
-          include: {
-            item: true,
-            variant: true,
-            toppings: { include: { topping: true } },
-            extras: { include: { extra: true } },
-          },
-        },
-      },
-    });
-
-    return updatedOrder;
-  }
-
-  // -----------------------------------------------------
-  // ACCEPT ORDER
-  // -----------------------------------------------------
-  static async acceptOrder(order_id: string, terminal_id: number) {
-    const order = await prisma.order.findUnique({
-      where: { order_id },
+      where: { id: order_id },
     });
 
     if (!order) {
@@ -273,44 +174,36 @@ export class TerminalService {
     }
 
     const updatedOrder = await prisma.order.update({
-      where: { order_id },
+      where: { id: order_id },
       data: { status: "accepted" },
       include: {
         items: {
           include: {
             item: true,
-            variant: true,
-            toppings: { include: { topping: true } },
-            extras: { include: { extra: true } },
           },
         },
       },
     });
 
-    // Emit socket event
-    const { getIO } = await import("../../lib/socket");
+    const { getIO } = await import("../../lib/socket.js");
     const payload = {
-      order_id: updatedOrder.order_id,
+      order_id: updatedOrder.id,
       terminal_id: updatedOrder.terminal_id,
       status: updatedOrder.status,
-      branch_id: updatedOrder.branch_id
+      branch_id: updatedOrder.branchId,
     };
     getIO().to(`terminal_${terminal_id}`).emit("order_accepted", payload);
-    getIO().to(`branch_${updatedOrder.branch_id}`).emit("order_accepted", payload);
+    getIO().to(`branch_${updatedOrder.branchId}`).emit("order_accepted", payload);
 
-    // Emit order status to branch
-    const { OrderService } = await import("../order/order.service");
+    const { OrderService } = await import("../order/order.service.js");
     OrderService.emitOrderStatus(updatedOrder);
 
     return updatedOrder;
   }
 
-  // -----------------------------------------------------
-  // REJECT ORDER
-  // -----------------------------------------------------
-  static async rejectOrder(order_id: string, terminal_id: number) {
+  static async rejectOrder(order_id: string, terminal_id: string) {
     const order = await prisma.order.findUnique({
-      where: { order_id },
+      where: { id: order_id },
     });
 
     if (!order) {
@@ -322,7 +215,7 @@ export class TerminalService {
     }
 
     const updatedOrder = await prisma.order.update({
-      where: { order_id },
+      where: { id: order_id },
       data: {
         status: "rejected",
         terminal_id: null,
@@ -331,27 +224,24 @@ export class TerminalService {
         items: {
           include: {
             item: true,
-            variant: true,
-            toppings: { include: { topping: true } },
-            extras: { include: { extra: true } },
           },
         },
       },
     });
 
-    // Emit socket event
-    const { getIO } = await import("../../lib/socket");
+    const { getIO } = await import("../../lib/socket.js");
     const payload = {
-      order_id: updatedOrder.order_id,
+      order_id: updatedOrder.id,
       terminal_id: updatedOrder.terminal_id,
       status: updatedOrder.status,
-      branch_id: updatedOrder.branch_id
+      branch_id: updatedOrder.branchId,
     };
-    getIO().to(`terminal_${terminal_id}`).emit("order_rejected", payload);
-    getIO().to(`branch_${updatedOrder.branch_id}`).emit("order_rejected", payload);
+    if (terminal_id) {
+      getIO().to(`terminal_${terminal_id}`).emit("order_rejected", payload);
+    }
+    getIO().to(`branch_${updatedOrder.branchId}`).emit("order_rejected", payload);
 
-    // Emit order status to branch
-    const { OrderService } = await import("../order/order.service");
+    const { OrderService } = await import("../order/order.service.js");
     OrderService.emitOrderStatus(updatedOrder);
 
     return updatedOrder;

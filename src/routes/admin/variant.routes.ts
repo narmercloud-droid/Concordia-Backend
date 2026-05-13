@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { VariantController } from "../../controllers/admin/variant.controller";
-import { verifyAdmin } from "../../middleware/auth";
+import { VariantController } from "../../controllers/admin/variant.controller.js";
+import { verifyAdmin } from "../../middleware/auth.js";
 
 const router = Router();
 
@@ -11,3 +11,5 @@ router.put("/:id", verifyAdmin, VariantController.update);
 router.delete("/:id", verifyAdmin, VariantController.remove);
 
 export default router;
+
+

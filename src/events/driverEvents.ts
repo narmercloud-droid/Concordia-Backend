@@ -1,6 +1,6 @@
 import { Server, Socket } from "socket.io";
-import { DRIVER_EVENTS } from "./eventTypes";
-import logger from "../utils/logger";
+import { DRIVER_EVENTS } from "./eventTypes.js";
+import logger from "../utils/logger.js";
 
 interface DriverState {
   driverId: string;

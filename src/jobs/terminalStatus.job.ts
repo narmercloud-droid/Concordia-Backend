@@ -1,19 +1,19 @@
-import { prisma } from "../prisma/client";
+import { prisma } from "../prisma/client.js";
 
 export function startTerminalStatusJob() {
   setInterval(async () => {
     try {
       const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
 
-      const result = await prisma.branchTerminal.updateMany({
+      const result = await prisma.terminal.updateMany({
         where: {
-          last_seen: {
+          lastSeen: {
             lt: twoMinutesAgo,
           },
-          is_online: true,
+          isOnline: true,
         },
         data: {
-          is_online: false,
+          isOnline: false,
         },
       });
 

@@ -1,15 +1,15 @@
-import { prisma } from "../../prisma/client";
+import { prisma } from "../../prisma/client.js";
 
 export class VariantService {
   static async getAll() {
     return prisma.variant.findMany({
-      orderBy: { sort_order: "asc" }
+      orderBy: { name: "asc" },
     });
   }
 
-  static async getById(id: number) {
+  static async getById(id: string) {
     return prisma.variant.findUnique({
-      where: { variant_id: id }
+      where: { id },
     });
   }
 
@@ -17,16 +17,16 @@ export class VariantService {
     return prisma.variant.create({ data });
   }
 
-  static async update(id: number, data: any) {
+  static async update(id: string, data: any) {
     return prisma.variant.update({
-      where: { variant_id: id },
-      data
+      where: { id },
+      data,
     });
   }
 
-  static async remove(id: number) {
+  static async remove(id: string) {
     return prisma.variant.delete({
-      where: { variant_id: id }
+      where: { id },
     });
   }
 }

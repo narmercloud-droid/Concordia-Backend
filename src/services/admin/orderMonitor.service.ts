@@ -1,11 +1,11 @@
-import { prisma } from "../../prisma/client";
+import { prisma } from "../../prisma/client.js";
 
 export class OrderMonitorService {
   static async getLiveOrders() {
     const orders = await prisma.order.findMany({
       select: {
-        order_id: true,
-        branch_id: true,
+        id: true,
+        branchId: true,
         terminal_id: true,
         status: true,
         createdAt: true,
@@ -14,8 +14,8 @@ export class OrderMonitorService {
     });
 
     return orders.map((order) => ({
-      order_id: order.order_id,
-      branch_id: order.branch_id,
+      order_id: order.id,
+      branch_id: order.branchId,
       terminal_id: order.terminal_id,
       status: order.status,
       created_at: order.createdAt,

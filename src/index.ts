@@ -1,40 +1,49 @@
 import dotenv from "dotenv";
 dotenv.config();
 
+import "./globalTypes.js";
+
 import express from "express";
 import cors from "cors";
 
-import adminRouter from "./routes/admin";
-import authRouter from "./routes/auth";
-import { verifyAdmin } from "./middleware/auth";
+import adminRouter from "./routes/admin.js";
+import authRouter from "./routes/auth.js";
+import { adminAuth } from "./middleware/adminAuth.js";
 
-import menuRoutes from "./routes/menu.routes";
-import adminCategoryRoutes from "./routes/admin/category.routes";
-import adminItemRoutes from "./routes/admin/item.routes";
-import adminVariantRoutes from "./routes/admin/variant.routes";
-import adminToppingRoutes from "./routes/admin/topping.routes";
-import adminExtraRoutes from "./routes/admin/extra.routes";
-import adminRelationRoutes from "./routes/admin/relation.routes";
-import adminDealRoutes from "./routes/admin/deal.routes";
-import terminalAdminRoutes from "./routes/admin/terminalAdmin.routes";
-import terminalStatusRoutes from "./routes/admin/terminalStatus.routes";
-import orderMonitorRoutes from "./routes/admin/orderMonitor.routes";
+// Core routes
+import menuRoutes from "./routes/menu.routes.js";
+import analyticsRoutes from "./routes/analytics.routes.js";
 
-import cartRoutes from "./routes/cart/cart.routes";
-import orderRoutes from "./routes/order/order.routes";
-import orderLifecycleRoutes from "./routes/order/orderLifecycle.routes";
-import printRoutes from "./routes/print/print.routes";
-import terminalRoutes from "./routes/terminal.routes";
+// Admin routes - menu management
+import adminCategoryRoutes from "./routes/admin/category.routes.js";
+import adminItemRoutes from "./routes/admin/item.routes.js";
+import adminVariantRoutes from "./routes/admin/variant.routes.js";
+import adminToppingRoutes from "./routes/admin/topping.routes.js";
+import adminExtraRoutes from "./routes/admin/extra.routes.js";
+import adminRelationRoutes from "./routes/admin/relation.routes.js";
+import adminDealRoutes from "./routes/admin/deal.routes.js";
+import terminalAdminRoutes from "./routes/admin/terminalAdmin.routes.js";
+import terminalStatusRoutes from "./routes/admin/terminalStatus.routes.js";
+import orderMonitorRoutes from "./routes/admin/orderMonitor.routes.js";
+
+// Customer routes
+import customersRoutes from "./routes/customers.routes.js";
+import cartRoutes from "./routes/cart/cart.routes.js";
+import ordersRoutes from "./routes/orders.routes.js";
+import orderLifecycleRoutes from "./routes/order/orderLifecycle.routes.js";
+import printRoutes from "./routes/print/print.routes.js";
+import courierTrackingRoutes from "./routes/courierTracking.routes.js";
+import dashboardRoutes from "./routes/dashboard.routes.js";
+
+// Public routes
+import publicRoutes from "./routes/public.routes.js";
 
 import { createServer } from "http";
 import { Server } from "socket.io";
-import { registerEvents } from "./events";
-import { setIO } from "./lib/socket";
+import { registerEvents } from "./events/index.js";
+import { setIO } from "./lib/socket.js";
 
-// -----------------------------------------------------
-// EXPRESS + SOCKET.IO SETUP
-// -----------------------------------------------------
-
+// Express + Socket.IO setup
 const app = express();
 const server = createServer(app);
 
@@ -45,31 +54,20 @@ const io = new Server(server, {
 });
 
 setIO(io);
-
 registerEvents(io);
 
-// Start terminal status job
-import { startTerminalStatusJob } from "./jobs/terminalStatus.job";
-startTerminalStatusJob();
-
-// -----------------------------------------------------
-// MIDDLEWARE
-// -----------------------------------------------------
-
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-// -----------------------------------------------------
-// ROUTES
-// -----------------------------------------------------
-
-// Public route (login)
+// Routes - Auth
 app.use("/api/auth", authRouter);
 
-// Protected admin routes
-app.use("/api/v1/admin", verifyAdmin, adminRouter);
+// Routes - Admin dashboard
+app.use("/api/v1/admin", adminAuth, adminRouter);
+app.use("/api/v1/admin/analytics", analyticsRoutes);
 
-// Menu + Admin
+// Routes - Menu management
 app.use("/api/v1", menuRoutes);
 app.use("/api/v1/admin/categories", adminCategoryRoutes);
 app.use("/api/v1/admin/items", adminItemRoutes);
@@ -82,34 +80,21 @@ app.use("/api/v1/admin", terminalAdminRoutes);
 app.use("/api/v1/admin", terminalStatusRoutes);
 app.use("/api/v1/admin", orderMonitorRoutes);
 
-// Cart
+// Routes - Customer operations
+app.use("/api/v1/customers", customersRoutes);
 app.use("/api/v1/cart", cartRoutes);
-
-// Orders
-app.use("/api/v1/order", orderRoutes);
+app.use("/api/v1/order", ordersRoutes);
 app.use("/api/v1/orders", orderLifecycleRoutes);
-
-// Terminal activation
-app.use("/api/v1/terminal", terminalRoutes);
-
-// KDS
-import kdsRoutes from "./routes/kds.routes";
-app.use("/api/v1/kds", kdsRoutes);
-
-// Printing
 app.use("/api/v1/print", printRoutes);
+app.use("/api/v1/courier", courierTrackingRoutes);
+app.use("/api/v1/dashboard", dashboardRoutes);
 
-// Public tracking API
-import publicRoutes from "./routes/public.routes";
+// Routes - Public
 app.use("/api/public", publicRoutes);
 
-// -----------------------------------------------------
-// START SERVER
-// -----------------------------------------------------
-
+// Server startup
 const PORT = process.env.PORT || 4000;
 
 server.listen(PORT, () => {
   console.log(`Server running with Socket.io on port ${PORT}`);
 });
-

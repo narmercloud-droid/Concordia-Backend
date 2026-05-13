@@ -1,31 +1,24 @@
 import { Request, Response, NextFunction } from "express";
-import { prisma } from "../prisma/client";
+import { prisma } from "../prisma/client.js";
 
-export async function validateKDSToken(req: Request, res: Response, next: NextFunction) {
-  const token = req.headers["x-kds-token"] as string;
-
-  if (!token) {
-    return res.status(401).json({ error: "Invalid or missing KDS token" });
-  }
-
+export const kdsAuth = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const kds = await prisma.kitchenDisplay.findUnique({
-      where: { kds_token: token },
-    });
-
-    if (!kds) {
-      return res.status(401).json({ error: "Invalid or missing KDS token" });
+    const token = req.headers["x-kds-key"];
+    if (!token || typeof token !== "string") {
+      return res.status(401).json({ error: "Missing KDS key" });
     }
-
-    (req as any).kds = {
-      kds_id: kds.id,
-      branch_id: kds.branch_id,
-      name: kds.name,
-    };
-
+    const kds = await prisma.kitchenDisplay.findUnique({
+      where: { apiKey: token }
+    });
+    if (!kds) {
+      return res.status(401).json({ error: "Invalid KDS key" });
+    }
+    (req as any).kds = kds;
     next();
-  } catch (error) {
-    console.error("KDS auth error:", error);
-    return res.status(500).json({ error: "Internal server error" });
+  } catch (err) {
+    console.error("KDS Auth Error:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
-}
+};
+
+

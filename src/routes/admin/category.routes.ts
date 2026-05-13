@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { CategoryController } from "../../controllers/admin/category.controller";
-import { verifyAdmin } from "../../middleware/auth";
+import { CategoryController } from "../../controllers/admin/category.controller.js";
+import { verifyAdmin } from "../../middleware/auth.js";
 
 const router = Router();
 
@@ -11,3 +11,5 @@ router.put("/:id", verifyAdmin, CategoryController.update);
 router.delete("/:id", verifyAdmin, CategoryController.remove);
 
 export default router;
+
+

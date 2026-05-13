@@ -1,152 +1,98 @@
-import { prisma } from "../../prisma/client";
-import { PricingService } from "../cart/pricing.service";
-import { OrderSocket } from "../../socket/order.socket";
-import { v4 as uuid } from "uuid";
+import { prisma } from "../../prisma/client.js";
+import { OrderSocket } from "../../socket/order.socket.js";
+
+interface CreateOrderData {
+  branchId: string;
+  customerId?: string;
+  isGuest?: boolean;
+  paymentMethod: string;
+  items: Array<{
+    itemId: string;
+    variantId: string;
+    addOnIds: string[];
+    quantity: number;
+    notes?: string;
+    price: number;
+  }>;
+}
 
 export class OrderService {
-  // -----------------------------------------------------
-  // CREATE ORDER FROM CART
-  // -----------------------------------------------------
-  static async createOrder(cartId: string, branch_id: number) {
-    const cart = await prisma.cart.findUnique({
-      where: { cart_id: cartId },
-      include: {
-        items: {
-          include: {
-            variant: true,
-            toppings: true,
-            extras: true
-          }
-        }
-      }
-    });
+  static async createOrder(orderData: CreateOrderData): Promise<any> {
+    const { branchId, customerId, isGuest = false, paymentMethod, items } = orderData;
 
-    if (!cart || cart.items.length === 0) {
-      throw new Error("Cart is empty or does not exist");
+    if (!items || items.length === 0) {
+      throw new Error("Order must have at least one item");
     }
 
-    const totals = await PricingService.calculateCart(cart);
-    const orderId = `order_${uuid()}`;
+    const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
     const order = await prisma.order.create({
       data: {
-        order_id: orderId,
-        cart_id: cartId,
-        branch_id: branch_id,
-        subtotal: totals.subtotal,
-        total: totals.total,
+        branchId,
+        customerId,
+        isGuest,
+        paymentMethod,
+        paymentStatus: "pending",
         status: "pending",
-        terminal_id: null,
-      }
-    });
-
-    // Save each cart item into order items
-    for (const cartItem of cart.items) {
-      const itemTotal = await PricingService.calculateCartItem(cartItem);
-
-      const orderItem = await prisma.orderItem.create({
-        data: {
-          order_id: orderId,
-          item_id: cartItem.item_id,
-          quantity: cartItem.quantity,
-          base_price: itemTotal / cartItem.quantity,
-          total_price: itemTotal
+        items: {
+          create: items.map(item => ({
+            itemId: item.itemId,
+            variantId: item.variantId,
+            addOnIds: item.addOnIds,
+            quantity: item.quantity,
+            notes: item.notes,
+            price: item.price
+          }))
         }
-      });
-
-      // Variant
-      if (cartItem.variant) {
-        await prisma.orderItemVariant.create({
-          data: {
-            order_item_id: orderItem.id,
-            variant_id: cartItem.variant.variant_id,
-            price: 0
-          }
-        });
+      },
+      include: {
+        items: true
       }
-
-      // Toppings
-      for (const topping of cartItem.toppings) {
-        await prisma.orderItemTopping.create({
-          data: {
-            order_item_id: orderItem.id,
-            topping_id: topping.topping_id,
-            price: 0
-          }
-        });
-      }
-
-      // Extras
-      for (const extra of cartItem.extras) {
-        await prisma.orderItemExtra.create({
-          data: {
-            order_item_id: orderItem.id,
-            extra_id: extra.extra_id,
-            price: 0
-          }
-        });
-      }
-    }
-
-    // Clear cart after order creation
-    await prisma.cartItem.deleteMany({
-      where: { cart_id: cartId }
     });
 
     this.emitOrderStatus(order);
     return order;
   }
 
-  // -----------------------------------------------------
-  static emitOrderStatus(order: any) {
-    const { getIO } = require("../../lib/socket");
+  static async emitOrderStatus(order: any) {
+    const { getIO } = await import("../../lib/socket.js");
     const payload = {
-      order_id: order.order_id,
+      orderId: order.id,
       terminal_id: order.terminal_id,
       status: order.status,
-      branch_id: order.branch_id
+      branchId: order.branchId
     };
-    getIO().to(`branch_${order.branch_id}`).emit("order_status", payload);
+    getIO().to(`branch_${order.branchId}`).emit("order_status", payload);
   }
 
-  // -----------------------------------------------------
-  // UPDATE ORDER STATUS (with printing + ETA)
-  // -----------------------------------------------------
   static async updateStatus(orderId: string, status: string, estimated_time?: number) {
     const order = await prisma.order.update({
-      where: { order_id: orderId },
+      where: { id: orderId },
       data: {
         status,
-        estimated_time: estimated_time ?? undefined
+        scheduledFor: estimated_time ? new Date(Date.now() + estimated_time * 60000) : undefined
       },
       include: {
-        items: {
-          include: {
-            item: true,
-            variant: true,
-            toppings: { include: { topping: true } },
-            extras: { include: { extra: true } }
-          }
-        }
+        items: true
       }
     });
 
-    // Trigger printing when order is accepted/preparing
     if (status === "preparing") {
-      const { PrintService } = await import("../print/print.service");
-      await PrintService.printOrder(order.order_id);
+      try {
+        const { PrintService } = await import("../../services/print/print.service.js");
+        await PrintService.printOrder(order.id);
+      } catch (error) {
+        console.error("Failed to print order:", error);
+      }
     }
 
     OrderSocket.orderUpdated(order);
     return order;
   }
 
-  // -----------------------------------------------------
-  // COURIER PICKUP (QR CODE SCAN)
-  // -----------------------------------------------------
   static async courierPickup(orderId: string) {
     const order = await prisma.order.update({
-      where: { order_id: orderId },
+      where: { id: orderId },
       data: { status: "picked_up" }
     });
 
@@ -154,68 +100,26 @@ export class OrderService {
     return order;
   }
 
-  // -----------------------------------------------------
-  // GET ACTIVE ORDERS (Kitchen Dashboard)
-  // -----------------------------------------------------
   static async getActiveOrders() {
     return prisma.order.findMany({
       where: {
         status: {
-          in: ["pending", "accepted", "preparing", "ready"]
+          in: ["pending", "accepted", "preparing", "ready_for_pickup"]
         }
       },
       orderBy: { createdAt: "asc" },
       include: {
-        items: {
-          include: {
-            item: true,
-            variant: true,
-            toppings: { include: { topping: true } },
-            extras: { include: { extra: true } }
-          }
-        }
+        items: true
       }
     });
   }
 
-  // -----------------------------------------------------
-  // GET ORDER BY ID
-  // -----------------------------------------------------
   static async getOrderById(orderId: string) {
     return prisma.order.findUnique({
-      where: { order_id: orderId },
+      where: { id: orderId },
       include: {
-        items: {
-          include: {
-            item: true,
-            variant: true,
-            toppings: { include: { topping: true } },
-            extras: { include: { extra: true } }
-          }
-        }
+        items: true
       }
     });
-  }
-
-  // -----------------------------------------------------
-  // ASSIGN ORDER TO TERMINAL
-  // -----------------------------------------------------
-  static async assignOrderToTerminal(order_id: string, terminal_id: number) {
-    const order = await prisma.order.update({
-      where: { order_id },
-      data: { terminal_id },
-      include: {
-        items: {
-          include: {
-            item: true,
-            variant: true,
-            toppings: { include: { topping: true } },
-            extras: { include: { extra: true } }
-          }
-        }
-      }
-    });
-
-    return order;
   }
 }

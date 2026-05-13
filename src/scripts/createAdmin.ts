@@ -1,4 +1,4 @@
-import prisma from '../prisma';
+import { prisma } from '../prisma/client.js';
 import bcrypt from 'bcryptjs';
 
 async function main() {
@@ -11,6 +11,7 @@ async function main() {
     data: {
       email,
       password: hashed,
+      role: "admin",
     },
   });
 

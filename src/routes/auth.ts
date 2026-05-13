@@ -1,5 +1,5 @@
 import { Router } from "express";
-import prisma from "../prisma";
+import { prisma } from "../prisma/client.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -8,7 +8,7 @@ const router = Router();
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
-  const admin = await prisma.adminUser.findUnique({
+  const admin = await prisma.admin.findUnique({
     where: { email },
   });
 
@@ -21,13 +21,26 @@ router.post("/login", async (req, res) => {
     return res.status(401).json({ error: "Invalid credentials" });
   }
 
-  const token = jwt.sign(
-    { id: admin.id, email: admin.email },
-    process.env.JWT_SECRET!,
-    { expiresIn: "7d" }
-  );
+  const payload = {
+    id: admin.id,
+    role: admin.role,
+    branchId: admin.branchId
+  };
 
-  res.json({ token });
+  if (!payload.role) {
+    return res.status(500).json({ error: "Admin role is required in token payload" });
+  }
+
+  if (!payload.branchId) {
+    return res.status(500).json({ error: "Admin branchId is required in token payload" });
+  }
+
+  const token = jwt.sign(payload, process.env.JWT_SECRET!, {
+    expiresIn: "7d",
+  });
+
+  res.json({ token, user: payload });
 });
 
 export default router;
+

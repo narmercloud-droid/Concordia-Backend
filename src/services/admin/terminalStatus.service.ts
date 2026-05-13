@@ -1,18 +1,18 @@
-import { prisma } from "../../prisma/client";
+import { prisma } from "../../prisma/client.js";
 
 export class TerminalStatusService {
   static async getTerminalStatus() {
-    const terminals = await prisma.branchTerminal.findMany({
+    const terminals = await prisma.terminal.findMany({
       select: {
-        is_online: true,
-        status: true,
+        isOnline: true,
+        lastSeen: true,
       },
     });
 
     const total_terminals = terminals.length;
-    const online_terminals = terminals.filter(t => t.is_online).length;
+    const online_terminals = terminals.filter(t => t.isOnline).length;
     const offline_terminals = total_terminals - online_terminals;
-    const active_terminals = terminals.filter(t => t.status === 'active').length;
+    const active_terminals = terminals.filter(t => t.lastSeen !== null).length;
     const inactive_terminals = total_terminals - active_terminals;
 
     return {

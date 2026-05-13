@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { AppError } from "../lib/AppError";
-import logger from "../utils/logger";
+import { AppError } from "../lib/AppError.js";
+import logger from "../utils/logger.js";
 
 export function errorHandler(
   err: Error | AppError,
@@ -24,3 +24,4 @@ export function errorHandler(
     error: message
   });
 }
+

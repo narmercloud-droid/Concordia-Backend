@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { verifyToken } from "../utils/jwt";
+import { validateJwtPayload, verifyToken, JwtPayload } from "../utils/jwt.js";
 
 export function requireAuth(req: Request, res: Response, next: NextFunction) {
   try {
@@ -9,11 +9,11 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
     const token = header.split(" ")[1];
     const decoded = verifyToken(token);
 
-    // @ts-ignore
-    req.user = decoded;
+    validateJwtPayload(decoded);
 
+    req.user = decoded as JwtPayload;
     next();
-  } catch (err) {
+  } catch {
     return res.status(401).json({ message: "Invalid token" });
   }
 }

@@ -1,5 +1,5 @@
 import express from "express";
-import { prisma } from "../prisma/client";
+import { prisma } from "../prisma/client.js";
 
 const router = express.Router();
 
@@ -8,16 +8,15 @@ router.get("/order/:tracking_token", async (req, res) => {
   const { tracking_token } = req.params;
   
   try {
-    const order = await prisma.order.findUnique({
+    const order = await prisma.order.findFirst({
       where: { tracking_token },
       include: {
         items: {
           include: {
-            variant: true,
-            toppings: true,
-            extras: true,
-          },
+            item: true
+          }
         },
+        customer: true
       },
     });
 
@@ -38,11 +37,11 @@ router.get("/order/:tracking_token", async (req, res) => {
     }
 
     const response = {
-      order_id: order.order_id,
+      order_id: order.id,
       status: order.status,
-      customer_name: order.customer_name,
-      customer_phone: order.customer_phone,
-      customer_email: order.customer_email,
+      customer_name: order.customer?.name || "Guest",
+      customer_phone: order.customer?.phone || null,
+      customer_email: order.customer?.email || null,
       items: order.items,
       timeline,
     };

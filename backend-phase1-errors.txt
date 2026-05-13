@@ -1,0 +1,9 @@
+﻿error TS6053: File 'src/controllers/**/*.ts' not found.
+  The file is in the program because:
+    Root file specified for compilation
+error TS6053: File 'src/middleware/**/*.ts' not found.
+  The file is in the program because:
+    Root file specified for compilation
+error TS6053: File 'src/services/**/*.ts' not found.
+  The file is in the program because:
+    Root file specified for compilation

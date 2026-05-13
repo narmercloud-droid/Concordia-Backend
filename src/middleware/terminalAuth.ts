@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { prisma } from "../prisma/client";
+import { prisma } from "../prisma/client.js";
 
 export async function validateTerminalToken(req: Request, res: Response, next: NextFunction) {
   const token = req.headers["x-terminal-token"] as string;
@@ -9,17 +9,18 @@ export async function validateTerminalToken(req: Request, res: Response, next: N
   }
 
   try {
-    const terminal = await prisma.branchTerminal.findUnique({
-      where: { terminal_token: token },
+    const terminal = await prisma.terminal.findUnique({
+      where: { activation_token: token },
     });
 
     if (!terminal) {
       return res.status(401).json({ error: "Invalid or missing terminal token" });
     }
 
-    (req as any).terminal = {
-      terminal_id: terminal.id,
-      branch_id: terminal.branch_id,
+    req.user = {
+      id: terminal.id,
+      role: "terminal",
+      branchId: terminal.branchId,
     };
 
     next();

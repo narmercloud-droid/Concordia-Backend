@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { ToppingController } from "../../controllers/admin/topping.controller";
-import { verifyAdmin } from "../../middleware/auth";
+import { ToppingController } from "../../controllers/admin/topping.controller.js";
+import { verifyAdmin } from "../../middleware/auth.js";
 
 const router = Router();
 
@@ -11,3 +11,5 @@ router.put("/:id", verifyAdmin, ToppingController.update);
 router.delete("/:id", verifyAdmin, ToppingController.remove);
 
 export default router;
+
+

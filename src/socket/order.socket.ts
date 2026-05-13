@@ -1,4 +1,4 @@
-import { getIO } from "../lib/socket";
+import { getIO } from "../lib/socket.js";
 
 export class OrderSocket {
   // -----------------------------------------------------
@@ -45,3 +45,4 @@ export class OrderSocket {
     getIO().to(`branch_${order.branch_id}`).emit("order_rejected", order);
   }
 }
+

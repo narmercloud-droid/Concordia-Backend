@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { TerminalController } from "../controllers/terminal/terminal.controller";
-import { validateTerminalToken } from "../middleware/terminalAuth";
-import { validate } from "../middleware/validate";
-import { activateTerminalSchema, registerTerminalSchema, loginTerminalSchema } from "../schemas/terminalSchemas";
-import { assignOrderSchema, acceptOrderSchema, rejectOrderSchema } from "../schemas/orderWorkflowSchemas";
+import { TerminalController } from "../controllers/terminal/terminal.controller.js";
+import { validateTerminalToken } from "../middleware/terminalAuth.js";
+import { validate } from "../middleware/validate.js";
+import { activateTerminalSchema, registerTerminalSchema, loginTerminalSchema } from "../schemas/terminalSchemas.js";
+import { assignOrderSchema, acceptOrderSchema, rejectOrderSchema } from "../schemas/orderWorkflowSchemas.js";
 
 const router = Router();
 
@@ -18,3 +18,5 @@ router.post("/orders/:order_id/acknowledge", validateTerminalToken, TerminalCont
 router.get("/orders/stream", validateTerminalToken, TerminalController.ordersStream);
 
 export default router;
+
+

@@ -2,7 +2,7 @@ import { Router } from "express";
 import {
   getAvailableDriversController,
   getDriverController
-} from "../controllers/driverController";
+} from "../controllers/driverController.js";
 
 const router = Router();
 

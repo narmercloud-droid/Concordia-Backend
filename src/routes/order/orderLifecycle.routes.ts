@@ -1,5 +1,5 @@
 import express from "express";
-import { OrderLifecycleController } from "../../controllers/order/orderLifecycle.controller";
+import { OrderLifecycleController } from "../../controllers/order/orderLifecycle.controller.js";
 
 const router = express.Router();
 

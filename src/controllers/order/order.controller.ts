@@ -1,70 +1,96 @@
-import { Request, Response } from "express";
-import { OrderService } from "../../services/order/order.service";
+import { Request, Response, NextFunction } from "express";
+import { OrderService } from "../../services/order/order.service.js";
+
+interface AuthenticatedRequest extends Request {
+  user: {
+    id: string;
+    role: string;
+    branchId: string;
+  };
+}
 
 export class OrderController {
   // -----------------------------------------------------
   // CREATE ORDER
   // -----------------------------------------------------
-  static async createOrder(req: Request, res: Response) {
-    const { cartId, branch_id } = req.body;
-
+  static async createOrder(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {
-      const order = await OrderService.createOrder(cartId, branch_id);
+      const { items, paymentMethod, customerId, isGuest } = req.body;
+      const branchId = req.user.branchId;
+
+      const orderData = {
+        branchId,
+        customerId,
+        isGuest,
+        paymentMethod,
+        items
+      };
+
+      const order = await OrderService.createOrder(orderData);
       res.status(201).json(order);
-    } catch (err: any) {
-      res.status(400).json({ error: err.message });
+    } catch (err: unknown) {
+      next(err);
     }
   }
 
   // -----------------------------------------------------
   // UPDATE ORDER STATUS (pending → accepted → preparing → ready → delivered)
   // -----------------------------------------------------
-  static async updateStatus(req: Request, res: Response) {
-    const { orderId } = req.params;
-    const { status, estimated_time } = req.body;
-
+  static async updateStatus(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {
+      const { orderId } = req.params;
+      const { status, estimated_time } = req.body;
+
       const order = await OrderService.updateStatus(orderId, status, estimated_time);
       res.json(order);
-    } catch (err: any) {
-      res.status(400).json({ error: err.message });
+    } catch (err: unknown) {
+      next(err);
     }
   }
 
   // -----------------------------------------------------
   // COURIER PICKUP (QR CODE SCAN)
   // -----------------------------------------------------
-  static async courierPickup(req: Request, res: Response) {
+  static async courierPickup(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {
       const { orderId } = req.params;
 
       const order = await OrderService.courierPickup(orderId);
 
       res.json(order);
-    } catch (err: any) {
-      res.status(400).json({ error: err.message });
+    } catch (err: unknown) {
+      next(err);
     }
   }
 
   // -----------------------------------------------------
   // GET ACTIVE ORDERS (Kitchen Dashboard)
   // -----------------------------------------------------
-  static async getActiveOrders(req: Request, res: Response) {
-    const orders = await OrderService.getActiveOrders();
-    res.json(orders);
+  static async getActiveOrders(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      const orders = await OrderService.getActiveOrders();
+      res.json(orders);
+    } catch (err: unknown) {
+      next(err);
+    }
   }
 
   // -----------------------------------------------------
   // GET ORDER BY ID
   // -----------------------------------------------------
-  static async getOrder(req: Request, res: Response) {
-    const { orderId } = req.params;
+  static async getOrder(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      const { orderId } = req.params;
 
-    const order = await OrderService.getOrderById(orderId);
-    if (!order) {
-      return res.status(404).json({ error: "Order not found" });
+      const order = await OrderService.getOrderById(orderId);
+      if (!order) {
+        return res.status(404).json({ error: "Order not found" });
+      }
+
+      res.json(order);
+    } catch (err: unknown) {
+      next(err);
     }
-
-    res.json(order);
   }
 }
+

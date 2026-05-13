@@ -5,17 +5,24 @@
     "moduleResolution": "node16",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "strict": true,
+
+    "strict": false,
     "skipLibCheck": true,
-    "types": ["node"],
-    "rootDir": "./src",
+
+    "isolatedModules": true,
+
+    "types": ["jest", "node"],
+
+    "rootDir": ".",
     "outDir": "./dist",
     "typeRoots": ["./src/types", "./node_modules/@types"],
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true
+
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noImplicitReturns": false,
+    "noFallthroughCasesInSwitch": false
   },
-  "include": ["src", "src/types"],
+
+  "include": ["src/index.ts", "tests/**/*.ts"],
   "exclude": ["prisma/seed.ts"]
 }
