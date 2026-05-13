@@ -45,6 +45,11 @@
     "src/services/menuOptimization*",
     "src/services/staffingPrep*",
     "src/services/optimizationLoop*",
-    "src/services/orchestration*"
+    "src/services/orchestration*",
+    "src/services/decisionEngine.service.ts",
+    "src/services/cart.service.ts",
+    "src/services/loyalty.service.ts",
+    "src/services/review.service.ts",
+    "src/services/payments.service.ts"
   ]
 }
