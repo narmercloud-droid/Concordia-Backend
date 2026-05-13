@@ -10,16 +10,33 @@ import adminRouter from "./routes/admin.js";
 import authRouter from "./routes/auth.js";
 import { adminAuth } from "./middleware/adminAuth.js";
 
-// 🔥 VAPID SETUP (required for push notifications)
+// ---------------------------------------------
+// 🔐 SAFE VAPID SETUP (Crash‑proof)
+// ---------------------------------------------
 import webpush from "web-push";
 
-webpush.setVapidDetails(
-  "mailto:your-email@example.com",
-  process.env.VAPID_PUBLIC_KEY!,
-  process.env.VAPID_PRIVATE_KEY!
-);
+const publicKey = process.env.VAPID_PUBLIC_KEY;
+const privateKey = process.env.VAPID_PRIVATE_KEY;
 
+if (publicKey && privateKey) {
+  try {
+    webpush.setVapidDetails(
+      "mailto:support@example.com",
+      publicKey,
+      privateKey
+    );
+    console.log("🔐 Web Push enabled with VAPID keys");
+  } catch (err: any) {
+    console.error("⚠ Failed to initialize Web Push:", err.message);
+    console.warn("⚠ Continuing without Web Push");
+  }
+} else {
+  console.warn("⚠ Web Push disabled: missing VAPID_PUBLIC_KEY or VAPID_PRIVATE_KEY");
+}
+
+// ---------------------------------------------
 // Core routes
+// ---------------------------------------------
 import menuRoutes from "./routes/menu.routes.js";
 import analyticsRoutes from "./routes/analytics.routes.js";
 
@@ -52,7 +69,9 @@ import { Server } from "socket.io";
 import { registerEvents } from "./events/index.js";
 import { setIO } from "./lib/socket.js";
 
+// ---------------------------------------------
 // Express + Socket.IO setup
+// ---------------------------------------------
 const app = express();
 const server = createServer(app);
 
@@ -65,18 +84,26 @@ const io = new Server(server, {
 setIO(io);
 registerEvents(io);
 
+// ---------------------------------------------
 // Middleware
+// ---------------------------------------------
 app.use(cors());
 app.use(express.json());
 
+// ---------------------------------------------
 // Routes - Auth
+// ---------------------------------------------
 app.use("/api/auth", authRouter);
 
+// ---------------------------------------------
 // Routes - Admin dashboard
+// ---------------------------------------------
 app.use("/api/v1/admin", adminAuth, adminRouter);
 app.use("/api/v1/admin/analytics", analyticsRoutes);
 
+// ---------------------------------------------
 // Routes - Menu management
+// ---------------------------------------------
 app.use("/api/v1", menuRoutes);
 app.use("/api/v1/admin/categories", adminCategoryRoutes);
 app.use("/api/v1/admin/items", adminItemRoutes);
@@ -89,7 +116,9 @@ app.use("/api/v1/admin", terminalAdminRoutes);
 app.use("/api/v1/admin", terminalStatusRoutes);
 app.use("/api/v1/admin", orderMonitorRoutes);
 
+// ---------------------------------------------
 // Routes - Customer operations
+// ---------------------------------------------
 app.use("/api/v1/customers", customersRoutes);
 app.use("/api/v1/cart", cartRoutes);
 app.use("/api/v1/order", ordersRoutes);
@@ -98,12 +127,16 @@ app.use("/api/v1/print", printRoutes);
 app.use("/api/v1/courier", courierTrackingRoutes);
 app.use("/api/v1/dashboard", dashboardRoutes);
 
+// ---------------------------------------------
 // Routes - Public
+// ---------------------------------------------
 app.use("/api/public", publicRoutes);
 
+// ---------------------------------------------
 // Server startup
+// ---------------------------------------------
 const PORT = process.env.PORT || 4000;
 
 server.listen(PORT, () => {
-  console.log(`Server running with Socket.io on port ${PORT}`);
+  console.log(`🚀 Server running with Socket.io on port ${PORT}`);
 });
