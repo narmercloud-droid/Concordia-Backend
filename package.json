@@ -4,13 +4,14 @@
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "nodemon --watch src --exec ts-node src/index.ts",
-    "build": "tsc -p tsconfig.build.json",
-    "start": "node dist/index.js",
-    "seed": "ts-node prisma/seed.ts",
-    "test": "jest",
-    "test:ui": "playwright test",
-    "test:all": "npm run test && npm run test:ui"
+  "dev": "nodemon --watch src --exec ts-node src/index.ts",
+  "build": "tsc -p tsconfig.build.json",
+  "render-build": "npm run build",
+  "start": "node dist/index.js",
+  "seed": "ts-node prisma/seed.ts",
+  "test": "jest",
+  "test:ui": "playwright test",
+  "test:all": "npm run test && npm run test:ui"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
