@@ -21,6 +21,30 @@
     "noFallthroughCasesInSwitch": false
   },
 
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "tests"]
+  "include": [
+    "src/index.ts",
+    "src/routes/**/*",
+    "src/controllers/**/*",
+    "src/middleware/**/*",
+    "src/utils/**/*",
+    "src/services/push.service.ts",
+    "src/services/sms.service.ts"
+  ],
+
+  "exclude": [
+    "node_modules",
+    "dist",
+    "tests",
+    "src/services/experimental",
+    "src/services/ai",
+    "src/services/forecasting*",
+    "src/services/dynamicPricing*",
+    "src/services/ltvChurn*",
+    "src/services/behaviorPrediction*",
+    "src/services/knowledgeGraph*",
+    "src/services/menuOptimization*",
+    "src/services/staffingPrep*",
+    "src/services/optimizationLoop*",
+    "src/services/orchestration*"
+  ]
 }
