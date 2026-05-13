@@ -1,4 +1,4 @@
 export const optimizationLoopService = {
-  run: () => null
+  run: () => null,
+  runAll: () => null
 };
-

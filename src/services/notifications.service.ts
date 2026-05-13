@@ -1,3 +1,4 @@
 export const notificationsService = {
-  send: () => null
+  send: () => null,
+  sendMarketingSMS: () => null
 };

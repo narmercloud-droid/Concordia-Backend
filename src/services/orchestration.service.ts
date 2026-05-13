@@ -1,3 +1,6 @@
 export const orchestrationService = {
-  orchestrate: () => null
+  orchestrate: () => null,
+  runAll: () => null,
+  eventTrigger: () => null,
+  logs: () => null
 };

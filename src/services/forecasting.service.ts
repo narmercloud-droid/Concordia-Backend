@@ -1,3 +1,4 @@
 export const forecastingService = {
-  forecast: () => null
+  forecast: () => null,
+  fullForecast: () => null
 };
