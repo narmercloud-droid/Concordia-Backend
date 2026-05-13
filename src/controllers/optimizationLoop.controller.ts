@@ -1,9 +1,10 @@
+import type { AuthenticatedRequest } from "../globalTypes.js";
 import { optimizationLoopService } from "../services/optimizationLoop.service.js";
 import { prisma } from "../prisma/client.js";
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Response } from "express";
 
 export const OptimizationLoopController = {
-  run: async (req: Request, res: Response, next: NextFunction) => {
+  run: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const branchId = req.user!.branchId;
       const result = await optimizationLoopService.run(branchId);
@@ -13,7 +14,7 @@ export const OptimizationLoopController = {
     }
   },
 
-  logs: async (req: Request, res: Response, next: NextFunction) => {
+  logs: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const branchId = req.user!.branchId;
       const logs = await prisma.optimizationLog.findMany({

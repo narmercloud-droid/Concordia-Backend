@@ -1,9 +1,10 @@
-import { Request, Response, NextFunction } from "express";
+import type { AuthenticatedRequest } from "../globalTypes.js";
+import { Response, NextFunction } from "express";
 import { prisma } from "../prisma/client.js";
 import { notificationsService } from "../services/notifications.service.js";
 
 export const NotificationsController = {
-  updatePreferences: async (req: Request, res: Response, next: NextFunction) => {
+  updatePreferences: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const customerId = req.user.id;
 
@@ -22,7 +23,7 @@ export const NotificationsController = {
     }
   },
 
-  sendMarketingSMS: async (req: Request, res: Response, next: NextFunction) => {
+  sendMarketingSMS: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const { message, segment } = req.body;
 

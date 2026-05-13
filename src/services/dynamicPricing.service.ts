@@ -1,4 +1,5 @@
 export const dynamicPricingService = {
-  calculatePrice: () => null,
-  optimizeBranch: () => null
+  calculatePrice: (...args: any[]) => null,
+  applyPrice: (...args: any[]) => null,
+  optimizeBranch: (...args: any[]) => null
 };

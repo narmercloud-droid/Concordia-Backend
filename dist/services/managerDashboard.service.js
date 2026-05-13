@@ -10,7 +10,7 @@ export class ManagerDashboardService {
     async setItemAvailability(branchId, itemId, available) {
         return prisma.menuItem.updateMany({
             where: { id: itemId },
-            data: { available }
+            data: { available: available }
         });
     }
     // ORDERS FOR BRANCH

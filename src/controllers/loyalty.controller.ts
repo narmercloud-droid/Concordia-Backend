@@ -1,9 +1,10 @@
-import { Request, Response, NextFunction } from "express";
+import type { AuthenticatedRequest } from "../globalTypes.js";
+import { Response, NextFunction } from "express";
 import { prisma } from "../prisma/client.js";
 import { loyaltyService } from "../services/loyalty.service.js";
 
 export const LoyaltyController = {
-  getPoints: async (req: Request, res: Response, next: NextFunction) => {
+  getPoints: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const customerId = req.user.id;
       const points = await prisma.loyaltyPoints.findUnique({
@@ -15,7 +16,7 @@ export const LoyaltyController = {
     }
   },
 
-  redeemReward: async (req: Request, res: Response, next: NextFunction) => {
+  redeemReward: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const customerId = req.user.id;
       const reward = await loyaltyService.redeemReward(customerId, req.body.rewardId);
@@ -25,7 +26,7 @@ export const LoyaltyController = {
     }
   },
 
-  applyPromoCode: async (req: Request, res: Response, next: NextFunction) => {
+  applyPromoCode: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const promo = await loyaltyService.applyPromoCode(req.body.code);
       if (!promo) return res.status(400).json({ error: "Invalid promo code" });
@@ -35,7 +36,7 @@ export const LoyaltyController = {
     }
   },
 
-  applyReferral: async (req: Request, res: Response, next: NextFunction) => {
+  applyReferral: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const success = await loyaltyService.applyReferral(req.body.code, req.user.id);
       if (!success) return res.status(400).json({ error: "Invalid referral code" });
@@ -45,7 +46,7 @@ export const LoyaltyController = {
     }
   },
 
-  listRewards: async (req: Request, res: Response, next: NextFunction) => {
+  listRewards: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const rewards = await prisma.reward.findMany();
       res.json(rewards);

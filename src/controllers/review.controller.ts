@@ -1,8 +1,9 @@
-import { Request, Response, NextFunction } from "express";
+import type { AuthenticatedRequest } from "../globalTypes.js";
+import { Response, NextFunction } from "express";
 import { reviewService } from "../services/review.service.js";
 
 export const ReviewController = {
-  submit: async (req: Request, res: Response, next: NextFunction) => {
+  submit: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const customerId = req.user.id;
       const review = await reviewService.submitReview(customerId, req.body);
@@ -12,7 +13,7 @@ export const ReviewController = {
     }
   },
 
-  update: async (req: Request, res: Response, next: NextFunction) => {
+  update: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const customerId = req.user.id;
       const { reviewId } = req.params;
@@ -23,7 +24,7 @@ export const ReviewController = {
     }
   },
 
-  delete: async (req: Request, res: Response, next: NextFunction) => {
+  delete: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const customerId = req.user.id;
       const { reviewId } = req.params;
@@ -34,7 +35,7 @@ export const ReviewController = {
     }
   },
 
-  rateItem: async (req: Request, res: Response, next: NextFunction) => {
+  rateItem: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const { orderItemId, rating } = req.body;
       const result = await reviewService.rateItem(orderItemId, rating);
@@ -44,7 +45,7 @@ export const ReviewController = {
     }
   },
 
-  branchReviews: async (req: Request, res: Response, next: NextFunction) => {
+  branchReviews: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const branchId = req.user.branchId;
       const reviews = await reviewService.listBranchReviews(branchId);
@@ -54,7 +55,7 @@ export const ReviewController = {
     }
   },
 
-  branchRating: async (req: Request, res: Response, next: NextFunction) => {
+  branchRating: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const branchId = req.user.branchId;
       const rating = await reviewService.branchRating(branchId);

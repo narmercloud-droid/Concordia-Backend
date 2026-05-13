@@ -1,4 +1,8 @@
 import { prisma } from "../prisma/client.js";
+import { forecastingService } from "./forecasting.service.js";
+import { ltvChurnService } from "./ltvChurn.service.js";
+import { menuOptimizationService } from "./menuOptimization.service.js";
+import { knowledgeGraphService } from "./knowledgeGraph.service.js";
 export class NLAEService {
     // 1. Classify question
     classify(question) {

@@ -1,6 +1,6 @@
 import { prisma } from "../prisma/client.js";
-import { deliveryFeeService } from "./deliveryFee.service";
-import { loyaltyService } from "./loyalty.service";
+import { deliveryFeeService } from "./deliveryFee.service.js";
+import { loyaltyService } from "./loyalty.service.js";
 
 export class CartService {
   // MAIN CHECKOUT ENGINE

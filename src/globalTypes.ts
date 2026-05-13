@@ -11,27 +11,20 @@ declare global {
 // ------------------------------------------------------
 // Express Request Augmentation
 // ------------------------------------------------------
-declare module "express-serve-static-core" {
-  interface User {
-    id: string;
-    role: string;
-    branchId: string;
-  }
-
+declare module "express" {
   interface Request {
-    user?: User;
+    user?: {
+      id: string;
+      role: string;
+      branchId: string;
+    };
+    app?: any;
   }
 }
 
 // ------------------------------------------------------
 // AuthenticatedRequest Type
 // ------------------------------------------------------
-export interface AuthenticatedRequest extends Request {
-  user?: {
-    id: string;
-    role: string;
-    branchId: string;
-  };
-}
+export type AuthenticatedRequest = Request;
 
 export {};

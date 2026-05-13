@@ -1,9 +1,10 @@
+import type { AuthenticatedRequest } from "../globalTypes.js";
 import { knowledgeGraphService } from "../services/knowledgeGraph.service.js";
 import { prisma } from "../prisma/client.js";
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Response } from "express";
 
 export const KnowledgeGraphController = {
-  analyze: async (req: Request, res: Response, next: NextFunction) => {
+  analyze: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const branchId = req.user!.branchId;
       const result = await knowledgeGraphService.analyze(branchId);
@@ -13,7 +14,7 @@ export const KnowledgeGraphController = {
     }
   },
 
-  insights: async (req: Request, res: Response, next: NextFunction) => {
+  insights: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const branchId = req.user!.branchId;
       const logs = await prisma.insightLog.findMany({

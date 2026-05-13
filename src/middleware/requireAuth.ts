@@ -11,7 +11,7 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
 
     validateJwtPayload(decoded);
 
-    req.user = decoded as JwtPayload;
+    req.user = decoded as unknown as Request["user"];
     next();
   } catch {
     return res.status(401).json({ message: "Invalid token" });

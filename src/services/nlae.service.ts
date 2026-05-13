@@ -1,10 +1,9 @@
 import { prisma } from "../prisma/client.js";
-// import { forecastingService } from "./forecasting.service";
-// import { menuOptimizationService } from "./menuOptimization.service";
-// import { ltvChurnService } from "./ltvChurn.service";
-// import { behaviorPredictionService } from "./behaviorPrediction.service";
-// import { knowledgeGraphService } from "./knowledgeGraph.service";
-import { decisionEngineService } from "./decisionEngine.service";
+import { forecastingService } from "./forecasting.service.js";
+import { ltvChurnService } from "./ltvChurn.service.js";
+import { menuOptimizationService } from "./menuOptimization.service.js";
+import { knowledgeGraphService } from "./knowledgeGraph.service.js";
+import { decisionEngineService } from "./decisionEngine.service.js";
 
 export class NLAEService {
   // 1. Classify question

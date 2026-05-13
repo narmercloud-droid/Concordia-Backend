@@ -1,5 +1,5 @@
 export const decisionEngineService = {
-  decide: () => null,
-  run: () => null
+  decide: (...args: any[]) => null,
+  run: (...args: any[]) => null
 };
 

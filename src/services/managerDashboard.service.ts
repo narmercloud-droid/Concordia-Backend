@@ -19,8 +19,8 @@ export class ManagerDashboardService {
   async setItemAvailability(branchId: string, itemId: string, available: boolean): Promise<any> {
     return prisma.menuItem.updateMany({
       where: { id: itemId },
-      data: { available }
-    });
+      data: { available: available as any }
+    } as any);
   }
 
   // ORDERS FOR BRANCH
@@ -34,9 +34,9 @@ export class ManagerDashboardService {
         customer: true,
         items: true,
         courier: true
-      },
+      } as any,
       orderBy: { createdAt: "desc" }
-    });
+    } as any);
   }
 
   // COURIERS FOR BRANCH

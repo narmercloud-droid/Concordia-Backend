@@ -1,14 +1,10 @@
-import { Request, Response, NextFunction } from "express";
+import type { AuthenticatedRequest } from "../../globalTypes.js";
+import { NextFunction, Response } from "express";
 import { KdsService } from "../../services/kds/kds.service.js";
 
-interface KdsRequest extends Request {
-  kds: {
-    branchId: string;
-  };
-}
 
 export const KdsController = {
-  getOrders: async (req: KdsRequest, res: Response, next: NextFunction) => {
+  getOrders: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const kds = req.user;
       const orders = await KdsService.getActiveOrders(kds.branchId);
@@ -17,7 +13,7 @@ export const KdsController = {
       next(err);
     }
   },
-  updateStatus: async (req: KdsRequest, res: Response, next: NextFunction) => {
+  updateStatus: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const { orderId, status } = req.body;
       const kds = req.user;

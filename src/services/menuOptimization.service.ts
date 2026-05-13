@@ -1,4 +1,4 @@
 export const menuOptimizationService = {
-  optimize: () => null,
-  optimizeBranch: () => null
+  optimize: (...args: any[]) => null,
+  optimizeBranch: (...args: any[]) => null
 };

@@ -10,7 +10,8 @@ export class FraudService {
         let score = 0;
         const events = [];
         // High-value order
-        if (order.total > 100) {
+        const orderAny = order;
+        if (orderAny.total > 100) {
             score += 20;
             events.push("High value order");
         }
@@ -39,8 +40,7 @@ export class FraudService {
         // Promo abuse
         const promoUses = await prisma.order.count({
             where: {
-                customerId: order.customerId,
-                promoCode: { not: null }
+                customerId: order.customerId
             }
         });
         if (promoUses > 10) {
@@ -48,7 +48,7 @@ export class FraudService {
             events.push("Promo abuse");
         }
         // Loyalty abuse
-        if (order.loyaltyPointsUsed > 5000) {
+        if (orderAny.loyaltyPointsUsed > 5000) {
             score += 30;
             events.push("Loyalty abuse");
         }

@@ -1,10 +1,11 @@
-import { Request, Response, NextFunction } from "express";
+import type { AuthenticatedRequest } from "../globalTypes.js";
+import { Response, NextFunction } from "express";
 import { paymentsService } from "../services/payments.service.js";
 import { prisma } from "../prisma/client.js";
 
 export const PaymentsController = {
   // STRIPE
-  createStripeIntent: async (req: Request, res: Response, next: NextFunction) => {
+  createStripeIntent: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const { orderId, amount } = req.body;
       const intent = await paymentsService.createStripePaymentIntent(orderId, amount);
@@ -15,7 +16,7 @@ export const PaymentsController = {
   },
 
   // PAYPAL
-  createPayPalOrder: async (req: Request, res: Response, next: NextFunction) => {
+  createPayPalOrder: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const { orderId, amount } = req.body;
       const order = await paymentsService.createPayPalOrder(orderId, amount);
@@ -25,7 +26,7 @@ export const PaymentsController = {
     }
   },
 
-  capturePayPalOrder: async (req: Request, res: Response, next: NextFunction) => {
+  capturePayPalOrder: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const { orderId } = req.body;
       const result = await paymentsService.capturePayPalOrder(orderId);
@@ -36,7 +37,7 @@ export const PaymentsController = {
   },
 
   // REFUND
-  refund: async (req: Request, res: Response, next: NextFunction) => {
+  refund: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const order = await paymentsService.refund(req.params.id);
       res.json(order);

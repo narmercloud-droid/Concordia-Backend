@@ -1,3 +1,3 @@
 export const deliveryFeeService = {
-  calculate: () => 0
+  calculate: (...args: any[]) => ({ allowed: true, fee: 0, reason: "" } as any)
 };

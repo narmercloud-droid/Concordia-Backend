@@ -1,8 +1,9 @@
+import type { AuthenticatedRequest } from "../globalTypes.js";
 import { orchestrationService } from "../services/orchestration.service.js";
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Response } from "express";
 
 export const OrchestrationController = {
-  runAll: async (req: Request, res: Response, next: NextFunction) => {
+  runAll: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const branchId = req.user!.branchId;
       const result = await orchestrationService.runAll(branchId);
@@ -12,7 +13,7 @@ export const OrchestrationController = {
     }
   },
 
-  trigger: async (req: Request, res: Response, next: NextFunction) => {
+  trigger: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const branchId = req.user!.branchId;
       const { event } = req.body;
@@ -23,7 +24,7 @@ export const OrchestrationController = {
     }
   },
 
-  logs: async (req: Request, res: Response, next: NextFunction) => {
+  logs: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const branchId = req.user!.branchId;
       const logs = await orchestrationService.logs(branchId);

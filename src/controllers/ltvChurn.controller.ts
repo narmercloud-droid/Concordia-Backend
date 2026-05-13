@@ -1,8 +1,9 @@
+import type { AuthenticatedRequest } from "../globalTypes.js";
 import { ltvChurnService } from "../services/ltvChurn.service.js";
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Response } from "express";
 
 export const LtvChurnController = {
-  segment: async (req: Request, res: Response, next: NextFunction) => {
+  segment: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const customerId = req.params.customerId as string;
       const result = await ltvChurnService.segment(customerId);
@@ -12,7 +13,7 @@ export const LtvChurnController = {
     }
   },
 
-  branchSegments: async (req: Request, res: Response, next: NextFunction) => {
+  branchSegments: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const branchId = req.user!.branchId;
       const result = await ltvChurnService.branchSegments(branchId);

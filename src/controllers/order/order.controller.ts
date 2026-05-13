@@ -1,13 +1,6 @@
-import { Request, Response, NextFunction } from "express";
+import type { AuthenticatedRequest } from "../../globalTypes.js";
+import { Response, NextFunction } from "express";
 import { OrderService } from "../../services/order/order.service.js";
-
-interface AuthenticatedRequest extends Request {
-  user: {
-    id: string;
-    role: string;
-    branchId: string;
-  };
-}
 
 export class OrderController {
   // -----------------------------------------------------
