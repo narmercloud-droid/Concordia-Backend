@@ -8,14 +8,12 @@
 
     "strict": false,
     "skipLibCheck": true,
+    "isolatedModules": false,
 
-    "isolatedModules": true,
+    "types": ["node"],
 
-    "types": ["jest", "node"],
-
-    "rootDir": ".",
+    "rootDir": "./src",
     "outDir": "./dist",
-    "typeRoots": ["./src/types", "./node_modules/@types"],
 
     "noUnusedLocals": false,
     "noUnusedParameters": false,
@@ -23,6 +21,6 @@
     "noFallthroughCasesInSwitch": false
   },
 
-  "include": ["src/index.ts", "tests/**/*.ts"],
-  "exclude": ["prisma/seed.ts"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "tests"]
 }
