@@ -6,7 +6,6 @@ import { knowledgeGraphService } from "./knowledgeGraph.service.js";
 import { decisionEngineService } from "./decisionEngine.service.js";
 
 export class NLAEService {
-  // 1. Classify question
   classify(question: string): string {
     const q = question.toLowerCase();
 
@@ -34,44 +33,43 @@ export class NLAEService {
     return "general";
   }
 
-  // 2. Handle forecasting questions
   async handleForecasting(branchId: string): Promise<string> {
     const forecast = await forecastingService.fullForecast(branchId);
-    return `Tomorrow's busiest hour is likely ${forecast.next24Hours.sort((a: any, b: any) => b.expectedOrders - a.expectedOrders)[0].hour}:00.`;
+    const entries = forecast.forecast || [];
+    const topHour = entries.sort((a: any, b: any) => (b.expectedOrders || 0) - (a.expectedOrders || 0))[0];
+    return `Tomorrow's busiest hour is likely ${topHour?.hour ?? "unknown"}:00.`;
   }
 
-  // 3. Handle inventory questions
   async handleInventory(branchId: string): Promise<string> {
     const stock = await forecastingService.forecastStock(branchId);
-    const low = stock.filter((s: any) => s.expectedDaysUntilOut !== "N/A" && Number(s.expectedDaysUntilOut) < 2);
+    const levels = stock.stockLevels || [];
+    const low = levels.filter((s: any) => s.expectedDaysUntilOut !== "N/A" && Number(s.expectedDaysUntilOut) < 2);
 
     if (low.length === 0) return "No items are at risk of running out.";
 
     return `Items at risk: ${low.map(l => l.name).join(", ")}.`;
   }
 
-  // 4. Handle customer questions
   async handleCustomer(branchId: string) {
-    const segments = await ltvChurnService.branchSegments(branchId);
+    const { segments } = await ltvChurnService.branchSegments(branchId);
     const atRisk = segments.filter(s => s.segment === "at-risk");
 
     return `${atRisk.length} customers are at high churn risk.`;
   }
 
-  // 5. Handle menu questions
   async handleMenu(branchId: string) {
     const opt = await menuOptimizationService.optimize(branchId);
-    return `Underperforming items: ${opt.underperforming.map(i => i.name).join(", ")}`;
+    const underperforming = opt.optimizations || [];
+    return `Underperforming items: ${underperforming.map((i: any) => i.name).join(", ")}`;
   }
 
-  // 6. Handle insights
   async handleInsights(branchId: string) {
-    const insights = await knowledgeGraphService.generateInsights(branchId);
+    const insightsResponse = await knowledgeGraphService.generateInsights(branchId);
+    const insights = insightsResponse.insights || [];
     if (insights.length === 0) return "No new insights detected.";
-    return insights.map(i => i.description).join(" | ");
+    return insights.map((i: any) => i.description).join(" | ");
   }
 
-  // 7. Handle decision explanations
   async handleDecisions(branchId: string) {
     const logs = await prisma.decisionLog.findMany({
       where: { branchId },
@@ -84,7 +82,6 @@ export class NLAEService {
     return logs.map(l => `${l.actionType}: ${l.description}`).join(" | ");
   }
 
-  // 8. Main query handler
   async ask(branchId: string, question: string) {
     const type = this.classify(question);
 

@@ -1,5 +1,5 @@
 export const ltvChurnService = {
-    analyze: (...args) => null,
-    segment: (...args) => null,
-    branchSegments: (...args) => null
+    analyze: (...args) => ({ analysis: {} }),
+    segment: (...args) => ({ segments: [] }),
+    branchSegments: (...args) => ({ segments: [] })
 };

@@ -9,11 +9,27 @@ export class MenuService {
     async deleteCategory(id) {
         return prisma.category.delete({ where: { id } });
     }
-    async listCategories() {
+    async listCategories(page = 1, pageSize = 50) {
+        const skip = Math.max(0, page - 1) * pageSize;
         return prisma.category.findMany({
             orderBy: { position: "asc" },
-            include: {
-                items: true
+            skip,
+            take: pageSize,
+            select: {
+                id: true,
+                name: true,
+                description: true,
+                position: true,
+                items: {
+                    orderBy: { name: "asc" },
+                    select: {
+                        id: true,
+                        name: true,
+                        price: true,
+                        autoDisable: true,
+                        categoryId: true
+                    }
+                }
             }
         });
     }

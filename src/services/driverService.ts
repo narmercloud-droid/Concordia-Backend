@@ -25,7 +25,7 @@ export function unregisterDriver(driverId: string) {
 
 export function updateDriverLocation(driverId: string, coords: { lat: number; lng: number }) {
   const driver = drivers.get(driverId);
-  if (!driver) return null;
+  if (!driver) return false;
 
   driver.location = coords;
   return driver;
@@ -33,7 +33,7 @@ export function updateDriverLocation(driverId: string, coords: { lat: number; ln
 
 export function updateDriverAvailability(driverId: string, available: boolean) {
   const driver = drivers.get(driverId);
-  if (!driver) return null;
+  if (!driver) return false;
 
   driver.available = available;
   return driver;
@@ -41,7 +41,7 @@ export function updateDriverAvailability(driverId: string, available: boolean) {
 
 export function assignDriverToOrder(driverId: string, orderId: string) {
   const driver = drivers.get(driverId);
-  if (!driver) return null;
+  if (!driver) return false;
 
   driver.currentOrderId = orderId;
   return driver;

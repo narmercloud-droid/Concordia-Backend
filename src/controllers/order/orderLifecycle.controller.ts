@@ -2,74 +2,85 @@ import { Request, Response, NextFunction } from "express";
 import { prisma } from "../../prisma/client.js";
 import { Server } from "socket.io";
 import {
-  emitOrderPreparing,
   emitOrderReady,
   emitOrderCompleted,
   emitOrderRejected
 } from "../../events/terminalEvents.js";
+import { success, fail } from "../controllerHelper.js";
+import { idParamSchema } from "../../validation/common.schema.js";
+import { AdminSocket } from "../../socket/admin.socket.js";
 
-// Helper to get the Socket.IO instance
 async function getIO(): Promise<Server> {
   const { getIO } = await import("../../lib/socket.js");
   return getIO();
 }
 
+const validationMessage = (issues: { message: string }[]) =>
+  issues.map((i) => i.message).join(", ") || "Invalid input";
+
 export const OrderLifecycleController = {
-  // Mark order as preparing
   async preparing(req: Request, res: Response, next: NextFunction) {
-    const { id } = req.params;
     try {
+      const parsed = idParamSchema.safeParse(req.params);
+      if (!parsed.success) {
+        return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
+      }
+      const { id } = parsed.data;
       const order = await prisma.order.findUnique({ where: { id } });
       if (!order) {
-        return res.status(404).json({ error: "Order not found" });
+        return fail(res, "NOT_FOUND", "Order not found", 404);
       }
 
       const updatedOrder = await prisma.order.update({
         where: { id },
-        data: { status: "preparing" },
+        data: { status: "preparing" }
       });
 
+      const { OrderService } = await import("../../services/order/order.service.js");
+      OrderService.emitOrderStatus(updatedOrder);
 
-
-      const io = await getIO();
-      emitOrderReady(io, updatedOrder);
-
-      res.json(updatedOrder);
+      return success(res, updatedOrder, "Order preparing");
     } catch (err: unknown) {
-      next(err);
+      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
     }
   },
 
-  // Mark order as ready
   async ready(req: Request, res: Response, next: NextFunction) {
-    const { id } = req.params;
     try {
+      const parsed = idParamSchema.safeParse(req.params);
+      if (!parsed.success) {
+        return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
+      }
+      const { id } = parsed.data;
       const order = await prisma.order.findUnique({ where: { id } });
       if (!order) {
-        return res.status(404).json({ error: "Order not found" });
+        return fail(res, "NOT_FOUND", "Order not found", 404);
       }
 
       const updatedOrder = await prisma.order.update({
         where: { id },
-        data: { status: "ready_for_pickup" },
+        data: { status: "ready_for_pickup" }
       });
 
-      const io = await getIO();
-      emitOrderReady(io, updatedOrder);
+      const { OrderService } = await import("../../services/order/order.service.js");
+      OrderService.emitOrderStatus(updatedOrder);
 
-      res.json(updatedOrder);
+      return success(res, updatedOrder, "Order ready");
     } catch (err: unknown) {
-      next(err);
+      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
     }
   },
 
-  // Mark order as completed
   async completed(req: Request, res: Response, next: NextFunction) {
-    const { id } = req.params;
     try {
+      const parsed = idParamSchema.safeParse(req.params);
+      if (!parsed.success) {
+        return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
+      }
+      const { id } = parsed.data;
       const order = await prisma.order.findUnique({ where: { id } });
       if (!order) {
-        return res.status(404).json({ error: "Order not found" });
+        return fail(res, "NOT_FOUND", "Order not found", 404);
       }
 
       const updatedOrder = await prisma.order.update({
@@ -77,22 +88,42 @@ export const OrderLifecycleController = {
         data: { status: "completed" }
       });
 
-      const io = await getIO();
-      emitOrderCompleted(io, updatedOrder);
+      // Update analytics
+      const { CustomerAnalyticsService } = await import("../../services/ai/customerAnalytics.service.js");
+      const { MenuAnalyticsService } = await import("../../services/ai/menuAnalytics.service.js");
+      const { CourierAnalyticsService } = await import("../../services/ai/courierAnalytics.service.js");
+      const { DemandForecastService } = await import("../../services/ai/demandForecast.service.js");
 
-      res.json(updatedOrder);
+      await CustomerAnalyticsService.updateCustomerStats(updatedOrder);
+      await MenuAnalyticsService.updateMenuItemStats(updatedOrder);
+      await DemandForecastService.recordBranchDemand(updatedOrder);
+      await CourierAnalyticsService.updateCourierPerformance(updatedOrder);
+
+      // Trigger AI update events
+      await AdminSocket.triggerChurnUpdate(updatedOrder);
+      await AdminSocket.triggerDemandUpdate(updatedOrder);
+      await AdminSocket.triggerCourierPerformanceUpdate(updatedOrder);
+      await AdminSocket.triggerAIUpdateAfterOrder(updatedOrder);
+
+      const { OrderService } = await import("../../services/order/order.service.js");
+      OrderService.emitOrderStatus(updatedOrder);
+
+      return success(res, updatedOrder, "Order completed");
     } catch (err: unknown) {
-      next(err);
+      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
     }
   },
 
-  // Reject order
   async reject(req: Request, res: Response, next: NextFunction) {
-    const { id } = req.params;
     try {
+      const parsed = idParamSchema.safeParse(req.params);
+      if (!parsed.success) {
+        return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
+      }
+      const { id } = parsed.data;
       const order = await prisma.order.findUnique({ where: { id } });
       if (!order) {
-        return res.status(404).json({ error: "Order not found" });
+        return fail(res, "NOT_FOUND", "Order not found", 404);
       }
 
       const updatedOrder = await prisma.order.update({
@@ -100,13 +131,13 @@ export const OrderLifecycleController = {
         data: { status: "rejected" }
       });
 
-      const io = await getIO();
-      emitOrderRejected(io, updatedOrder, order.terminal_id);
+      const { OrderService } = await import("../../services/order/order.service.js");
+      OrderService.emitOrderStatus(updatedOrder);
 
-      res.json(updatedOrder);
+      return success(res, updatedOrder, "Order rejected");
     } catch (err: unknown) {
-      next(err);
+      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
     }
-  },
+  }
 };
 

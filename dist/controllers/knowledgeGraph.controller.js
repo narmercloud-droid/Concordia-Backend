@@ -1,14 +1,15 @@
 import { knowledgeGraphService } from "../services/knowledgeGraph.service.js";
 import { prisma } from "../prisma/client.js";
+import { success, fail } from "./controllerHelper.js";
 export const KnowledgeGraphController = {
     analyze: async (req, res, next) => {
         try {
             const branchId = req.user.branchId;
             const result = await knowledgeGraphService.analyze(branchId);
-            res.json(result);
+            return success(res, result, "Knowledge graph analyzed");
         }
         catch (err) {
-            next(err);
+            return fail(res, "UNKNOWN_ERROR", err.message, 500);
         }
     },
     insights: async (req, res, next) => {
@@ -16,12 +17,12 @@ export const KnowledgeGraphController = {
             const branchId = req.user.branchId;
             const logs = await prisma.insightLog.findMany({
                 where: { branchId },
-                orderBy: { createdAt: "desc" },
+                orderBy: { createdAt: "desc" }
             });
-            res.json(logs);
+            return success(res, logs, "Insights fetched");
         }
         catch (err) {
-            next(err);
+            return fail(res, "UNKNOWN_ERROR", err.message, 500);
         }
-    },
+    }
 };

@@ -1,0 +1,161 @@
+name: Deploy Concordia Backend
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run linting
+      run: npm run lint
+
+    - name: Run tests
+      run: npm test
+      env:
+        DATABASE_URL: postgresql://test:test@localhost:5432/test
+        REDIS_URL: redis://localhost:6379
+        JWT_ACCESS_SECRET: test-secret-key
+        JWT_REFRESH_SECRET: test-refresh-secret-key
+        NODE_ENV: test
+
+    - name: Build TypeScript
+      run: npm run build
+
+  build-and-push:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=sha,prefix={{branch}}-
+          type=raw,value=latest,enable={{is_default_branch}}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+
+  deploy-staging:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: staging
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configure kubectl
+      uses: azure/k8s-set-context@v3
+      with:
+        method: kubeconfig
+        kubeconfig: ${{ secrets.KUBE_CONFIG_STAGING }}
+
+    - name: Deploy to staging
+      run: |
+        # Update image tag in deployment
+        sed -i 's|image: concordia/backend:latest|image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main|' k8s/deployment.yaml
+
+        # Apply Kubernetes manifests
+        kubectl apply -f k8s/configmap.yaml
+        kubectl apply -f k8s/secret.yaml
+        kubectl apply -f k8s/service.yaml
+        kubectl apply -f k8s/deployment.yaml
+        kubectl apply -f k8s/hpa.yaml
+        kubectl apply -f k8s/ingress.yaml
+
+        # Wait for rollout
+        kubectl rollout status deployment/concordia-backend --timeout=300s
+
+    - name: Run health checks
+      run: |
+        # Wait for ingress to be ready
+        sleep 30
+
+        # Check health endpoints
+        curl -f https://staging-api.concordia.com/health/live
+        curl -f https://staging-api.concordia.com/health/ready
+
+  deploy-production:
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: production
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configure kubectl
+      uses: azure/k8s-set-context@v3
+      with:
+        method: kubeconfig
+        kubeconfig: ${{ secrets.KUBE_CONFIG_PRODUCTION }}
+
+    - name: Deploy to production
+      run: |
+        # Update image tag in deployment
+        sed -i 's|image: concordia/backend:latest|image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main|' k8s/deployment.yaml
+
+        # Apply Kubernetes manifests
+        kubectl apply -f k8s/configmap.yaml
+        kubectl apply -f k8s/secret.yaml
+        kubectl apply -f k8s/service.yaml
+        kubectl apply -f k8s/deployment.yaml
+        kubectl apply -f k8s/hpa.yaml
+        kubectl apply -f k8s/ingress.yaml
+
+        # Wait for rollout
+        kubectl rollout status deployment/concordia-backend --timeout=600s
+
+    - name: Run health checks
+      run: |
+        # Wait for ingress to be ready
+        sleep 60
+
+        # Check health endpoints
+        curl -f https://api.concordia.com/health/live
+        curl -f https://api.concordia.com/health/ready
+
+        # Check metrics endpoint
+        curl -f https://api.concordia.com/metrics

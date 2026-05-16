@@ -1,5 +1,5 @@
 export const forecastingService = {
-  forecast: (...args: any[]) => null,
-  fullForecast: (...args: any[]) => null,
-  forecastStock: (...args: any[]) => null
+  forecast: (...args: any[]) => ({ forecast: [] }),
+  fullForecast: (...args: any[]) => ({ forecast: [], trends: [] }),
+  forecastStock: (...args: any[]) => ({ stockLevels: [] })
 };

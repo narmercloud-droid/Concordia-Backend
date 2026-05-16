@@ -1,18 +1,17 @@
-import { Request, Response, NextFunction, RequestHandler } from "express";
+export const success = (res, data = null, message = "OK", status = 200) => {
+  return res.status(status).json({
+    success: true,
+    data,
+    message
+  });
+};
 
-export function controller<T extends Record<string, RequestHandler>>(handlers: T): T {
-  const wrapped = {} as Record<string, RequestHandler>;
-
-  for (const [name, handler] of Object.entries(handlers)) {
-    wrapped[name] = async (req: Request, res: Response, next: NextFunction) => {
-      try {
-        await (handler as any)(req, res, next);
-      } catch (err: unknown) {
-        next(err);
-      }
-    };
-  }
-
-  return wrapped as T;
-}
-
+export const fail = (res, code = "UNKNOWN_ERROR", message = "An error occurred", status = 400) => {
+  return res.status(status).json({
+    success: false,
+    error: {
+      code,
+      message
+    }
+  });
+};

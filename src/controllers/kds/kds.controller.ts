@@ -1,26 +1,31 @@
 import type { AuthenticatedRequest } from "../../globalTypes.js";
 import { NextFunction, Response } from "express";
 import { KdsService } from "../../services/kds/kds.service.js";
+import { success, fail } from "../controllerHelper.js";
+import { kdsUpdateStatusSchema } from "../../validation/kds.schema.js";
 
+const validationMessage = (issues: { message: string }[]) =>
+  issues.map((i) => i.message).join(", ") || "Invalid input";
 
 export const KdsController = {
   getOrders: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const kds = req.user;
       const orders = await KdsService.getActiveOrders(kds.branchId);
-      res.json({ orders });
+      return success(res, { orders }, "KDS orders fetched");
     } catch (err: unknown) {
-      next(err);
+      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
     }
   },
+
   updateStatus: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-      const { orderId, status } = req.body;
-      const kds = req.user;
-      const valid = ["preparing", "ready", "completed"];
-      if (!valid.includes(status)) {
-        return res.status(400).json({ error: "Invalid status" });
+      const parsed = kdsUpdateStatusSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
       }
+      const { orderId, status } = parsed.data;
+      const kds = req.user;
       const order = await KdsService.updateStatus(orderId, status);
       req.app
         .get("io")
@@ -30,10 +35,9 @@ export const KdsController = {
         .get("io")
         .to(`customer_${order.id}`)
         .emit("order_update", order);
-      res.json({ success: true, order });
+      return success(res, { success: true, order }, "Order status updated");
     } catch (err: unknown) {
-      next(err);
+      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
     }
   }
 };
-

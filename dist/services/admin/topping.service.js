@@ -1,27 +1,27 @@
 import { prisma } from "../../prisma/client.js";
 export class ToppingService {
-    static async getAll() {
+    static async getAll(branchId) {
         return prisma.topping.findMany({
-            orderBy: { name: "asc" },
+            orderBy: { name: "asc" }
         });
     }
-    static async getById(id) {
-        return prisma.topping.findUnique({
-            where: { id },
+    static async getById(id, branchId) {
+        return prisma.topping.findFirst({
+            where: { id }
         });
     }
-    static async create(data) {
+    static async create(branchId, data) {
         return prisma.topping.create({ data });
     }
-    static async update(id, data) {
+    static async update(id, branchId, data) {
         return prisma.topping.update({
             where: { id },
-            data,
+            data
         });
     }
-    static async remove(id) {
-        return prisma.topping.delete({
-            where: { id },
+    static async remove(id, branchId) {
+        return prisma.topping.deleteMany({
+            where: { id }
         });
     }
 }

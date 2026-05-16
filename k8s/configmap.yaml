@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: concordia-backend-config
+data:
+  NODE_ENV: "production"
+  LOG_LEVEL: "warn"
+  CORS_ORIGIN: "https://api.concordia.com"
+  SOCKET_ORIGIN: "https://api.concordia.com"

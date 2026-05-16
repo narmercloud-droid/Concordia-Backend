@@ -1,69 +1,101 @@
 import { ordersService } from "../services/orders.service.js";
+import { success, fail } from "./controllerHelper.js";
+import { legacyCreateOrderSchema, courierOrderActionSchema, orderStatusBodySchema } from "../validation/orders.schema.js";
+import { branchIdParamSchema, idParamSchema } from "../validation/common.schema.js";
+const validationMessage = (issues) => issues.map((i) => i.message).join(", ") || "Invalid input";
 export const OrdersController = {
     create: async (req, res, next) => {
         try {
-            const order = await ordersService.createOrder(req.body);
-            res.json(order);
+            const parsed = legacyCreateOrderSchema.safeParse(req.body);
+            if (!parsed.success) {
+                return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
+            }
+            const order = await ordersService.createOrder(parsed.data);
+            return success(res, order, "Order created successfully", 201);
         }
         catch (err) {
-            next(err);
+            return fail(res, "UNKNOWN_ERROR", err.message, 500);
         }
     },
     listBranchOrders: async (req, res, next) => {
         try {
-            const orders = await ordersService.listBranchOrders(req.params.branchId);
-            res.json(orders);
+            const parsed = branchIdParamSchema.safeParse(req.params);
+            if (!parsed.success) {
+                return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
+            }
+            const orders = await ordersService.listBranchOrders(parsed.data.branchId);
+            return success(res, orders, "Branch orders fetched successfully");
         }
         catch (err) {
-            next(err);
+            return fail(res, "UNKNOWN_ERROR", err.message, 500);
         }
     },
     updateStatus: async (req, res, next) => {
         try {
-            const order = await ordersService.updateStatus(req.params.id, req.body.status);
-            res.json(order);
+            const parsedParams = idParamSchema.safeParse(req.params);
+            if (!parsedParams.success) {
+                return fail(res, "VALIDATION_ERROR", validationMessage(parsedParams.error.issues), 400);
+            }
+            const parsed = orderStatusBodySchema.safeParse(req.body);
+            if (!parsed.success) {
+                return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
+            }
+            const order = await ordersService.updateStatus(parsedParams.data.id, parsed.data.status);
+            return success(res, order, "Order status updated successfully");
         }
         catch (err) {
-            next(err);
+            return fail(res, "UNKNOWN_ERROR", err.message, 500);
         }
     },
     courierClaim: async (req, res, next) => {
         try {
-            const { orderId, courierToken } = req.body;
+            const parsed = courierOrderActionSchema.safeParse(req.body);
+            if (!parsed.success) {
+                return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
+            }
+            const { orderId, courierToken } = parsed.data;
             const order = await ordersService.validateCourierToken(orderId, courierToken);
             if (!order)
-                return res.status(403).json({ error: "Invalid or expired token" });
+                return fail(res, "FORBIDDEN", "Invalid or expired token", 403);
             const updated = await ordersService.updateStatus(orderId, "picked_up");
-            res.json(updated);
+            return success(res, updated, "Order claimed successfully");
         }
         catch (err) {
-            next(err);
+            return fail(res, "UNKNOWN_ERROR", err.message, 500);
         }
     },
     courierPickedUp: async (req, res, next) => {
         try {
-            const { orderId, courierToken } = req.body;
+            const parsed = courierOrderActionSchema.safeParse(req.body);
+            if (!parsed.success) {
+                return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
+            }
+            const { orderId, courierToken } = parsed.data;
             const order = await ordersService.validateCourierToken(orderId, courierToken);
             if (!order)
-                return res.status(403).json({ error: "Invalid or expired token" });
+                return fail(res, "FORBIDDEN", "Invalid or expired token", 403);
             const updated = await ordersService.courierPickedUp(orderId);
-            res.json(updated);
+            return success(res, updated, "Order picked up successfully");
         }
         catch (err) {
-            next(err);
+            return fail(res, "UNKNOWN_ERROR", err.message, 500);
         }
     },
     courierDelivered: async (req, res, next) => {
         try {
-            const { orderId, courierToken } = req.body;
+            const parsed = courierOrderActionSchema.safeParse(req.body);
+            if (!parsed.success) {
+                return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
+            }
+            const { orderId, courierToken } = parsed.data;
             const order = await ordersService.validateCourierToken(orderId, courierToken);
             if (!order)
-                return res.status(403).json({ error: "Invalid or expired token" });
+                return fail(res, "FORBIDDEN", "Invalid or expired token", 403);
             const updated = await ordersService.courierDelivered(orderId);
-            res.json(updated);
+            return success(res, updated, "Order delivered successfully");
         }
         catch (err) {
-            next(err);
+            return fail(res, "UNKNOWN_ERROR", err.message, 500);
         }
     }
 };

@@ -1,47 +1,67 @@
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
+import type { AuthenticatedRequest } from "../globalTypes.js";
 import { addressService } from "../services/address.service.js";
+import { success, fail } from "./controllerHelper.js";
+import { addressBodySchema } from "../validation/address.schema.js";
+import { idParamSchema } from "../validation/common.schema.js";
+
+const validationMessage = (issues: { message: string }[]) =>
+  issues.map((i) => i.message).join(", ") || "Invalid input";
 
 export const AddressController = {
-  add: async (req: Request, res: Response, next: NextFunction) => {
+  add: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const customerId = req.user.id;
-      const address = await addressService.addAddress(customerId, req.body);
-      res.json(address);
+      const parsed = addressBodySchema.safeParse(req.body);
+      if (!parsed.success) {
+        return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
+      }
+      const address = await addressService.addAddress(customerId, parsed.data);
+      return success(res, address, "Address added");
     } catch (err: unknown) {
-      next(err);
+      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
     }
   },
 
-  update: async (req: Request, res: Response, next: NextFunction) => {
+  update: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-      const customerId = req.user.id;
-      const { id } = req.params;
-      await addressService.updateAddress(customerId, id, req.body);
-      res.json({ success: true });
+      const customerId = req.user!.id;
+      const parsedParams = idParamSchema.safeParse(req.params);
+      if (!parsedParams.success) {
+        return fail(res, "VALIDATION_ERROR", validationMessage(parsedParams.error.issues), 400);
+      }
+      const parsedBody = addressBodySchema.safeParse(req.body);
+      if (!parsedBody.success) {
+        return fail(res, "VALIDATION_ERROR", validationMessage(parsedBody.error.issues), 400);
+      }
+      await addressService.updateAddress(customerId, parsedParams.data.id, parsedBody.data);
+      return success(res, { success: true }, "Address updated");
     } catch (err: unknown) {
-      next(err);
+      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
     }
   },
 
-  delete: async (req: Request, res: Response, next: NextFunction) => {
+  delete: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-      const customerId = req.user.id;
-      const { id } = req.params;
-      await addressService.deleteAddress(customerId, id);
-      res.json({ success: true });
+      const customerId = req.user!.id;
+      const parsedParams = idParamSchema.safeParse(req.params);
+      if (!parsedParams.success) {
+        return fail(res, "VALIDATION_ERROR", validationMessage(parsedParams.error.issues), 400);
+      }
+      await addressService.deleteAddress(customerId, parsedParams.data.id);
+      return success(res, { success: true }, "Address deleted");
     } catch (err: unknown) {
-      next(err);
+      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
     }
   },
 
-  list: async (req: Request, res: Response, next: NextFunction) => {
+  list: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-      const customerId = req.user.id;
+      const customerId = req.user!.id;
       const list = await addressService.listAddresses(customerId);
-      res.json(list);
+      return success(res, list, "Addresses listed");
     } catch (err: unknown) {
-      next(err);
+      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
     }
   }
 };
-

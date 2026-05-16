@@ -1,4 +1,4 @@
-import { prisma } from '../src/prisma/client.js';
+import { prisma } from '../src/prisma/client';
 
 describe('Prisma Client', () => {
   describe('connect', () => {

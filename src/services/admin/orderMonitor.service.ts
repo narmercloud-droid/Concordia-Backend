@@ -1,8 +1,9 @@
 import { prisma } from "../../prisma/client.js";
 
 export class OrderMonitorService {
-  static async getLiveOrders() {
+  static async getLiveOrders(branchId?: string, limit = 50) {
     const orders = await prisma.order.findMany({
+      where: branchId ? { branchId } : {},
       select: {
         id: true,
         branchId: true,
@@ -11,6 +12,7 @@ export class OrderMonitorService {
         createdAt: true,
       },
       orderBy: { createdAt: "desc" },
+      take: limit,
     });
 
     return orders.map((order) => ({

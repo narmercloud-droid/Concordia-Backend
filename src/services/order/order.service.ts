@@ -1,5 +1,6 @@
 import { prisma } from "../../prisma/client.js";
 import { OrderSocket } from "../../socket/order.socket.js";
+import { AdminSocket } from "../../socket/admin.socket.js";
 
 interface CreateOrderData {
   branchId: string;
@@ -9,7 +10,7 @@ interface CreateOrderData {
   items: Array<{
     itemId: string;
     variantId: string;
-    addOnIds: string[];
+    addOnIds?: string[];
     quantity: number;
     notes?: string;
     price: number;
@@ -38,31 +39,94 @@ export class OrderService {
           create: items.map(item => ({
             itemId: item.itemId,
             variantId: item.variantId,
-            addOnIds: item.addOnIds,
+            addOnIds: item.addOnIds || [],
             quantity: item.quantity,
             notes: item.notes,
             price: item.price
           }))
         }
       },
-      include: {
-        items: true
+      select: {
+        id: true,
+        branchId: true,
+        customerId: true,
+        status: true,
+        paymentMethod: true,
+        paymentStatus: true,
+        createdAt: true,
+        items: {
+          select: {
+            itemId: true,
+            variantId: true,
+            addOnIds: true,
+            quantity: true,
+            price: true
+          }
+        }
       }
     });
 
+    try {
+      const { DemandForecastService } = await import("../../services/ai/demandForecast.service.js");
+      await DemandForecastService.recordBranchDemand(order);
+
+      await AdminSocket.triggerAIUpdateAfterOrder(order);
+      await AdminSocket.triggerDemandUpdate(order);
+    } catch (error) {
+      console.error("Failed to update demand analytics:", error);
+    }
+
+    this.emitOrderEvent(order, "created");
     this.emitOrderStatus(order);
     return order;
   }
 
-  static async emitOrderStatus(order: any) {
-    const { getIO } = await import("../../lib/socket.js");
-    const payload = {
-      orderId: order.id,
-      terminal_id: order.terminal_id,
-      status: order.status,
-      branchId: order.branchId
+  static async emitOrderEvent(order: any, eventType: string) {
+    const { getIO, getOrdersNamespace, getKDSNamespace, getAdminNamespace } = await import("../../socket/index.js");
+
+    const eventData = {
+      success: true,
+      event: `order:${eventType}`,
+      data: {
+        orderId: order.id,
+        status: order.status,
+        customerId: order.customerId,
+        branchId: order.branchId,
+        createdAt: order.createdAt
+      }
     };
-    getIO().to(`branch_${order.branchId}`).emit("order_status", payload);
+
+    if (order.customerId) {
+      getIO().to(`customer_${order.customerId}`).emit(`order:${eventType}`, eventData);
+    }
+
+    getOrdersNamespace().to(`branch_${order.branchId}`).emit(`order:${eventType}`, eventData);
+    getKDSNamespace().to(`kds_branch_${order.branchId}`).emit(`order:${eventType}`, eventData);
+    getAdminNamespace().to(`branch_${order.branchId}`).emit(`order:${eventType}`, eventData);
+  }
+
+  static async emitOrderStatus(order: any) {
+    const { getIO, getOrdersNamespace, getKDSNamespace, getAdminNamespace } = await import("../../socket/index.js");
+
+    const eventData = {
+      success: true,
+      event: `order:${order.status}`,
+      data: {
+        orderId: order.id,
+        status: order.status,
+        customerId: order.customerId,
+        branchId: order.branchId,
+        updatedAt: order.updatedAt
+      }
+    };
+
+    if (order.customerId) {
+      getIO().to(`customer_${order.customerId}`).emit(`order:${order.status}`, eventData);
+    }
+
+    getOrdersNamespace().to(`branch_${order.branchId}`).emit(`order:${order.status}`, eventData);
+    getKDSNamespace().to(`kds_branch_${order.branchId}`).emit(`order:${order.status}`, eventData);
+    getAdminNamespace().to(`branch_${order.branchId}`).emit(`order:${order.status}`, eventData);
   }
 
   static async updateStatus(orderId: string, status: string, estimated_time?: number) {
@@ -72,8 +136,12 @@ export class OrderService {
         status,
         scheduledFor: estimated_time ? new Date(Date.now() + estimated_time * 60000) : undefined
       },
-      include: {
-        items: true
+      select: {
+        id: true,
+        branchId: true,
+        customerId: true,
+        status: true,
+        updatedAt: true
       }
     });
 
@@ -86,7 +154,28 @@ export class OrderService {
       }
     }
 
-    OrderSocket.orderUpdated(order);
+    if (status === "delivered") {
+      try {
+        const { CustomerAnalyticsService } = await import("../../services/ai/customerAnalytics.service.js");
+        const { MenuAnalyticsService } = await import("../../services/ai/menuAnalytics.service.js");
+        const { CourierAnalyticsService } = await import("../../services/ai/courierAnalytics.service.js");
+        const { DemandForecastService } = await import("../../services/ai/demandForecast.service.js");
+
+        await CustomerAnalyticsService.updateCustomerStats(order);
+        await MenuAnalyticsService.updateMenuItemStats(order);
+        await DemandForecastService.recordBranchDemand(order);
+        await CourierAnalyticsService.updateCourierPerformance(order);
+
+        await AdminSocket.triggerChurnUpdate(order);
+        await AdminSocket.triggerDemandUpdate(order);
+        await AdminSocket.triggerCourierPerformanceUpdate(order);
+        await AdminSocket.triggerAIUpdateAfterOrder(order);
+      } catch (error) {
+        console.error("Failed to update analytics:", error);
+      }
+    }
+
+    this.emitOrderStatus(order);
     return order;
   }
 
@@ -108,8 +197,19 @@ export class OrderService {
         }
       },
       orderBy: { createdAt: "asc" },
-      include: {
-        items: true
+      take: 50,
+      select: {
+        id: true,
+        branchId: true,
+        status: true,
+        createdAt: true,
+        items: {
+          select: {
+            itemId: true,
+            quantity: true,
+            price: true
+          }
+        }
       }
     });
   }
@@ -117,9 +217,27 @@ export class OrderService {
   static async getOrderById(orderId: string) {
     return prisma.order.findUnique({
       where: { id: orderId },
-      include: {
-        items: true
+      select: {
+        id: true,
+        branchId: true,
+        customerId: true,
+        status: true,
+        paymentMethod: true,
+        paymentStatus: true,
+        createdAt: true,
+        updatedAt: true,
+        items: {
+          select: {
+            itemId: true,
+            variantId: true,
+            addOnIds: true,
+            quantity: true,
+            price: true,
+            notes: true
+          }
+        }
       }
     });
   }
 }
+

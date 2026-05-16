@@ -1,31 +1,39 @@
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
+import type { AuthenticatedRequest } from "../globalTypes.js";
 import { nlaeService } from "../services/nlae.service.js";
 import { prisma } from "../prisma/client.js";
+import { success, fail } from "./controllerHelper.js";
+import { nlaeAskSchema } from "../validation/nlae.schema.js";
+
+const validationMessage = (issues: { message: string }[]) =>
+  issues.map((i) => i.message).join(", ") || "Invalid input";
 
 export const NLAEController = {
-  ask: async (req: Request, res: Response, next: NextFunction) => {
+  ask: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const branchId = req.user.branchId;
-      const { question } = req.body;
+      const parsed = nlaeAskSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
+      }
+      const { question } = parsed.data;
       const answer = await nlaeService.ask(branchId, question);
-      res.json({ question, answer });
+      return success(res, { question, answer }, "Answered");
     } catch (err: unknown) {
-      next(err);
+      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
     }
   },
 
-  history: async (req: Request, res: Response, next: NextFunction) => {
+  history: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-      const branchId = req.user.branchId;
+      const branchId = req.user!.branchId;
       const logs = await prisma.analyticsQueryLog.findMany({
         where: { branchId },
         orderBy: { createdAt: "desc" }
       });
-      res.json(logs);
+      return success(res, logs, "NLAE history");
     } catch (err: unknown) {
-      next(err);
+      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
     }
   }
 };
-
-

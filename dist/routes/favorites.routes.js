@@ -9,5 +9,5 @@ router.post("/add", customerAuth, FavoritesController.add);
 router.post("/remove", customerAuth, FavoritesController.remove);
 router.get("/list", customerAuth, FavoritesController.list);
 // Manager analytics
-router.get("/analytics/most-favorited", adminAuth, adminRole("manager"), FavoritesController.mostFavorited);
+router.get("/analytics/most-favorited", adminAuth, adminRole("manager"), FavoritesController.listFavorites);
 export default router;

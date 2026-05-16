@@ -1,48 +1,61 @@
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
+import type { AuthenticatedRequest } from "../globalTypes.js";
 import { favoritesService } from "../services/favorites.service.js";
+import { success, fail } from "./controllerHelper.js";
+import { favoritesBodySchema } from "../validation/favorites.schema.js";
+
+const validationMessage = (issues: { message: string }[]) =>
+  issues.map((i) => i.message).join(", ") || "Invalid input";
 
 export const FavoritesController = {
-  add: async (req: Request, res: Response, next: NextFunction) => {
+  add: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-      const customerId = req.user.id;
-      const { itemId } = req.body;
+      const customerId = req.user!.id;
+      const parsed = favoritesBodySchema.safeParse(req.body);
+      if (!parsed.success) {
+        return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
+      }
+      const { itemId } = parsed.data;
 
       const fav = await favoritesService.addFavorite(customerId, itemId);
-      res.json(fav);
+      return success(res, fav, "Favorite added");
     } catch (err: unknown) {
-      next(err);
+      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
     }
   },
 
-  remove: async (req: Request, res: Response, next: NextFunction) => {
+  remove: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-      const customerId = req.user.id;
-      const { itemId } = req.body;
+      const customerId = req.user!.id;
+      const parsed = favoritesBodySchema.safeParse(req.body);
+      if (!parsed.success) {
+        return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
+      }
+      const { itemId } = parsed.data;
 
       await favoritesService.removeFavorite(customerId, itemId);
-      res.json({ success: true });
+      return success(res, { success: true }, "Favorite removed");
     } catch (err: unknown) {
-      next(err);
+      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
     }
   },
 
-  list: async (req: Request, res: Response, next: NextFunction) => {
+  list: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-      const customerId = req.user.id;
+      const customerId = req.user!.id;
       const list = await favoritesService.listFavorites(customerId);
-      res.json(list);
+      return success(res, list, "Favorites listed");
     } catch (err: unknown) {
-      next(err);
+      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
     }
   },
 
-  mostFavorited: async (req: Request, res: Response, next: NextFunction) => {
+  listFavorites: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const data = await favoritesService.mostFavoritedItems();
-      res.json(data);
+      return success(res, data, "Most favorited items");
     } catch (err: unknown) {
-      next(err);
+      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
     }
   }
 };
-

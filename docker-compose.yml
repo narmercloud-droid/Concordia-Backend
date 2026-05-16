@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://concordia:password@postgres:5432/concordia
+      - REDIS_URL=redis://redis:6379
+      - JWT_ACCESS_SECRET=your-access-secret-key
+      - JWT_REFRESH_SECRET=your-refresh-secret-key
+      - CORS_ORIGIN=http://localhost:3000
+      - SOCKET_ORIGIN=http://localhost:3000
+      - LOG_LEVEL=info
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: npm run dev
+    networks:
+      - concordia-network
+
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=concordia
+      - POSTGRES_USER=concordia
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - concordia-network
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - concordia-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  concordia-network:
+    driver: bridge

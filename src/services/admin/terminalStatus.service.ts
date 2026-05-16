@@ -1,8 +1,9 @@
 import { prisma } from "../../prisma/client.js";
 
 export class TerminalStatusService {
-  static async getTerminalStatus() {
+  static async getTerminalStatus(branchId?: string) {
     const terminals = await prisma.terminal.findMany({
+      where: branchId ? { branchId } : {},
       select: {
         isOnline: true,
         lastSeen: true,

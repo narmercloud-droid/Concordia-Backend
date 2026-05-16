@@ -1,46 +1,71 @@
 import { deliveryFeeService } from "../services/deliveryFee.service.js";
 import { prisma } from "../prisma/client.js";
+import { success, fail } from "./controllerHelper.js";
+import { deliveryFeeCalculateBodySchema, deliveryFeeZoneBodySchema } from "../validation/deliveryFee.schema.js";
+import { branchIdParamSchema } from "../validation/common.schema.js";
+const validationMessage = (issues) => issues.map((i) => i.message).join(", ") || "Invalid input";
 export const DeliveryFeeController = {
     calculate: async (req, res, next) => {
         try {
-            const { branchId, addressId, orderTotal } = req.body;
+            const parsed = deliveryFeeCalculateBodySchema.safeParse(req.body);
+            if (!parsed.success) {
+                return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
+            }
+            const { branchId, addressId, orderTotal } = parsed.data;
             const address = await prisma.address.findUnique({
                 where: { id: addressId }
             });
             if (!address)
-                return res.status(400).json({ error: "Invalid address" });
+                return fail(res, "INVALID_ADDRESS", "Invalid address", 400);
             const result = await deliveryFeeService.calculate(branchId, {
                 ...address,
                 orderTotal
             });
-            res.json(result);
+            return success(res, result, "Delivery fee calculated");
         }
         catch (err) {
-            next(err);
+            return fail(res, "UNKNOWN_ERROR", err.message, 500);
         }
     },
     setZone: async (req, res, next) => {
         try {
-            const { branchId } = req.params;
+            const parsedParams = branchIdParamSchema.safeParse(req.params);
+            if (!parsedParams.success) {
+                return fail(res, "VALIDATION_ERROR", validationMessage(parsedParams.error.issues), 400);
+            }
+            const parsedBody = deliveryFeeZoneBodySchema.safeParse(req.body);
+            if (!parsedBody.success) {
+                return fail(res, "VALIDATION_ERROR", validationMessage(parsedBody.error.issues), 400);
+            }
+            const { branchId } = parsedParams.data;
             const zone = await prisma.deliveryZone.upsert({
                 where: { branchId },
-                update: req.body,
-                create: { branchId, ...req.body }
+                update: parsedBody.data,
+                create: {
+                    branch: { connect: { id: branchId } },
+                    ...parsedBody.data
+                }
             });
-            res.json(zone);
+            return success(res, zone, "Zone saved");
         }
         catch (err) {
-            next(err);
+            return fail(res, "UNKNOWN_ERROR", err.message, 500);
         }
     },
     getZone: async (req, res, next) => {
         try {
-            const { branchId } = req.params;
-            const zone = await prisma.deliveryZone.findUnique({ where: { branchId } });
-            res.json(zone);
+            const parsedParams = branchIdParamSchema.safeParse(req.params);
+            if (!parsedParams.success) {
+                return fail(res, "VALIDATION_ERROR", validationMessage(parsedParams.error.issues), 400);
+            }
+            const { branchId } = parsedParams.data;
+            const zone = await prisma.deliveryZone.findUnique({
+                where: { branchId }
+            });
+            return success(res, zone, "Zone fetched");
         }
         catch (err) {
-            next(err);
+            return fail(res, "UNKNOWN_ERROR", err.message, 500);
         }
     }
 };

@@ -1,56 +1,95 @@
 import { VariantService } from "../../services/admin/variant.service.js";
+import { success, fail } from "../controllerHelper.js";
+import { adminEntityBodySchema } from "../../validation/admin.schema.js";
+import { idParamSchema } from "../../validation/common.schema.js";
+const validationMessage = (issues) => issues.map((i) => i.message).join(", ") || "Invalid input";
 export class VariantController {
-    static async getAll(_req, res, next) {
+    static async getAll(req, res, next) {
         try {
-            const variants = await VariantService.getAll();
-            res.json(variants);
-            return;
+            const branchId = req.user?.branchId;
+            if (!branchId) {
+                return fail(res, "MISSING_BRANCH", "Branch ID is required", 400);
+            }
+            const variants = await VariantService.getAll(branchId);
+            return success(res, variants, "Variants listed");
         }
         catch (err) {
-            next(err);
+            return fail(res, "UNKNOWN_ERROR", err.message, 500);
         }
     }
     static async getById(req, res, next) {
         try {
-            const id = req.params.id;
-            const variant = await VariantService.getById(id);
-            if (!variant) {
-                return res.status(404).json({ error: "Variant not found" });
+            const branchId = req.user?.branchId;
+            if (!branchId) {
+                return fail(res, "MISSING_BRANCH", "Branch ID is required", 400);
             }
-            res.json(variant);
-            return;
+            const parsed = idParamSchema.safeParse(req.params);
+            if (!parsed.success) {
+                return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
+            }
+            const variant = await VariantService.getById(parsed.data.id, branchId);
+            if (!variant) {
+                return fail(res, "NOT_FOUND", "Variant not found", 404);
+            }
+            return success(res, variant, "Variant fetched");
         }
         catch (err) {
-            next(err);
+            return fail(res, "UNKNOWN_ERROR", err.message, 500);
         }
     }
     static async create(req, res, next) {
         try {
-            const variant = await VariantService.create(req.body);
-            res.status(201).json(variant);
+            const branchId = req.user?.branchId;
+            if (!branchId) {
+                return fail(res, "MISSING_BRANCH", "Branch ID is required", 400);
+            }
+            const parsed = adminEntityBodySchema.safeParse(req.body);
+            if (!parsed.success) {
+                return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
+            }
+            const variant = await VariantService.create(branchId, parsed.data);
+            return success(res, variant, "Variant created", 201);
         }
         catch (err) {
-            next(err);
+            return fail(res, "UNKNOWN_ERROR", err.message, 500);
         }
     }
     static async update(req, res, next) {
         try {
-            const id = req.params.id;
-            const variant = await VariantService.update(id, req.body);
-            res.json(variant);
+            const branchId = req.user?.branchId;
+            if (!branchId) {
+                return fail(res, "MISSING_BRANCH", "Branch ID is required", 400);
+            }
+            const parsedParams = idParamSchema.safeParse(req.params);
+            if (!parsedParams.success) {
+                return fail(res, "VALIDATION_ERROR", validationMessage(parsedParams.error.issues), 400);
+            }
+            const parsedBody = adminEntityBodySchema.safeParse(req.body);
+            if (!parsedBody.success) {
+                return fail(res, "VALIDATION_ERROR", validationMessage(parsedBody.error.issues), 400);
+            }
+            const variant = await VariantService.update(parsedParams.data.id, branchId, parsedBody.data);
+            return success(res, variant, "Variant updated");
         }
         catch (err) {
-            next(err);
+            return fail(res, "UNKNOWN_ERROR", err.message, 500);
         }
     }
     static async remove(req, res, next) {
         try {
-            const id = req.params.id;
-            await VariantService.remove(id);
-            res.json({ success: true });
+            const branchId = req.user?.branchId;
+            if (!branchId) {
+                return fail(res, "MISSING_BRANCH", "Branch ID is required", 400);
+            }
+            const parsed = idParamSchema.safeParse(req.params);
+            if (!parsed.success) {
+                return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
+            }
+            await VariantService.remove(parsed.data.id, branchId);
+            return success(res, { success: true }, "Variant removed");
         }
         catch (err) {
-            next(err);
+            return fail(res, "UNKNOWN_ERROR", err.message, 500);
         }
     }
 }

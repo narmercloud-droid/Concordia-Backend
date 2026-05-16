@@ -15,21 +15,21 @@ export function unregisterDriver(driverId) {
 export function updateDriverLocation(driverId, coords) {
     const driver = drivers.get(driverId);
     if (!driver)
-        return null;
+        return false;
     driver.location = coords;
     return driver;
 }
 export function updateDriverAvailability(driverId, available) {
     const driver = drivers.get(driverId);
     if (!driver)
-        return null;
+        return false;
     driver.available = available;
     return driver;
 }
 export function assignDriverToOrder(driverId, orderId) {
     const driver = drivers.get(driverId);
     if (!driver)
-        return null;
+        return false;
     driver.currentOrderId = orderId;
     return driver;
 }

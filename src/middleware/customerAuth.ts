@@ -1,7 +1,8 @@
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
+import type { AuthenticatedRequest } from "../globalTypes.js";
 import { validateJwtPayload, verifyToken, AuthJwtPayload } from "../utils/jwt.js";
 
-export function customerAuth(req: Request, res: Response, next: NextFunction) {
+export function customerAuth(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   const header = req.headers.authorization;
   if (!header) return res.status(401).json({ error: "Unauthorized" });
 

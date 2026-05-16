@@ -1,16 +1,16 @@
 import { forecastingService } from "../services/forecasting.service.js";
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Response } from "express";
+import type { AuthenticatedRequest } from "../globalTypes.js";
+import { success, fail } from "./controllerHelper.js";
 
 export const ForecastingController = {
-  fullForecast: async (req: Request, res: Response, next: NextFunction) => {
+  fullForecast: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-      const branchId = req.user!.branchId;
+      const branchId = req.user.branchId;
       const result = await forecastingService.fullForecast(branchId);
-      res.json(result);
+      return success(res, result, "Forecast complete");
     } catch (err: unknown) {
-      next(err);
+      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
     }
-  },
+  }
 };
-
-

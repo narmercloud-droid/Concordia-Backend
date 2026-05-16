@@ -51,4 +51,71 @@ export class CartService {
       where: { id: cartItemId }
     });
   }
+
+  static async clearCart(cartId: string) {
+    return prisma.cartItem.deleteMany({
+      where: { cartId }
+    });
+  }
+
+  static async calculateTotal(cartId: string) {
+    const cart = await prisma.cart.findUnique({
+      where: { id: cartId },
+      include: {
+        items: {
+          include: {
+            item: true
+          }
+        }
+      }
+    });
+
+    if (!cart) return { total: 0, items: [] };
+
+    let total = 0;
+    const items = cart.items.map(cartItem => {
+      const item = cartItem.item;
+      const itemTotal = item.price * cartItem.quantity;
+      total += itemTotal;
+      return {
+        ...cartItem,
+        item,
+        variantId: (cartItem as any).variantId || "",
+        total: itemTotal
+      };
+    });
+
+    return { total, items };
+  }
+
+  static async checkout(cartId: string, customerId: string, branchId: string, paymentMethod: string) {
+    const { total, items } = await this.calculateTotal(cartId);
+    
+    const order = await prisma.order.create({
+      data: {
+        branchId,
+        customerId,
+        isGuest: false,
+        paymentMethod,
+        paymentStatus: 'pending',
+        status: 'pending'
+      }
+    });
+
+    for (const cartItem of items) {
+      await prisma.orderItem.create({
+        data: {
+          order: { connect: { id: order.id } },
+          item: { connect: { id: cartItem.itemId } },
+          variantId: cartItem.variantId,
+          quantity: cartItem.quantity,
+          price: cartItem.item.price
+        }
+      });
+    }
+
+    await this.clearCart(cartId);
+
+    return { order, total, items };
+  }
 }

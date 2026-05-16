@@ -1,6 +1,6 @@
 export const orchestrationService = {
-  orchestrate: (...args: any[]) => null,
-  runAll: (...args: any[]) => null,
-  eventTrigger: (...args: any[]) => null,
-  logs: (...args: any[]) => null
+  orchestrate: (...args: any[]) => ({ results: [] }),
+  runAll: (...args: any[]) => ({ results: [] }),
+  eventTrigger: (...args: any[]) => ({ triggered: true }),
+  logs: (...args: any[]) => ({ logs: [] })
 };

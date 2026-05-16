@@ -1,4 +1,4 @@
 export const staffingPrepService = {
-    prepare: (...args) => null,
-    fullPlan: (...args) => null
+    prepare: (...args) => ({ plan: [] }),
+    fullPlan: (...args) => ({ plan: [] })
 };

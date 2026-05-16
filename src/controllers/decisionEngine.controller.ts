@@ -1,31 +1,30 @@
 import { decisionEngineService } from "../services/decisionEngine.service.js";
 import { prisma } from "../prisma/client.js";
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Response } from "express";
+import type { AuthenticatedRequest } from "../globalTypes.js";
+import { success, fail } from "./controllerHelper.js";
 
 export const DecisionEngineController = {
-  run: async (req: Request, res: Response, next: NextFunction) => {
+  run: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const branchId = req.user!.branchId;
       const result = await decisionEngineService.run(branchId);
-      res.json(result);
+      return success(res, result, "Decision engine run");
     } catch (err: unknown) {
-      next(err);
+      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
     }
   },
 
-  logs: async (req: Request, res: Response, next: NextFunction) => {
+  logs: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const branchId = req.user!.branchId;
       const logs = await prisma.decisionLog.findMany({
         where: { branchId },
-        orderBy: { createdAt: "desc" },
+        orderBy: { createdAt: "desc" }
       });
-      res.json(logs);
+      return success(res, logs, "Decision logs");
     } catch (err: unknown) {
-      next(err);
+      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
     }
-  },
+  }
 };
-
-
-

@@ -1,0 +1,37 @@
+{
+  "models": [
+    {
+      "model": "codellama",
+      "provider": "ollama",
+      "apiBase": "http://localhost:11434",
+      "title": "CodeLlama (Local)",
+      "systemMessage": "You are a helpful coding assistant."
+    },
+    {
+      "model": "llama3",
+      "provider": "ollama",
+      "apiBase": "http://localhost:11434",
+      "title": "Llama 3 (Local)",
+      "systemMessage": "You are a helpful coding assistant."
+    },
+    {
+      "model": "llama3-8b-8192",
+      "provider": "groq",
+      "apiKey": "YOUR_GROQ_API_KEY_HERE",
+      "title": "Groq Llama 3 8B",
+      "systemMessage": "You are a helpful coding assistant."
+    },
+    {
+      "model": "mixtral-8x7b-32768",
+      "provider": "groq",
+      "apiKey": "YOUR_GROQ_API_KEY_HERE",
+      "title": "Groq Mixtral 8x7B",
+      "systemMessage": "You are a helpful coding assistant."
+    }
+  ],
+  "tabAutocompleteModel": {
+    "model": "codellama",
+    "provider": "ollama",
+    "apiBase": "http://localhost:11434"
+  }
+}

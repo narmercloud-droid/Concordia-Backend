@@ -1,4 +1,4 @@
 export const decisionEngineService = {
-    decide: (...args) => null,
-    run: (...args) => null
+    decide: (...args) => ({ decision: "default", confidence: 0 }),
+    run: (...args) => ({ results: [] })
 };

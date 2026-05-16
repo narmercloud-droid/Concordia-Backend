@@ -16,13 +16,13 @@ export class CourierService {
     async validateCourierToken(orderId, token) {
         const order = await prisma.order.findUnique({ where: { id: orderId } });
         if (!order)
-            return null;
+            return false;
         if (order.courierToken !== token)
-            return null;
+            return false;
         if (!order.courierTokenExpiresAt)
-            return null;
+            return false;
         if (order.courierTokenExpiresAt < new Date())
-            return null;
+            return false;
         return order;
     }
     async claimOrder(orderId) {

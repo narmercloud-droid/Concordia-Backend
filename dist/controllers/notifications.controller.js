@@ -1,26 +1,37 @@
 import { prisma } from "../prisma/client.js";
 import { notificationsService } from "../services/notifications.service.js";
+import { success, fail } from "./controllerHelper.js";
+import { notificationPreferencesSchema, marketingSmsSchema } from "../validation/notifications.schema.js";
+const validationMessage = (issues) => issues.map((i) => i.message).join(", ") || "Invalid input";
 export const NotificationsController = {
     updatePreferences: async (req, res, next) => {
         try {
             const customerId = req.user.id;
+            const parsed = notificationPreferencesSchema.safeParse(req.body);
+            if (!parsed.success) {
+                return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
+            }
             const prefs = await prisma.notificationPreference.upsert({
                 where: { customerId },
-                update: req.body,
+                update: parsed.data,
                 create: {
                     customerId,
-                    ...req.body
+                    ...parsed.data
                 }
             });
-            res.json(prefs);
+            return success(res, prefs, "Preferences updated");
         }
         catch (err) {
-            next(err);
+            return fail(res, "UNKNOWN_ERROR", err.message, 500);
         }
     },
     sendMarketingSMS: async (req, res, next) => {
         try {
-            const { message, segment } = req.body;
+            const parsed = marketingSmsSchema.safeParse(req.body);
+            if (!parsed.success) {
+                return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
+            }
+            const { message, segment } = parsed.data;
             let customers = [];
             if (segment === "all") {
                 customers = await prisma.customer.findMany();
@@ -38,14 +49,12 @@ export const NotificationsController = {
                     }
                 });
             }
-            const phones = customers
-                .filter(c => c.phone)
-                .map(c => c.phone);
+            const phones = customers.filter((c) => c.phone).map((c) => c.phone);
             await notificationsService.sendMarketingSMS(phones, message);
-            res.json({ success: true, sent: phones.length });
+            return success(res, { success: true, sent: phones.length }, "SMS sent");
         }
         catch (err) {
-            next(err);
+            return fail(res, "UNKNOWN_ERROR", err.message, 500);
         }
     }
 };

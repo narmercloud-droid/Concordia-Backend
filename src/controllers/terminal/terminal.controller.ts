@@ -1,116 +1,145 @@
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
+import type { AuthenticatedRequest } from "../../globalTypes.js";
 import { TerminalService } from "../../services/terminal/terminal.service.js";
+import { success, fail } from "../controllerHelper.js";
+import {
+  terminalActivateSchema,
+  terminalRegisterSchema,
+  terminalLoginSchema,
+  terminalOrderIdParamSchema
+} from "../../validation/terminal.schema.js";
+
+const validationMessage = (issues: { message: string }[]) =>
+  issues.map((i) => i.message).join(", ") || "Invalid input";
 
 export class TerminalController {
-  static async activate(req: Request, res: Response, next: NextFunction) {
-    const { branchId } = req.body;
-
-    if (!branchId) {
-      return res.status(400).json({ error: "branchId is required" });
-    }
-
+  static async activate(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {
+      const parsed = terminalActivateSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
+      }
+      const { branchId } = parsed.data;
       const activationToken = await TerminalService.activateTerminal(branchId);
-      res.json({ token: activationToken });
-    } catch (err: any) {
-      const status = err.message === "Branch not found" ? 404 : 500;
-      res.status(status).json({ error: err.message || "Failed to generate terminal activation token" });
+      return success(res, { token: activationToken }, "Activation token created");
+    } catch (err: unknown) {
+      const message = (err as Error).message;
+      if (message === "Branch not found") {
+        return fail(res, "NOT_FOUND", message, 404);
+      }
+      return fail(res, "UNKNOWN_ERROR", message || "Failed to generate terminal activation token", 500);
     }
   }
 
-  static async register(req: Request, res: Response, next: NextFunction) {
-    const { activation_token, terminal_name } = req.body;
-
-    if (!activation_token || !terminal_name) {
-      return res.status(400).json({ error: "activation_token and terminal_name are required" });
-    }
-
+  static async register(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {
+      const parsed = terminalRegisterSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
+      }
+      const { activation_token, terminal_name } = parsed.data;
       const terminal = await TerminalService.registerTerminal(activation_token, terminal_name);
-      res.status(201).json({ terminal_id: terminal.id, branchId: terminal.branchId });
-    } catch (err: any) {
-      let status = 400;
-      if (err.message === "Branch not found") status = 404;
-      if (err.message === "Terminal has already been registered") status = 409;
-      res.status(status).json({ error: err.message || "Failed to register terminal" });
+      return success(
+        res,
+        { terminal_id: terminal.id, branchId: terminal.branchId },
+        "Terminal registered",
+        201
+      );
+    } catch (err: unknown) {
+      const message = (err as Error).message;
+      if (message === "Branch not found") return fail(res, "NOT_FOUND", message, 404);
+      if (message === "Terminal has already been registered") {
+        return fail(res, "CONFLICT", message, 409);
+      }
+      return fail(res, "UNKNOWN_ERROR", message || "Failed to register terminal", 400);
     }
   }
 
-  static async login(req: Request, res: Response, next: NextFunction) {
-    const { terminal_token } = req.body;
-
-    if (!terminal_token) {
-      return res.status(400).json({ error: "terminal_token is required" });
-    }
-
+  static async login(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {
+      const parsed = terminalLoginSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
+      }
+      const { terminal_token } = parsed.data;
       const terminal = await TerminalService.loginTerminal(terminal_token);
-      res.json({ terminal_id: terminal.id, branchId: terminal.branchId });
-    } catch (err: any) {
-      res.status(401).json({ error: err.message || "Failed to login terminal" });
+      return success(res, { terminal_id: terminal.id, branchId: terminal.branchId }, "Terminal logged in");
+    } catch (err: unknown) {
+      return fail(res, "UNAUTHORIZED", (err as Error).message || "Failed to login terminal", 401);
     }
   }
 
-  static async acknowledgeOrder(req: Request, res: Response, next: NextFunction) {
-    const { order_id } = req.params;
-    const terminal_id = req.user?.id as string;
-
+  static async acknowledgeOrder(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {
-      const order = await TerminalService.acknowledgeOrder(order_id, terminal_id);
-      res.json(order);
-    } catch (err: any) {
-      res.status(400).json({ error: err.message });
+      const parsedParams = terminalOrderIdParamSchema.safeParse(req.params);
+      if (!parsedParams.success) {
+        return fail(res, "VALIDATION_ERROR", validationMessage(parsedParams.error.issues), 400);
+      }
+      const terminal_id = req.user?.id as string;
+      const order = await TerminalService.acknowledgeOrder(parsedParams.data.order_id, terminal_id);
+      return success(res, order, "Order acknowledged");
+    } catch (err: unknown) {
+      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 400);
     }
   }
 
-  static async assignOrder(req: Request, res: Response, next: NextFunction) {
-    const { order_id } = req.params;
-    const terminal_id = req.user?.id as string;
-
+  static async assignOrder(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {
-      await TerminalService.assignOrder(order_id, terminal_id);
-      res.json({ status: "assigned" });
-    } catch (err: any) {
-      res.status(400).json({ error: err.message });
+      const parsedParams = terminalOrderIdParamSchema.safeParse(req.params);
+      if (!parsedParams.success) {
+        return fail(res, "VALIDATION_ERROR", validationMessage(parsedParams.error.issues), 400);
+      }
+      const terminal_id = req.user?.id as string;
+      await TerminalService.assignOrder(parsedParams.data.order_id, terminal_id);
+      return success(res, { status: "assigned" }, "Order assigned");
+    } catch (err: unknown) {
+      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 400);
     }
   }
 
-  static async acceptOrder(req: Request, res: Response, next: NextFunction) {
-    const { order_id } = req.params;
-    const terminal_id = req.user?.id as string;
-
+  static async acceptOrder(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {
-      const order = await TerminalService.acceptOrder(order_id, terminal_id);
-      res.json(order);
-    } catch (err: any) {
-      res.status(400).json({ error: err.message });
+      const parsedParams = terminalOrderIdParamSchema.safeParse(req.params);
+      if (!parsedParams.success) {
+        return fail(res, "VALIDATION_ERROR", validationMessage(parsedParams.error.issues), 400);
+      }
+      const terminal_id = req.user?.id as string;
+      const order = await TerminalService.acceptOrder(parsedParams.data.order_id, terminal_id);
+      return success(res, order, "Order accepted");
+    } catch (err: unknown) {
+      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 400);
     }
   }
 
-  static async rejectOrder(req: Request, res: Response, next: NextFunction) {
-    const { order_id } = req.params;
-    const terminal_id = req.user?.id as string;
-
+  static async rejectOrder(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {
-      const order = await TerminalService.rejectOrder(order_id, terminal_id);
-      res.json(order);
-    } catch (err: any) {
-      res.status(400).json({ error: err.message });
+      const parsedParams = terminalOrderIdParamSchema.safeParse(req.params);
+      if (!parsedParams.success) {
+        return fail(res, "VALIDATION_ERROR", validationMessage(parsedParams.error.issues), 400);
+      }
+      const terminal_id = req.user?.id as string;
+      const order = await TerminalService.rejectOrder(parsedParams.data.order_id, terminal_id);
+      return success(res, order, "Order rejected");
+    } catch (err: unknown) {
+      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 400);
     }
   }
 
-  static async heartbeat(req: Request, res: Response, next: NextFunction) {
-    const terminal_id = req.user?.id as string;
-
+  static async heartbeat(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {
+      const terminal_id = req.user?.id as string;
       await TerminalService.updateHeartbeat(terminal_id);
-      res.json({ status: "ok" });
-    } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      return success(res, { status: "ok" }, "Heartbeat OK");
+    } catch (err: unknown) {
+      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
     }
   }
 
-  static async ordersStream(req: Request, res: Response, next: NextFunction) {
-    res.status(501).json({ error: "Not implemented" });
+  static async ordersStream(_req: AuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      return fail(res, "NOT_IMPLEMENTED", "Not implemented", 501);
+    } catch (err: unknown) {
+      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
+    }
   }
 }
