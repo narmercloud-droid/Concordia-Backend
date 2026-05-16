@@ -1,100 +1,59 @@
 import { Request, Response, NextFunction } from "express";
 import { ToppingService } from "../../services/admin/topping.service.js";
-import { success, fail } from "../controllerHelper.js";
-import { adminEntityBodySchema } from "../../validation/admin.schema.js";
-import { idParamSchema } from "../../validation/common.schema.js";
-
-const validationMessage = (issues: { message: string }[]) =>
-  issues.map((i) => i.message).join(", ") || "Invalid input";
 
 export class ToppingController {
-  static async getAll(req: Request, res: Response, next: NextFunction) {
+  static async getAll(_req: Request, res: Response, next: NextFunction) {
     try {
-      const branchId = req.user?.branchId;
-      if (!branchId) {
-        return fail(res, "MISSING_BRANCH", "Branch ID is required", 400);
-      }
-      const toppings = await ToppingService.getAll(branchId);
-      return success(res, toppings, "Toppings listed");
+      const toppings = await ToppingService.getAll();
+      res.json(toppings);
+      return;
     } catch (err: unknown) {
-      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
+      next(err);
     }
   }
 
   static async getById(req: Request, res: Response, next: NextFunction) {
     try {
-      const branchId = req.user?.branchId;
-      if (!branchId) {
-        return fail(res, "MISSING_BRANCH", "Branch ID is required", 400);
-      }
-      const parsed = idParamSchema.safeParse(req.params);
-      if (!parsed.success) {
-        return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
-      }
-      const topping = await ToppingService.getById(parsed.data.id, branchId);
+      const id = req.params.id;
+      const topping = await ToppingService.getById(id);
 
       if (!topping) {
-        return fail(res, "NOT_FOUND", "Topping not found", 404);
+        return res.status(404).json({ error: "Topping not found" });
       }
 
-      return success(res, topping, "Topping fetched");
+      res.json(topping);
+      return;
     } catch (err: unknown) {
-      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
+      next(err);
     }
   }
 
   static async create(req: Request, res: Response, next: NextFunction) {
     try {
-      const branchId = req.user?.branchId;
-      if (!branchId) {
-        return fail(res, "MISSING_BRANCH", "Branch ID is required", 400);
-      }
-      const parsed = adminEntityBodySchema.safeParse(req.body);
-      if (!parsed.success) {
-        return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
-      }
-      const topping = await ToppingService.create(branchId, parsed.data);
-      return success(res, topping, "Topping created", 201);
+      const topping = await ToppingService.create(req.body);
+      res.status(201).json(topping);
     } catch (err: unknown) {
-      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
+      next(err);
     }
   }
 
   static async update(req: Request, res: Response, next: NextFunction) {
     try {
-      const branchId = req.user?.branchId;
-      if (!branchId) {
-        return fail(res, "MISSING_BRANCH", "Branch ID is required", 400);
-      }
-      const parsedParams = idParamSchema.safeParse(req.params);
-      if (!parsedParams.success) {
-        return fail(res, "VALIDATION_ERROR", validationMessage(parsedParams.error.issues), 400);
-      }
-      const parsedBody = adminEntityBodySchema.safeParse(req.body);
-      if (!parsedBody.success) {
-        return fail(res, "VALIDATION_ERROR", validationMessage(parsedBody.error.issues), 400);
-      }
-      const topping = await ToppingService.update(parsedParams.data.id, branchId, parsedBody.data);
-      return success(res, topping, "Topping updated");
+      const id = req.params.id;
+      const topping = await ToppingService.update(id, req.body);
+      res.json(topping);
     } catch (err: unknown) {
-      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
+      next(err);
     }
   }
 
   static async remove(req: Request, res: Response, next: NextFunction) {
     try {
-      const branchId = req.user?.branchId;
-      if (!branchId) {
-        return fail(res, "MISSING_BRANCH", "Branch ID is required", 400);
-      }
-      const parsed = idParamSchema.safeParse(req.params);
-      if (!parsed.success) {
-        return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
-      }
-      await ToppingService.remove(parsed.data.id, branchId);
-      return success(res, { success: true }, "Topping removed");
+      const id = req.params.id;
+      await ToppingService.remove(id);
+      res.json({ success: true });
     } catch (err: unknown) {
-      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
+      next(err);
     }
   }
 }

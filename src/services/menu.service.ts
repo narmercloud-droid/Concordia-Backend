@@ -13,27 +13,11 @@ export class MenuService {
     return prisma.category.delete({ where: { id } });
   }
 
-  async listCategories(page: number = 1, pageSize: number = 50): Promise<any[]> {
-    const skip = Math.max(0, page - 1) * pageSize;
+  async listCategories(): Promise<any[]> {
     return prisma.category.findMany({
       orderBy: { position: "asc" },
-      skip,
-      take: pageSize,
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        position: true,
-        items: {
-          orderBy: { name: "asc" },
-          select: {
-            id: true,
-            name: true,
-            price: true,
-            autoDisable: true,
-            categoryId: true
-          }
-        }
+      include: {
+        items: true
       }
     });
   }

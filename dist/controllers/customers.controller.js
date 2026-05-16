@@ -1,123 +1,49 @@
 import { customerService } from "../services/customers.service.js";
-import { success, fail } from "./controllerHelper.js";
-import { customerRegisterSchema, customerLoginSchema, customerRefreshSchema } from "../validation/customers.schema.js";
-import { addressBodySchema } from "../validation/address.schema.js";
-import { idParamSchema } from "../validation/common.schema.js";
-const validationMessage = (issues) => issues.map((i) => i.message).join(", ") || "Invalid input";
 export const CustomersController = {
     register: async (req, res, next) => {
-        try {
-            const parsed = customerRegisterSchema.safeParse(req.body);
-            if (!parsed.success) {
-                return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
-            }
-            const customer = await customerService.register(parsed.data);
-            return success(res, customer, "Customer registered successfully");
-        }
-        catch (err) {
-            return fail(res, "UNKNOWN_ERROR", err.message, 500);
-        }
+        const customer = await customerService.register(req.body);
+        res.json(customer);
     },
     login: async (req, res, next) => {
-        try {
-            const parsed = customerLoginSchema.safeParse(req.body);
-            if (!parsed.success) {
-                return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
-            }
-            const { email, password } = parsed.data;
-            const tokens = await customerService.login(email, password);
-            if (!tokens)
-                return fail(res, "INVALID_CREDENTIALS", "Invalid credentials", 401);
-            return success(res, tokens, "Login successful");
-        }
-        catch (err) {
-            return fail(res, "UNKNOWN_ERROR", err.message, 500);
-        }
+        const { email, password } = req.body;
+        const tokens = await customerService.login(email, password);
+        if (!tokens)
+            return res.status(401).json({ error: "Invalid credentials" });
+        res.json(tokens);
     },
     refresh: async (req, res, next) => {
-        try {
-            const parsed = customerRefreshSchema.safeParse(req.body);
-            if (!parsed.success) {
-                return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
-            }
-            const { refreshToken } = parsed.data;
-            const tokens = await customerService.refresh(refreshToken);
-            if (!tokens)
-                return fail(res, "INVALID_TOKEN", "Invalid token", 403);
-            return success(res, tokens, "Token refreshed successfully");
-        }
-        catch (err) {
-            return fail(res, "UNKNOWN_ERROR", err.message, 500);
-        }
-    },
-    addAddress: async (req, res, next) => {
-        try {
-            const customerId = req.user?.id;
-            if (!customerId)
-                return fail(res, "UNAUTHORIZED", "Unauthorized", 401);
-            const parsed = addressBodySchema.safeParse(req.body);
-            if (!parsed.success) {
-                return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
-            }
-            const address = await customerService.addAddress(customerId, parsed.data);
-            return success(res, address, "Address added successfully");
-        }
-        catch (err) {
-            return fail(res, "UNKNOWN_ERROR", err.message, 500);
-        }
-    },
-    listAddresses: async (req, res, next) => {
-        try {
-            const customerId = req.user?.id;
-            if (!customerId)
-                return fail(res, "UNAUTHORIZED", "Unauthorized", 401);
-            const addresses = await customerService.listAddresses(customerId);
-            return success(res, addresses, "Addresses fetched successfully");
-        }
-        catch (err) {
-            return fail(res, "UNKNOWN_ERROR", err.message, 500);
-        }
-    },
-    deleteAddress: async (req, res, next) => {
-        try {
-            const customerId = req.user?.id;
-            if (!customerId)
-                return fail(res, "UNAUTHORIZED", "Unauthorized", 401);
-            const parsed = idParamSchema.safeParse(req.params);
-            if (!parsed.success) {
-                return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
-            }
-            const address = await customerService.deleteAddress(parsed.data.id);
-            return success(res, address, "Address deleted successfully");
-        }
-        catch (err) {
-            return fail(res, "UNKNOWN_ERROR", err.message, 500);
-        }
+        const { refreshToken } = req.body;
+        const tokens = await customerService.refresh(refreshToken);
+        if (!tokens)
+            return res.status(403).json({ error: "Invalid token" });
+        res.json(tokens);
     },
     profile: async (req, res, next) => {
-        try {
-            const customerId = req.user?.id;
-            if (!customerId)
-                return fail(res, "UNAUTHORIZED", "Unauthorized", 401);
-            const profile = await customerService.getProfile(customerId);
-            if (!profile)
-                return fail(res, "NOT_FOUND", "Profile not found", 404);
-            return success(res, profile, "Profile fetched successfully");
-        }
-        catch (err) {
-            return fail(res, "UNKNOWN_ERROR", err.message, 500);
-        }
+        const customerId = req.user?.id;
+        if (!customerId)
+            return res.status(401).json({ error: "Unauthorized" });
+        const profile = await customerService.getProfile(customerId);
+        res.json(profile);
     },
-    orders: async (req, res, next) => {
-        try {
-            const customerId = req.user?.id;
-            if (!customerId)
-                return fail(res, "UNAUTHORIZED", "Unauthorized", 401);
-            const orders = await customerService.getOrders(customerId);
-            return success(res, orders, "Orders fetched successfully");
-        }
-        catch (err) {
-            return fail(res, "UNKNOWN_ERROR", err.message, 500);
-        }
+    addAddress: async (req, res, next) => {
+        const customerId = req.user?.id;
+        if (!customerId)
+            return res.status(401).json({ error: "Unauthorized" });
+        const address = await customerService.addAddress(customerId, req.body);
+        res.json(address);
+    },
+    listAddresses: async (req, res, next) => {
+        const customerId = req.user?.id;
+        if (!customerId)
+            return res.status(401).json({ error: "Unauthorized" });
+        const addresses = await customerService.listAddresses(customerId);
+        res.json(addresses);
+    },
+    deleteAddress: async (req, res, next) => {
+        const customerId = req.user?.id;
+        if (!customerId)
+            return res.status(401).json({ error: "Unauthorized" });
+        const address = await customerService.deleteAddress(req.params.id);
+        res.json(address);
     }
 };

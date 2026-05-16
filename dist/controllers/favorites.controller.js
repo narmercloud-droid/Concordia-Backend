@@ -1,55 +1,44 @@
 import { favoritesService } from "../services/favorites.service.js";
-import { success, fail } from "./controllerHelper.js";
-import { favoritesBodySchema } from "../validation/favorites.schema.js";
-const validationMessage = (issues) => issues.map((i) => i.message).join(", ") || "Invalid input";
 export const FavoritesController = {
     add: async (req, res, next) => {
         try {
             const customerId = req.user.id;
-            const parsed = favoritesBodySchema.safeParse(req.body);
-            if (!parsed.success) {
-                return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
-            }
-            const { itemId } = parsed.data;
+            const { itemId } = req.body;
             const fav = await favoritesService.addFavorite(customerId, itemId);
-            return success(res, fav, "Favorite added");
+            res.json(fav);
         }
         catch (err) {
-            return fail(res, "UNKNOWN_ERROR", err.message, 500);
+            next(err);
         }
     },
     remove: async (req, res, next) => {
         try {
             const customerId = req.user.id;
-            const parsed = favoritesBodySchema.safeParse(req.body);
-            if (!parsed.success) {
-                return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
-            }
-            const { itemId } = parsed.data;
+            const { itemId } = req.body;
             await favoritesService.removeFavorite(customerId, itemId);
-            return success(res, { success: true }, "Favorite removed");
+            res.json({ success: true });
         }
         catch (err) {
-            return fail(res, "UNKNOWN_ERROR", err.message, 500);
+            next(err);
         }
     },
     list: async (req, res, next) => {
         try {
             const customerId = req.user.id;
             const list = await favoritesService.listFavorites(customerId);
-            return success(res, list, "Favorites listed");
+            res.json(list);
         }
         catch (err) {
-            return fail(res, "UNKNOWN_ERROR", err.message, 500);
+            next(err);
         }
     },
-    listFavorites: async (req, res, next) => {
+    mostFavorited: async (req, res, next) => {
         try {
             const data = await favoritesService.mostFavoritedItems();
-            return success(res, data, "Most favorited items");
+            res.json(data);
         }
         catch (err) {
-            return fail(res, "UNKNOWN_ERROR", err.message, 500);
+            next(err);
         }
     }
 };

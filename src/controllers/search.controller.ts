@@ -1,67 +1,50 @@
-import { Response, NextFunction } from "express";
-import type { AuthenticatedRequest } from "../globalTypes.js";
+import { Request, Response, NextFunction } from "express";
 import { searchService } from "../services/search.service.js";
-import { success, fail } from "./controllerHelper.js";
-import { searchQuerySchema } from "../validation/search.schema.js";
-
-const validationMessage = (issues: { message: string }[]) =>
-  issues.map((i) => i.message).join(", ") || "Invalid input";
 
 export const SearchController = {
-  menu: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  menu: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const parsed = searchQuerySchema.safeParse(req.query);
-      if (!parsed.success) {
-        return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
-      }
-      const { q } = parsed.data;
+      const q = req.query.q as string;
       const customerId = req.user?.id;
 
       await searchService.recordSearch(q);
 
       const results = await searchService.searchMenu(q, customerId);
-      return success(res, results, "Menu search results");
+      res.json(results);
     } catch (err: unknown) {
-      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
+      next(err);
     }
   },
 
-  branches: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  branches: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const parsed = searchQuerySchema.safeParse(req.query);
-      if (!parsed.success) {
-        return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
-      }
-      const { q } = parsed.data;
+      const q = req.query.q as string;
       await searchService.recordSearch(q);
       const results = await searchService.searchBranches(q);
-      return success(res, results, "Branch search results");
+      res.json(results);
     } catch (err: unknown) {
-      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
+      next(err);
     }
   },
 
-  categories: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  categories: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const parsed = searchQuerySchema.safeParse(req.query);
-      if (!parsed.success) {
-        return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
-      }
-      const { q } = parsed.data;
+      const q = req.query.q as string;
       await searchService.recordSearch(q);
       const results = await searchService.searchCategories(q);
-      return success(res, results, "Category search results");
+      res.json(results);
     } catch (err: unknown) {
-      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
+      next(err);
     }
   },
 
-  topSearches: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  topSearches: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const results = await searchService.topSearches();
-      return success(res, results, "Top searches");
+      res.json(results);
     } catch (err: unknown) {
-      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
+      next(err);
     }
   }
 };
+

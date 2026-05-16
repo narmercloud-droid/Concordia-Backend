@@ -7,9 +7,7 @@ export class CustomerService {
     async register(data) {
         const { password, ...customerData } = data;
         return prisma.customer.create({
-            data: {
-                ...customerData
-            }
+            data: customerData
         });
     }
     async validatePassword(password, hashed) {
@@ -23,22 +21,11 @@ export class CustomerService {
     async login(email, _password) {
         const customer = await prisma.customer.findUnique({ where: { email } });
         if (!customer)
-            return false;
+            return null;
         return this.generateTokens(customer);
     }
-    async refresh(refreshToken) {
-        try {
-            const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET || "refresh_secret");
-            if (decoded.type !== "customer")
-                return false;
-            const customer = await prisma.customer.findUnique({ where: { id: decoded.id } });
-            if (!customer)
-                return false;
-            return this.generateTokens(customer);
-        }
-        catch (error) {
-            return false;
-        }
+    async refresh(_refreshToken) {
+        return null;
     }
     async addAddress(customerId, data) {
         return prisma.address.create({
@@ -57,19 +44,6 @@ export class CustomerService {
         return prisma.customer.findUnique({
             where: { id },
             include: { addresses: true }
-        });
-    }
-    async getOrders(customerId) {
-        return prisma.order.findMany({
-            where: { customerId },
-            include: {
-                items: {
-                    include: {
-                        item: true
-                    }
-                }
-            },
-            orderBy: { createdAt: "desc" }
         });
     }
 }

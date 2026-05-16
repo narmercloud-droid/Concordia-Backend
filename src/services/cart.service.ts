@@ -33,7 +33,7 @@ export class CartService {
     const validatedItems = [];
 
     for (const cartItem of items) {
-      const item = await prisma.menuItem.findFirst({
+      const item = await prisma.menuItem.findUnique({
         where: { id: cartItem.itemId }
       });
 
@@ -71,8 +71,8 @@ export class CartService {
     if (rewardId) {
       const reward = await loyaltyService.redeemReward(customerId, rewardId);
       appliedReward = reward;
-      if ((reward as any).discount) rewardDiscount = subtotal * (reward as any).discount;
-      if ((reward as any).amountOff) rewardDiscount = (reward as any).amountOff;
+      if (reward.discount) rewardDiscount = subtotal * reward.discount;
+      if (reward.amountOff) rewardDiscount = reward.amountOff;
     }
 
     // 7. Delivery fee

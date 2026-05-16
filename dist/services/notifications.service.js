@@ -1,4 +1,4 @@
 export const notificationsService = {
-    send: (...args) => ({ success: true }),
-    sendMarketingSMS: (...args) => ({ success: true })
+    send: (...args) => null,
+    sendMarketingSMS: (...args) => null
 };

@@ -1,31 +1,24 @@
 import { conversationalService } from "../services/conversational.service.js";
-import { success, fail } from "./controllerHelper.js";
-import { conversationalTalkBodySchema } from "../validation/conversational.schema.js";
-const validationMessage = (issues) => issues.map((i) => i.message).join(", ") || "Invalid input";
 export const ConversationalController = {
     talk: async (req, res, next) => {
         try {
             const branchId = req.user.branchId;
-            const parsed = conversationalTalkBodySchema.safeParse(req.body);
-            if (!parsed.success) {
-                return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
-            }
-            const { message } = parsed.data;
+            const { message } = req.body;
             const response = await conversationalService.respond(branchId, message);
-            return success(res, { message, response }, "Response generated");
+            res.json({ message, response });
         }
         catch (err) {
-            return fail(res, "UNKNOWN_ERROR", err.message, 500);
+            next(err);
         }
     },
     history: async (req, res, next) => {
         try {
             const branchId = req.user.branchId;
             const logs = await conversationalService.history(branchId);
-            return success(res, logs, "Conversation history");
+            res.json(logs);
         }
         catch (err) {
-            return fail(res, "UNKNOWN_ERROR", err.message, 500);
+            next(err);
         }
     }
 };

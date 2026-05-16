@@ -2,79 +2,6 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model KitchenDisplay {
-  id        String   @id @default(uuid())
-  name      String
-  apiKey    String   @unique
-  branchId  String
-  createdAt DateTime @default(now())
-
-  branch Branch @relation(fields: [branchId], references: [id])
-}
-
-// PHASE 1 — CREATE ANALYTICS DATA MODELS
-model CustomerAnalytics {
-  id              String   @id @default(uuid())
-  customerId      String   @unique
-  totalOrders     Int      @default(0)
-  totalSpend      Float    @default(0)
-  avgOrderValue   Float    @default(0)
-  lastOrderDate   DateTime?
-  churnRiskScore  Float    @default(0)
-  lifetimeValueScore Float @default(0)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  customer Customer @relation(fields: [customerId], references: [id])
-  
-  @@index([customerId])
-}
-
-model MenuItemAnalytics {
-  id             String   @id @default(uuid())
-  itemId         String   @unique
-  totalOrders    Int      @default(0)
-  totalRevenue   Float    @default(0)
-  popularityScore Float   @default(0)
-  lastOrderedAt  DateTime?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  item MenuItem @relation(fields: [itemId], references: [id])
-  
-  @@index([itemId])
-}
-
-model CourierPerformance {
-  id               String   @id @default(uuid())
-  courierId        String   @unique
-  totalDeliveries  Int      @default(0)
-  avgDeliveryTime  Float    @default(0)
-  onTimeRate       Float    @default(0)
-  ratingScore      Float    @default(0)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-
-  courier Courier @relation(fields: [courierId], references: [id])
-  
-  @@index([courierId])
-}
-
-model BranchDemand {
-  id              String   @id @default(uuid())
-  branchId        String
-  date            DateTime
-  hour            Int
-  orderCount      Int      @default(0)
-  predictedDemand Float    @default(0)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  branch Branch @relation(fields: [branchId], references: [id])
-  
-  @@index([branchId, date, hour])
-}
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -114,11 +41,6 @@ model Order {
   Review             Review?
   RiskScore          RiskScore?
   OrderRiskEvent     OrderRiskEvent[]
-
-  @@index([branchId, createdAt])
-  @@index([customerId, createdAt])
-  @@index([branchId, status])
-  @@index([status, createdAt])
 }
 
 model OrderItem {
@@ -135,9 +57,6 @@ model OrderItem {
   order      Order       @relation(fields: [orderId], references: [id])
   item       MenuItem   @relation(fields: [itemId], references: [id])
   ItemRating ItemRating?
-
-  @@index([orderId])
-  @@index([itemId])
 }
 
 model Branch {
@@ -157,7 +76,6 @@ model Branch {
   terminals      Terminal[]
   kitchenDisplays KitchenDisplay[]
   couriers       Courier[]
-  branchDemand   BranchDemand[]
 }
 
 model Terminal {
@@ -185,7 +103,6 @@ model Customer {
   favorites              Favorite[]
   addresses              Address[]
   Review                 Review[]
-  customerAnalytics      CustomerAnalytics?
 }
 
 model Courier {
@@ -199,10 +116,6 @@ model Courier {
   branch   Branch @relation(fields: [branchId], references: [id])
 
   locations CourierLocation[]
-  courierPerformance CourierPerformance?
-
-  @@index([branchId])
-  @@index([active])
 }
 
 model Admin {
@@ -283,7 +196,6 @@ model MenuItem {
   orderItems  OrderItem[]
   relations   Relation[]
   cartItems   CartItem[]
-  menuItemAnalytics MenuItemAnalytics?
 }
 
 model Favorite {
@@ -311,8 +223,6 @@ model Address {
   isDefault    Boolean @default(false)
 
   customer Customer @relation(fields: [customerId], references: [id])
-
-  @@index([customerId])
 }
 
 model DeliveryZone {
@@ -388,9 +298,6 @@ model CartItem {
   quantity  Int     @default(1)
   cart      Cart    @relation(fields: [cartId], references: [id])
   item      MenuItem @relation(fields: [itemId], references: [id])
-
-  @@index([cartId])
-  @@index([itemId])
 }
 
 model SearchLog {
@@ -438,9 +345,6 @@ model OrderTrackingEvent {
   timestamp DateTime @default(now())
 
   order Order @relation(fields: [orderId], references: [id])
-
-  @@index([orderId])
-  @@index([timestamp])
 }
 
 model Review {
@@ -456,10 +360,6 @@ model Review {
   order    Order    @relation(fields: [orderId], references: [id])
   customer Customer @relation(fields: [customerId], references: [id])
   branch   Branch   @relation(fields: [branchId], references: [id])
-
-  @@index([customerId])
-  @@index([branchId, createdAt])
-  @@index([createdAt])
 }
 
 model ItemRating {
@@ -486,10 +386,6 @@ model FraudFlag {
   orderId    String?
   reason     String
   createdAt  DateTime @default(now())
-
-  @@index([customerId])
-  @@index([orderId])
-  @@index([createdAt])
 }
 
 model OrderRiskEvent {
@@ -499,9 +395,6 @@ model OrderRiskEvent {
   createdAt DateTime @default(now())
 
   order Order @relation(fields: [orderId], references: [id])
-
-  @@index([orderId])
-  @@index([createdAt])
 }
 
 model PriceHistory {
@@ -513,9 +406,6 @@ model PriceHistory {
   createdAt DateTime @default(now())
 
   item MenuItem @relation(fields: [itemId], references: [id])
-
-  @@index([itemId])
-  @@index([createdAt])
 }
 
 model DynamicPriceRule {
@@ -527,9 +417,6 @@ model DynamicPriceRule {
   amount     Float?
   active     Boolean  @default(true)
   createdAt  DateTime @default(now())
-
-  @@index([branchId])
-  @@index([active, createdAt])
 }
 
 model InsightLog {
@@ -540,9 +427,6 @@ model InsightLog {
   confidence  Float
   impact      String // low, medium, high
   createdAt   DateTime @default(now())
-
-  @@index([branchId, createdAt])
-  @@index([type])
 }
 
 model DecisionLog {
@@ -554,9 +438,6 @@ model DecisionLog {
   impact      String // low, medium, high
   autoApplied Boolean
   createdAt   DateTime @default(now())
-
-  @@index([branchId, createdAt])
-  @@index([actionType])
 }
 
 model AutomationSettings {
@@ -646,4 +527,14 @@ model ConversationLog {
   message   String
   response  String
   createdAt DateTime @default(now())
+}
+
+model KitchenDisplay {
+  id        String   @id @default(uuid())
+  name      String
+  apiKey    String   @unique
+  branchId  String
+  createdAt DateTime @default(now())
+
+  branch Branch @relation(fields: [branchId], references: [id])
 }

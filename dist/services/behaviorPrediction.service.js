@@ -1,4 +1,4 @@
 export const behaviorPredictionService = {
-    predict: (...args) => ({ predictions: [] }),
-    fullProfile: (...args) => ({ profile: {}, insights: [] })
+    predict: (...args) => null,
+    fullProfile: (...args) => null
 };

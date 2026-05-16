@@ -1,70 +1,50 @@
 import type { AuthenticatedRequest } from "../globalTypes.js";
 import { Response, NextFunction } from "express";
 import { paymentsService } from "../services/payments.service.js";
-import { success, fail } from "./controllerHelper.js";
-import {
-  createStripeIntentBodySchema,
-  createPayPalOrderBodySchema,
-  capturePayPalBodySchema
-} from "../validation/payments.schema.js";
-import { idParamSchema } from "../validation/common.schema.js";
-
-const validationMessage = (issues: { message: string }[]) =>
-  issues.map((i) => i.message).join(", ") || "Invalid input";
+import { prisma } from "../prisma/client.js";
 
 export const PaymentsController = {
+  // STRIPE
   createStripeIntent: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-      const parsed = createStripeIntentBodySchema.safeParse(req.body);
-      if (!parsed.success) {
-        return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
-      }
-      const { orderId, amount } = parsed.data;
+      const { orderId, amount } = req.body;
       const intent = await paymentsService.createStripePaymentIntent(orderId, amount);
-      return success(res, { clientSecret: intent.client_secret }, "Stripe payment intent created successfully");
+      res.json({ clientSecret: intent.client_secret });
     } catch (err: unknown) {
-      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
+      next(err);
     }
   },
 
+  // PAYPAL
   createPayPalOrder: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-      const parsed = createPayPalOrderBodySchema.safeParse(req.body);
-      if (!parsed.success) {
-        return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
-      }
-      const { orderId, amount } = parsed.data;
+      const { orderId, amount } = req.body;
       const order = await paymentsService.createPayPalOrder(orderId, amount);
-      return success(res, order, "PayPal order created successfully");
+      res.json(order);
     } catch (err: unknown) {
-      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
+      next(err);
     }
   },
 
   capturePayPalOrder: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-      const parsed = capturePayPalBodySchema.safeParse(req.body);
-      if (!parsed.success) {
-        return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
-      }
-      const { orderId } = parsed.data;
+      const { orderId } = req.body;
       const result = await paymentsService.capturePayPalOrder(orderId);
-      return success(res, result, "PayPal order captured successfully");
+      res.json(result);
     } catch (err: unknown) {
-      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
+      next(err);
     }
   },
 
+  // REFUND
   refund: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-      const parsed = idParamSchema.safeParse(req.params);
-      if (!parsed.success) {
-        return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
-      }
-      const order = await paymentsService.refund(parsed.data.id);
-      return success(res, order, "Refund processed successfully");
+      const order = await paymentsService.refund(req.params.id);
+      res.json(order);
     } catch (err: unknown) {
-      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
+      next(err);
     }
   }
 };
+
+

@@ -1,8 +1,7 @@
-import { Response, NextFunction } from "express";
-import type { AuthenticatedRequest } from "../globalTypes.js";
+import { Request, Response, NextFunction } from "express";
 import { prisma } from "../prisma/client.js";
 
-export async function validateTerminalToken(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+export async function validateTerminalToken(req: Request, res: Response, next: NextFunction) {
   const token = req.headers["x-terminal-token"] as string;
 
   if (!token) {
@@ -30,4 +29,3 @@ export async function validateTerminalToken(req: AuthenticatedRequest, res: Resp
     return res.status(500).json({ error: "Internal server error" });
   }
 }
-

@@ -16,7 +16,7 @@ router.get(
   "/analytics/most-favorited",
   adminAuth,
   adminRole("manager"),
-  FavoritesController.listFavorites
+  FavoritesController.mostFavorited
 );
 
 export default router;

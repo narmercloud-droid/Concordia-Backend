@@ -5,7 +5,7 @@ interface LocationData {
   lng: number;
   speed?: number;
   heading?: number;
-  updatedAt?: string | Date;
+  updatedAt?: Date;
 }
 
 interface TrackingInfo {
@@ -16,69 +16,11 @@ interface TrackingInfo {
 
 export class CourierTrackingService {
   async updateLocation(courierId: string, data: LocationData): Promise<any> {
-    const payload = {
-      ...data,
-      updatedAt: data.updatedAt ? new Date(data.updatedAt) : undefined
-    };
-    const location = await prisma.courierLocation.upsert({
+    return prisma.courierLocation.upsert({
       where: { courierId },
-      update: { ...payload },
-      create: { courierId, ...payload }
+      update: { ...data },
+      create: { courierId, ...data }
     });
-
-    // Emit location update
-    this.emitLocationUpdate(courierId, location);
-    return location;
-  }
-
-  async emitLocationUpdate(courierId: string, location: any) {
-    const { getIO, getCouriersNamespace, getAdminNamespace } = await import("../socket/index.js");
-
-    const courier = await prisma.courier.findUnique({ where: { id: courierId } });
-    const branchRoom = courier?.branchId ? `branch_${courier.branchId}` : undefined;
-
-    const eventData = {
-      success: true,
-      event: "courier:location_update",
-      data: {
-        courierId,
-        location: {
-          lat: location.lat,
-          lng: location.lng,
-          speed: location.speed,
-          heading: location.heading,
-          updatedAt: location.updatedAt
-        }
-      }
-    };
-
-    // Emit to courier namespace
-    if (branchRoom) {
-      getCouriersNamespace().to(branchRoom).emit("courier:location_update", eventData);
-    } else {
-      getCouriersNamespace().emit("courier:location_update", eventData);
-    }
-
-    // Emit to admin namespace
-    if (branchRoom) {
-      getAdminNamespace().to(branchRoom).emit("courier:location_update", eventData);
-    } else {
-      getAdminNamespace().emit("courier:location_update", eventData);
-    }
-
-    // Emit to customer's order room if courier has active orders
-    const activeOrders = await prisma.order.findMany({
-      where: {
-        courierToken: courierId,
-        status: { in: ["out_for_delivery", "picked_up"] }
-      }
-    });
-
-    for (const order of activeOrders) {
-      if (order.customerId) {
-        getIO().to(`customer_${order.customerId}`).emit("courier:location_update", eventData);
-      }
-    }
   }
 
   async getCourierLocation(courierId: string): Promise<any> {
@@ -108,15 +50,10 @@ export class CourierTrackingService {
     if (!order) throw new Error("Order not found");
 
     const timeline = await this.getOrderTimeline(orderId);
-    let courierLocation = null;
-
-    if ((order as any).courierToken) {
-      courierLocation = await this.getCourierLocation((order as any).courierToken);
-    }
 
     return {
       orderStatus: order.status,
-      courierLocation,
+      courierLocation: null,
       timeline
     };
   }

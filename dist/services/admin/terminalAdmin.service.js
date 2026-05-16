@@ -1,8 +1,7 @@
 import { prisma } from "../../prisma/client.js";
 export class TerminalAdminService {
-    static async getAllTerminals(branchId) {
+    static async getAllTerminals() {
         return await prisma.terminal.findMany({
-            where: branchId ? { branchId } : {},
             select: {
                 id: true,
                 name: true,
@@ -19,9 +18,8 @@ export class TerminalAdminService {
             orderBy: { createdAt: "asc" },
         });
     }
-    static async getTerminalActivity(branchId) {
+    static async getTerminalActivity() {
         const terminals = await prisma.terminal.findMany({
-            where: branchId ? { branchId } : {},
             select: {
                 id: true,
                 name: true,

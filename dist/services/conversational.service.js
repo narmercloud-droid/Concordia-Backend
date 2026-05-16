@@ -23,8 +23,7 @@ export class ConversationalService {
         }
         // Ask AI directly
         else if (lower.includes("explain") || lower.includes("why")) {
-            const logsData = await orchestrationService.logs(branchId);
-            const logs = Array.isArray(logsData.logs) ? logsData.logs : [];
+            const logs = await orchestrationService.logs(branchId);
             if (logs.length > 0) {
                 response = `${this.personality.prefix} The latest AI decision was: ${logs[0].summary}`;
             }

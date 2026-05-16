@@ -28,7 +28,7 @@ export class CartService {
         let subtotal = 0;
         const validatedItems = [];
         for (const cartItem of items) {
-            const item = await prisma.menuItem.findFirst({
+            const item = await prisma.menuItem.findUnique({
                 where: { id: cartItem.itemId }
             });
             if (!item || item.autoDisable) {

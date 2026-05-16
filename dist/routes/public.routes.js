@@ -1,16 +1,10 @@
 import express from "express";
 import { prisma } from "../prisma/client.js";
-import { success, fail } from "../controllers/controllerHelper.js";
-import { trackingTokenParamSchema } from "../validation/public.schema.js";
 const router = express.Router();
 // Public tracking endpoint
 router.get("/order/:tracking_token", async (req, res) => {
+    const { tracking_token } = req.params;
     try {
-        const parsedParams = trackingTokenParamSchema.safeParse(req.params);
-        if (!parsedParams.success) {
-            return fail(res, "INVALID_INPUT", parsedParams.error.message, 400);
-        }
-        const { tracking_token } = parsedParams.data;
         const order = await prisma.order.findFirst({
             where: { tracking_token },
             include: {
@@ -20,11 +14,12 @@ router.get("/order/:tracking_token", async (req, res) => {
                     }
                 },
                 customer: true
-            }
+            },
         });
         if (!order) {
-            return fail(res, "NOT_FOUND", "Order not found", 404);
+            return res.status(404).json({ error: "Order not found" });
         }
+        // Build timeline based on order status
         const timeline = [];
         if (order.status === "accepted" || order.status === "preparing") {
             timeline.push({ status: "accepted", timestamp: order.updatedAt });
@@ -42,12 +37,12 @@ router.get("/order/:tracking_token", async (req, res) => {
             customer_phone: order.customer?.phone || null,
             customer_email: order.customer?.email || null,
             items: order.items,
-            timeline
+            timeline,
         };
-        return success(res, response, "Order tracking data");
+        res.json(response);
     }
     catch (err) {
-        return fail(res, "UNKNOWN_ERROR", err.message, 500);
+        res.status(500).json({ error: err.message });
     }
 });
 export default router;

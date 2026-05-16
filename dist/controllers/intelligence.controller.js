@@ -1,16 +1,15 @@
 import { intelligenceService } from "../services/intelligence.service.js";
 import { prisma } from "../prisma/client.js";
-import { success, fail } from "./controllerHelper.js";
 export const IntelligenceController = {
     summary: async (req, res, next) => {
         try {
             const branchId = req.user.branchId;
             const result = await intelligenceService.summary(branchId);
             await intelligenceService.logView(branchId, "summary");
-            return success(res, result, "Intelligence summary");
+            res.json(result);
         }
         catch (err) {
-            return fail(res, "UNKNOWN_ERROR", err.message, 500);
+            next(err);
         }
     },
     report: async (req, res, next) => {
@@ -18,10 +17,10 @@ export const IntelligenceController = {
             const branchId = req.user.branchId;
             const result = await intelligenceService.generateReport(branchId);
             await intelligenceService.logView(branchId, "report");
-            return success(res, result, "Report generated");
+            res.json(result);
         }
         catch (err) {
-            return fail(res, "UNKNOWN_ERROR", err.message, 500);
+            next(err);
         }
     },
     logs: async (req, res, next) => {
@@ -29,12 +28,12 @@ export const IntelligenceController = {
             const branchId = req.user.branchId;
             const logs = await prisma.dashboardViewLog.findMany({
                 where: { branchId },
-                orderBy: { createdAt: "desc" }
+                orderBy: { createdAt: "desc" },
             });
-            return success(res, logs, "View logs");
+            res.json(logs);
         }
         catch (err) {
-            return fail(res, "UNKNOWN_ERROR", err.message, 500);
+            next(err);
         }
-    }
+    },
 };

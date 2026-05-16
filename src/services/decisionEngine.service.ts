@@ -1,5 +1,5 @@
 export const decisionEngineService = {
-  decide: (...args: any[]) => ({ decision: "default", confidence: 0 }),
-  run: (...args: any[]) => ({ results: [] })
+  decide: (...args: any[]) => null,
+  run: (...args: any[]) => null
 };
 

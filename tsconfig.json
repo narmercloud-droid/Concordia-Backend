@@ -10,7 +10,7 @@
     "skipLibCheck": true,
     "isolatedModules": false,
 
-    "types": ["node", "jest", "express"],
+    "types": ["node"],
     "typeRoots": ["./src/types", "./node_modules/@types"],
 
     "rootDir": "./src",

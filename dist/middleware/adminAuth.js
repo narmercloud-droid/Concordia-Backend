@@ -1,4 +1,4 @@
-import * as jwt from "jsonwebtoken";
+import { validateJwtPayload, verifyToken } from "../utils/jwt.js";
 export function adminAuth(req, res, next) {
     const header = req.headers.authorization;
     if (!header) {
@@ -6,8 +6,9 @@ export function adminAuth(req, res, next) {
     }
     const token = header.split(" ")[1];
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || "secret");
-        if (decoded.type !== "admin") {
+        const decoded = verifyToken(token);
+        validateJwtPayload(decoded);
+        if (decoded.role !== "admin" && decoded.role !== "manager") {
             return res.status(403).json({ error: "Forbidden" });
         }
         req.user = decoded;

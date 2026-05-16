@@ -1,15 +1,11 @@
-import type { Request } from "express";
-
-declare global {
-  namespace Express {
-    interface Request {
-      user?: {
-        id: string;
-        role: string;
-        branchId: string;
-      };
-      app?: any;
-    }
+declare namespace Express {
+  export interface Request {
+    user?: {
+      id: string;
+      role: string;
+      branchId: string;
+    };
+    app?: any;
   }
 }
 

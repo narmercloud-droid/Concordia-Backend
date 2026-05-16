@@ -1,8 +1,5 @@
 import { prisma } from "../prisma/client.js";
 import { loyaltyService } from "../services/loyalty.service.js";
-import { success, fail } from "./controllerHelper.js";
-import { loyaltyRedeemSchema, loyaltyPromoSchema, loyaltyReferralSchema } from "../validation/loyalty.schema.js";
-const validationMessage = (issues) => issues.map((i) => i.message).join(", ") || "Invalid input";
 export const LoyaltyController = {
     getPoints: async (req, res, next) => {
         try {
@@ -10,63 +7,51 @@ export const LoyaltyController = {
             const points = await prisma.loyaltyPoints.findUnique({
                 where: { customerId }
             });
-            return success(res, points || { points: 0 }, "Points fetched");
+            res.json(points || { points: 0 });
         }
         catch (err) {
-            return fail(res, "UNKNOWN_ERROR", err.message, 500);
+            next(err);
         }
     },
     redeemReward: async (req, res, next) => {
         try {
             const customerId = req.user.id;
-            const parsed = loyaltyRedeemSchema.safeParse(req.body);
-            if (!parsed.success) {
-                return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
-            }
-            const reward = await loyaltyService.redeemReward(customerId, parsed.data.rewardId);
-            return success(res, reward, "Reward redeemed");
+            const reward = await loyaltyService.redeemReward(customerId, req.body.rewardId);
+            res.json(reward);
         }
         catch (err) {
-            return fail(res, "UNKNOWN_ERROR", err.message, 500);
+            next(err);
         }
     },
     applyPromoCode: async (req, res, next) => {
         try {
-            const parsed = loyaltyPromoSchema.safeParse(req.body);
-            if (!parsed.success) {
-                return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
-            }
-            const promo = await loyaltyService.applyPromoCode(parsed.data.code);
+            const promo = await loyaltyService.applyPromoCode(req.body.code);
             if (!promo)
-                return fail(res, "INVALID_PROMO", "Invalid promo code", 400);
-            return success(res, promo, "Promo applied");
+                return res.status(400).json({ error: "Invalid promo code" });
+            res.json(promo);
         }
         catch (err) {
-            return fail(res, "UNKNOWN_ERROR", err.message, 500);
+            next(err);
         }
     },
     applyReferral: async (req, res, next) => {
         try {
-            const parsed = loyaltyReferralSchema.safeParse(req.body);
-            if (!parsed.success) {
-                return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
-            }
-            const ok = await loyaltyService.applyReferral(parsed.data.code, req.user.id);
-            if (!ok)
-                return fail(res, "INVALID_REFERRAL", "Invalid referral code", 400);
-            return success(res, { success: true }, "Referral applied");
+            const success = await loyaltyService.applyReferral(req.body.code, req.user.id);
+            if (!success)
+                return res.status(400).json({ error: "Invalid referral code" });
+            res.json({ success: true });
         }
         catch (err) {
-            return fail(res, "UNKNOWN_ERROR", err.message, 500);
+            next(err);
         }
     },
     listRewards: async (req, res, next) => {
         try {
             const rewards = await prisma.reward.findMany();
-            return success(res, rewards, "Rewards listed");
+            res.json(rewards);
         }
         catch (err) {
-            return fail(res, "UNKNOWN_ERROR", err.message, 500);
+            next(err);
         }
     }
 };

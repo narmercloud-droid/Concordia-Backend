@@ -1,16 +1,11 @@
 import { OrderService } from "../../services/order/order.service.js";
-import { success, fail } from "../controllerHelper.js";
-import { kitchenCreateOrderSchema, kitchenUpdateStatusSchema } from "../../validation/order.schema.js";
-import { orderIdParamSchema } from "../../validation/common.schema.js";
-const validationMessage = (issues) => issues.map((i) => i.message).join(", ") || "Invalid input";
 export class OrderController {
+    // -----------------------------------------------------
+    // CREATE ORDER
+    // -----------------------------------------------------
     static async createOrder(req, res, next) {
         try {
-            const parsed = kitchenCreateOrderSchema.safeParse(req.body);
-            if (!parsed.success) {
-                return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
-            }
-            const { items, paymentMethod, customerId, isGuest } = parsed.data;
+            const { items, paymentMethod, customerId, isGuest } = req.body;
             const branchId = req.user.branchId;
             const orderData = {
                 branchId,
@@ -20,69 +15,65 @@ export class OrderController {
                 items
             };
             const order = await OrderService.createOrder(orderData);
-            return success(res, order, "Order created", 201);
+            res.status(201).json(order);
         }
         catch (err) {
-            return fail(res, "UNKNOWN_ERROR", err.message, 500);
+            next(err);
         }
     }
+    // -----------------------------------------------------
+    // UPDATE ORDER STATUS (pending → accepted → preparing → ready → delivered)
+    // -----------------------------------------------------
     static async updateStatus(req, res, next) {
         try {
-            const parsedParams = orderIdParamSchema.safeParse(req.params);
-            if (!parsedParams.success) {
-                return fail(res, "VALIDATION_ERROR", validationMessage(parsedParams.error.issues), 400);
-            }
-            const parsedBody = kitchenUpdateStatusSchema.safeParse(req.body);
-            if (!parsedBody.success) {
-                return fail(res, "VALIDATION_ERROR", validationMessage(parsedBody.error.issues), 400);
-            }
-            const { orderId } = parsedParams.data;
-            const { status, estimated_time } = parsedBody.data;
+            const { orderId } = req.params;
+            const { status, estimated_time } = req.body;
             const order = await OrderService.updateStatus(orderId, status, estimated_time);
-            return success(res, order, "Order status updated");
+            res.json(order);
         }
         catch (err) {
-            return fail(res, "UNKNOWN_ERROR", err.message, 500);
+            next(err);
         }
     }
+    // -----------------------------------------------------
+    // COURIER PICKUP (QR CODE SCAN)
+    // -----------------------------------------------------
     static async courierPickup(req, res, next) {
         try {
-            const parsedParams = orderIdParamSchema.safeParse(req.params);
-            if (!parsedParams.success) {
-                return fail(res, "VALIDATION_ERROR", validationMessage(parsedParams.error.issues), 400);
-            }
-            const { orderId } = parsedParams.data;
+            const { orderId } = req.params;
             const order = await OrderService.courierPickup(orderId);
-            return success(res, order, "Courier pickup recorded");
+            res.json(order);
         }
         catch (err) {
-            return fail(res, "UNKNOWN_ERROR", err.message, 500);
+            next(err);
         }
     }
+    // -----------------------------------------------------
+    // GET ACTIVE ORDERS (Kitchen Dashboard)
+    // -----------------------------------------------------
     static async getActiveOrders(req, res, next) {
         try {
             const orders = await OrderService.getActiveOrders();
-            return success(res, orders, "Active orders fetched");
+            res.json(orders);
         }
         catch (err) {
-            return fail(res, "UNKNOWN_ERROR", err.message, 500);
+            next(err);
         }
     }
+    // -----------------------------------------------------
+    // GET ORDER BY ID
+    // -----------------------------------------------------
     static async getOrder(req, res, next) {
         try {
-            const parsedParams = orderIdParamSchema.safeParse(req.params);
-            if (!parsedParams.success) {
-                return fail(res, "VALIDATION_ERROR", validationMessage(parsedParams.error.issues), 400);
-            }
-            const { orderId } = parsedParams.data;
+            const { orderId } = req.params;
             const order = await OrderService.getOrderById(orderId);
             if (!order) {
-                return fail(res, "NOT_FOUND", "Order not found", 404);
+                return res.status(404).json({ error: "Order not found" });
             }
-            return success(res, order, "Order fetched");
+            res.json(order);
         }
         catch (err) {
-            return fail(res, "UNKNOWN_ERROR", err.message, 500);
+            next(err);
         }
     }
 }

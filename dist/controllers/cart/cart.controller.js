@@ -1,91 +1,60 @@
 import { CartService } from "../../services/cart/cart.service.js";
 import { PricingService } from "../../services/cart/pricing.service.js";
-import { success, fail } from "../controllerHelper.js";
-import { cartAddItemSchema, cartQuantitySchema, cartIdParamSchema, cartItemIdParamSchema, cartLoadQuerySchema } from "../../validation/cart.schema.js";
-const validationMessage = (issues) => issues.map((i) => i.message).join(", ") || "Invalid input";
 export class CartController {
     static async loadCart(req, res, next) {
         try {
-            const parsed = cartLoadQuerySchema.safeParse(req.query);
-            if (!parsed.success) {
-                return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
-            }
-            const { cartId } = parsed.data;
+            const { cartId } = req.query;
             const cart = await CartService.getOrCreateCart(cartId);
-            return success(res, cart, "Cart loaded");
+            res.json(cart);
         }
         catch (err) {
-            return fail(res, "UNKNOWN_ERROR", err.message, 500);
+            next(err);
         }
     }
     static async getCart(req, res, next) {
         try {
-            const parsedParams = cartIdParamSchema.safeParse(req.params);
-            if (!parsedParams.success) {
-                return fail(res, "VALIDATION_ERROR", validationMessage(parsedParams.error.issues), 400);
-            }
-            const { cartId } = parsedParams.data;
+            const { cartId } = req.params;
             const cart = await CartService.getCart(cartId);
             if (!cart) {
-                return fail(res, "NOT_FOUND", "Cart not found", 404);
+                return res.status(404).json({ error: "Cart not found" });
             }
             const totals = await PricingService.calculateCart(cart);
-            return success(res, { cart, totals }, "Cart fetched");
+            res.json({ cart, totals });
         }
         catch (err) {
-            return fail(res, "UNKNOWN_ERROR", err.message, 500);
+            next(err);
         }
     }
     static async addItem(req, res, next) {
         try {
-            const parsedParams = cartIdParamSchema.safeParse(req.params);
-            if (!parsedParams.success) {
-                return fail(res, "VALIDATION_ERROR", validationMessage(parsedParams.error.issues), 400);
-            }
-            const parsedBody = cartAddItemSchema.safeParse(req.body);
-            if (!parsedBody.success) {
-                return fail(res, "VALIDATION_ERROR", validationMessage(parsedBody.error.issues), 400);
-            }
-            const { cartId } = parsedParams.data;
-            const { itemId, quantity } = parsedBody.data;
+            const { cartId } = req.params;
+            const { itemId, quantity } = req.body;
             const item = await CartService.addItem(cartId, itemId, quantity);
-            return success(res, item, "Item added", 201);
+            res.status(201).json(item);
         }
         catch (err) {
-            return fail(res, "UNKNOWN_ERROR", err.message, 500);
+            next(err);
         }
     }
     static async updateQuantity(req, res, next) {
         try {
-            const parsedParams = cartItemIdParamSchema.safeParse(req.params);
-            if (!parsedParams.success) {
-                return fail(res, "VALIDATION_ERROR", validationMessage(parsedParams.error.issues), 400);
-            }
-            const parsedBody = cartQuantitySchema.safeParse(req.body);
-            if (!parsedBody.success) {
-                return fail(res, "VALIDATION_ERROR", validationMessage(parsedBody.error.issues), 400);
-            }
-            const { cartItemId } = parsedParams.data;
-            const { quantity } = parsedBody.data;
+            const cartItemId = req.params.cartItemId;
+            const { quantity } = req.body;
             const result = await CartService.updateQuantity(cartItemId, quantity);
-            return success(res, result, "Quantity updated");
+            res.json(result);
         }
         catch (err) {
-            return fail(res, "UNKNOWN_ERROR", err.message, 500);
+            next(err);
         }
     }
     static async removeItem(req, res, next) {
         try {
-            const parsedParams = cartItemIdParamSchema.safeParse(req.params);
-            if (!parsedParams.success) {
-                return fail(res, "VALIDATION_ERROR", validationMessage(parsedParams.error.issues), 400);
-            }
-            const { cartItemId } = parsedParams.data;
+            const cartItemId = req.params.cartItemId;
             await CartService.removeItem(cartItemId);
-            return success(res, { success: true }, "Item removed");
+            res.json({ success: true });
         }
         catch (err) {
-            return fail(res, "UNKNOWN_ERROR", err.message, 500);
+            next(err);
         }
     }
 }

@@ -1,8 +1,7 @@
-import { Response, NextFunction } from "express";
-import type { AuthenticatedRequest } from "../globalTypes.js";
+import { Request, Response, NextFunction } from "express";
 import { validateJwtPayload, verifyToken, JwtPayload } from "../utils/jwt.js";
 
-export function requireAuth(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+export function requireAuth(req: Request, res: Response, next: NextFunction) {
   try {
     const header = req.headers.authorization;
     if (!header) return res.status(401).json({ message: "Missing token" });
@@ -12,7 +11,7 @@ export function requireAuth(req: AuthenticatedRequest, res: Response, next: Next
 
     validateJwtPayload(decoded);
 
-    req.user = decoded as AuthenticatedRequest["user"];
+    req.user = decoded as unknown as Request["user"];
     next();
   } catch {
     return res.status(401).json({ message: "Invalid token" });

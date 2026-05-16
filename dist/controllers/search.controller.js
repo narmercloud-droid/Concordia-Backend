@@ -1,61 +1,46 @@
 import { searchService } from "../services/search.service.js";
-import { success, fail } from "./controllerHelper.js";
-import { searchQuerySchema } from "../validation/search.schema.js";
-const validationMessage = (issues) => issues.map((i) => i.message).join(", ") || "Invalid input";
 export const SearchController = {
     menu: async (req, res, next) => {
         try {
-            const parsed = searchQuerySchema.safeParse(req.query);
-            if (!parsed.success) {
-                return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
-            }
-            const { q } = parsed.data;
+            const q = req.query.q;
             const customerId = req.user?.id;
             await searchService.recordSearch(q);
             const results = await searchService.searchMenu(q, customerId);
-            return success(res, results, "Menu search results");
+            res.json(results);
         }
         catch (err) {
-            return fail(res, "UNKNOWN_ERROR", err.message, 500);
+            next(err);
         }
     },
     branches: async (req, res, next) => {
         try {
-            const parsed = searchQuerySchema.safeParse(req.query);
-            if (!parsed.success) {
-                return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
-            }
-            const { q } = parsed.data;
+            const q = req.query.q;
             await searchService.recordSearch(q);
             const results = await searchService.searchBranches(q);
-            return success(res, results, "Branch search results");
+            res.json(results);
         }
         catch (err) {
-            return fail(res, "UNKNOWN_ERROR", err.message, 500);
+            next(err);
         }
     },
     categories: async (req, res, next) => {
         try {
-            const parsed = searchQuerySchema.safeParse(req.query);
-            if (!parsed.success) {
-                return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
-            }
-            const { q } = parsed.data;
+            const q = req.query.q;
             await searchService.recordSearch(q);
             const results = await searchService.searchCategories(q);
-            return success(res, results, "Category search results");
+            res.json(results);
         }
         catch (err) {
-            return fail(res, "UNKNOWN_ERROR", err.message, 500);
+            next(err);
         }
     },
     topSearches: async (req, res, next) => {
         try {
             const results = await searchService.topSearches();
-            return success(res, results, "Top searches");
+            res.json(results);
         }
         catch (err) {
-            return fail(res, "UNKNOWN_ERROR", err.message, 500);
+            next(err);
         }
     }
 };

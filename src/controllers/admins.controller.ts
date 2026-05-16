@@ -1,111 +1,83 @@
 import { Request, Response, NextFunction } from "express";
 import { adminService } from "../services/admins.service.js";
-import { success, fail } from "./controllerHelper.js";
-import { adminLoginSchema, adminRefreshSchema } from "../validation/auth.schema.js";
-import { adminEntityBodySchema } from "../validation/admin.schema.js";
-import { idParamSchema } from "../validation/common.schema.js";
-
-const validationMessage = (issues: { message: string }[]) =>
-  issues.map((i) => i.message).join(", ") || "Invalid input";
+import { prisma } from "../prisma/client.js";
 
 export const AdminController = {
   create: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const parsed = adminEntityBodySchema.safeParse(req.body);
-      if (!parsed.success) {
-        return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
-      }
-      const admin = await adminService.createAdmin(parsed.data);
-      return success(res, admin, "Admin created", 201);
+      const admin = await adminService.createAdmin(req.body);
+      res.json(admin);
     } catch (err: unknown) {
-      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
+      next(err);
     }
   },
 
   login: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const parsed = adminLoginSchema.safeParse(req.body);
-      if (!parsed.success) {
-        return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
-      }
-      const { email, password } = parsed.data;
-      const admin = await adminService.getAdminByEmail(email);
-      if (!admin) return fail(res, "INVALID_CREDENTIALS", "Invalid credentials", 401);
+      const admin = await adminService.getAdminByEmail(req.body.email);
+      if (!admin) return res.status(401).json({ error: "Invalid credentials" });
 
-      const valid = await adminService.validatePassword(password, admin.password);
-      if (!valid) return fail(res, "INVALID_CREDENTIALS", "Invalid credentials", 401);
+      const valid = await adminService.validatePassword(
+        req.body.password,
+        admin.password
+      );
+      if (!valid) return res.status(401).json({ error: "Invalid credentials" });
 
       const tokens = await adminService.generateTokens(admin);
-      return success(res, { admin, ...tokens }, "Login successful");
+      res.json({ admin, ...tokens });
     } catch (err: unknown) {
-      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
+      next(err);
     }
   },
 
   refresh: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const parsed = adminRefreshSchema.safeParse(req.body);
-      if (!parsed.success) {
-        return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
-      }
-      if (!parsed.data.refreshToken) {
-        return fail(res, "INVALID_CREDENTIALS", "Missing token", 401);
-      }
-      return fail(res, "FORBIDDEN", "Invalid token", 403);
+      const { refreshToken } = req.body;
+      if (!refreshToken) return res.status(401).json({ error: "Missing token" });
+
+      // Admin model in prisma/schema.prisma has no refreshToken field.
+      // Reject to avoid Prisma type mismatch.
+      return res.status(403).json({ error: "Invalid token" });
     } catch (err: unknown) {
-      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
+      next(err);
     }
   },
 
   getById: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const parsed = idParamSchema.safeParse(req.params);
-      if (!parsed.success) {
-        return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
-      }
-      const admin = await adminService.getAdminById(parsed.data.id);
-      return success(res, admin, "Admin fetched");
+      const admin = await adminService.getAdminById(req.params.id);
+      res.json(admin);
     } catch (err: unknown) {
-      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
+      next(err);
     }
   },
 
   list: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const admins = await adminService.listAdmins();
-      return success(res, admins, "Admins listed");
+      res.json(admins);
     } catch (err: unknown) {
-      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
+      next(err);
     }
   },
 
   update: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const parsedBody = adminEntityBodySchema.safeParse(req.body);
-      if (!parsedBody.success) {
-        return fail(res, "VALIDATION_ERROR", validationMessage(parsedBody.error.issues), 400);
-      }
-      const parsedParams = idParamSchema.safeParse(req.params);
-      if (!parsedParams.success) {
-        return fail(res, "VALIDATION_ERROR", validationMessage(parsedParams.error.issues), 400);
-      }
-      const admin = await adminService.updateAdmin(parsedParams.data.id, parsedBody.data);
-      return success(res, admin, "Admin updated");
+      const admin = await adminService.updateAdmin(req.params.id, req.body);
+      res.json(admin);
     } catch (err: unknown) {
-      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
+      next(err);
     }
   },
 
   delete: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const parsed = idParamSchema.safeParse(req.params);
-      if (!parsed.success) {
-        return fail(res, "VALIDATION_ERROR", validationMessage(parsed.error.issues), 400);
-      }
-      const admin = await adminService.deleteAdmin(parsed.data.id);
-      return success(res, admin, "Admin deleted");
+      const admin = await adminService.deleteAdmin(req.params.id);
+      res.json(admin);
     } catch (err: unknown) {
-      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
+      next(err);
     }
   }
 };
+
+

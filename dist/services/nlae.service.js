@@ -4,6 +4,7 @@ import { ltvChurnService } from "./ltvChurn.service.js";
 import { menuOptimizationService } from "./menuOptimization.service.js";
 import { knowledgeGraphService } from "./knowledgeGraph.service.js";
 export class NLAEService {
+    // 1. Classify question
     classify(question) {
         const q = question.toLowerCase();
         if (q.includes("forecast") || q.includes("busy") || q.includes("predict"))
@@ -22,37 +23,38 @@ export class NLAEService {
             return "decisions";
         return "general";
     }
+    // 2. Handle forecasting questions
     async handleForecasting(branchId) {
         const forecast = await forecastingService.fullForecast(branchId);
-        const entries = forecast.forecast || [];
-        const topHour = entries.sort((a, b) => (b.expectedOrders || 0) - (a.expectedOrders || 0))[0];
-        return `Tomorrow's busiest hour is likely ${topHour?.hour ?? "unknown"}:00.`;
+        return `Tomorrow's busiest hour is likely ${forecast.next24Hours.sort((a, b) => b.expectedOrders - a.expectedOrders)[0].hour}:00.`;
     }
+    // 3. Handle inventory questions
     async handleInventory(branchId) {
         const stock = await forecastingService.forecastStock(branchId);
-        const levels = stock.stockLevels || [];
-        const low = levels.filter((s) => s.expectedDaysUntilOut !== "N/A" && Number(s.expectedDaysUntilOut) < 2);
+        const low = stock.filter((s) => s.expectedDaysUntilOut !== "N/A" && Number(s.expectedDaysUntilOut) < 2);
         if (low.length === 0)
             return "No items are at risk of running out.";
         return `Items at risk: ${low.map(l => l.name).join(", ")}.`;
     }
+    // 4. Handle customer questions
     async handleCustomer(branchId) {
-        const { segments } = await ltvChurnService.branchSegments(branchId);
+        const segments = await ltvChurnService.branchSegments(branchId);
         const atRisk = segments.filter(s => s.segment === "at-risk");
         return `${atRisk.length} customers are at high churn risk.`;
     }
+    // 5. Handle menu questions
     async handleMenu(branchId) {
         const opt = await menuOptimizationService.optimize(branchId);
-        const underperforming = opt.optimizations || [];
-        return `Underperforming items: ${underperforming.map((i) => i.name).join(", ")}`;
+        return `Underperforming items: ${opt.underperforming.map(i => i.name).join(", ")}`;
     }
+    // 6. Handle insights
     async handleInsights(branchId) {
-        const insightsResponse = await knowledgeGraphService.generateInsights(branchId);
-        const insights = insightsResponse.insights || [];
+        const insights = await knowledgeGraphService.generateInsights(branchId);
         if (insights.length === 0)
             return "No new insights detected.";
-        return insights.map((i) => i.description).join(" | ");
+        return insights.map(i => i.description).join(" | ");
     }
+    // 7. Handle decision explanations
     async handleDecisions(branchId) {
         const logs = await prisma.decisionLog.findMany({
             where: { branchId },
@@ -63,6 +65,7 @@ export class NLAEService {
             return "No recent AI decisions.";
         return logs.map(l => `${l.actionType}: ${l.description}`).join(" | ");
     }
+    // 8. Main query handler
     async ask(branchId, question) {
         const type = this.classify(question);
         let answer = "I’m not sure, but I will learn to answer this soon.";

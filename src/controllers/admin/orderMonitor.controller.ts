@@ -1,15 +1,19 @@
 import { Request, Response, NextFunction } from "express";
 import { OrderMonitorService } from "../../services/admin/orderMonitor.service.js";
-import { success, fail } from "../controllerHelper.js";
 
 export class OrderMonitorController {
+  // -----------------------------------------------------
+  // GET LIVE ORDERS
+  // -----------------------------------------------------
   static async getLiveOrders(_req: Request, res: Response, next: NextFunction) {
     try {
       const orders = await OrderMonitorService.getLiveOrders();
 
-      return success(res, orders, "Live orders fetched");
+      res.json(orders);
+      return;
     } catch (err: unknown) {
-      return fail(res, "UNKNOWN_ERROR", (err as Error).message, 500);
+      next(err);
     }
   }
 }
+

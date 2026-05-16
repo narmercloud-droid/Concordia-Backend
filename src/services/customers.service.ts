@@ -9,9 +9,7 @@ export class CustomerService {
   async register(data: { name: string; email: string; phone?: string; password?: string }): Promise<any> {
     const { password, ...customerData } = data;
     return prisma.customer.create({
-      data: {
-        ...customerData
-      }
+      data: customerData
     });
   }
 
@@ -35,25 +33,15 @@ export class CustomerService {
     return { accessToken, refreshToken };
   }
 
-  async login(email: string, _password?: string): Promise<any> {
+  async login(email: string, _password: string): Promise<any> {
     const customer = await prisma.customer.findUnique({ where: { email } });
-    if (!customer) return false;
+    if (!customer) return null;
 
     return this.generateTokens(customer);
   }
 
-  async refresh(refreshToken: string): Promise<any> {
-    try {
-      const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET || "refresh_secret") as any;
-      if (decoded.type !== "customer") return false;
-
-      const customer = await prisma.customer.findUnique({ where: { id: decoded.id } });
-      if (!customer) return false;
-
-      return this.generateTokens(customer);
-    } catch (error) {
-      return false;
-    }
+  async refresh(_refreshToken: string): Promise<any> {
+    return null;
   }
 
   async addAddress(customerId: string, data: any): Promise<any> {
@@ -76,20 +64,6 @@ export class CustomerService {
     return prisma.customer.findUnique({
       where: { id },
       include: { addresses: true }
-    });
-  }
-
-  async getOrders(customerId: string): Promise<any[]> {
-    return prisma.order.findMany({
-      where: { customerId },
-      include: {
-        items: {
-          include: {
-            item: true
-          }
-        }
-      },
-      orderBy: { createdAt: "desc" }
     });
   }
 }
