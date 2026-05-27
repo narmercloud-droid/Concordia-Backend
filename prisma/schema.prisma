@@ -8,194 +8,192 @@ datasource db {
 }
 
 model Order {
-  id         String  @id @default(uuid())
-  branchId   String
-  customerId String?
-  isGuest    Boolean @default(false)
-
-  paymentMethod String // "cash" | "online"
-  paymentStatus String @default("pending") // pending, paid, failed
-
-  paymentIntentId String?
-  paypalOrderId   String?
-  paypalCaptureId String?
-
-  status String @default("pending") // pending, accepted, preparing, ready_for_pickup, picked_up, delivered, cancelled
-
-  scheduledFor          DateTime?
+  id                    String               @id @default(uuid())
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+  branchId              String
+  courierStatus         String?
   courierToken          String?
   courierTokenExpiresAt DateTime?
-  courierStatus         String? // accepted, picked_up, delivered
-
-  tracking_token String?
-  terminal_id    String?
-
-  items OrderItem[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  branch             Branch               @relation(fields: [branchId], references: [id])
-  customer           Customer?            @relation(fields: [customerId], references: [id])
-  OrderTrackingEvent OrderTrackingEvent[]
-  Review             Review?
-  RiskScore          RiskScore?
-  OrderRiskEvent     OrderRiskEvent[]
+  customerId            String?
+  isGuest               Boolean              @default(false)
+  paymentIntentId       String?
+  paymentMethod         String
+  paymentStatus         String               @default("pending")
+  paypalCaptureId       String?
+  paypalOrderId         String?
+  scheduledFor          DateTime?
+  status                String               @default("pending")
+  courierId             String?
+  externalAmount        Decimal?             @default(0.00)
+  paidAt                DateTime?
+  terminal_id           String?
+  tracking_token        String?              @unique
+  transactionId         String?
+  walletUsed            Decimal?             @default(0.00)
+  courierLocations      CourierLocation[]    @relation("OrderCourierLocations")
+  branch                Branch               @relation(fields: [branchId], references: [id])
+  Courier               Courier?             @relation(fields: [courierId], references: [id])
+  customer              Customer?            @relation(fields: [customerId], references: [id])
+  items                 OrderItem[]
+  orderRiskEvents       OrderRiskEvent[]     @relation("OrderOrderRiskEvents")
+  trackingEvents        OrderTrackingEvent[] @relation("OrderTrackingEvents")
+  review                Review?              @relation("OrderReview")
+  riskScore             RiskScore?           @relation("OrderRiskScore")
+  terminalEvents        TerminalEvent[]      @relation("OrderTerminalEvents")
 }
 
 model OrderItem {
-  id        String   @id @default(uuid())
-  orderId   String
-  itemId    String
-  variantId String
-  addOnIds  String[] @default([])
-  quantity  Int      @default(1)
-  notes     String?
-
-  price Float
-
-  order      Order       @relation(fields: [orderId], references: [id])
-  item       MenuItem   @relation(fields: [itemId], references: [id])
+  id         String      @id @default(uuid())
+  quantity   Int         @default(1)
+  addOnIds   String[]    @default([])
+  itemId     String
+  notes      String?
+  orderId    String
+  price      Float
+  variantId  String
   ItemRating ItemRating?
+  item       MenuItem    @relation(fields: [itemId], references: [id])
+  order      Order       @relation(fields: [orderId], references: [id])
 }
 
 model Branch {
-  id      String  @id @default(uuid())
-  name    String
-  address String?
-  phone   String?
-  lat     Float?
-  lng     Float?
-  cuisine String?
-  active  Boolean @default(true)
-
-  orders         Order[]
-  deliveryZone   DeliveryZone?
-  BranchSchedule BranchSchedule[]
-  Review         Review[]
-  terminals      Terminal[]
+  id              String           @id @default(uuid())
+  name            String
+  createdAt       DateTime         @default(now())
+  printerType     String
+  ActivationCode  ActivationCode[]
+  BranchConfig    BranchConfig?
+  BranchSchedule  BranchSchedule[]
+  BranchTerminal  BranchTerminal[]
+  couriers        Courier[]
+  deliveryZone    DeliveryZone?
+  Device          Device[]
   kitchenDisplays KitchenDisplay[]
-  couriers       Courier[]
+  orders          Order[]
+  Review          Review[]
+  terminals       Terminal[]
 }
 
 model Terminal {
-  id               String   @id @default(uuid())
+  id               String    @id @default(uuid())
   name             String
-  activation_token String   @unique
+  activation_token String    @unique
   branchId         String
-  isOnline         Boolean  @default(false)
+  isOnline         Boolean   @default(false)
   lastSeen         DateTime?
-  createdAt        DateTime @default(now())
-
-  branch Branch @relation(fields: [branchId], references: [id])
+  createdAt        DateTime  @default(now())
+  branch           Branch    @relation(fields: [branchId], references: [id])
 }
 
 model Customer {
-  id    String  @id @default(uuid())
-  name  String
-  email String  @unique
-  phone String?
-
-  orders                 Order[]
-  notificationPreference NotificationPreference?
-  loyaltyPoints          LoyaltyPoints?
-  referral               Referral?
-  favorites              Favorite[]
+  id                     String                  @id @default(uuid())
+  name                   String
+  email                  String                  @unique
+  phone                  String?
+  loginToken             String?                 @db.VarChar(255)
+  loginTokenExpires      DateTime?
+  loyaltyPoints          Int                     @default(0)
+  marketingConsent       Boolean                 @default(false)
+  marketingConsentAt     DateTime?
+  marketingEmail         Boolean                 @default(false)
+  marketingSMS           Boolean                 @default(false)
+  marketingWhatsApp      Boolean                 @default(false)
+  phoneNumber            String?                 @db.VarChar(255)
   addresses              Address[]
+  favorites              Favorite[]
+  loyaltyPointsRecord    LoyaltyPoints?
+  notificationPreference NotificationPreference?
+  orders                 Order[]
+  referral               Referral?
   Review                 Review[]
 }
 
 model Courier {
-  id      String  @id @default(uuid())
-  name    String
-  email   String  @unique
-  phone   String
-  vehicle String?
-  active  Boolean @default(true)
-  branchId String
-  branch   Branch @relation(fields: [branchId], references: [id])
-
+  id        String            @id @default(uuid())
+  name      String
+  email     String            @unique
+  phone     String
+  vehicle   String?
+  active    Boolean           @default(true)
+  branchId  String
+  branch    Branch            @relation(fields: [branchId], references: [id])
   locations CourierLocation[]
+  Order     Order[]
 }
 
 model Admin {
-  id       String @id @default(uuid())
-  email    String @unique
-  password String
-  role     String // "admin" | "manager"
-  branchId String
-
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  role      String
+  branchId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model NotificationPreference {
-  id         String  @id @default(uuid())
-  customerId String  @unique
-  allowPush  Boolean @default(true)
-  allowSMS   Boolean @default(false)
-
-  customer Customer @relation(fields: [customerId], references: [id])
+  id         String   @id @default(uuid())
+  customerId String   @unique
+  allowPush  Boolean  @default(true)
+  allowSMS   Boolean  @default(false)
+  customer   Customer @relation(fields: [customerId], references: [id])
 }
 
 model LoyaltyPoints {
-  id         String @id @default(uuid())
-  customerId String @unique
-  points     Int    @default(0)
-
-  customer Customer @relation(fields: [customerId], references: [id])
+  id         String   @id @default(uuid())
+  customerId String   @unique
+  points     Int      @default(0)
+  customer   Customer @relation(fields: [customerId], references: [id])
 }
 
 model Reward {
-  id          String  @id @default(uuid())
+  id          String   @id @default(uuid())
   title       String
   description String?
   costPoints  Int
-  discount    Float? // percentage discount (0.1 = 10%)
-  amountOff   Float? // fixed discount
-  freeItemId  String? // optional free item reward
-
-  createdAt DateTime @default(now())
+  discount    Float?
+  amountOff   Float?
+  freeItemId  String?
+  createdAt   DateTime @default(now())
 }
 
 model PromoCode {
   id        String    @id @default(uuid())
   code      String    @unique
-  discount  Float? // percentage
-  amountOff Float? // fixed amount
+  discount  Float?
+  amountOff Float?
   expiresAt DateTime?
   maxUses   Int?
   usedCount Int       @default(0)
-
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
 }
 
 model Referral {
-  id            String @id @default(uuid())
-  customerId    String @unique
-  code          String @unique
-  referredCount Int    @default(0)
-
-  customer Customer @relation(fields: [customerId], references: [id])
+  id            String   @id @default(uuid())
+  customerId    String   @unique
+  code          String   @unique
+  referredCount Int      @default(0)
+  customer      Customer @relation(fields: [customerId], references: [id])
 }
 
 model MenuItem {
-  id                String   @id @default(uuid())
+  id                String         @id @default(uuid())
   name              String
   description       String?
   price             Float
-  tags              String[] @default([])
-  stock             Int?     @default(999999)
-  lowStockThreshold Int?     @default(5)
-  autoDisable       Boolean  @default(true)
-
-  categoryId  String?
-  category    Category? @relation(fields: [categoryId], references: [id])
-  favorites    Favorite[]
-  PriceHistory PriceHistory[]
-  orderItems  OrderItem[]
-  relations   Relation[]
-  cartItems   CartItem[]
+  tags              String[]       @default([])
+  stock             Int?           @default(999999)
+  lowStockThreshold Int?           @default(5)
+  autoDisable       Boolean        @default(true)
+  categoryId        String?
+  kitchen           String         @default("A")
+  cartItems         CartItem[]
+  favorites         Favorite[]
+  category          Category?      @relation(fields: [categoryId], references: [id])
+  orderItems        OrderItem[]
+  PriceHistory      PriceHistory[]
+  relations         Relation[]
 }
 
 model Favorite {
@@ -203,15 +201,14 @@ model Favorite {
   customerId String
   itemId     String
   createdAt  DateTime @default(now())
-
-  customer Customer @relation(fields: [customerId], references: [id])
-  item     MenuItem @relation(fields: [itemId], references: [id])
+  customer   Customer @relation(fields: [customerId], references: [id])
+  item       MenuItem @relation(fields: [itemId], references: [id])
 
   @@unique([customerId, itemId])
 }
 
 model Address {
-  id           String  @id @default(uuid())
+  id           String   @id @default(uuid())
   customerId   String
   label        String
   street       String
@@ -220,9 +217,8 @@ model Address {
   lat          Float?
   lng          Float?
   instructions String?
-  isDefault    Boolean @default(false)
-
-  customer Customer @relation(fields: [customerId], references: [id])
+  isDefault    Boolean  @default(false)
+  customer     Customer @relation(fields: [customerId], references: [id])
 }
 
 model DeliveryZone {
@@ -233,15 +229,14 @@ model DeliveryZone {
   perKmFee              Float
   freeDeliveryThreshold Float?
   minimumOrderAmount    Float?
-
-  branch Branch @relation(fields: [branchId], references: [id])
+  branch                Branch @relation(fields: [branchId], references: [id])
 }
 
 model Category {
-  id          String  @id @default(uuid())
-  name        String  @unique
+  id          String     @id @default(uuid())
   description String?
-  position    Int     @default(0)
+  name        String     @unique
+  position    Int        @default(0)
   items       MenuItem[]
 }
 
@@ -254,50 +249,50 @@ model Deal {
 }
 
 model Extra {
-  id          String  @id @default(uuid())
-  name        String
-  price       Float
-  visible     Boolean @default(true)
+  id      String  @id @default(uuid())
+  name    String
+  price   Float
+  visible Boolean @default(true)
 }
 
 model Topping {
-  id          String  @id @default(uuid())
-  name        String
-  price       Float
-  visible     Boolean @default(true)
+  id      String  @id @default(uuid())
+  name    String
+  price   Float
+  visible Boolean @default(true)
 }
 
 model Variant {
-  id          String  @id @default(uuid())
-  name        String
-  price       Float
-  visible     Boolean @default(true)
+  id      String  @id @default(uuid())
+  name    String
+  price   Float
+  visible Boolean @default(true)
 }
 
 model Relation {
-  id          String  @id @default(uuid())
-  itemId      String
-  variantId   String?
-  toppingId   String?
-  extraId     String?
-  item        MenuItem @relation(fields: [itemId], references: [id])
+  id        String   @id @default(uuid())
+  itemId    String
+  variantId String?
+  toppingId String?
+  extraId   String?
+  item      MenuItem @relation(fields: [itemId], references: [id])
 }
 
 model Cart {
   id         String     @id @default(uuid())
   customerId String?
-  items      CartItem[]
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
+  items      CartItem[]
 }
 
 model CartItem {
-  id        String  @id @default(uuid())
-  cartId    String
-  itemId    String
-  quantity  Int     @default(1)
-  cart      Cart    @relation(fields: [cartId], references: [id])
-  item      MenuItem @relation(fields: [itemId], references: [id])
+  id       String   @id @default(uuid())
+  cartId   String
+  itemId   String
+  quantity Int      @default(1)
+  cart     Cart     @relation(fields: [cartId], references: [id])
+  item     MenuItem @relation(fields: [itemId], references: [id])
 }
 
 model SearchLog {
@@ -309,42 +304,43 @@ model SearchLog {
 model BranchSchedule {
   id        String @id @default(uuid())
   branchId  String
-  day       Int // 0 = Monday, 6 = Sunday
+  day       Int
   openTime  String
   closeTime String
-
-  branch Branch @relation(fields: [branchId], references: [id])
+  branch    Branch @relation(fields: [branchId], references: [id])
 }
 
 model AdminUser {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  role      String   // "owner" | "superadmin"
-  refreshToken String? @db.Text
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String   @id @default(uuid())
+  email        String   @unique
+  password     String
+  role         String
+  refreshToken String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model CourierLocation {
   id        String   @id @default(uuid())
-  courierId String   @unique
-  lat       Float
-  lng       Float
-  speed     Float?
-  heading   Float?
-  updatedAt DateTime @updatedAt
+  courierId String
+  accuracy  Float?
+  createdAt DateTime @default(now())
+  latitude  Float
+  longitude Float
+  orderId   String?
+  courier   Courier  @relation(fields: [courierId], references: [id])
+  order     Order?   @relation("OrderCourierLocations", fields: [orderId], references: [id])
 
-  courier Courier @relation(fields: [courierId], references: [id])
+  @@index([courierId])
+  @@index([orderId])
 }
 
 model OrderTrackingEvent {
   id        String   @id @default(uuid())
   orderId   String
-  status    String // accepted, preparing, picked_up, en_route, delivered
+  status    String
   timestamp DateTime @default(now())
-
-  order Order @relation(fields: [orderId], references: [id])
+  order     Order    @relation("OrderTrackingEvents", fields: [orderId], references: [id])
 }
 
 model Review {
@@ -356,28 +352,25 @@ model Review {
   comment    String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-
-  order    Order    @relation(fields: [orderId], references: [id])
-  customer Customer @relation(fields: [customerId], references: [id])
-  branch   Branch   @relation(fields: [branchId], references: [id])
+  branch     Branch   @relation(fields: [branchId], references: [id])
+  customer   Customer @relation(fields: [customerId], references: [id])
+  order      Order    @relation("OrderReview", fields: [orderId], references: [id])
 }
 
 model ItemRating {
-  id          String @id @default(uuid())
-  orderItemId String @unique
+  id          String    @id @default(uuid())
+  orderItemId String    @unique
   rating      Int
-
-  orderItem OrderItem @relation(fields: [orderItemId], references: [id])
+  orderItem   OrderItem @relation(fields: [orderItemId], references: [id])
 }
 
 model RiskScore {
   id        String   @id @default(uuid())
   orderId   String   @unique
   score     Int
-  level     String // low, medium, high, extreme
+  level     String
   createdAt DateTime @default(now())
-
-  order Order @relation(fields: [orderId], references: [id])
+  order     Order    @relation("OrderRiskScore", fields: [orderId], references: [id])
 }
 
 model FraudFlag {
@@ -393,8 +386,7 @@ model OrderRiskEvent {
   orderId   String
   event     String
   createdAt DateTime @default(now())
-
-  order Order @relation(fields: [orderId], references: [id])
+  order     Order    @relation("OrderOrderRiskEvents", fields: [orderId], references: [id])
 }
 
 model PriceHistory {
@@ -404,15 +396,14 @@ model PriceHistory {
   newPrice  Float
   reason    String
   createdAt DateTime @default(now())
-
-  item MenuItem @relation(fields: [itemId], references: [id])
+  item      MenuItem @relation(fields: [itemId], references: [id])
 }
 
 model DynamicPriceRule {
   id         String   @id @default(uuid())
   branchId   String
   itemId     String?
-  ruleType   String // demand, inventory, time, surge, discount
+  ruleType   String
   multiplier Float?
   amount     Float?
   active     Boolean  @default(true)
@@ -422,20 +413,20 @@ model DynamicPriceRule {
 model InsightLog {
   id          String   @id @default(uuid())
   branchId    String
-  type        String // pattern, anomaly, correlation
+  type        String
   description String
   confidence  Float
-  impact      String // low, medium, high
+  impact      String
   createdAt   DateTime @default(now())
 }
 
 model DecisionLog {
   id          String   @id @default(uuid())
   branchId    String
-  actionType  String // pricing, marketing, inventory, staffing, retention, fraud
+  actionType  String
   description String
   confidence  Float
-  impact      String // low, medium, high
+  impact      String
   autoApplied Boolean
   createdAt   DateTime @default(now())
 }
@@ -462,7 +453,7 @@ model AnalyticsQueryLog {
 model OptimizationLog {
   id        String   @id @default(uuid())
   branchId  String
-  module    String // pricing, forecasting, churn, behavior, staffing, inventory
+  module    String
   parameter String
   oldValue  Float?
   newValue  Float?
@@ -484,7 +475,7 @@ model OptimizationParameters {
 model OrchestrationLog {
   id        String   @id @default(uuid())
   branchId  String
-  cycleType String // scheduled, event-triggered, manual
+  cycleType String
   summary   String
   createdAt DateTime @default(now())
 }
@@ -492,7 +483,7 @@ model OrchestrationLog {
 model MemoryRecord {
   id        String   @id @default(uuid())
   branchId  String
-  module    String // forecasting, pricing, churn, behavior, staffing, insights, decisions
+  module    String
   key       String
   value     Json
   createdAt DateTime @default(now())
@@ -501,7 +492,7 @@ model MemoryRecord {
 model TrendRecord {
   id        String   @id @default(uuid())
   branchId  String
-  category  String // demand, pricing, churn, behavior, inventory
+  category  String
   summary   String
   createdAt DateTime @default(now())
 }
@@ -535,6 +526,270 @@ model KitchenDisplay {
   apiKey    String   @unique
   branchId  String
   createdAt DateTime @default(now())
+  branch    Branch   @relation(fields: [branchId], references: [id])
+}
 
-  branch Branch @relation(fields: [branchId], references: [id])
+model ActivationCode {
+  id        String    @id
+  code      String    @unique
+  branchId  String
+  expiresAt DateTime
+  used      Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  usedAt    DateTime?
+  deviceId  String?
+  Branch    Branch    @relation(fields: [branchId], references: [id])
+}
+
+model BranchConfig {
+  id         String   @id
+  branchId   String   @unique
+  configJson Json
+  version    Int      @default(1)
+  updatedAt  DateTime @default(now())
+  Branch     Branch   @relation(fields: [branchId], references: [id])
+}
+
+model BranchSettings {
+  id           Int      @id @default(autoincrement())
+  branchId     String   @unique
+  printingMode String   @default("direct")
+  autoPrint    Boolean  @default(true)
+  printCopies  Int      @default(1)
+  routingMode  String   @default("kitchen")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime
+}
+
+model BranchTerminal {
+  id             Int             @id @default(autoincrement())
+  branchId       String
+  token          String          @unique
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime
+  Branch         Branch          @relation(fields: [branchId], references: [id])
+  TerminalStatus TerminalStatus?
+}
+
+model Campaign {
+  id           Int       @id @default(autoincrement())
+  name         String
+  description  String?
+  createdAt    DateTime  @default(now())
+  scheduledFor DateTime?
+  status       String    @default("draft")
+  channelEmail Boolean   @default(true)
+  segmentId    Int?
+  content      String
+  Segment      Segment?  @relation(fields: [segmentId], references: [id])
+}
+
+model CloudPrinter {
+  id         Int      @id @default(autoincrement())
+  branchId   String
+  printerId  String
+  kitchen    String
+  ipAddress  String
+  type       String
+  trustScore Int      @default(100)
+  online     Boolean  @default(false)
+  lastSync   DateTime @default(now())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime
+
+  @@unique([branchId, printerId])
+}
+
+model Device {
+  id           String   @id
+  serialNumber String
+  branchId     String
+  activatedAt  DateTime @default(now())
+  lastSeenAt   DateTime @default(now())
+  status       String   @default("ACTIVE")
+  Branch       Branch   @relation(fields: [branchId], references: [id])
+}
+
+model Offer {
+  id           Int       @id @default(autoincrement())
+  code         String    @unique
+  description  String?
+  discountPct  Int?
+  discountAmt  Int?
+  freeDelivery Boolean   @default(false)
+  minOrder     Int?
+  expiresAt    DateTime?
+  createdAt    DateTime  @default(now())
+}
+
+model PrinterAnomaly {
+  id        Int      @id @default(autoincrement())
+  printerId String
+  branchId  String
+  type      String
+  severity  Int
+  createdAt DateTime @default(now())
+}
+
+model PrinterFleet {
+  id         Int      @id @default(autoincrement())
+  branchId   String
+  printerId  String
+  group      String
+  policy     String?
+  firmware   String?
+  configHash String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime
+
+  @@unique([branchId, printerId])
+}
+
+model PrinterHealth {
+  id          Int      @id @default(autoincrement())
+  printerId   String
+  branchId    String
+  score       Int      @default(100)
+  lastUpdated DateTime @default(now())
+}
+
+model PrinterQueue {
+  id          Int       @id @default(autoincrement())
+  kitchen     String
+  payload     Json
+  attempts    Int       @default(0)
+  maxAttempts Int       @default(5)
+  status      String    @default("pending")
+  lastError   String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime
+  durationMs  Int?
+  printedAt   DateTime?
+}
+
+model PrinterSecurity {
+  id         Int      @id @default(autoincrement())
+  printerId  String
+  kitchen    String
+  ipAddress  String
+  approved   Boolean  @default(false)
+  token      String
+  trustScore Int      @default(100)
+  tampered   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime
+}
+
+model PrinterTrace {
+  id         Int      @id @default(autoincrement())
+  printerId  String
+  kitchen    String
+  branchId   String
+  event      String
+  durationMs Int?
+  createdAt  DateTime @default(now())
+}
+
+model Segment {
+  id         Int        @id @default(autoincrement())
+  name       String
+  createdAt  DateTime   @default(now())
+  filterJson String
+  Campaign   Campaign[]
+}
+
+model TerminalError {
+  id         Int      @id @default(autoincrement())
+  terminalId Int
+  branchId   Int
+  message    String
+  severity   Int
+  createdAt  DateTime @default(now())
+}
+
+model TerminalEvent {
+  id        String   @id
+  orderId   String
+  event     String
+  payload   String
+  createdAt DateTime @default(now())
+  order     Order    @relation("OrderTerminalEvents", fields: [orderId], references: [id])
+}
+
+model TerminalStatus {
+  id               Int             @id @default(autoincrement())
+  terminalId       Int
+  branchId         Int
+  online           Boolean         @default(false)
+  lastSeen         DateTime        @default(now())
+  assignedKitchen  String?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime
+  branchTerminalId Int?            @unique
+  BranchTerminal   BranchTerminal? @relation(fields: [branchTerminalId], references: [id])
+
+  @@unique([terminalId, branchId])
+}
+
+model VirtualPrinter {
+  id         Int       @id @default(autoincrement())
+  kitchen    String
+  instanceId String
+  active     Boolean   @default(true)
+  createdAt  DateTime  @default(now())
+  releasedAt DateTime?
+}
+
+model Voucher {
+  id        String    @id
+  code      String    @unique
+  amount    Decimal
+  expiresAt DateTime?
+  isUsed    Boolean   @default(false)
+  usedBy    String?
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+}
+
+model Wallet {
+  id                String              @id
+  customerId        String              @unique
+  balance           Decimal             @default(0.00)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime
+  WalletTransaction WalletTransaction[]
+}
+
+model WalletTransaction {
+  id        String          @id
+  walletId  String
+  type      TransactionType
+  amount    Decimal
+  reference String?
+  createdAt DateTime        @default(now())
+  Wallet    Wallet          @relation(fields: [walletId], references: [id])
+}
+
+model ingredients {
+  id       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name     String
+  allergen Boolean? @default(false)
+  vegan    Boolean? @default(false)
+}
+
+model promotions {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code          String   @unique
+  discount_type String
+  amount        Decimal  @db.Decimal(10, 2)
+  active        Boolean? @default(true)
+}
+
+enum TransactionType {
+  CREDIT
+  DEBIT
+  REFUND
+  VOUCHER
+  PROMO
+  TOPUP
 }
