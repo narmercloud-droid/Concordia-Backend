@@ -1,8 +1,6 @@
-# FORCE_REWRITE
-
-# --- FIX: allow prisma folder ---
-!prisma
-!prisma/**
+# Allow prisma_clean folder
+!prisma_clean
+!prisma_clean/**
 
 # Node dependencies
 node_modules
