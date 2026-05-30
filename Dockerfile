@@ -7,7 +7,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # 3. Copy prisma BEFORE npm ci
-COPY prisma_clean ./prisma
+COPY prisma ./prisma
 
 # 4. Install dependencies (this runs postinstall → prisma generate)
 RUN npm ci
