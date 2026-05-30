@@ -57,10 +57,10 @@ docker-compose*
 **/.cache
 
 # FRONTEND FOLDERS (root-anchored)
-#/admin-dashboard
-#/admin-ui
-#/concordia-courier-ui
-#/frontend
+/admin-dashboard
+/admin-ui
+/concordia-courier-ui
+/frontend
 
 # Other folders that must be root-anchored
 /data
