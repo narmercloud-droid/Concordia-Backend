@@ -1,0 +1,6 @@
+-- AlterTable
+ALTER TABLE "MenuCategory" ADD COLUMN     "order" INTEGER NOT NULL DEFAULT 0;
+
+-- AlterTable
+ALTER TABLE "MenuItem" ADD COLUMN     "itemNumber" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "order" INTEGER NOT NULL DEFAULT 0;
