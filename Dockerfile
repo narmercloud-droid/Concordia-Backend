@@ -1,25 +1,45 @@
-# Builder
+# ============================
+# 1. Builder Stage
+# ============================
 FROM node:20-bullseye AS builder
 WORKDIR /app
 
+# Install dependencies
 COPY package*.json ./
 RUN npm ci
 
-COPY . .
+# Copy only what is required for build
+COPY prisma ./prisma
+COPY src ./src
+COPY migrations ./migrations
+COPY seed ./seed
+COPY tsconfig*.json ./
+
+# Generate Prisma client
 RUN npx prisma generate
+
+# Build TypeScript
 RUN npm run build
+
+# Remove dev dependencies
 RUN npm prune --production
 
-# Runtime
+
+# ============================
+# 2. Runtime Stage
+# ============================
 FROM node:20-bullseye AS runtime
 WORKDIR /app
 
+# Create non-root user
 RUN addgroup --system concordia && adduser --system --ingroup concordia concordia
 
+# Copy runtime artifacts
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 
+# Permissions
 RUN chown -R concordia:concordia /app
 USER concordia
 
