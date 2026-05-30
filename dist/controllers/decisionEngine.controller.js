@@ -1,11 +1,12 @@
 import { decisionEngineService } from "../services/decisionEngine.service.js";
 import { prisma } from "../prisma/client.js";
+import { success } from "./controllerHelper.js";
 export const DecisionEngineController = {
     run: async (req, res, next) => {
         try {
             const branchId = req.user.branchId;
             const result = await decisionEngineService.run(branchId);
-            res.json(result);
+            return success(res, result);
         }
         catch (err) {
             next(err);
@@ -18,7 +19,7 @@ export const DecisionEngineController = {
                 where: { branchId },
                 orderBy: { createdAt: "desc" },
             });
-            res.json(logs);
+            return success(res, logs);
         }
         catch (err) {
             next(err);

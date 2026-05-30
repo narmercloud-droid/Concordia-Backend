@@ -1,5 +1,6 @@
-import { Request, Response, NextFunction } from "express";
+﻿import type { Request, Response, NextFunction  } from "express";
 import { courierTrackingService } from "../services/courierTracking.service.js";
+import { success } from "./controllerHelper.js";
 
 export const CourierTrackingController = {
   // Courier updates GPS
@@ -7,28 +8,33 @@ export const CourierTrackingController = {
     const courierId = req.user.id;
     const data = req.body;
     const result = await courierTrackingService.updateLocation(courierId, data);
-    res.json(result);
+    return success(res, result);
   },
 
   // Customer tracking screen
   customerTracking: async (req: Request, res: Response, next: NextFunction) => {
     const { orderId } = req.params;
     const result = await courierTrackingService.getCustomerTracking(orderId);
-    res.json(result);
+    return success(res, result);
   },
 
   // Add tracking event (courier or system)
   addEvent: async (req: Request, res: Response, next: NextFunction) => {
     const { orderId, status } = req.body;
     const event = await courierTrackingService.addTrackingEvent(orderId, status);
-    res.json(event);
+    return success(res, event);
   },
 
   // Manager live map
   managerLiveMap: async (req: Request, res: Response, next: NextFunction) => {
     const branchId = req.user.branchId;
     const couriers = await courierTrackingService.getActiveCouriers(branchId);
-    res.json(couriers);
+    return success(res, couriers);
   }
 };
+
+
+
+
+
 

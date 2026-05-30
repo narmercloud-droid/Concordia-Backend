@@ -1,0 +1,4626 @@
+{
+  "tables": {
+    "Category": {
+      "columns": {
+        "id": {
+          "type": "SERIAL",
+          "raw": "\"id\" SERIAL NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": true
+        },
+        "position": {
+          "type": "INTEGER",
+          "raw": "\"position\" INTEGER NOT NULL DEFAULT 0;",
+          "notnull": true,
+          "default": "0;",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": [
+        {
+          "name": "Category_category_id_key",
+          "column": "category_id",
+          "unique": true
+        },
+        {
+          "name": "Category_name_key",
+          "column": "name",
+          "unique": true
+        }
+      ]
+    },
+    "Order": {
+      "columns": {
+        "id": {
+          "type": "SERIAL",
+          "raw": "\"id\" SERIAL NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": true
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        },
+        "courierId": {
+          "type": "TEXT,",
+          "raw": "\"courierId\" TEXT, ADD COLUMN     \"externalAmount\" DECIMAL(65,30) DEFAULT 0.00, ADD COLUMN     \"paidAt\" TIMESTAMP(3), ADD COLUMN     \"terminal_id\" TEXT, ADD COLUMN     \"tracking_token\" TEXT, ADD COLUMN     \"transactionId\" TEXT, ADD COLUMN     \"walletUsed\" DECIMAL(65,30) DEFAULT 0.00;",
+          "notnull": false,
+          "default": "0.00",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [
+        {
+          "column": "branch_id",
+          "ref_table": "Branch",
+          "ref_column": "id",
+          "on_delete": "RESTRICT",
+          "on_update": "CASCADE"
+        },
+        {
+          "column": "terminal_id",
+          "ref_table": "BranchTerminal",
+          "ref_column": "id",
+          "on_delete": "SET",
+          "on_update": null
+        },
+        {
+          "column": "branchId",
+          "ref_table": "Branch",
+          "ref_column": "id",
+          "on_delete": "RESTRICT",
+          "on_update": "CASCADE"
+        },
+        {
+          "column": "customerId",
+          "ref_table": "Customer",
+          "ref_column": "id",
+          "on_delete": "SET",
+          "on_update": null
+        },
+        {
+          "column": "courierId",
+          "ref_table": "Courier",
+          "ref_column": "id",
+          "on_delete": "SET",
+          "on_update": null
+        }
+      ],
+      "indexes": [
+        {
+          "name": "Order_order_id_key",
+          "column": "order_id",
+          "unique": true
+        },
+        {
+          "name": "Order_tracking_token_key",
+          "column": "tracking_token",
+          "unique": true
+        },
+        {
+          "name": "Order_tracking_token_key",
+          "column": "tracking_token",
+          "unique": true
+        }
+      ]
+    },
+    "OrderItem": {
+      "columns": {
+        "id": {
+          "type": "SERIAL",
+          "raw": "\"id\" SERIAL NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": true
+        },
+        "quantity": {
+          "type": "INTEGER",
+          "raw": "\"quantity\" INTEGER NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [
+        {
+          "column": "order_id",
+          "ref_table": "Order",
+          "ref_column": "order_id",
+          "on_delete": "RESTRICT",
+          "on_update": "CASCADE"
+        },
+        {
+          "column": "item_id",
+          "ref_table": "Item",
+          "ref_column": "item_id",
+          "on_delete": "RESTRICT",
+          "on_update": "CASCADE"
+        },
+        {
+          "column": "orderId",
+          "ref_table": "Order",
+          "ref_column": "id",
+          "on_delete": "RESTRICT",
+          "on_update": "CASCADE"
+        },
+        {
+          "column": "itemId",
+          "ref_table": "MenuItem",
+          "ref_column": "id",
+          "on_delete": "RESTRICT",
+          "on_update": "CASCADE"
+        }
+      ],
+      "indexes": []
+    },
+    "Branch": {
+      "columns": {
+        "id": {
+          "type": "SERIAL",
+          "raw": "\"id\" SERIAL NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": true
+        },
+        "name": {
+          "type": "TEXT",
+          "raw": "\"name\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": [
+        {
+          "name": "Branch_branch_code_key",
+          "column": "branch_code",
+          "unique": true
+        }
+      ]
+    },
+    "Customer": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "name": {
+          "type": "TEXT",
+          "raw": "\"name\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "email": {
+          "type": "TEXT",
+          "raw": "\"email\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "phone": {
+          "type": "TEXT",
+          "raw": "\"phone\" TEXT",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "loginToken": {
+          "type": "VARCHAR(255),",
+          "raw": "\"loginToken\" VARCHAR(255), ADD COLUMN     \"loginTokenExpires\" TIMESTAMP(3), ADD COLUMN     \"loyaltyPoints\" INTEGER NOT NULL DEFAULT 0, ADD COLUMN     \"marketingConsent\" BOOLEAN NOT NULL DEFAULT false, ADD COLUMN     \"marketingConsentAt\" TIMESTAMP(3), ADD COLUMN     \"marketingEmail\" BOOLEAN NOT NULL DEFAULT false, ADD COLUMN     \"marketingSMS\" BOOLEAN NOT NULL DEFAULT false, ADD COLUMN     \"marketingWhatsApp\" BOOLEAN NOT NULL DEFAULT false, ADD COLUMN     \"phoneNumber\" VARCHAR(255);",
+          "notnull": true,
+          "default": "0",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": [
+        {
+          "name": "Customer_email_key",
+          "column": "email",
+          "unique": true
+        }
+      ]
+    },
+    "Courier": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "name": {
+          "type": "TEXT",
+          "raw": "\"name\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "email": {
+          "type": "TEXT",
+          "raw": "\"email\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "phone": {
+          "type": "TEXT",
+          "raw": "\"phone\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "vehicle": {
+          "type": "TEXT",
+          "raw": "\"vehicle\" TEXT",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "active": {
+          "type": "BOOLEAN",
+          "raw": "\"active\" BOOLEAN NOT NULL DEFAULT true",
+          "notnull": true,
+          "default": "true",
+          "unique": false,
+          "autoincrement": false
+        },
+        "branchId": {
+          "type": "TEXT",
+          "raw": "\"branchId\" TEXT NOT NULL;",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [
+        {
+          "column": "branchId",
+          "ref_table": "Branch",
+          "ref_column": "id",
+          "on_delete": "RESTRICT",
+          "on_update": "CASCADE"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "Courier_email_key",
+          "column": "email",
+          "unique": true
+        }
+      ]
+    },
+    "Admin": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "email": {
+          "type": "TEXT",
+          "raw": "\"email\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "password": {
+          "type": "TEXT",
+          "raw": "\"password\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "role": {
+          "type": "TEXT",
+          "raw": "\"role\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "branchId": {
+          "type": "TEXT",
+          "raw": "\"branchId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        },
+        "updatedAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"updatedAt\" TIMESTAMP(3) NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": [
+        {
+          "name": "Admin_email_key",
+          "column": "email",
+          "unique": true
+        }
+      ]
+    },
+    "NotificationPreference": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "customerId": {
+          "type": "TEXT",
+          "raw": "\"customerId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "allowPush": {
+          "type": "BOOLEAN",
+          "raw": "\"allowPush\" BOOLEAN NOT NULL DEFAULT true",
+          "notnull": true,
+          "default": "true",
+          "unique": false,
+          "autoincrement": false
+        },
+        "allowSMS": {
+          "type": "BOOLEAN",
+          "raw": "\"allowSMS\" BOOLEAN NOT NULL DEFAULT false",
+          "notnull": true,
+          "default": "false",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [
+        {
+          "column": "customerId",
+          "ref_table": "Customer",
+          "ref_column": "id",
+          "on_delete": "RESTRICT",
+          "on_update": "CASCADE"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "NotificationPreference_customerId_key",
+          "column": "customerId",
+          "unique": true
+        }
+      ]
+    },
+    "LoyaltyPoints": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "customerId": {
+          "type": "TEXT",
+          "raw": "\"customerId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "points": {
+          "type": "INTEGER",
+          "raw": "\"points\" INTEGER NOT NULL DEFAULT 0",
+          "notnull": true,
+          "default": "0",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [
+        {
+          "column": "customerId",
+          "ref_table": "Customer",
+          "ref_column": "id",
+          "on_delete": "RESTRICT",
+          "on_update": "CASCADE"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "LoyaltyPoints_customerId_key",
+          "column": "customerId",
+          "unique": true
+        }
+      ]
+    },
+    "Reward": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "title": {
+          "type": "TEXT",
+          "raw": "\"title\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "description": {
+          "type": "TEXT",
+          "raw": "\"description\" TEXT",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "costPoints": {
+          "type": "INTEGER",
+          "raw": "\"costPoints\" INTEGER NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "discount": {
+          "type": "DOUBLE",
+          "raw": "\"discount\" DOUBLE PRECISION",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "amountOff": {
+          "type": "DOUBLE",
+          "raw": "\"amountOff\" DOUBLE PRECISION",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "freeItemId": {
+          "type": "TEXT",
+          "raw": "\"freeItemId\" TEXT",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": []
+    },
+    "PromoCode": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "code": {
+          "type": "TEXT",
+          "raw": "\"code\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "discount": {
+          "type": "DOUBLE",
+          "raw": "\"discount\" DOUBLE PRECISION",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "amountOff": {
+          "type": "DOUBLE",
+          "raw": "\"amountOff\" DOUBLE PRECISION",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "expiresAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"expiresAt\" TIMESTAMP(3)",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "maxUses": {
+          "type": "INTEGER",
+          "raw": "\"maxUses\" INTEGER",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "usedCount": {
+          "type": "INTEGER",
+          "raw": "\"usedCount\" INTEGER NOT NULL DEFAULT 0",
+          "notnull": true,
+          "default": "0",
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": [
+        {
+          "name": "PromoCode_code_key",
+          "column": "code",
+          "unique": true
+        }
+      ]
+    },
+    "Referral": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "customerId": {
+          "type": "TEXT",
+          "raw": "\"customerId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "code": {
+          "type": "TEXT",
+          "raw": "\"code\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "referredCount": {
+          "type": "INTEGER",
+          "raw": "\"referredCount\" INTEGER NOT NULL DEFAULT 0",
+          "notnull": true,
+          "default": "0",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [
+        {
+          "column": "customerId",
+          "ref_table": "Customer",
+          "ref_column": "id",
+          "on_delete": "RESTRICT",
+          "on_update": "CASCADE"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "Referral_customerId_key",
+          "column": "customerId",
+          "unique": true
+        },
+        {
+          "name": "Referral_code_key",
+          "column": "code",
+          "unique": true
+        }
+      ]
+    },
+    "MenuItem": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "name": {
+          "type": "TEXT",
+          "raw": "\"name\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "description": {
+          "type": "TEXT",
+          "raw": "\"description\" TEXT",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "price": {
+          "type": "DOUBLE",
+          "raw": "\"price\" DOUBLE PRECISION NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "tags": {
+          "type": "TEXT[]",
+          "raw": "\"tags\" TEXT[] DEFAULT ARRAY[]::TEXT[]",
+          "notnull": false,
+          "default": "ARRAY[]::TEXT[]",
+          "unique": false,
+          "autoincrement": false
+        },
+        "stock": {
+          "type": "INTEGER",
+          "raw": "\"stock\" INTEGER DEFAULT 999999",
+          "notnull": false,
+          "default": "999999",
+          "unique": false,
+          "autoincrement": false
+        },
+        "lowStockThreshold": {
+          "type": "INTEGER",
+          "raw": "\"lowStockThreshold\" INTEGER DEFAULT 5",
+          "notnull": false,
+          "default": "5",
+          "unique": false,
+          "autoincrement": false
+        },
+        "autoDisable": {
+          "type": "BOOLEAN",
+          "raw": "\"autoDisable\" BOOLEAN NOT NULL DEFAULT true",
+          "notnull": true,
+          "default": "true",
+          "unique": false,
+          "autoincrement": false
+        },
+        "categoryId": {
+          "type": "TEXT,",
+          "raw": "\"categoryId\" TEXT, ADD COLUMN     \"kitchen\" TEXT NOT NULL DEFAULT 'A';",
+          "notnull": true,
+          "default": "'A';",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [
+        {
+          "column": "categoryId",
+          "ref_table": "Category",
+          "ref_column": "id",
+          "on_delete": "SET",
+          "on_update": null
+        }
+      ],
+      "indexes": []
+    },
+    "Favorite": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "customerId": {
+          "type": "TEXT",
+          "raw": "\"customerId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "itemId": {
+          "type": "TEXT",
+          "raw": "\"itemId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [
+        {
+          "column": "customerId",
+          "ref_table": "Customer",
+          "ref_column": "id",
+          "on_delete": "RESTRICT",
+          "on_update": "CASCADE"
+        },
+        {
+          "column": "itemId",
+          "ref_table": "MenuItem",
+          "ref_column": "id",
+          "on_delete": "RESTRICT",
+          "on_update": "CASCADE"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "Favorite_customerId_itemId_key",
+          "column": "customerId",
+          "unique": true
+        },
+        {
+          "name": "Favorite_customerId_itemId_key",
+          "column": "itemId",
+          "unique": true
+        }
+      ]
+    },
+    "Address": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "customerId": {
+          "type": "TEXT",
+          "raw": "\"customerId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "label": {
+          "type": "TEXT",
+          "raw": "\"label\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "street": {
+          "type": "TEXT",
+          "raw": "\"street\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "city": {
+          "type": "TEXT",
+          "raw": "\"city\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "postalCode": {
+          "type": "TEXT",
+          "raw": "\"postalCode\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "lat": {
+          "type": "DOUBLE",
+          "raw": "\"lat\" DOUBLE PRECISION",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "lng": {
+          "type": "DOUBLE",
+          "raw": "\"lng\" DOUBLE PRECISION",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "instructions": {
+          "type": "TEXT",
+          "raw": "\"instructions\" TEXT",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "isDefault": {
+          "type": "BOOLEAN",
+          "raw": "\"isDefault\" BOOLEAN NOT NULL DEFAULT false",
+          "notnull": true,
+          "default": "false",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [
+        {
+          "column": "customerId",
+          "ref_table": "Customer",
+          "ref_column": "id",
+          "on_delete": "RESTRICT",
+          "on_update": "CASCADE"
+        }
+      ],
+      "indexes": []
+    },
+    "DeliveryZone": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "branchId": {
+          "type": "TEXT",
+          "raw": "\"branchId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "maxDistanceKm": {
+          "type": "DOUBLE",
+          "raw": "\"maxDistanceKm\" DOUBLE PRECISION NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "baseFee": {
+          "type": "DOUBLE",
+          "raw": "\"baseFee\" DOUBLE PRECISION NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "perKmFee": {
+          "type": "DOUBLE",
+          "raw": "\"perKmFee\" DOUBLE PRECISION NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "freeDeliveryThreshold": {
+          "type": "DOUBLE",
+          "raw": "\"freeDeliveryThreshold\" DOUBLE PRECISION",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "minimumOrderAmount": {
+          "type": "DOUBLE",
+          "raw": "\"minimumOrderAmount\" DOUBLE PRECISION",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [
+        {
+          "column": "branchId",
+          "ref_table": "Branch",
+          "ref_column": "id",
+          "on_delete": "RESTRICT",
+          "on_update": "CASCADE"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "DeliveryZone_branchId_key",
+          "column": "branchId",
+          "unique": true
+        }
+      ]
+    },
+    "SearchLog": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "query": {
+          "type": "TEXT",
+          "raw": "\"query\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": []
+    },
+    "BranchSchedule": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "branchId": {
+          "type": "TEXT",
+          "raw": "\"branchId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "day": {
+          "type": "INTEGER",
+          "raw": "\"day\" INTEGER NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "openTime": {
+          "type": "TEXT",
+          "raw": "\"openTime\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "closeTime": {
+          "type": "TEXT",
+          "raw": "\"closeTime\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [
+        {
+          "column": "branchId",
+          "ref_table": "Branch",
+          "ref_column": "id",
+          "on_delete": "RESTRICT",
+          "on_update": "CASCADE"
+        }
+      ],
+      "indexes": []
+    },
+    "CourierLocation": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "courierId": {
+          "type": "TEXT",
+          "raw": "\"courierId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [
+        {
+          "column": "courierId",
+          "ref_table": "Courier",
+          "ref_column": "id",
+          "on_delete": "RESTRICT",
+          "on_update": "CASCADE"
+        },
+        {
+          "column": "orderId",
+          "ref_table": "Order",
+          "ref_column": "id",
+          "on_delete": "SET",
+          "on_update": null
+        }
+      ],
+      "indexes": [
+        {
+          "name": "CourierLocation_courierId_key",
+          "column": "courierId",
+          "unique": true
+        },
+        {
+          "name": "CourierLocation_courierId_idx",
+          "column": "courierId",
+          "unique": false
+        },
+        {
+          "name": "CourierLocation_orderId_idx",
+          "column": "orderId",
+          "unique": false
+        }
+      ]
+    },
+    "OrderTrackingEvent": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "orderId": {
+          "type": "TEXT",
+          "raw": "\"orderId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "status": {
+          "type": "TEXT",
+          "raw": "\"status\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "timestamp": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"timestamp\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [
+        {
+          "column": "orderId",
+          "ref_table": "Order",
+          "ref_column": "id",
+          "on_delete": "RESTRICT",
+          "on_update": "CASCADE"
+        }
+      ],
+      "indexes": []
+    },
+    "Review": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "orderId": {
+          "type": "TEXT",
+          "raw": "\"orderId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "customerId": {
+          "type": "TEXT",
+          "raw": "\"customerId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "branchId": {
+          "type": "TEXT",
+          "raw": "\"branchId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "rating": {
+          "type": "INTEGER",
+          "raw": "\"rating\" INTEGER NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "comment": {
+          "type": "TEXT",
+          "raw": "\"comment\" TEXT",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        },
+        "updatedAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"updatedAt\" TIMESTAMP(3) NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [
+        {
+          "column": "orderId",
+          "ref_table": "Order",
+          "ref_column": "id",
+          "on_delete": "RESTRICT",
+          "on_update": "CASCADE"
+        },
+        {
+          "column": "customerId",
+          "ref_table": "Customer",
+          "ref_column": "id",
+          "on_delete": "RESTRICT",
+          "on_update": "CASCADE"
+        },
+        {
+          "column": "branchId",
+          "ref_table": "Branch",
+          "ref_column": "id",
+          "on_delete": "RESTRICT",
+          "on_update": "CASCADE"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "Review_orderId_key",
+          "column": "orderId",
+          "unique": true
+        }
+      ]
+    },
+    "ItemRating": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "orderItemId": {
+          "type": "TEXT",
+          "raw": "\"orderItemId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "rating": {
+          "type": "INTEGER",
+          "raw": "\"rating\" INTEGER NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [
+        {
+          "column": "orderItemId",
+          "ref_table": "OrderItem",
+          "ref_column": "id",
+          "on_delete": "RESTRICT",
+          "on_update": "CASCADE"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "ItemRating_orderItemId_key",
+          "column": "orderItemId",
+          "unique": true
+        }
+      ]
+    },
+    "RiskScore": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "orderId": {
+          "type": "TEXT",
+          "raw": "\"orderId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "score": {
+          "type": "INTEGER",
+          "raw": "\"score\" INTEGER NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "level": {
+          "type": "TEXT",
+          "raw": "\"level\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [
+        {
+          "column": "orderId",
+          "ref_table": "Order",
+          "ref_column": "id",
+          "on_delete": "RESTRICT",
+          "on_update": "CASCADE"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "RiskScore_orderId_key",
+          "column": "orderId",
+          "unique": true
+        }
+      ]
+    },
+    "FraudFlag": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "customerId": {
+          "type": "TEXT",
+          "raw": "\"customerId\" TEXT",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "orderId": {
+          "type": "TEXT",
+          "raw": "\"orderId\" TEXT",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "reason": {
+          "type": "TEXT",
+          "raw": "\"reason\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": []
+    },
+    "OrderRiskEvent": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "orderId": {
+          "type": "TEXT",
+          "raw": "\"orderId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "event": {
+          "type": "TEXT",
+          "raw": "\"event\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [
+        {
+          "column": "orderId",
+          "ref_table": "Order",
+          "ref_column": "id",
+          "on_delete": "RESTRICT",
+          "on_update": "CASCADE"
+        }
+      ],
+      "indexes": []
+    },
+    "PriceHistory": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "itemId": {
+          "type": "TEXT",
+          "raw": "\"itemId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "oldPrice": {
+          "type": "DOUBLE",
+          "raw": "\"oldPrice\" DOUBLE PRECISION NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "newPrice": {
+          "type": "DOUBLE",
+          "raw": "\"newPrice\" DOUBLE PRECISION NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "reason": {
+          "type": "TEXT",
+          "raw": "\"reason\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [
+        {
+          "column": "itemId",
+          "ref_table": "MenuItem",
+          "ref_column": "id",
+          "on_delete": "RESTRICT",
+          "on_update": "CASCADE"
+        }
+      ],
+      "indexes": []
+    },
+    "DynamicPriceRule": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "branchId": {
+          "type": "TEXT",
+          "raw": "\"branchId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "itemId": {
+          "type": "TEXT",
+          "raw": "\"itemId\" TEXT",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "ruleType": {
+          "type": "TEXT",
+          "raw": "\"ruleType\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "multiplier": {
+          "type": "DOUBLE",
+          "raw": "\"multiplier\" DOUBLE PRECISION",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "amount": {
+          "type": "DOUBLE",
+          "raw": "\"amount\" DOUBLE PRECISION",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "active": {
+          "type": "BOOLEAN",
+          "raw": "\"active\" BOOLEAN NOT NULL DEFAULT true",
+          "notnull": true,
+          "default": "true",
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": []
+    },
+    "InsightLog": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "branchId": {
+          "type": "TEXT",
+          "raw": "\"branchId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "type": {
+          "type": "TEXT",
+          "raw": "\"type\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "description": {
+          "type": "TEXT",
+          "raw": "\"description\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "confidence": {
+          "type": "DOUBLE",
+          "raw": "\"confidence\" DOUBLE PRECISION NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "impact": {
+          "type": "TEXT",
+          "raw": "\"impact\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": []
+    },
+    "DecisionLog": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "branchId": {
+          "type": "TEXT",
+          "raw": "\"branchId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "actionType": {
+          "type": "TEXT",
+          "raw": "\"actionType\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "description": {
+          "type": "TEXT",
+          "raw": "\"description\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "confidence": {
+          "type": "DOUBLE",
+          "raw": "\"confidence\" DOUBLE PRECISION NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "impact": {
+          "type": "TEXT",
+          "raw": "\"impact\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "autoApplied": {
+          "type": "BOOLEAN",
+          "raw": "\"autoApplied\" BOOLEAN NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": []
+    },
+    "AutomationSettings": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "branchId": {
+          "type": "TEXT",
+          "raw": "\"branchId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "pricing": {
+          "type": "BOOLEAN",
+          "raw": "\"pricing\" BOOLEAN NOT NULL DEFAULT false",
+          "notnull": true,
+          "default": "false",
+          "unique": false,
+          "autoincrement": false
+        },
+        "marketing": {
+          "type": "BOOLEAN",
+          "raw": "\"marketing\" BOOLEAN NOT NULL DEFAULT false",
+          "notnull": true,
+          "default": "false",
+          "unique": false,
+          "autoincrement": false
+        },
+        "inventory": {
+          "type": "BOOLEAN",
+          "raw": "\"inventory\" BOOLEAN NOT NULL DEFAULT false",
+          "notnull": true,
+          "default": "false",
+          "unique": false,
+          "autoincrement": false
+        },
+        "staffing": {
+          "type": "BOOLEAN",
+          "raw": "\"staffing\" BOOLEAN NOT NULL DEFAULT false",
+          "notnull": true,
+          "default": "false",
+          "unique": false,
+          "autoincrement": false
+        },
+        "retention": {
+          "type": "BOOLEAN",
+          "raw": "\"retention\" BOOLEAN NOT NULL DEFAULT false",
+          "notnull": true,
+          "default": "false",
+          "unique": false,
+          "autoincrement": false
+        },
+        "fraud": {
+          "type": "BOOLEAN",
+          "raw": "\"fraud\" BOOLEAN NOT NULL DEFAULT false",
+          "notnull": true,
+          "default": "false",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": [
+        {
+          "name": "AutomationSettings_branchId_key",
+          "column": "branchId",
+          "unique": true
+        }
+      ]
+    },
+    "AnalyticsQueryLog": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "branchId": {
+          "type": "TEXT",
+          "raw": "\"branchId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "question": {
+          "type": "TEXT",
+          "raw": "\"question\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "answer": {
+          "type": "TEXT",
+          "raw": "\"answer\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": []
+    },
+    "OptimizationLog": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "branchId": {
+          "type": "TEXT",
+          "raw": "\"branchId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "module": {
+          "type": "TEXT",
+          "raw": "\"module\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "parameter": {
+          "type": "TEXT",
+          "raw": "\"parameter\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "oldValue": {
+          "type": "DOUBLE",
+          "raw": "\"oldValue\" DOUBLE PRECISION",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "newValue": {
+          "type": "DOUBLE",
+          "raw": "\"newValue\" DOUBLE PRECISION",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "reason": {
+          "type": "TEXT",
+          "raw": "\"reason\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": []
+    },
+    "OptimizationParameters": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "branchId": {
+          "type": "TEXT",
+          "raw": "\"branchId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "pricingMultiplier": {
+          "type": "DOUBLE",
+          "raw": "\"pricingMultiplier\" DOUBLE PRECISION NOT NULL DEFAULT 1.0",
+          "notnull": true,
+          "default": "1.0",
+          "unique": false,
+          "autoincrement": false
+        },
+        "forecastWeight": {
+          "type": "DOUBLE",
+          "raw": "\"forecastWeight\" DOUBLE PRECISION NOT NULL DEFAULT 1.0",
+          "notnull": true,
+          "default": "1.0",
+          "unique": false,
+          "autoincrement": false
+        },
+        "churnThreshold": {
+          "type": "DOUBLE",
+          "raw": "\"churnThreshold\" DOUBLE PRECISION NOT NULL DEFAULT 0.5",
+          "notnull": true,
+          "default": "0.5",
+          "unique": false,
+          "autoincrement": false
+        },
+        "behaviorConfidence": {
+          "type": "DOUBLE",
+          "raw": "\"behaviorConfidence\" DOUBLE PRECISION NOT NULL DEFAULT 0.7",
+          "notnull": true,
+          "default": "0.7",
+          "unique": false,
+          "autoincrement": false
+        },
+        "staffingRatio": {
+          "type": "DOUBLE",
+          "raw": "\"staffingRatio\" DOUBLE PRECISION NOT NULL DEFAULT 3.0",
+          "notnull": true,
+          "default": "3.0",
+          "unique": false,
+          "autoincrement": false
+        },
+        "inventoryThreshold": {
+          "type": "DOUBLE",
+          "raw": "\"inventoryThreshold\" DOUBLE PRECISION NOT NULL DEFAULT 2.0",
+          "notnull": true,
+          "default": "2.0",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": [
+        {
+          "name": "OptimizationParameters_branchId_key",
+          "column": "branchId",
+          "unique": true
+        }
+      ]
+    },
+    "OrchestrationLog": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "branchId": {
+          "type": "TEXT",
+          "raw": "\"branchId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "cycleType": {
+          "type": "TEXT",
+          "raw": "\"cycleType\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "summary": {
+          "type": "TEXT",
+          "raw": "\"summary\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": []
+    },
+    "MemoryRecord": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "branchId": {
+          "type": "TEXT",
+          "raw": "\"branchId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "module": {
+          "type": "TEXT",
+          "raw": "\"module\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "key": {
+          "type": "TEXT",
+          "raw": "\"key\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "value": {
+          "type": "JSONB",
+          "raw": "\"value\" JSONB NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": []
+    },
+    "TrendRecord": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "branchId": {
+          "type": "TEXT",
+          "raw": "\"branchId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "category": {
+          "type": "TEXT",
+          "raw": "\"category\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "summary": {
+          "type": "TEXT",
+          "raw": "\"summary\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": []
+    },
+    "IntelligenceReport": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "branchId": {
+          "type": "TEXT",
+          "raw": "\"branchId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "summary": {
+          "type": "TEXT",
+          "raw": "\"summary\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "details": {
+          "type": "JSONB",
+          "raw": "\"details\" JSONB NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": []
+    },
+    "DashboardViewLog": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "branchId": {
+          "type": "TEXT",
+          "raw": "\"branchId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "section": {
+          "type": "TEXT",
+          "raw": "\"section\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": []
+    },
+    "ConversationLog": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "branchId": {
+          "type": "TEXT",
+          "raw": "\"branchId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "message": {
+          "type": "TEXT",
+          "raw": "\"message\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "response": {
+          "type": "TEXT",
+          "raw": "\"response\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": []
+    },
+    "Terminal": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "name": {
+          "type": "TEXT",
+          "raw": "\"name\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "activation_token": {
+          "type": "TEXT",
+          "raw": "\"activation_token\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "branchId": {
+          "type": "TEXT",
+          "raw": "\"branchId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "isOnline": {
+          "type": "BOOLEAN",
+          "raw": "\"isOnline\" BOOLEAN NOT NULL DEFAULT false",
+          "notnull": true,
+          "default": "false",
+          "unique": false,
+          "autoincrement": false
+        },
+        "lastSeen": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"lastSeen\" TIMESTAMP(3)",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [
+        {
+          "column": "branchId",
+          "ref_table": "Branch",
+          "ref_column": "id",
+          "on_delete": "RESTRICT",
+          "on_update": "CASCADE"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "Terminal_activation_token_key",
+          "column": "activation_token",
+          "unique": true
+        },
+        {
+          "name": "Terminal_activation_token_key",
+          "column": "activation_token",
+          "unique": true
+        }
+      ]
+    },
+    "TerminalEvent": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "orderId": {
+          "type": "TEXT",
+          "raw": "\"orderId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "event": {
+          "type": "TEXT",
+          "raw": "\"event\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "payload": {
+          "type": "TEXT",
+          "raw": "\"payload\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [
+        {
+          "column": "orderId",
+          "ref_table": "Order",
+          "ref_column": "id",
+          "on_delete": "RESTRICT",
+          "on_update": "CASCADE"
+        }
+      ],
+      "indexes": []
+    },
+    "Campaign": {
+      "columns": {
+        "id": {
+          "type": "SERIAL",
+          "raw": "\"id\" SERIAL NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": true
+        },
+        "name": {
+          "type": "TEXT",
+          "raw": "\"name\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "description": {
+          "type": "TEXT",
+          "raw": "\"description\" TEXT",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        },
+        "scheduledFor": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"scheduledFor\" TIMESTAMP(3)",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "status": {
+          "type": "TEXT",
+          "raw": "\"status\" TEXT NOT NULL DEFAULT 'draft'",
+          "notnull": true,
+          "default": "'draft'",
+          "unique": false,
+          "autoincrement": false
+        },
+        "channelEmail": {
+          "type": "BOOLEAN",
+          "raw": "\"channelEmail\" BOOLEAN NOT NULL DEFAULT true",
+          "notnull": true,
+          "default": "true",
+          "unique": false,
+          "autoincrement": false
+        },
+        "segmentId": {
+          "type": "INTEGER",
+          "raw": "\"segmentId\" INTEGER",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "content": {
+          "type": "TEXT",
+          "raw": "\"content\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [
+        {
+          "column": "segmentId",
+          "ref_table": "Segment",
+          "ref_column": "id",
+          "on_delete": "SET",
+          "on_update": null
+        }
+      ],
+      "indexes": []
+    },
+    "Segment": {
+      "columns": {
+        "id": {
+          "type": "SERIAL",
+          "raw": "\"id\" SERIAL NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": true
+        },
+        "name": {
+          "type": "TEXT",
+          "raw": "\"name\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        },
+        "filterJson": {
+          "type": "TEXT",
+          "raw": "\"filterJson\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": []
+    },
+    "Offer": {
+      "columns": {
+        "id": {
+          "type": "SERIAL",
+          "raw": "\"id\" SERIAL NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": true
+        },
+        "code": {
+          "type": "TEXT",
+          "raw": "\"code\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "description": {
+          "type": "TEXT",
+          "raw": "\"description\" TEXT",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "discountPct": {
+          "type": "INTEGER",
+          "raw": "\"discountPct\" INTEGER",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "discountAmt": {
+          "type": "INTEGER",
+          "raw": "\"discountAmt\" INTEGER",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "freeDelivery": {
+          "type": "BOOLEAN",
+          "raw": "\"freeDelivery\" BOOLEAN NOT NULL DEFAULT false",
+          "notnull": true,
+          "default": "false",
+          "unique": false,
+          "autoincrement": false
+        },
+        "minOrder": {
+          "type": "INTEGER",
+          "raw": "\"minOrder\" INTEGER",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "expiresAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"expiresAt\" TIMESTAMP(3)",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": [
+        {
+          "name": "Offer_code_key",
+          "column": "code",
+          "unique": true
+        }
+      ]
+    },
+    "Deal": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "name": {
+          "type": "TEXT",
+          "raw": "\"name\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "description": {
+          "type": "TEXT",
+          "raw": "\"description\" TEXT",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "price": {
+          "type": "DOUBLE",
+          "raw": "\"price\" DOUBLE PRECISION NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "visible": {
+          "type": "BOOLEAN",
+          "raw": "\"visible\" BOOLEAN NOT NULL DEFAULT true",
+          "notnull": true,
+          "default": "true",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": [
+        {
+          "name": "Deal_deal_id_key",
+          "column": "deal_id",
+          "unique": true
+        }
+      ]
+    },
+    "Extra": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "name": {
+          "type": "TEXT",
+          "raw": "\"name\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "price": {
+          "type": "DOUBLE",
+          "raw": "\"price\" DOUBLE PRECISION NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "visible": {
+          "type": "BOOLEAN",
+          "raw": "\"visible\" BOOLEAN NOT NULL DEFAULT true",
+          "notnull": true,
+          "default": "true",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": [
+        {
+          "name": "Extra_extra_id_key",
+          "column": "extra_id",
+          "unique": true
+        }
+      ]
+    },
+    "Topping": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "name": {
+          "type": "TEXT",
+          "raw": "\"name\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "price": {
+          "type": "DOUBLE",
+          "raw": "\"price\" DOUBLE PRECISION NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "visible": {
+          "type": "BOOLEAN",
+          "raw": "\"visible\" BOOLEAN NOT NULL DEFAULT true",
+          "notnull": true,
+          "default": "true",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": [
+        {
+          "name": "Topping_topping_id_key",
+          "column": "topping_id",
+          "unique": true
+        }
+      ]
+    },
+    "Variant": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "name": {
+          "type": "TEXT",
+          "raw": "\"name\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "price": {
+          "type": "DOUBLE",
+          "raw": "\"price\" DOUBLE PRECISION NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "visible": {
+          "type": "BOOLEAN",
+          "raw": "\"visible\" BOOLEAN NOT NULL DEFAULT true",
+          "notnull": true,
+          "default": "true",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": [
+        {
+          "name": "Variant_variant_id_key",
+          "column": "variant_id",
+          "unique": true
+        }
+      ]
+    },
+    "Relation": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "itemId": {
+          "type": "TEXT",
+          "raw": "\"itemId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "variantId": {
+          "type": "TEXT",
+          "raw": "\"variantId\" TEXT",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "toppingId": {
+          "type": "TEXT",
+          "raw": "\"toppingId\" TEXT",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "extraId": {
+          "type": "TEXT",
+          "raw": "\"extraId\" TEXT",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [
+        {
+          "column": "itemId",
+          "ref_table": "MenuItem",
+          "ref_column": "id",
+          "on_delete": "RESTRICT",
+          "on_update": "CASCADE"
+        }
+      ],
+      "indexes": []
+    },
+    "Cart": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "customerId": {
+          "type": "TEXT",
+          "raw": "\"customerId\" TEXT",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        },
+        "updatedAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"updatedAt\" TIMESTAMP(3) NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": [
+        {
+          "name": "Cart_cart_id_key",
+          "column": "cart_id",
+          "unique": true
+        }
+      ]
+    },
+    "CartItem": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "cartId": {
+          "type": "TEXT",
+          "raw": "\"cartId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "itemId": {
+          "type": "TEXT",
+          "raw": "\"itemId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "quantity": {
+          "type": "INTEGER",
+          "raw": "\"quantity\" INTEGER NOT NULL DEFAULT 1",
+          "notnull": true,
+          "default": "1",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [
+        {
+          "column": "cartId",
+          "ref_table": "Cart",
+          "ref_column": "id",
+          "on_delete": "RESTRICT",
+          "on_update": "CASCADE"
+        },
+        {
+          "column": "itemId",
+          "ref_table": "MenuItem",
+          "ref_column": "id",
+          "on_delete": "RESTRICT",
+          "on_update": "CASCADE"
+        }
+      ],
+      "indexes": []
+    },
+    "AdminUser": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "email": {
+          "type": "TEXT",
+          "raw": "\"email\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "password": {
+          "type": "TEXT",
+          "raw": "\"password\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "role": {
+          "type": "TEXT",
+          "raw": "\"role\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "refreshToken": {
+          "type": "TEXT",
+          "raw": "\"refreshToken\" TEXT",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        },
+        "updatedAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"updatedAt\" TIMESTAMP(3) NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": [
+        {
+          "name": "AdminUser_email_key",
+          "column": "email",
+          "unique": true
+        },
+        {
+          "name": "AdminUser_email_key",
+          "column": "email",
+          "unique": true
+        }
+      ]
+    },
+    "Voucher": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "code": {
+          "type": "TEXT",
+          "raw": "\"code\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "amount": {
+          "type": "DECIMAL(65,30)",
+          "raw": "\"amount\" DECIMAL(65,30) NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "expiresAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"expiresAt\" TIMESTAMP(3)",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "isUsed": {
+          "type": "BOOLEAN",
+          "raw": "\"isUsed\" BOOLEAN NOT NULL DEFAULT false",
+          "notnull": true,
+          "default": "false",
+          "unique": false,
+          "autoincrement": false
+        },
+        "usedBy": {
+          "type": "TEXT",
+          "raw": "\"usedBy\" TEXT",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "usedAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"usedAt\" TIMESTAMP(3)",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": [
+        {
+          "name": "Voucher_code_key",
+          "column": "code",
+          "unique": true
+        }
+      ]
+    },
+    "Wallet": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "customerId": {
+          "type": "TEXT",
+          "raw": "\"customerId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "balance": {
+          "type": "DECIMAL(65,30)",
+          "raw": "\"balance\" DECIMAL(65,30) NOT NULL DEFAULT 0.00",
+          "notnull": true,
+          "default": "0.00",
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        },
+        "updatedAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"updatedAt\" TIMESTAMP(3) NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": [
+        {
+          "name": "Wallet_customerId_key",
+          "column": "customerId",
+          "unique": true
+        }
+      ]
+    },
+    "WalletTransaction": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "walletId": {
+          "type": "TEXT",
+          "raw": "\"walletId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "type": {
+          "type": "\"TransactionType\"",
+          "raw": "\"type\" \"TransactionType\" NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "amount": {
+          "type": "DECIMAL(65,30)",
+          "raw": "\"amount\" DECIMAL(65,30) NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "reference": {
+          "type": "TEXT",
+          "raw": "\"reference\" TEXT",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [
+        {
+          "column": "walletId",
+          "ref_table": "Wallet",
+          "ref_column": "id",
+          "on_delete": "RESTRICT",
+          "on_update": "CASCADE"
+        }
+      ],
+      "indexes": []
+    },
+    "KitchenDisplay": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "name": {
+          "type": "TEXT",
+          "raw": "\"name\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "apiKey": {
+          "type": "TEXT",
+          "raw": "\"apiKey\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "branchId": {
+          "type": "TEXT",
+          "raw": "\"branchId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [
+        {
+          "column": "branchId",
+          "ref_table": "Branch",
+          "ref_column": "id",
+          "on_delete": "RESTRICT",
+          "on_update": "CASCADE"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "KitchenDisplay_apiKey_key",
+          "column": "apiKey",
+          "unique": true
+        },
+        {
+          "name": "KitchenDisplay_apiKey_key",
+          "column": "apiKey",
+          "unique": true
+        }
+      ]
+    },
+    "PrinterQueue": {
+      "columns": {
+        "id": {
+          "type": "SERIAL",
+          "raw": "\"id\" SERIAL NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": true
+        },
+        "kitchen": {
+          "type": "TEXT",
+          "raw": "\"kitchen\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "payload": {
+          "type": "JSONB",
+          "raw": "\"payload\" JSONB NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "attempts": {
+          "type": "INTEGER",
+          "raw": "\"attempts\" INTEGER NOT NULL DEFAULT 0",
+          "notnull": true,
+          "default": "0",
+          "unique": false,
+          "autoincrement": false
+        },
+        "maxAttempts": {
+          "type": "INTEGER",
+          "raw": "\"maxAttempts\" INTEGER NOT NULL DEFAULT 5",
+          "notnull": true,
+          "default": "5",
+          "unique": false,
+          "autoincrement": false
+        },
+        "status": {
+          "type": "TEXT",
+          "raw": "\"status\" TEXT NOT NULL DEFAULT 'pending'",
+          "notnull": true,
+          "default": "'pending'",
+          "unique": false,
+          "autoincrement": false
+        },
+        "lastError": {
+          "type": "TEXT",
+          "raw": "\"lastError\" TEXT",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        },
+        "updatedAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"updatedAt\" TIMESTAMP(3) NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "durationMs": {
+          "type": "INTEGER,",
+          "raw": "\"durationMs\" INTEGER, ADD COLUMN     \"printedAt\" TIMESTAMP(3);",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": []
+    },
+    "PrinterSecurity": {
+      "columns": {
+        "id": {
+          "type": "SERIAL",
+          "raw": "\"id\" SERIAL NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": true
+        },
+        "printerId": {
+          "type": "TEXT",
+          "raw": "\"printerId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "kitchen": {
+          "type": "TEXT",
+          "raw": "\"kitchen\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "ipAddress": {
+          "type": "TEXT",
+          "raw": "\"ipAddress\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "approved": {
+          "type": "BOOLEAN",
+          "raw": "\"approved\" BOOLEAN NOT NULL DEFAULT false",
+          "notnull": true,
+          "default": "false",
+          "unique": false,
+          "autoincrement": false
+        },
+        "token": {
+          "type": "TEXT",
+          "raw": "\"token\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "trustScore": {
+          "type": "INTEGER",
+          "raw": "\"trustScore\" INTEGER NOT NULL DEFAULT 100",
+          "notnull": true,
+          "default": "100",
+          "unique": false,
+          "autoincrement": false
+        },
+        "tampered": {
+          "type": "BOOLEAN",
+          "raw": "\"tampered\" BOOLEAN NOT NULL DEFAULT false",
+          "notnull": true,
+          "default": "false",
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        },
+        "updatedAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"updatedAt\" TIMESTAMP(3) NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": []
+    },
+    "VirtualPrinter": {
+      "columns": {
+        "id": {
+          "type": "SERIAL",
+          "raw": "\"id\" SERIAL NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": true
+        },
+        "kitchen": {
+          "type": "TEXT",
+          "raw": "\"kitchen\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "instanceId": {
+          "type": "TEXT",
+          "raw": "\"instanceId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "active": {
+          "type": "BOOLEAN",
+          "raw": "\"active\" BOOLEAN NOT NULL DEFAULT true",
+          "notnull": true,
+          "default": "true",
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        },
+        "releasedAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"releasedAt\" TIMESTAMP(3)",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": []
+    },
+    "CloudPrinter": {
+      "columns": {
+        "id": {
+          "type": "SERIAL",
+          "raw": "\"id\" SERIAL NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": true
+        },
+        "branchId": {
+          "type": "TEXT",
+          "raw": "\"branchId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "printerId": {
+          "type": "TEXT",
+          "raw": "\"printerId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "kitchen": {
+          "type": "TEXT",
+          "raw": "\"kitchen\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "ipAddress": {
+          "type": "TEXT",
+          "raw": "\"ipAddress\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "type": {
+          "type": "TEXT",
+          "raw": "\"type\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "trustScore": {
+          "type": "INTEGER",
+          "raw": "\"trustScore\" INTEGER NOT NULL DEFAULT 100",
+          "notnull": true,
+          "default": "100",
+          "unique": false,
+          "autoincrement": false
+        },
+        "online": {
+          "type": "BOOLEAN",
+          "raw": "\"online\" BOOLEAN NOT NULL DEFAULT false",
+          "notnull": true,
+          "default": "false",
+          "unique": false,
+          "autoincrement": false
+        },
+        "lastSync": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"lastSync\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        },
+        "updatedAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"updatedAt\" TIMESTAMP(3) NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": [
+        {
+          "name": "CloudPrinter_branchId_printerId_key",
+          "column": "branchId",
+          "unique": true
+        },
+        {
+          "name": "CloudPrinter_branchId_printerId_key",
+          "column": "printerId",
+          "unique": true
+        }
+      ]
+    },
+    "PrinterFleet": {
+      "columns": {
+        "id": {
+          "type": "SERIAL",
+          "raw": "\"id\" SERIAL NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": true
+        },
+        "branchId": {
+          "type": "TEXT",
+          "raw": "\"branchId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "printerId": {
+          "type": "TEXT",
+          "raw": "\"printerId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "group": {
+          "type": "TEXT",
+          "raw": "\"group\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "policy": {
+          "type": "TEXT",
+          "raw": "\"policy\" TEXT",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "firmware": {
+          "type": "TEXT",
+          "raw": "\"firmware\" TEXT",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "configHash": {
+          "type": "TEXT",
+          "raw": "\"configHash\" TEXT",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        },
+        "updatedAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"updatedAt\" TIMESTAMP(3) NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": [
+        {
+          "name": "PrinterFleet_branchId_printerId_key",
+          "column": "branchId",
+          "unique": true
+        },
+        {
+          "name": "PrinterFleet_branchId_printerId_key",
+          "column": "printerId",
+          "unique": true
+        }
+      ]
+    },
+    "PrinterTrace": {
+      "columns": {
+        "id": {
+          "type": "SERIAL",
+          "raw": "\"id\" SERIAL NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": true
+        },
+        "printerId": {
+          "type": "TEXT",
+          "raw": "\"printerId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "kitchen": {
+          "type": "TEXT",
+          "raw": "\"kitchen\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "branchId": {
+          "type": "TEXT",
+          "raw": "\"branchId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "event": {
+          "type": "TEXT",
+          "raw": "\"event\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "durationMs": {
+          "type": "INTEGER",
+          "raw": "\"durationMs\" INTEGER",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": []
+    },
+    "PrinterHealth": {
+      "columns": {
+        "id": {
+          "type": "SERIAL",
+          "raw": "\"id\" SERIAL NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": true
+        },
+        "printerId": {
+          "type": "TEXT",
+          "raw": "\"printerId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "branchId": {
+          "type": "TEXT",
+          "raw": "\"branchId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "score": {
+          "type": "INTEGER",
+          "raw": "\"score\" INTEGER NOT NULL DEFAULT 100",
+          "notnull": true,
+          "default": "100",
+          "unique": false,
+          "autoincrement": false
+        },
+        "lastUpdated": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"lastUpdated\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": []
+    },
+    "PrinterAnomaly": {
+      "columns": {
+        "id": {
+          "type": "SERIAL",
+          "raw": "\"id\" SERIAL NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": true
+        },
+        "printerId": {
+          "type": "TEXT",
+          "raw": "\"printerId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "branchId": {
+          "type": "TEXT",
+          "raw": "\"branchId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "type": {
+          "type": "TEXT",
+          "raw": "\"type\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "severity": {
+          "type": "INTEGER",
+          "raw": "\"severity\" INTEGER NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": []
+    },
+    "TerminalStatus": {
+      "columns": {
+        "id": {
+          "type": "SERIAL",
+          "raw": "\"id\" SERIAL NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": true
+        },
+        "terminalId": {
+          "type": "INTEGER",
+          "raw": "\"terminalId\" INTEGER NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "branchId": {
+          "type": "INTEGER",
+          "raw": "\"branchId\" INTEGER NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "online": {
+          "type": "BOOLEAN",
+          "raw": "\"online\" BOOLEAN NOT NULL DEFAULT false",
+          "notnull": true,
+          "default": "false",
+          "unique": false,
+          "autoincrement": false
+        },
+        "lastSeen": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"lastSeen\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        },
+        "assignedKitchen": {
+          "type": "TEXT",
+          "raw": "\"assignedKitchen\" TEXT",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        },
+        "updatedAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"updatedAt\" TIMESTAMP(3) NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "branchTerminalId": {
+          "type": "INTEGER;",
+          "raw": "\"branchTerminalId\" INTEGER;",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [
+        {
+          "column": "branchTerminalId",
+          "ref_table": "BranchTerminal",
+          "ref_column": "id",
+          "on_delete": "SET",
+          "on_update": null
+        }
+      ],
+      "indexes": [
+        {
+          "name": "TerminalStatus_terminalId_branchId_key",
+          "column": "terminalId",
+          "unique": true
+        },
+        {
+          "name": "TerminalStatus_terminalId_branchId_key",
+          "column": "branchId",
+          "unique": true
+        },
+        {
+          "name": "TerminalStatus_branchTerminalId_key",
+          "column": "branchTerminalId",
+          "unique": true
+        }
+      ]
+    },
+    "TerminalError": {
+      "columns": {
+        "id": {
+          "type": "SERIAL",
+          "raw": "\"id\" SERIAL NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": true
+        },
+        "terminalId": {
+          "type": "INTEGER",
+          "raw": "\"terminalId\" INTEGER NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "branchId": {
+          "type": "INTEGER",
+          "raw": "\"branchId\" INTEGER NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "message": {
+          "type": "TEXT",
+          "raw": "\"message\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "severity": {
+          "type": "INTEGER",
+          "raw": "\"severity\" INTEGER NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": []
+    },
+    "BranchSettings": {
+      "columns": {
+        "id": {
+          "type": "SERIAL",
+          "raw": "\"id\" SERIAL NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": true
+        },
+        "branchId": {
+          "type": "TEXT;",
+          "raw": "\"branchId\" INTEGER NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "printingMode": {
+          "type": "TEXT",
+          "raw": "\"printingMode\" TEXT NOT NULL DEFAULT 'direct'",
+          "notnull": true,
+          "default": "'direct'",
+          "unique": false,
+          "autoincrement": false
+        },
+        "autoPrint": {
+          "type": "BOOLEAN",
+          "raw": "\"autoPrint\" BOOLEAN NOT NULL DEFAULT true",
+          "notnull": true,
+          "default": "true",
+          "unique": false,
+          "autoincrement": false
+        },
+        "printCopies": {
+          "type": "INTEGER",
+          "raw": "\"printCopies\" INTEGER NOT NULL DEFAULT 1",
+          "notnull": true,
+          "default": "1",
+          "unique": false,
+          "autoincrement": false
+        },
+        "routingMode": {
+          "type": "TEXT",
+          "raw": "\"routingMode\" TEXT NOT NULL DEFAULT 'kitchen'",
+          "notnull": true,
+          "default": "'kitchen'",
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        },
+        "updatedAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"updatedAt\" TIMESTAMP(3) NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [],
+      "indexes": [
+        {
+          "name": "BranchSettings_branch_id_key",
+          "column": "branch_id",
+          "unique": true
+        },
+        {
+          "name": "BranchSettings_branchId_key",
+          "column": "branchId",
+          "unique": true
+        }
+      ]
+    },
+    "BranchTerminal": {
+      "columns": {
+        "id": {
+          "type": "SERIAL",
+          "raw": "\"id\" SERIAL NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": true
+        },
+        "branchId": {
+          "type": "TEXT",
+          "raw": "\"branchId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "token": {
+          "type": "TEXT",
+          "raw": "\"token\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        },
+        "updatedAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"updatedAt\" TIMESTAMP(3) NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [
+        {
+          "column": "branchId",
+          "ref_table": "Branch",
+          "ref_column": "id",
+          "on_delete": "RESTRICT",
+          "on_update": "CASCADE"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "BranchTerminal_terminal_token_key",
+          "column": "terminal_token",
+          "unique": true
+        },
+        {
+          "name": "BranchTerminal_token_key",
+          "column": "token",
+          "unique": true
+        }
+      ]
+    },
+    "ActivationCode": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "code": {
+          "type": "TEXT",
+          "raw": "\"code\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "branchId": {
+          "type": "TEXT",
+          "raw": "\"branchId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "expiresAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"expiresAt\" TIMESTAMP(3) NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "used": {
+          "type": "BOOLEAN",
+          "raw": "\"used\" BOOLEAN NOT NULL DEFAULT false",
+          "notnull": true,
+          "default": "false",
+          "unique": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        },
+        "usedAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"usedAt\" TIMESTAMP(3)",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "deviceId": {
+          "type": "TEXT",
+          "raw": "\"deviceId\" TEXT",
+          "notnull": false,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [
+        {
+          "column": "branchId",
+          "ref_table": "Branch",
+          "ref_column": "id",
+          "on_delete": "RESTRICT",
+          "on_update": "CASCADE"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "ActivationCode_code_key",
+          "column": "code",
+          "unique": true
+        }
+      ]
+    },
+    "Device": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "serialNumber": {
+          "type": "TEXT",
+          "raw": "\"serialNumber\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "branchId": {
+          "type": "TEXT",
+          "raw": "\"branchId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "activatedAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"activatedAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        },
+        "lastSeenAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"lastSeenAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        },
+        "status": {
+          "type": "TEXT",
+          "raw": "\"status\" TEXT NOT NULL DEFAULT 'ACTIVE'",
+          "notnull": true,
+          "default": "'ACTIVE'",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [
+        {
+          "column": "branchId",
+          "ref_table": "Branch",
+          "ref_column": "id",
+          "on_delete": "RESTRICT",
+          "on_update": "CASCADE"
+        }
+      ],
+      "indexes": []
+    },
+    "BranchConfig": {
+      "columns": {
+        "id": {
+          "type": "TEXT",
+          "raw": "\"id\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "branchId": {
+          "type": "TEXT",
+          "raw": "\"branchId\" TEXT NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "configJson": {
+          "type": "JSONB",
+          "raw": "\"configJson\" JSONB NOT NULL",
+          "notnull": true,
+          "default": null,
+          "unique": false,
+          "autoincrement": false
+        },
+        "version": {
+          "type": "INTEGER",
+          "raw": "\"version\" INTEGER NOT NULL DEFAULT 1",
+          "notnull": true,
+          "default": "1",
+          "unique": false,
+          "autoincrement": false
+        },
+        "updatedAt": {
+          "type": "TIMESTAMP(3)",
+          "raw": "\"updatedAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP",
+          "notnull": true,
+          "default": "CURRENT_TIMESTAMP",
+          "unique": false,
+          "autoincrement": false
+        }
+      },
+      "pk": [
+        "id"
+      ],
+      "fks": [
+        {
+          "column": "branchId",
+          "ref_table": "Branch",
+          "ref_column": "id",
+          "on_delete": "RESTRICT",
+          "on_update": "CASCADE"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "BranchConfig_branchId_key",
+          "column": "branchId",
+          "unique": true
+        }
+      ]
+    }
+  },
+  "enums": {
+    "OrderStatus": [
+      "pending",
+      "assigned",
+      "accepted",
+      "preparing",
+      "ready",
+      "completed",
+      "rejected"
+    ],
+    "TransactionType": [
+      "CREDIT",
+      "DEBIT",
+      "REFUND",
+      "VOUCHER",
+      "PROMO",
+      "TOPUP"
+    ]
+  }
+}

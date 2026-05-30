@@ -1,4 +1,5 @@
 import { prisma } from "../../prisma/client.js";
+import { OrderLifecycleService } from "../order/orderLifecycle.service.js";
 export class AdminOrdersService {
     static async getAll(branchId, filters) {
         const { status, customerId, startDate, endDate, page = 1, limit = 20 } = filters;
@@ -45,15 +46,10 @@ export class AdminOrdersService {
         });
     }
     static async updateStatus(orderId, branchId, status, estimatedTime) {
-        const updated = await prisma.order.updateMany({
-            where: { id: orderId, branchId },
-            data: {
-                status,
-                scheduledFor: estimatedTime ? new Date(Date.now() + estimatedTime * 60000) : undefined
-            }
-        });
-        if (updated.count === 0)
+        const order = await prisma.order.findFirst({ where: { id: orderId, branchId } });
+        if (!order)
             throw new Error("Order not found for branch");
+        const updated = await OrderLifecycleService.updateStatus(orderId, status, estimatedTime ? new Date(Date.now() + estimatedTime * 60000) : undefined);
         return prisma.order.findUnique({
             where: { id: orderId },
             include: {
@@ -62,17 +58,10 @@ export class AdminOrdersService {
         });
     }
     static async assignCourier(orderId, branchId, courierToken) {
-        const updated = await prisma.order.updateMany({
-            where: { id: orderId, branchId },
-            data: { courierToken }
-        });
-        if (updated.count === 0)
+        const order = await prisma.order.findFirst({ where: { id: orderId, branchId } });
+        if (!order)
             throw new Error("Order not found for branch");
-        return prisma.order.findUnique({
-            where: { id: orderId },
-            include: {
-                customer: true
-            }
-        });
+        await OrderLifecycleService.setCourierToken(orderId, courierToken, new Date(Date.now() + 1000 * 60 * 60 * 3));
+        return prisma.order.findUnique({ where: { id: orderId }, include: { customer: true } });
     }
 }

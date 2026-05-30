@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: concordia-backend-web
+    env: docker
+    dockerfilePath: Dockerfile
+    buildCommand: npm run build
+    startCommand: npm run start
+    healthCheckPath: /health
+    plan: starter
+    envVars:
+      - key: NODE_ENV
+        value: production
+  - type: worker
+    name: concordia-backend-worker
+    env: docker
+    dockerfilePath: Dockerfile
+    buildCommand: npm run build
+    startCommand: npm run start:worker
+    plan: starter
+    envVars:
+      - key: NODE_ENV
+        value: production

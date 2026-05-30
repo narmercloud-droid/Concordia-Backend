@@ -1,4 +1,4 @@
-import { prisma } from "../../prisma/client.js";
+﻿import { prisma } from "../../prisma/client.js";
 
 export class ItemService {
   static async getAll() {
@@ -30,3 +30,7 @@ export class ItemService {
     });
   }
 }
+
+
+
+

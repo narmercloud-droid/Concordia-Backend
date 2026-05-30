@@ -1,4 +1,4 @@
-import { prisma } from "../../prisma/client.js";
+﻿import { prisma } from "../../prisma/client.js";
 
 export class RelationService {
   static async getItemRelations(itemId: string) {
@@ -7,3 +7,7 @@ export class RelationService {
     });
   }
 }
+
+
+
+

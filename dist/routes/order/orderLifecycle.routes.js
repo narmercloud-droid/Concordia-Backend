@@ -1,6 +1,11 @@
 import express from "express";
 import { OrderLifecycleController } from "../../controllers/order/orderLifecycle.controller.js";
+import { customerAuth } from "../../middleware/customerAuth.js";
 const router = express.Router();
+// Order creation
+router.post("/create", customerAuth, OrderLifecycleController.createOrder);
+// Payment confirmation
+router.post("/confirm-payment", customerAuth, OrderLifecycleController.confirmExternalPayment);
 // Order lifecycle routes
 router.post("/:id/preparing", OrderLifecycleController.preparing);
 router.post("/:id/ready", OrderLifecycleController.ready);

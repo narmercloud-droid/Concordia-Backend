@@ -1,4 +1,5 @@
 import { prisma } from "../../prisma/client.js";
+import { randomUUID } from "crypto";
 import { v4 as uuid } from "uuid";
 export class CartService {
     static async getOrCreateCart(cartId) {
@@ -29,6 +30,7 @@ export class CartService {
     static async addItem(cartId, itemId, quantity) {
         return prisma.cartItem.create({
             data: {
+                id: randomUUID(),
                 cartId,
                 itemId,
                 quantity

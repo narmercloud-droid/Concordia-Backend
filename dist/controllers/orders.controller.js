@@ -1,9 +1,10 @@
 import { ordersService } from "../services/orders.service.js";
+import { success, fail } from "./controllerHelper.js";
 export const OrdersController = {
     create: async (req, res, next) => {
         try {
             const order = await ordersService.createOrder(req.body);
-            res.json(order);
+            return success(res, order);
         }
         catch (err) {
             next(err);
@@ -12,7 +13,7 @@ export const OrdersController = {
     listBranchOrders: async (req, res, next) => {
         try {
             const orders = await ordersService.listBranchOrders(req.params.branchId);
-            res.json(orders);
+            return success(res, orders);
         }
         catch (err) {
             next(err);
@@ -21,7 +22,7 @@ export const OrdersController = {
     updateStatus: async (req, res, next) => {
         try {
             const order = await ordersService.updateStatus(req.params.id, req.body.status);
-            res.json(order);
+            return success(res, order);
         }
         catch (err) {
             next(err);
@@ -32,9 +33,9 @@ export const OrdersController = {
             const { orderId, courierToken } = req.body;
             const order = await ordersService.validateCourierToken(orderId, courierToken);
             if (!order)
-                return res.status(403).json({ error: "Invalid or expired token" });
+                return fail(res, "Invalid or expired token", 403);
             const updated = await ordersService.updateStatus(orderId, "picked_up");
-            res.json(updated);
+            return success(res, updated);
         }
         catch (err) {
             next(err);
@@ -45,9 +46,9 @@ export const OrdersController = {
             const { orderId, courierToken } = req.body;
             const order = await ordersService.validateCourierToken(orderId, courierToken);
             if (!order)
-                return res.status(403).json({ error: "Invalid or expired token" });
+                return fail(res, "Invalid or expired token", 403);
             const updated = await ordersService.courierPickedUp(orderId);
-            res.json(updated);
+            return success(res, updated);
         }
         catch (err) {
             next(err);
@@ -58,9 +59,9 @@ export const OrdersController = {
             const { orderId, courierToken } = req.body;
             const order = await ordersService.validateCourierToken(orderId, courierToken);
             if (!order)
-                return res.status(403).json({ error: "Invalid or expired token" });
+                return fail(res, "Invalid or expired token", 403);
             const updated = await ordersService.courierDelivered(orderId);
-            res.json(updated);
+            return success(res, updated);
         }
         catch (err) {
             next(err);

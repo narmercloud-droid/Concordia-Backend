@@ -1,0 +1,78 @@
+{
+  "order": {
+    "id": "a31e9f96-275a-4099-b402-c2074415e735",
+    "tracking_token": "6f4334cc-fd71-46e1-a8ea-55607f609add",
+    "status": "delivered"
+  },
+  "timeline": [
+    {
+      "id": "745804f5-4b86-4460-87de-edf73f577117",
+      "orderId": "a31e9f96-275a-4099-b402-c2074415e735",
+      "status": "created",
+      "timestamp": "2026-05-27T02:50:06.890Z"
+    },
+    {
+      "id": "4913c568-8e92-4ba9-82e2-55edda71232c",
+      "orderId": "a31e9f96-275a-4099-b402-c2074415e735",
+      "status": "accepted",
+      "timestamp": "2026-05-27T10:45:32.719Z"
+    },
+    {
+      "id": "c265b325-c895-4131-b30b-5ae9a8d6612f",
+      "orderId": "a31e9f96-275a-4099-b402-c2074415e735",
+      "status": "preparing",
+      "timestamp": "2026-05-27T11:49:05.788Z"
+    },
+    {
+      "id": "6a654f0f-6a08-4fcd-9b21-d05f07173596",
+      "orderId": "a31e9f96-275a-4099-b402-c2074415e735",
+      "status": "preparing",
+      "timestamp": "2026-05-27T11:50:14.742Z"
+    },
+    {
+      "id": "1c84cf9a-125f-42c3-8154-416ce789d478",
+      "orderId": "a31e9f96-275a-4099-b402-c2074415e735",
+      "status": "preparing",
+      "timestamp": "2026-05-27T11:51:18.818Z"
+    },
+    {
+      "id": "b76e80ce-64a4-4962-82da-23f49abc6aef",
+      "orderId": "a31e9f96-275a-4099-b402-c2074415e735",
+      "status": "ready_for_pickup",
+      "timestamp": "2026-05-27T12:13:55.747Z"
+    },
+    {
+      "id": "1323d189-e0b6-4e8a-b4e4-59b5096b3cf0",
+      "orderId": "a31e9f96-275a-4099-b402-c2074415e735",
+      "status": "ready_for_pickup",
+      "timestamp": "2026-05-27T12:15:10.521Z"
+    },
+    {
+      "id": "7267f141-1760-461d-a751-c7dca9f7f293",
+      "orderId": "a31e9f96-275a-4099-b402-c2074415e735",
+      "status": "picked_up",
+      "timestamp": "2026-05-27T12:20:27.285Z"
+    },
+    {
+      "id": "43962f40-d8e5-4503-a713-0a912e7256b8",
+      "orderId": "a31e9f96-275a-4099-b402-c2074415e735",
+      "status": "picked_up",
+      "timestamp": "2026-05-27T12:21:11.608Z"
+    },
+    {
+      "id": "e7d78ea8-0d9a-4c6c-8f47-f20b4bed4aec",
+      "orderId": "a31e9f96-275a-4099-b402-c2074415e735",
+      "status": "delivered",
+      "timestamp": "2026-05-27T12:26:24.686Z"
+    }
+  ],
+  "checks": {
+    "timelineExists": true,
+    "sortedAsc": true,
+    "firstIsCreated": true,
+    "noNullTimestamps": true,
+    "duplicates": false,
+    "statusMatchesLast": true
+  },
+  "errors": []
+}

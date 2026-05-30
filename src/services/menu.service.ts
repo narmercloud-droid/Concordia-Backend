@@ -1,4 +1,4 @@
-import { prisma } from "../prisma/client.js";
+﻿import { prisma } from "../prisma/client.js";
 
 export class MenuService {
   async createCategory(data: any): Promise<any> {
@@ -17,7 +17,20 @@ export class MenuService {
     return prisma.category.findMany({
       orderBy: { position: "asc" },
       include: {
-        items: true
+        menuItems: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            price: true,
+            tags: true,
+            stock: true,
+            lowStockThreshold: true,
+            autoDisable: true,
+            kitchen: true,
+            categoryId: true
+          }
+        }
       }
     });
   }
@@ -35,15 +48,15 @@ export class MenuService {
   }
 
   async createVariant(data: any): Promise<any> {
-    return prisma.variant.create({ data });
+    throw new Error("Variants are not supported by the current schema");
   }
 
   async updateVariant(id: string, data: any): Promise<any> {
-    return prisma.variant.update({ where: { id }, data });
+    throw new Error("Variants are not supported by the current schema");
   }
 
   async deleteVariant(id: string): Promise<any> {
-    return prisma.variant.delete({ where: { id } });
+    throw new Error("Variants are not supported by the current schema");
   }
 
   async setItemAvailability(id: string, available: boolean): Promise<any> {
@@ -59,11 +72,12 @@ export class MenuService {
   }
 
   async setVariantAvailability(id: string, available: boolean): Promise<any> {
-    return prisma.variant.update({
-      where: { id },
-      data: { visible: available }
-    });
+    throw new Error("Variants are not supported by the current schema");
   }
 }
 
 export const menuService = new MenuService();
+
+
+
+

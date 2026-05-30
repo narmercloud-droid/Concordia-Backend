@@ -1,4 +1,4 @@
-import { Server, Socket } from "socket.io";
+﻿import { Server, Socket } from "socket.io";
 import { getKDSNamespace } from "./index.js";
 import { OrderService } from "../services/order/order.service.js";
 import { batchSet, batchGet } from "../lib/redis.js";
@@ -39,7 +39,7 @@ export function registerKDSEvents(io: Server, socket: Socket) {
   socket.on("kds:join", (data: { branchId: string }) => {
     socket.data.branchId = data.branchId;
     socket.join(`kds_branch_${data.branchId}`);
-    console.log(`🍳 KDS joined branch: ${data.branchId}`);
+    console.log(`ðŸ³ KDS joined branch: ${data.branchId}`);
   });
 
   socket.on("kds:accept_order", async (data: { orderId: string }) => {
@@ -145,10 +145,13 @@ export function registerKDSEvents(io: Server, socket: Socket) {
   });
 
   socket.on("error", (error) => {
-    console.error(`❌ KDS Socket error (${socket.id}):`, error);
+    console.error(`âŒ KDS Socket error (${socket.id}):`, error);
   });
 
   socket.on("disconnect", (reason) => {
-    console.log(`🍳 KDS disconnected from branch ${branchId}: reason=${reason}`);
+    console.log(`ðŸ³ KDS disconnected from branch ${branchId}: reason=${reason}`);
   });
 }
+
+
+

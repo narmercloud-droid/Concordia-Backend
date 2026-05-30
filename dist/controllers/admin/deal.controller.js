@@ -1,10 +1,10 @@
 import { DealService } from "../../services/admin/deal.service.js";
+import { success, fail } from "../controllerHelper.js";
 export class DealController {
     static async getAll(_req, res, next) {
         try {
             const deals = await DealService.getAll();
-            res.json(deals);
-            return;
+            return success(res, deals);
         }
         catch (err) {
             next(err);
@@ -15,10 +15,9 @@ export class DealController {
             const id = req.params.id;
             const deal = await DealService.getById(id);
             if (!deal) {
-                return res.status(404).json({ error: "Deal not found" });
+                return fail(res, "Deal not found", 404);
             }
-            res.json(deal);
-            return;
+            return success(res, deal);
         }
         catch (err) {
             next(err);
@@ -27,7 +26,7 @@ export class DealController {
     static async create(req, res, next) {
         try {
             const deal = await DealService.create(req.body);
-            res.status(201).json(deal);
+            return success(res, deal);
         }
         catch (err) {
             next(err);
@@ -37,7 +36,7 @@ export class DealController {
         try {
             const id = req.params.id;
             const deal = await DealService.update(id, req.body);
-            res.json(deal);
+            return success(res, deal);
         }
         catch (err) {
             next(err);
@@ -47,7 +46,7 @@ export class DealController {
         try {
             const id = req.params.id;
             await DealService.remove(id);
-            res.json({ success: true });
+            return success(res, { success: true });
         }
         catch (err) {
             next(err);

@@ -1,6 +1,7 @@
-import type { AuthenticatedRequest } from "../../globalTypes.js";
-import { NextFunction, Response } from "express";
+﻿import type { AuthenticatedRequest } from "../../globalTypes.js";
+import type { NextFunction, Response  } from "express";
 import { KdsService } from "../../services/kds/kds.service.js";
+import { success, fail } from "../controllerHelper.js";
 
 
 export const KdsController = {
@@ -8,7 +9,7 @@ export const KdsController = {
     try {
       const kds = req.user;
       const orders = await KdsService.getActiveOrders(kds.branchId);
-      res.json({ orders });
+      return success(res, { orders });
     } catch (err: unknown) {
       next(err);
     }
@@ -19,7 +20,7 @@ export const KdsController = {
       const kds = req.user;
       const valid = ["preparing", "ready", "completed"];
       if (!valid.includes(status)) {
-        return res.status(400).json({ error: "Invalid status" });
+        return fail(res, "Invalid status", 400);
       }
       const order = await KdsService.updateStatus(orderId, status);
       req.app
@@ -30,10 +31,15 @@ export const KdsController = {
         .get("io")
         .to(`customer_${order.id}`)
         .emit("order_update", order);
-      res.json({ success: true, order });
+      return success(res, { success: true, order });
     } catch (err: unknown) {
       next(err);
     }
   }
 };
+
+
+
+
+
 

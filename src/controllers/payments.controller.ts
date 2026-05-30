@@ -1,7 +1,8 @@
-import type { AuthenticatedRequest } from "../globalTypes.js";
-import { Response, NextFunction } from "express";
+﻿import type { AuthenticatedRequest } from "../globalTypes.js";
+import type { Response, NextFunction  } from "express";
 import { paymentsService } from "../services/payments.service.js";
 import { prisma } from "../prisma/client.js";
+import { success } from "./controllerHelper.js";
 
 export const PaymentsController = {
   // STRIPE
@@ -9,7 +10,7 @@ export const PaymentsController = {
     try {
       const { orderId, amount } = req.body;
       const intent = await paymentsService.createStripePaymentIntent(orderId, amount);
-      res.json({ clientSecret: intent.client_secret });
+      return success(res, { clientSecret: intent.client_secret });
     } catch (err: unknown) {
       next(err);
     }
@@ -20,7 +21,7 @@ export const PaymentsController = {
     try {
       const { orderId, amount } = req.body;
       const order = await paymentsService.createPayPalOrder(orderId, amount);
-      res.json(order);
+      return success(res, order);
     } catch (err: unknown) {
       next(err);
     }
@@ -30,7 +31,7 @@ export const PaymentsController = {
     try {
       const { orderId } = req.body;
       const result = await paymentsService.capturePayPalOrder(orderId);
-      res.json(result);
+      return success(res, result);
     } catch (err: unknown) {
       next(err);
     }
@@ -40,11 +41,16 @@ export const PaymentsController = {
   refund: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const order = await paymentsService.refund(req.params.id);
-      res.json(order);
+      return success(res, order);
     } catch (err: unknown) {
       next(err);
     }
   }
 };
+
+
+
+
+
 
 

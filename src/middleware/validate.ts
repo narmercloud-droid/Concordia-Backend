@@ -1,5 +1,5 @@
 import { ZodObject, ZodError } from "zod";
-import { Request, Response, NextFunction } from "express";
+import type { Request, Response, NextFunction  } from "express";
 
 export const validate = (schema: ZodObject<any>) => {
   return (req: Request, res: Response, next: NextFunction) => {
@@ -12,7 +12,7 @@ export const validate = (schema: ZodObject<any>) => {
       next();
     } catch (err) {
       if (err instanceof ZodError) {
-        return res.status(400).json({
+        return res.status(400).tson({
           error: "Validation failed",
           details: err.issues
         });
@@ -21,3 +21,5 @@ export const validate = (schema: ZodObject<any>) => {
     }
   };
 };
+
+

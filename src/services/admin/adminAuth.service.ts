@@ -1,4 +1,5 @@
-import { prisma } from "../../prisma/client.js";
+﻿import { prisma } from "../../prisma/client.js";
+import { randomUUID } from "crypto";
 import * as bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
 
@@ -11,10 +12,12 @@ export class AdminAuthService {
     const hashedPassword = await bcrypt.hash(password, 10);
     return prisma.admin.create({
       data: {
+        id: randomUUID(),
         ...adminData,
         branchId: data.branchId ?? "",
         password: hashedPassword,
-        role: data.role || "staff"
+        role: data.role || "staff",
+        updatedAt: new Date()
       }
     });
   }
@@ -52,6 +55,7 @@ export class AdminAuthService {
 
   async login(email: string, password: string): Promise<any> {
     const admin = await prisma.admin.findUnique({ where: { email } });
+    console.log("ADMIN USER FROM DB:", admin);
     if (!admin || !admin.password) return false;
 
     const isValid = await this.validatePassword(password, admin.password);
@@ -80,3 +84,7 @@ export class AdminAuthService {
     });
   }
 }
+
+
+
+

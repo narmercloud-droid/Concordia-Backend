@@ -1,0 +1,75 @@
+﻿{
+  "branches": [
+    {
+      "id": "test-branch-1",
+      "name": "Test Branch",
+      "address": "123 Test Street",
+      "city": "Test City",
+      "lat": 50.7753,
+      "lng": 6.0839,
+      "phone": "+49 241 123456",
+      "openingHours": {
+        "mon": "08:00-20:00",
+        "tue": "08:00-20:00",
+        "wed": "08:00-20:00",
+        "thu": "08:00-20:00",
+        "fri": "08:00-20:00",
+        "sat": "10:00-18:00",
+        "sun": "closed"
+      }
+    }
+  ],
+  "menuSample": {
+    "id": "8dfc0ba1-e1e3-40e1-9e46-d05ef4657da6",
+    "name": "Margherita Pizza",
+    "description": "Classic pizza with tomato sauce, mozzarella, and basil.",
+    "price": 12.5,
+    "tags": [
+      "vegetarian",
+      "popular"
+    ],
+    "stock": 50,
+    "lowStockThreshold": 5,
+    "autoDisable": false,
+    "kitchen": "A",
+    "categoryId": "7e2908f4-6869-44ed-80d6-83b27039fc42"
+  },
+  "create": {
+    "id": "a31e9f96-275a-4099-b402-c2074415e735",
+    "branchId": "test-branch-1",
+    "customerId": null,
+    "courierStatus": null,
+    "courierToken": null,
+    "courierTokenExpiresAt": null,
+    "isGuest": false,
+    "paymentIntentId": null,
+    "paymentMethod": "cash",
+    "paymentStatus": "pending",
+    "paypalCaptureId": null,
+    "paypalOrderId": null,
+    "scheduledFor": null,
+    "courierId": null,
+    "externalAmount": "0",
+    "paidAt": null,
+    "terminal_id": null,
+    "tracking_token": "6f4334cc-fd71-46e1-a8ea-55607f609add",
+    "transactionId": null,
+    "walletUsed": "0",
+    "updatedAt": "2026-05-27T02:31:11.339Z",
+    "createdAt": "2026-05-27T02:31:11.339Z",
+    "status": "pending",
+    "items": [
+      {
+        "id": "bd98a596-532b-4bfb-ac17-ee387fa04cb1",
+        "orderId": "a31e9f96-275a-4099-b402-c2074415e735",
+        "itemId": "8dfc0ba1-e1e3-40e1-9e46-d05ef4657da6",
+        "quantity": 1,
+        "addOnIds": [],
+        "notes": null,
+        "price": 12.5,
+        "variantId": "8dfc0ba1-e1e3-40e1-9e46-d05ef4657da6"
+      }
+    ]
+  }
+}
+

@@ -1,10 +1,10 @@
 import { ToppingService } from "../../services/admin/topping.service.js";
+import { success, fail } from "../controllerHelper.js";
 export class ToppingController {
     static async getAll(_req, res, next) {
         try {
             const toppings = await ToppingService.getAll();
-            res.json(toppings);
-            return;
+            return success(res, toppings);
         }
         catch (err) {
             next(err);
@@ -15,10 +15,9 @@ export class ToppingController {
             const id = req.params.id;
             const topping = await ToppingService.getById(id);
             if (!topping) {
-                return res.status(404).json({ error: "Topping not found" });
+                return fail(res, "Topping not found", 404);
             }
-            res.json(topping);
-            return;
+            return success(res, topping);
         }
         catch (err) {
             next(err);
@@ -27,7 +26,7 @@ export class ToppingController {
     static async create(req, res, next) {
         try {
             const topping = await ToppingService.create(req.body);
-            res.status(201).json(topping);
+            return success(res, topping);
         }
         catch (err) {
             next(err);
@@ -37,7 +36,7 @@ export class ToppingController {
         try {
             const id = req.params.id;
             const topping = await ToppingService.update(id, req.body);
-            res.json(topping);
+            return success(res, topping);
         }
         catch (err) {
             next(err);
@@ -47,7 +46,7 @@ export class ToppingController {
         try {
             const id = req.params.id;
             await ToppingService.remove(id);
-            res.json({ success: true });
+            return success(res, { success: true });
         }
         catch (err) {
             next(err);

@@ -1,4 +1,4 @@
-import { Server, Socket } from "socket.io";
+﻿import { Server, Socket } from "socket.io";
 import { DRIVER_EVENTS } from "./eventTypes.js";
 import logger from "../utils/logger.js";
 
@@ -59,3 +59,7 @@ export function registerDriverEvents(io: Server, socket: Socket) {
     logger.info(`Driver disconnected: ${driverId}`);
   });
 }
+
+
+
+

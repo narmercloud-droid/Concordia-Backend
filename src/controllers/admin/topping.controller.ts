@@ -1,12 +1,12 @@
-import { Request, Response, NextFunction } from "express";
+﻿import type { Request, Response, NextFunction  } from "express";
 import { ToppingService } from "../../services/admin/topping.service.js";
+import { success, fail } from "../controllerHelper.js";
 
 export class ToppingController {
   static async getAll(_req: Request, res: Response, next: NextFunction) {
     try {
       const toppings = await ToppingService.getAll();
-      res.json(toppings);
-      return;
+      return success(res, toppings);
     } catch (err: unknown) {
       next(err);
     }
@@ -18,11 +18,10 @@ export class ToppingController {
       const topping = await ToppingService.getById(id);
 
       if (!topping) {
-        return res.status(404).json({ error: "Topping not found" });
+        return fail(res, "Topping not found", 404);
       }
 
-      res.json(topping);
-      return;
+      return success(res, topping);
     } catch (err: unknown) {
       next(err);
     }
@@ -31,7 +30,7 @@ export class ToppingController {
   static async create(req: Request, res: Response, next: NextFunction) {
     try {
       const topping = await ToppingService.create(req.body);
-      res.status(201).json(topping);
+      return success(res, topping);
     } catch (err: unknown) {
       next(err);
     }
@@ -41,7 +40,7 @@ export class ToppingController {
     try {
       const id = req.params.id;
       const topping = await ToppingService.update(id, req.body);
-      res.json(topping);
+      return success(res, topping);
     } catch (err: unknown) {
       next(err);
     }
@@ -51,9 +50,14 @@ export class ToppingController {
     try {
       const id = req.params.id;
       await ToppingService.remove(id);
-      res.json({ success: true });
+      return success(res, { success: true });
     } catch (err: unknown) {
       next(err);
     }
   }
 }
+
+
+
+
+

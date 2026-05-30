@@ -1,4 +1,4 @@
-import { z } from "zod";
+﻿import { z } from "zod";
 import { queryStringOptional } from "./common.schema.js";
 
 export const analyticsBodySchema = z.record(z.string(), z.unknown());
@@ -6,3 +6,7 @@ export const analyticsBodySchema = z.record(z.string(), z.unknown());
 export const analyticsBranchQuerySchema = z.object({
   branchId: queryStringOptional
 });
+
+
+
+

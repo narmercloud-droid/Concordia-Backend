@@ -1,4 +1,4 @@
-import { prisma } from "../../prisma/client.js";
+﻿import { prisma } from "../../prisma/client.js";
 
 export class AdminCustomersService {
   static async getAll(branchId: string, filters: { page?: number; limit?: number; search?: string }) {
@@ -90,3 +90,7 @@ export class AdminCustomersService {
     });
   }
 }
+
+
+
+

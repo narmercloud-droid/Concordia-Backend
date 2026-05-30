@@ -1,4 +1,4 @@
-import { createClient } from "redis";
+﻿import { createClient } from "redis";
 import { trackRedisOperation, trackRedisOperationError, trackCacheHit } from "../metrics/metrics.js";
 import { getCurrentRequestProfile } from "./profile.js";
 
@@ -38,7 +38,7 @@ export const getCache = async (key: string): Promise<string | null> => {
     if (value) {
       trackCacheHit(key);
     }
-    return value;
+    return typeof value === "string" ? value : value?.toString() ?? null;
   } catch (error) {
     const duration = (Date.now() - start) / 1000;
     trackRedisOperation("GET", duration, false);
@@ -147,7 +147,13 @@ export const batchGet = async (keys: string[]): Promise<(string | null)[]> => {
     const results = await pipeline.exec();
     const duration = (Date.now() - start) / 1000;
     trackRedisOperation("BATCH_GET", duration, true);
-    return results as (string | null)[];
+    if (!Array.isArray(results)) {
+      return keys.map(() => null);
+    }
+    return results.map((result) => {
+      if (result === null || result === undefined) return null;
+      return typeof result === "string" ? result : result instanceof Buffer ? result.toString() : String(result);
+    });
   } catch (error) {
     const duration = (Date.now() - start) / 1000;
     trackRedisOperation("BATCH_GET", duration, false);
@@ -291,3 +297,6 @@ export const getBranchDemand = async (branchId: string) => {
 };
 
 export { client as redisClient };
+
+
+

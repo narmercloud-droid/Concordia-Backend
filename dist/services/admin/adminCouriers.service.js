@@ -4,8 +4,7 @@ export class AdminCouriersService {
         return prisma.courier.findMany({
             where: { branchId },
             include: {
-                locations: true,
-                courierPerformance: true
+                locations: true
             },
             orderBy: { name: "asc" }
         });
@@ -14,8 +13,7 @@ export class AdminCouriersService {
         return prisma.courier.findFirst({
             where: { id: courierId, branchId },
             include: {
-                locations: true,
-                courierPerformance: true
+                locations: true
             }
         });
     }

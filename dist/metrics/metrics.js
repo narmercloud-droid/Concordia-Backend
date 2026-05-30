@@ -1,3 +1,31 @@
+import * as promClient from "prom-client";
+const registry = new promClient.Registry();
+// collect default system metrics
+promClient.collectDefaultMetrics({ register: registry });
+export const httpRequestsTotal = new promClient.Counter({
+    name: "http_requests_total",
+    help: "Total number of HTTP requests",
+    labelNames: ["method", "route", "status"],
+    registers: [registry]
+});
+export const httpRequestDurationSeconds = new promClient.Histogram({
+    name: "http_request_duration_seconds",
+    help: "Duration of HTTP requests in seconds",
+    labelNames: ["method", "route", "status"],
+    buckets: [0.005, 0.01, 0.05, 0.1, 0.5, 1, 2, 5],
+    registers: [registry]
+});
+export const ordersCreatedTotal = new promClient.Counter({
+    name: "orders_created_total",
+    help: "Total orders created",
+    registers: [registry]
+});
+export const errorsTotal = new promClient.Counter({
+    name: "errors_total",
+    help: "Total errors",
+    registers: [registry]
+});
+export default registry;
 import client from "prom-client";
 const { Gauge, Counter, Histogram } = client;
 const register = client.register;
@@ -225,7 +253,7 @@ export const nodejsEventLoopLag = new Gauge({
 // Memory usage gauge
 export const nodejsMemoryUsage = new Gauge({
     name: 'nodejs_memory_usage_bytes',
-    help: 'Node.js memory usage in bytes',
+    help: 'Node.ts memory usage in bytes',
     labelNames: ['type']
 });
 // ===== BUSINESS METRICS =====
@@ -416,7 +444,7 @@ export const updateBranchSocketConnections = (branchId, count) => {
 export const updateBranchAILatencyAvg = (branchId, avgLatency) => {
     branchAILatencyAvg.labels(branchId).set(avgLatency);
 };
-// Sample Node.js resource metrics
+// Sample Node.ts resource metrics
 export const sampleNodejsResources = () => {
     try {
         const memUsage = process.memoryUsage();
@@ -427,7 +455,7 @@ export const sampleNodejsResources = () => {
         // active handles and requests are exposed by prom-client default metrics
     }
     catch (error) {
-        console.error("Error sampling Node.js resources:", error);
+        console.error("Error sampling Node.ts resources:", error);
     }
 };
 // Start periodic resource sampling

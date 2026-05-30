@@ -1,0 +1,13 @@
+{
+  "build": {
+    "install": "npm install",
+    "command": "npm run build"
+  },
+  "start": {
+    "command": "npm run start"
+  },
+  "health_check": {
+    "path": "/health",
+    "interval_seconds": 10
+  }
+}

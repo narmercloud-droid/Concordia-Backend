@@ -1,4 +1,4 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { AddressController } from "../controllers/address.controller.js";
 import { customerAuth } from "../middleware/customerAuth.js";
 
@@ -10,4 +10,9 @@ router.delete("/:id", customerAuth, AddressController.delete);
 router.get("/", customerAuth, AddressController.list);
 
 export default router;
+
+
+
+
+
 

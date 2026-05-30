@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+﻿import type { Request, Response, NextFunction  } from "express";
 import { createHash } from "crypto";
 import { clearCache, getCache, setCache } from "../lib/redis.js";
 import { trackApiCacheHit, trackApiCacheMiss } from "../metrics/metrics.js";
@@ -33,11 +33,11 @@ export const cacheRoute = (ttl: number = 60) => {
       if (cachedResponse) {
         trackApiCacheHit(routeLabel);
         res.set("X-Cache", "HIT");
-        return res.json(JSON.parse(cachedResponse));
+        return res.tson(JSON.parse(cachedResponse));
       }
 
-      const originalJson = res.json.bind(res);
-      res.json = (data: any) => {
+      const originalJson = res.tson.bind(res);
+      res.tson = (data: any) => {
         try {
           if (res.statusCode >= 200 && res.statusCode < 300) {
             setCache(cacheKey, JSON.stringify(data), ttl).catch(console.error);
@@ -57,3 +57,7 @@ export const cacheRoute = (ttl: number = 60) => {
     }
   };
 };
+
+
+
+

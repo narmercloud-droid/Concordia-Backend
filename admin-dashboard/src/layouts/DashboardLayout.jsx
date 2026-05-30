@@ -1,5 +1,5 @@
-import Sidebar from "../components/Sidebar";
-import PrinterStatusWidget from "../components/PrinterStatusWidget";
+import Sidebar from "../components/Sidebar.js";
+import PrinterStatusWidget from "../components/PrinterStatusWidget.js";
 
 export default function DashboardLayout({ children }) {
   return (

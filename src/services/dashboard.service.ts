@@ -1,4 +1,4 @@
-import { prisma } from "../prisma/client.js";
+﻿import { prisma } from "../prisma/client.js";
 
 export class DashboardService {
   async globalRevenue(): Promise<any> {
@@ -69,3 +69,7 @@ export class DashboardService {
 }
 
 export const dashboardService = new DashboardService();
+
+
+
+

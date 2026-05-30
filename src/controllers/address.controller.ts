@@ -1,12 +1,13 @@
-import { Request, Response, NextFunction } from "express";
+﻿import type { Request, Response, NextFunction  } from "express";
 import { addressService } from "../services/address.service.js";
+import { success } from "./controllerHelper.js";
 
 export const AddressController = {
   add: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const customerId = req.user.id;
       const address = await addressService.addAddress(customerId, req.body);
-      res.json(address);
+      return success(res, address);
     } catch (err: unknown) {
       next(err);
     }
@@ -17,7 +18,7 @@ export const AddressController = {
       const customerId = req.user.id;
       const { id } = req.params;
       await addressService.updateAddress(customerId, id, req.body);
-      res.json({ success: true });
+      return success(res, { success: true });
     } catch (err: unknown) {
       next(err);
     }
@@ -28,7 +29,7 @@ export const AddressController = {
       const customerId = req.user.id;
       const { id } = req.params;
       await addressService.deleteAddress(customerId, id);
-      res.json({ success: true });
+      return success(res, { success: true });
     } catch (err: unknown) {
       next(err);
     }
@@ -38,10 +39,15 @@ export const AddressController = {
     try {
       const customerId = req.user.id;
       const list = await addressService.listAddresses(customerId);
-      res.json(list);
+      return success(res, list);
     } catch (err: unknown) {
       next(err);
     }
   }
 };
+
+
+
+
+
 

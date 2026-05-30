@@ -1,4 +1,4 @@
-import pino from "pino";
+﻿import pino from "pino";
 import { env } from "../config/env.js";
 
 // Create logger with JSON format for Loki ingestion
@@ -74,3 +74,6 @@ export const requestLogger = (req: any, res: any, next: any) => {
 };
 
 export default logger;
+
+
+

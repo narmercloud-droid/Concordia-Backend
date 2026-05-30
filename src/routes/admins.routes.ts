@@ -1,4 +1,4 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { AdminController } from "../controllers/admins.controller.js";
 import { adminAuth } from "../middleware/adminAuth.js";
 import { adminRole } from "../middleware/adminRole.js";
@@ -25,5 +25,10 @@ router.put("/:id", adminAuth, adminRole("superadmin"), AdminController.update);
 router.delete("/:id", adminAuth, adminRole("superadmin"), AdminController.delete);
 
 export default router;
+
+
+
+
+
 
 

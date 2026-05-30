@@ -1,5 +1,6 @@
-import { Request, Response, NextFunction } from "express";
+﻿import type { Request, Response, NextFunction  } from "express";
 import { favoritesService } from "../services/favorites.service.js";
+import { success } from "./controllerHelper.js";
 
 export const FavoritesController = {
   add: async (req: Request, res: Response, next: NextFunction) => {
@@ -8,7 +9,7 @@ export const FavoritesController = {
       const { itemId } = req.body;
 
       const fav = await favoritesService.addFavorite(customerId, itemId);
-      res.json(fav);
+      return success(res, fav);
     } catch (err: unknown) {
       next(err);
     }
@@ -20,7 +21,7 @@ export const FavoritesController = {
       const { itemId } = req.body;
 
       await favoritesService.removeFavorite(customerId, itemId);
-      res.json({ success: true });
+      return success(res, { success: true });
     } catch (err: unknown) {
       next(err);
     }
@@ -30,7 +31,7 @@ export const FavoritesController = {
     try {
       const customerId = req.user.id;
       const list = await favoritesService.listFavorites(customerId);
-      res.json(list);
+      return success(res, list);
     } catch (err: unknown) {
       next(err);
     }
@@ -39,10 +40,15 @@ export const FavoritesController = {
   mostFavorited: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = await favoritesService.mostFavoritedItems();
-      res.json(data);
+      return success(res, data);
     } catch (err: unknown) {
       next(err);
     }
   }
 };
+
+
+
+
+
 

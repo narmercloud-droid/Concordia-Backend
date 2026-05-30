@@ -1,4 +1,5 @@
 import { TerminalAdminService } from "../../services/admin/terminalAdmin.service.js";
+import { success } from "../controllerHelper.js";
 export class TerminalAdminController {
     // -----------------------------------------------------
     // GET ALL TERMINALS
@@ -6,8 +7,7 @@ export class TerminalAdminController {
     static async getAllTerminals(_req, res, next) {
         try {
             const terminals = await TerminalAdminService.getAllTerminals();
-            res.json(terminals);
-            return;
+            return success(res, terminals);
         }
         catch (err) {
             next(err);
@@ -19,8 +19,7 @@ export class TerminalAdminController {
     static async getTerminalActivity(_req, res, next) {
         try {
             const activity = await TerminalAdminService.getTerminalActivity();
-            res.json(activity);
-            return;
+            return success(res, activity);
         }
         catch (err) {
             next(err);

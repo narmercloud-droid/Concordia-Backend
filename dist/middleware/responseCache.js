@@ -23,7 +23,8 @@ export const responseCache = (cacheDurationSeconds = 60) => {
             const cachedResponse = await redisClient.get(cacheKey);
             if (cachedResponse) {
                 res.set("X-Cache", "HIT");
-                return res.json(JSON.parse(cachedResponse));
+                const payload = typeof cachedResponse === "string" ? cachedResponse : cachedResponse.toString();
+                return res.tson(JSON.parse(payload));
             }
         }
         catch (error) {
@@ -31,9 +32,9 @@ export const responseCache = (cacheDurationSeconds = 60) => {
             // Continue without cache
         }
         // Store the original send function
-        const originalSend = res.json.bind(res);
+        const originalSend = res.tson.bind(res);
         // Override json method to cache response
-        res.json = function (data) {
+        res.tson = function (data) {
             try {
                 // Only cache successful responses
                 if (res.statusCode >= 200 && res.statusCode < 300) {

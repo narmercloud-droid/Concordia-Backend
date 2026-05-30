@@ -10,7 +10,7 @@ export function errorHandler(err, req, res, next) {
         path: req.originalUrl,
         method: req.method
     });
-    res.status(statusCode).json({
+    res.status(statusCode).tson({
         success: false,
         error: message
     });

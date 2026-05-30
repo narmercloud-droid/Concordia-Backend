@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+﻿import type { Request, Response, NextFunction  } from "express";
 import { validateJwtPayload, verifyToken } from "../utils/jwt.js";
 
 export function adminAuth(req: Request, res: Response, next: NextFunction) {
@@ -17,9 +17,14 @@ export function adminAuth(req: Request, res: Response, next: NextFunction) {
       return res.status(403).json({ error: "Forbidden" });
     }
 
-    req.user = decoded;
+    (req as any).user = decoded;
     next();
   } catch {
     return res.status(403).json({ error: "Invalid token" });
   }
 }
+
+
+
+
+

@@ -1,4 +1,4 @@
-import QRCode from "qrcode";
+﻿import QRCode from "qrcode";
 import { SunmiPrinter } from "../../printers/sunmiPrinter.js";
 import { prisma } from "../../prisma/client.js";
 
@@ -27,3 +27,7 @@ export class PrintService {
     await printer.printReceipt(order, qrBuffer);
   }
 }
+
+
+
+

@@ -1,4 +1,4 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { AnalyticsController } from "../controllers/analytics.controller.js";
 import { adminAuth } from "../middleware/adminAuth.js";
 import { adminRole } from "../middleware/adminRole.js";
@@ -14,4 +14,10 @@ router.get("/courier-performance", adminAuth, adminRole("manager"), AnalyticsCon
 router.get("/hourly-orders", adminAuth, adminRole("manager"), AnalyticsController.hourlyOrders);
 
 export default router;
+
+
+
+
+
+
 

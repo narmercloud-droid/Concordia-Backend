@@ -1,8 +1,9 @@
 import { dashboardService } from "../services/dashboard.service.js";
+import { success } from "./controllerHelper.js";
 export const DashboardController = {
     globalRevenue: async (req, res, next) => {
         try {
-            res.json(await dashboardService.globalRevenue());
+            return success(res, await dashboardService.globalRevenue());
         }
         catch (err) {
             next(err);
@@ -10,7 +11,7 @@ export const DashboardController = {
     },
     branchRevenue: async (req, res, next) => {
         try {
-            res.json(await dashboardService.branchRevenue(req.params.branchId));
+            return success(res, await dashboardService.branchRevenue(req.params.branchId));
         }
         catch (err) {
             next(err);
@@ -18,7 +19,7 @@ export const DashboardController = {
     },
     globalOrders: async (req, res, next) => {
         try {
-            res.json(await dashboardService.globalOrders());
+            return success(res, await dashboardService.globalOrders());
         }
         catch (err) {
             next(err);
@@ -26,7 +27,7 @@ export const DashboardController = {
     },
     branchOrders: async (req, res, next) => {
         try {
-            res.json(await dashboardService.branchOrders(req.params.branchId));
+            return success(res, await dashboardService.branchOrders(req.params.branchId));
         }
         catch (err) {
             next(err);
@@ -34,7 +35,7 @@ export const DashboardController = {
     },
     menuPerformance: async (req, res, next) => {
         try {
-            res.json(await dashboardService.menuPerformance(req.params.branchId));
+            return success(res, await dashboardService.menuPerformance(req.params.branchId));
         }
         catch (err) {
             next(err);
@@ -42,7 +43,7 @@ export const DashboardController = {
     },
     courierPerformance: async (req, res, next) => {
         try {
-            res.json(await dashboardService.courierPerformance(req.params.branchId));
+            return success(res, await dashboardService.courierPerformance(req.params.branchId));
         }
         catch (err) {
             next(err);
@@ -50,7 +51,7 @@ export const DashboardController = {
     },
     topSearches: async (req, res, next) => {
         try {
-            res.json(await dashboardService.topSearches());
+            return success(res, await dashboardService.topSearches());
         }
         catch (err) {
             next(err);
@@ -58,7 +59,7 @@ export const DashboardController = {
     },
     loyaltyStats: async (req, res, next) => {
         try {
-            res.json(await dashboardService.loyaltyStats());
+            return success(res, await dashboardService.loyaltyStats());
         }
         catch (err) {
             next(err);
@@ -66,7 +67,7 @@ export const DashboardController = {
     },
     customerStats: async (req, res, next) => {
         try {
-            res.json(await dashboardService.customerStats());
+            return success(res, await dashboardService.customerStats());
         }
         catch (err) {
             next(err);

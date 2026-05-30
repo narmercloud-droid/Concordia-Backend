@@ -34,7 +34,7 @@ export const getCache = async (key) => {
         if (value) {
             trackCacheHit(key);
         }
-        return value;
+        return typeof value === "string" ? value : value?.toString() ?? null;
     }
     catch (error) {
         const duration = (Date.now() - start) / 1000;
@@ -145,7 +145,14 @@ export const batchGet = async (keys) => {
         const results = await pipeline.exec();
         const duration = (Date.now() - start) / 1000;
         trackRedisOperation("BATCH_GET", duration, true);
-        return results;
+        if (!Array.isArray(results)) {
+            return keys.map(() => null);
+        }
+        return results.map((result) => {
+            if (result === null || result === undefined)
+                return null;
+            return typeof result === "string" ? result : result instanceof Buffer ? result.toString() : String(result);
+        });
     }
     catch (error) {
         const duration = (Date.now() - start) / 1000;

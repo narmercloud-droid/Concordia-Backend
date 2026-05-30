@@ -1,7 +1,8 @@
-import type { AuthenticatedRequest } from "../globalTypes.js";
-import { Response, NextFunction } from "express";
+﻿import type { AuthenticatedRequest } from "../globalTypes.js";
+import type { Response, NextFunction  } from "express";
 import { prisma } from "../prisma/client.js";
 import { notificationsService } from "../services/notifications.service.js";
+import { success } from "./controllerHelper.js";
 
 export const NotificationsController = {
   updatePreferences: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
@@ -16,8 +17,7 @@ export const NotificationsController = {
           ...req.body
         }
       });
-
-      res.json(prefs);
+      return success(res, prefs);
     } catch (err: unknown) {
       next(err);
     }
@@ -51,11 +51,16 @@ export const NotificationsController = {
 
       await notificationsService.sendMarketingSMS(phones, message);
 
-      res.json({ success: true, sent: phones.length });
+      return success(res, { success: true, sent: phones.length });
     } catch (err: unknown) {
       next(err);
     }
   }
 };
+
+
+
+
+
 
 

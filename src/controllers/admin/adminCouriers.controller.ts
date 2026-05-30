@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+﻿import type { Request, Response, NextFunction  } from "express";
 import { AdminCouriersService } from "../../services/admin/adminCouriers.service.js";
 import { success, fail } from "../controllerHelper.js";
 import { adminCourierCreateSchema, adminCourierUpdateSchema } from "../../validation/admin.schema.js";
@@ -113,3 +113,7 @@ export class AdminCouriersController {
     }
   }
 }
+
+
+
+

@@ -1,4 +1,5 @@
 import { prisma } from "../../prisma/client.js";
+import { OrderLifecycleService } from "../order/orderLifecycle.service.js";
 export const KdsService = {
     getActiveOrders: async (branchId) => {
         return prisma.order.findMany({
@@ -13,9 +14,6 @@ export const KdsService = {
         });
     },
     updateStatus: async (orderId, status) => {
-        return prisma.order.update({
-            where: { id: orderId },
-            data: { status: status }
-        });
+        return OrderLifecycleService.updateStatus(orderId, status);
     }
 };

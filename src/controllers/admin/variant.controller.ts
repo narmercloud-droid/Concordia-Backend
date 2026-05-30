@@ -1,12 +1,12 @@
-import { Request, Response, NextFunction } from "express";
+﻿import type { Request, Response, NextFunction  } from "express";
 import { VariantService } from "../../services/admin/variant.service.js";
+import { success, fail } from "../controllerHelper.js";
 
 export class VariantController {
   static async getAll(_req: Request, res: Response, next: NextFunction) {
     try {
       const variants = await VariantService.getAll();
-      res.json(variants);
-      return;
+      return success(res, variants);
     } catch (err: unknown) {
       next(err);
     }
@@ -18,11 +18,10 @@ export class VariantController {
       const variant = await VariantService.getById(id);
 
       if (!variant) {
-        return res.status(404).json({ error: "Variant not found" });
+        return fail(res, "Variant not found", 404);
       }
 
-      res.json(variant);
-      return;
+      return success(res, variant);
     } catch (err: unknown) {
       next(err);
     }
@@ -31,7 +30,7 @@ export class VariantController {
   static async create(req: Request, res: Response, next: NextFunction) {
     try {
       const variant = await VariantService.create(req.body);
-      res.status(201).json(variant);
+      return success(res, variant);
     } catch (err: unknown) {
       next(err);
     }
@@ -41,7 +40,7 @@ export class VariantController {
     try {
       const id = req.params.id;
       const variant = await VariantService.update(id, req.body);
-      res.json(variant);
+      return success(res, variant);
     } catch (err: unknown) {
       next(err);
     }
@@ -51,9 +50,14 @@ export class VariantController {
     try {
       const id = req.params.id;
       await VariantService.remove(id);
-      res.json({ success: true });
+      return success(res, { success: true });
     } catch (err: unknown) {
       next(err);
     }
   }
 }
+
+
+
+
+

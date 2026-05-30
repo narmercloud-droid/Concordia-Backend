@@ -1,13 +1,14 @@
-import type { AuthenticatedRequest } from "../globalTypes.js";
-import { Response, NextFunction } from "express";
+﻿import type { AuthenticatedRequest } from "../globalTypes.js";
+import type { Response, NextFunction  } from "express";
 import { reviewService } from "../services/review.service.js";
+import { success } from "./controllerHelper.js";
 
 export const ReviewController = {
   submit: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const customerId = req.user.id;
       const review = await reviewService.submitReview(customerId, req.body);
-      res.json(review);
+      return success(res, review);
     } catch (err: unknown) {
       next(err);
     }
@@ -18,7 +19,7 @@ export const ReviewController = {
       const customerId = req.user.id;
       const { reviewId } = req.params;
       const updated = await reviewService.updateReview(customerId, reviewId, req.body);
-      res.json(updated);
+      return success(res, updated);
     } catch (err: unknown) {
       next(err);
     }
@@ -29,7 +30,7 @@ export const ReviewController = {
       const customerId = req.user.id;
       const { reviewId } = req.params;
       await reviewService.deleteReview(customerId, reviewId);
-      res.json({ success: true });
+      return success(res, { success: true });
     } catch (err: unknown) {
       next(err);
     }
@@ -39,7 +40,7 @@ export const ReviewController = {
     try {
       const { orderItemId, rating } = req.body;
       const result = await reviewService.rateItem(orderItemId, rating);
-      res.json(result);
+      return success(res, result);
     } catch (err: unknown) {
       next(err);
     }
@@ -49,7 +50,7 @@ export const ReviewController = {
     try {
       const branchId = req.user.branchId;
       const reviews = await reviewService.listBranchReviews(branchId);
-      res.json(reviews);
+      return success(res, reviews);
     } catch (err: unknown) {
       next(err);
     }
@@ -59,10 +60,15 @@ export const ReviewController = {
     try {
       const branchId = req.user.branchId;
       const rating = await reviewService.branchRating(branchId);
-      res.json(rating);
+      return success(res, rating);
     } catch (err: unknown) {
       next(err);
     }
   }
 };
+
+
+
+
+
 

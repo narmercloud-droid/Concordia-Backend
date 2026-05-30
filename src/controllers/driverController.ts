@@ -1,17 +1,23 @@
-import { Request, Response, NextFunction } from "express";
+﻿import type { Request, Response, NextFunction  } from "express";
 import {
   getAvailableDrivers,
   getDriver
 } from "../services/driverService.js";
+import { success, fail } from "./controllerHelper.js";
 
 export function getAvailableDriversController(req: Request, res: Response, next: NextFunction) {
   const drivers = getAvailableDrivers();
-  res.json(drivers);
+  return success(res, drivers);
 }
 
 export function getDriverController(req: Request, res: Response, next: NextFunction) {
   const driver = getDriver(req.params.driverId);
-  if (!driver) return res.status(404).json({ message: "Driver not found" });
+  if (!driver) return fail(res, "Driver not found", 404);
 
-  res.json(driver);
+  return success(res, driver);
 }
+
+
+
+
+

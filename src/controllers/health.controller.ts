@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+﻿import type { Request, Response  } from "express";
 import { PrismaClient } from "@prisma/client";
 import { redisClient } from "../lib/redis.js";
 import logger from "../lib/logger.js";
@@ -120,3 +120,7 @@ export const HealthController = {
     }
   }
 };
+
+
+
+

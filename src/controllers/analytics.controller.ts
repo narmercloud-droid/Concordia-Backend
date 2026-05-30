@@ -1,12 +1,13 @@
-import { Request, Response, NextFunction } from "express";
+﻿import type { Request, Response, NextFunction  } from "express";
 import { analyticsService } from "../services/analytics.service.js";
+import { success } from "./controllerHelper.js";
 
 export const AnalyticsController = {
   totalRevenue: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const branchId = req.query.branchId as string;
       const data = await analyticsService.totalRevenue(branchId);
-      res.json(data);
+      return success(res, data);
     } catch (err: unknown) {
       next(err);
     }
@@ -16,7 +17,7 @@ export const AnalyticsController = {
     try {
       const branchId = req.query.branchId as string;
       const data = await analyticsService.ordersPerDay(branchId);
-      res.json(data);
+      return success(res, data);
     } catch (err: unknown) {
       next(err);
     }
@@ -26,7 +27,7 @@ export const AnalyticsController = {
     try {
       const branchId = req.query.branchId as string;
       const data = await analyticsService.bestSellingItems(branchId);
-      res.json(data);
+      return success(res, data);
     } catch (err: unknown) {
       next(err);
     }
@@ -35,7 +36,7 @@ export const AnalyticsController = {
   customerStats: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = await analyticsService.customerStats();
-      res.json(data);
+      return success(res, data);
     } catch (err: unknown) {
       next(err);
     }
@@ -44,7 +45,7 @@ export const AnalyticsController = {
   courierPerformance: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = await analyticsService.courierPerformance();
-      res.json(data);
+      return success(res, data);
     } catch (err: unknown) {
       next(err);
     }
@@ -54,10 +55,15 @@ export const AnalyticsController = {
     try {
       const branchId = req.query.branchId as string;
       const data = await analyticsService.hourlyOrders(branchId);
-      res.json(data);
+      return success(res, data);
     } catch (err: unknown) {
       next(err);
     }
   }
 };
+
+
+
+
+
 

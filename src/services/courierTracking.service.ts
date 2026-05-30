@@ -1,8 +1,12 @@
+﻿import { randomUUID } from "crypto";
 import { prisma } from "../prisma/client.js";
+import { OrderLifecycleService } from "./order/orderLifecycle.service.js";
 
 interface LocationData {
+  orderId?: string;
   lat: number;
   lng: number;
+  accuracy?: number;
   speed?: number;
   heading?: number;
   updatedAt?: Date;
@@ -16,23 +20,28 @@ interface TrackingInfo {
 
 export class CourierTrackingService {
   async updateLocation(courierId: string, data: LocationData): Promise<any> {
-    return prisma.courierLocation.upsert({
-      where: { courierId },
-      update: { ...data },
-      create: { courierId, ...data }
+    return prisma.courierLocation.create({
+      data: {
+        id: randomUUID(),
+        latitude: data.lat,
+        longitude: data.lng,
+        accuracy: data.accuracy ?? null,
+        courier: { connect: { id: courierId } },
+        order: data.orderId ? { connect: { id: data.orderId } } : undefined
+      }
     });
   }
 
   async getCourierLocation(courierId: string): Promise<any> {
-    return prisma.courierLocation.findUnique({
-      where: { courierId }
+    return prisma.courierLocation.findFirst({
+      where: { courierId },
+      orderBy: { createdAt: "desc" }
     });
   }
 
   async addTrackingEvent(orderId: string, status: string): Promise<any> {
-    return prisma.orderTrackingEvent.create({
-      data: { orderId, status }
-    });
+    // Delegate to lifecycle service so transitions and tracking are centralized
+    return OrderLifecycleService.updateStatus(orderId, status);
   }
 
   async getOrderTimeline(orderId: string): Promise<any[]> {
@@ -71,3 +80,7 @@ export class CourierTrackingService {
 }
 
 export const courierTrackingService = new CourierTrackingService();
+
+
+
+

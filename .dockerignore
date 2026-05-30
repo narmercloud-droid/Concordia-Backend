@@ -1,23 +1,70 @@
+# Node dependencies
 node_modules
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Build output
 dist
-.env*
-logs
-.git
-.gitignore
-README.md
-Dockerfile*
-docker-compose*
-.dockerignore
-.github
-k8s
+build
 coverage
 .nyc_output
+
+# Environment files
+.env
+.env.*
+
+# Logs
+logs
 *.log
+
+# Git
+.git
+.gitignore
+.gitmodules
+.gitworktrees
+
+# IDE / Editor
 .vscode
 .idea
 *.swp
 *.swo
 *~
+**/.history
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Kubernetes
+k8s
+
+# Prisma
+prisma/migrations
+prisma/dev.db
+
+# Temporary files
+tmp
+temp
+*.tmp
+
+# Copilot / VS Code workspace junk
+**/workspaceStorage
+**/chat-session-resources
+**/.cache
+
+# FRONTEND FOLDERS (critical)
+admin-dashboard
+admin-ui
+concordia-courier-ui
+frontend
+
+# Test artifacts (safe to ignore)
+tests
+*.ps1
+*.md

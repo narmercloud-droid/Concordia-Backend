@@ -1,4 +1,4 @@
-import { prisma } from "../../prisma/client.js";
+﻿import { prisma } from "../../prisma/client.js";
 import { cacheDashboardMetrics, getDashboardMetrics } from "../../lib/redis.js";
 
 export class AdminDashboardService {
@@ -127,110 +127,9 @@ export class AdminDashboardService {
     getAdminNamespace().to(`branch_${courier.branchId}`).emit("admin:courier_update", eventData);
     this.emitMetricsUpdate(courier.branchId);
   }
-
-  // ============================================
-  // AI/ML INTELLIGENCE LAYER FEATURES
-  // ============================================
-
-  /**
-   * Get churn risk distribution for a branch
-   */
-  static async getChurnRiskDistribution(branchId: string) {
-    // Get all customers with analytics for this branch
-    const customers = await prisma.customer.findMany({
-      where: {
-        orders: {
-          some: { branchId }
-        }
-      },
-      include: {
-        customerAnalytics: true
-      }
-    });
-
-    // Calculate churn risk for each customer
-    const { ChurnModel } = await import("../../ai/models/churnModel.js");
-    const risks = customers.map(customer => {
-      const analytics = customer.customerAnalytics;
-      if (!analytics) {
-        return { customerId: customer.id, risk: 0, level: "low" };
-      }
-
-      const risk = ChurnModel.predictChurnRisk({
-        totalOrders: analytics.totalOrders,
-        totalSpend: analytics.totalSpend,
-        avgOrderValue: analytics.avgOrderValue,
-        lastOrderDate: analytics.lastOrderDate || undefined
-      });
-
-      return {
-        customerId: customer.id,
-        customerName: customer.name,
-        risk,
-        level: ChurnModel.getRiskLevel(risk)
-      };
-    });
-
-    // Group by risk level
-    const distribution = {
-      low: risks.filter(r => r.level === "low").length,
-      medium: risks.filter(r => r.level === "medium").length,
-      high: risks.filter(r => r.level === "high").length,
-      extreme: risks.filter(r => r.level === "extreme").length
-    };
-
-    return {
-      distribution,
-      highRiskCustomers: risks.filter(r => r.level === "high" || r.level === "extreme")
-    };
-  }
-
-  /**
-   * Get top performing couriers for a branch
-   */
-  static async getTopPerformingCouriers(branchId: string, limit: number = 5) {
-    const { CourierAnalyticsService } = await import("../../services/ai/courierAnalytics.service.js");
-    return await CourierAnalyticsService.getTopCouriers(branchId, limit);
-  }
-
-  /**
-   * Get predicted demand for next 24 hours
-   */
-  static async getPredictedDemand(branchId: string) {
-    const { DemandForecastService } = await import("../../services/ai/demandForecast.service.js");
-    return await DemandForecastService.get24HourForecast(branchId);
-  }
-
-  /**
-   * Get top recommended items per branch
-   */
-  static async getTopRecommendedItems(branchId: string, limit: number = 10) {
-    const { MenuAnalyticsService } = await import("../../services/ai/menuAnalytics.service.js");
-    return await MenuAnalyticsService.getTopItems(branchId, limit);
-  }
-
-  /**
-   * Get AI dashboard summary
-   */
-  static async getAIDashboardSummary(branchId: string) {
-    const [
-      churnRisk,
-      topCouriers,
-      demandForecast,
-      topItems
-    ] = await Promise.all([
-      this.getChurnRiskDistribution(branchId),
-      this.getTopPerformingCouriers(branchId, 5),
-      this.getPredictedDemand(branchId),
-      this.getTopRecommendedItems(branchId, 10)
-    ]);
-
-    return {
-      churnRisk,
-      topCouriers,
-      demandForecast,
-      topItems
-    };
-  }
 }
+
+
+
+
 

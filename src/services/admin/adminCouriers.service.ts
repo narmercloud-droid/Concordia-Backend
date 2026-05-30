@@ -1,12 +1,11 @@
-import { prisma } from "../../prisma/client.js";
+﻿import { prisma } from "../../prisma/client.js";
 
 export class AdminCouriersService {
   static async getAll(branchId: string) {
     return prisma.courier.findMany({
       where: { branchId },
       include: {
-        locations: true,
-        courierPerformance: true
+        locations: true
       },
       orderBy: { name: "asc" }
     });
@@ -16,8 +15,7 @@ export class AdminCouriersService {
     return prisma.courier.findFirst({
       where: { id: courierId, branchId },
       include: {
-        locations: true,
-        courierPerformance: true
+        locations: true
       }
     });
   }
@@ -69,3 +67,6 @@ export class AdminCouriersService {
     });
   }
 }
+
+
+

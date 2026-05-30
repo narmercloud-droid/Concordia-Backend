@@ -1,0 +1,1492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agent Chat</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #2d3142;
+    }
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1 {
+      margin-bottom: 16px;
+      font-size: 28px;
+      color: #111827;
+    }
+    .chat-window {
+      height: 560px;
+      background: white;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      overflow-y: auto;
+      padding: 16px;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+    }
+    .message {
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+    .message.user {
+      text-align: right;
+    }
+    .message .bubble {
+      display: inline-block;
+      max-width: 85%;
+      padding: 12px 16px;
+      border-radius: 18px;
+      background: #e5e7eb;
+      color: #111827;
+    }
+    .message.user .bubble {
+      background: #2563eb;
+      color: white;
+    }
+    .message.agent .bubble {
+      background: #f3f4f6;
+      color: #111827;
+    }
+    .message.agent.soft-error .bubble {
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #f59e0b;
+    }
+    .message.agent .status {
+      margin-top: 6px;
+      font-size: 13px;
+      color: #6b7280;
+    }
+    .message.agent.soft-error .status {
+      color: #b45309;
+      font-weight: 600;
+    }
+    .status.success {
+      color: #16a34a;
+      font-weight: 600;
+    }
+    .status.error {
+      color: #dc2626;
+      font-weight: 600;
+    }
+    .input-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .input-row input {
+      flex: 1;
+      padding: 14px 16px;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      font-size: 16px;
+    }
+    .input-row button {
+      padding: 14px 22px;
+      border: none;
+      border-radius: 12px;
+      background: #2563eb;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .input-row button:hover {
+      background: #1d4ed8;
+    }
+    .note {
+      margin-top: 12px;
+      font-size: 14px;
+      color: #6b7280;
+    }
+    .schedule-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 14px;
+    }
+    .schedule-table th,
+    .schedule-table td {
+      border: 1px solid #d1d5db;
+      padding: 10px;
+      text-align: left;
+    }
+    .schedule-table th {
+      background: #f3f4f6;
+      color: #111827;
+    }
+    .schedule-table td.closed {
+      color: #dc2626;
+      font-weight: 600;
+    }
+    .schedule-table tr.changed {
+      background: #ecfdf5;
+    }
+    .holiday-overrides {
+      margin-top: 16px;
+      border: 1px solid #c7d2fe;
+      background: #eef2ff;
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .holiday-overrides h3 {
+      margin: 0 0 8px;
+      font-size: 15px;
+      color: #3730a3;
+    }
+    .holiday-override-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      padding: 10px 0;
+      border-bottom: 1px solid #dbeafe;
+    }
+    .holiday-override-item:last-child {
+      border-bottom: none;
+    }
+    .holiday-override-item .date {
+      font-weight: 600;
+      color: #1d4ed8;
+    }
+    .holiday-override-item .meta {
+      color: #1f2937;
+    }
+    .schedule-table td.changed {
+      color: #047857;
+      font-weight: 700;
+    }
+    .preview-actions,
+    .followup-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    .preview-actions button,
+    .followup-actions button {
+      padding: 10px 14px;
+      border: none;
+      border-radius: 10px;
+      background: #2563eb;
+      color: white;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .preview-actions button:hover,
+    .followup-actions button:hover {
+      background: #1d4ed8;
+    }
+    .memory-hints {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .memory-hint,
+    .memory-reset-hint {
+      background: #eef2ff;
+      color: #4338ca;
+      border-radius: 9999px;
+      padding: 6px 12px;
+      font-size: 13px;
+      border: 1px solid #c7d2fe;
+    }
+    .memory-reset-hint {
+      margin-top: 12px;
+      display: inline-block;
+      font-style: italic;
+    }
+    .history-section {
+      margin-top: 18px;
+      border: 1px solid #d1d5db;
+      background: #fafafb;
+      border-radius: 12px;
+      padding: 14px;
+    }
+    .history-section h2 {
+      margin: 0 0 8px;
+      font-size: 16px;
+      color: #111827;
+    }
+    .memory-panel {
+      display: grid;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .memory-card {
+      padding: 12px;
+      border-radius: 12px;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+    }
+    .memory-card strong {
+      display: block;
+      margin-bottom: 6px;
+      color: #111827;
+    }
+    .history-list {
+      display: grid;
+      gap: 10px;
+    }
+    .history-item {
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: white;
+      border: 1px solid #e5e7eb;
+      font-size: 14px;
+      color: #1f2937;
+    }
+    .history-item strong {
+      display: block;
+      margin-bottom: 4px;
+      color: #111827;
+    }
+    .plan-panel {
+      display: grid;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .plan-card {
+      padding: 12px;
+      border-radius: 12px;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+    }
+    .plan-step {
+      display: grid;
+      gap: 6px;
+      padding: 10px;
+      border-radius: 10px;
+      background: #f8fafc;
+      border: 1px solid #d1d5db;
+    }
+    .plan-step.completed {
+      border-color: #10b981;
+      background: #ecfdf5;
+    }
+    .plan-step.failed {
+      border-color: #ef4444;
+      background: #fef2f2;
+    }
+    .plan-progress {
+      font-size: 14px;
+      color: #1f2937;
+      font-weight: 600;
+    }
+    .plan-history-item {
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #f8fafc;
+      border: 1px solid #d1d5db;
+      margin-bottom: 8px;
+    }
+    .recommendation-panel {
+      display: grid;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .recommendation-item {
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #ffffff;
+      border: 1px solid #d1d5db;
+    }
+    .recommendation-item strong {
+      display: block;
+      margin-bottom: 4px;
+      color: #111827;
+    }
+    .crossdomain-panel {
+      display: grid;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .crossdomain-item {
+      padding: 12px;
+      border-radius: 12px;
+      background: #ffffff;
+      border: 1px solid #d1d5db;
+    }
+    .crossdomain-item strong {
+      display: block;
+      margin-bottom: 6px;
+      color: #111827;
+    }
+    .simulation-panel {
+      display: grid;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .simulation-item {
+      padding: 12px;
+      border-radius: 12px;
+      background: #ffffff;
+      border: 1px solid #d1d5db;
+    }
+    .simulation-item strong {
+      display: block;
+      margin-bottom: 6px;
+      color: #111827;
+    }
+</head>
+<body>
+  <div class="container">
+    <h1>Agent Chat</h1>
+    <div id="chat" class="chat-window"></div>
+    <div id="history" class="history-section">
+      <h2>Undo History</h2>
+      <div id="historyContent">No changes have been made yet.</div>
+    </div>
+    <div id="globalOps" class="history-section">
+      <h2>Global Operations</h2>
+      <div id="globalContent">No global operations yet.</div>
+    </div>
+    <div id="conversationOps" class="history-section">
+      <h2>Conversation Context</h2>
+      <div id="conversationContent">No conversational context yet.</div>
+    </div>
+    <div id="planOverview" class="history-section">
+      <h2>Active Plan</h2>
+      <div id="planOverviewContent">No active plan yet.</div>
+    </div>
+    <div id="planSteps" class="history-section">
+      <h2>Plan Steps</h2>
+      <div id="planStepsContent">No active plan steps.</div>
+    </div>
+    <div id="planProgress" class="history-section">
+      <h2>Plan Progress</h2>
+      <div id="planProgressContent">No active plan progress.</div>
+    </div>
+    <div id="planHistory" class="history-section">
+      <h2>Plan History</h2>
+      <div id="planHistoryContent">No plan history yet.</div>
+    </div>
+    <div id="recommendationPanel" class="history-section">
+      <h2>Recommendations</h2>
+      <div id="recommendationContent">No recommendations yet.</div>
+    </div>
+    <div id="crossDomainPanel" class="history-section">
+      <h2>Cross-Domain Reasoning</h2>
+      <div id="crossDomainContent">No cross-domain reasoning yet.</div>
+    </div>
+    <div id="reportPanel" class="history-section">
+      <h2>Reports</h2>
+      <div id="reportContent">No reports yet.</div>
+    </div>
+    <div id="orchestratorPanel" class="history-section">
+      <h2>Orchestrator</h2>
+      <div id="orchestratorQueueContent">No orchestrator activity yet.</div>
+    </div>
+    <div id="activeTasksPanel" class="history-section">
+      <h2>Active Tasks</h2>
+      <div id="activeTasksContent">No active tasks.</div>
+    </div>
+    <div id="scheduledTasksPanel" class="history-section">
+      <h2>Scheduled Tasks</h2>
+      <div id="scheduledTasksContent">No scheduled tasks.</div>
+    </div>
+    <div id="taskDepsPanel" class="history-section">
+      <h2>Task Dependencies</h2>
+      <div id="taskDepsContent">No dependencies yet.</div>
+    </div>
+    <div id="taskTimelinePanel" class="history-section">
+      <h2>Task Timeline</h2>
+      <div id="taskTimelineContent">No timeline yet.</div>
+    </div>
+    <div id="simulationPanel" class="history-section">
+      <h2>Simulation Forecasts</h2>
+      <div id="simulationContent">No simulation forecasts yet.</div>
+    </div>
+    <div id="zoneOps" class="history-section">
+      <h2>Delivery Zones</h2>
+      <div id="zonesContent">No delivery zone activity yet.</div>
+    </div>
+    <div id="branchCompare" class="history-section">
+      <h2>Branch Comparison</h2>
+      <div id="compareContent">No comparisons yet.</div>
+    </div>
+    <div id="longTermMemoryPanel" class="history-section">
+      <h2>Long-Term Memory</h2>
+      <div id="longTermMemoryContent">No long-term memory activity yet.</div>
+    </div>
+    <div class="input-row">
+      <input id="messageInput" type="text" placeholder="Type your message here..." autocomplete="off" />
+      <button id="sendButton">Send</button>
+    </div>
+    <p class="note">Ask the agent to update opening hours, close branches, or test invalid payloads.</p>
+  </div>
+
+  <script>
+    const chat = document.getElementById('chat');
+    const input = document.getElementById('messageInput');
+    const button = document.getElementById('sendButton');
+    let branchMap = {};
+    let currentPreviewMessage = null;
+
+    function appendMessage(role, text, statusText = '', statusClass = '', extraNode = null, isPreview = false) {
+      if (isPreview && currentPreviewMessage) {
+        currentPreviewMessage.remove();
+        currentPreviewMessage = null;
+      }
+
+      if (!isPreview && currentPreviewMessage && typeof statusText === 'string') {
+        if (statusText.startsWith('Intent: confirm_update') || statusText.startsWith('Intent: cancel_update')) {
+          currentPreviewMessage.remove();
+          currentPreviewMessage = null;
+        }
+      }
+
+      const wrapper = document.createElement('div');
+      wrapper.className = `message ${role}`;
+
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.textContent = text;
+      wrapper.appendChild(bubble);
+
+      if (statusText) {
+        const status = document.createElement('div');
+        status.className = `status ${statusClass}`;
+        status.textContent = statusText;
+        wrapper.appendChild(status);
+      }
+
+      if (extraNode) {
+        wrapper.appendChild(extraNode);
+      }
+
+      if (isPreview) {
+        currentPreviewMessage = wrapper;
+      }
+
+      chat.appendChild(wrapper);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function renderScheduleTable(hours, changedDays = []) {
+      const table = document.createElement('table');
+      table.className = 'schedule-table';
+
+      const header = document.createElement('tr');
+      ['Day', 'Open', 'Close', 'Status'].forEach((label) => {
+        const th = document.createElement('th');
+        th.textContent = label;
+        header.appendChild(th);
+      });
+      table.appendChild(header);
+
+      for (const row of hours) {
+        const tr = document.createElement('tr');
+        const isChanged = changedDays.includes(row.day);
+        if (isChanged) tr.className = 'changed';
+
+        const day = document.createElement('td');
+        day.textContent = row.day;
+        if (isChanged) day.className = 'changed';
+        tr.appendChild(day);
+
+        const open = document.createElement('td');
+        open.textContent = row.closed ? '-' : row.open;
+        if (isChanged) open.className = 'changed';
+        tr.appendChild(open);
+
+        const close = document.createElement('td');
+        close.textContent = row.closed ? '-' : row.close;
+        if (isChanged) close.className = 'changed';
+        tr.appendChild(close);
+
+        const status = document.createElement('td');
+        status.textContent = row.closed ? 'Closed' : 'Open';
+        if (row.closed) status.className = 'closed';
+        if (isChanged) status.className = `${status.className || ''} changed`.trim();
+        tr.appendChild(status);
+
+        table.appendChild(tr);
+      }
+
+      return table;
+    }
+
+    function getBranchName(branchId) {
+      return branchMap[branchId] || branchId || 'Unknown branch';
+    }
+
+    function renderHolidayOverrides(overrides) {
+      if (!Array.isArray(overrides) || overrides.length === 0) return null;
+      const wrapper = document.createElement('div');
+      wrapper.className = 'holiday-overrides';
+      const title = document.createElement('h3');
+      title.textContent = 'Holiday Overrides';
+      wrapper.appendChild(title);
+
+      overrides.forEach((override) => {
+        const item = document.createElement('div');
+        item.className = 'holiday-override-item';
+
+        const date = document.createElement('div');
+        date.className = 'date';
+        date.textContent = `${override.branchId || 'Branch'} • ${override.date}`;
+        item.appendChild(date);
+
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+        meta.textContent = override.isClosed ? 'Closed' : `${override.open || '-'} – ${override.close || '-'}`;
+        item.appendChild(meta);
+
+        wrapper.appendChild(item);
+      });
+
+      return wrapper;
+    }
+
+    async function loadBranches() {
+      try {
+        const response = await fetch('/api/branches');
+        if (!response.ok) throw new Error('Failed to load branch names');
+        branchMap = await response.json();
+      } catch (error) {
+        console.warn('Could not load branch names', error);
+        branchMap = {};
+      }
+    }
+
+    function createActionButton(text, messageToSend) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = text;
+      btn.addEventListener('click', () => {
+        input.value = messageToSend;
+        sendMessage();
+      });
+      return btn;
+    }
+
+    function renderMemoryHints(hints) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'memory-hints';
+      hints.forEach((hint) => {
+        const chip = document.createElement('span');
+        chip.className = 'memory-hint';
+        chip.textContent = hint;
+        wrapper.appendChild(chip);
+      });
+      return wrapper;
+    }
+
+    function renderMemoryResetHint(message) {
+      const hint = document.createElement('div');
+      hint.className = 'memory-reset-hint';
+      hint.textContent = message;
+      return hint;
+    }
+
+    function formatHistorySummary(entry) {
+      if (entry.type === 'weekly') {
+        return `Weekly schedule changed from ${entry.previousValue?.map((item) => `${item.day} ${item.open}-${item.close}`).slice(0, 3).join(', ')}... to ${entry.newValue?.map((item) => `${item.day} ${item.open}-${item.close}`).slice(0, 3).join(', ')}...`;
+      }
+      if (entry.type === 'holiday') {
+        if (!entry.previousValue && entry.newValue) {
+          return `Holiday override created for ${entry.newValue.date}.`;
+        }
+        if (entry.previousValue && !entry.newValue) {
+          return `Holiday override deleted for ${entry.previousValue.date}.`;
+        }
+        return `Holiday override updated for ${entry.previousValue?.date || entry.newValue?.date}.`;
+      }
+      return 'Change recorded.';
+    }
+
+    function renderHistory(history) {
+      const content = document.createElement('div');
+      if (!Array.isArray(history) || history.length === 0) {
+        content.textContent = 'No changes have been made yet.';
+        return content;
+      }
+
+      const list = document.createElement('div');
+      list.className = 'history-list';
+      history.slice().reverse().forEach((entry) => {
+        const item = document.createElement('div');
+        item.className = 'history-item';
+
+        const title = document.createElement('strong');
+        const branchName = getBranchName(entry.branchId);
+        title.textContent = `${new Date(entry.timestamp).toLocaleString()} • ${branchName} • ${entry.type}`;
+        item.appendChild(title);
+
+        const summary = document.createElement('div');
+        summary.textContent = formatHistorySummary(entry);
+        item.appendChild(summary);
+
+        list.appendChild(item);
+      });
+
+      content.appendChild(list);
+      return content;
+    }
+
+    function updateHistoryDisplay(history) {
+      const historyContainer = document.getElementById('historyContent');
+      if (!historyContainer) return;
+      historyContainer.innerHTML = '';
+      historyContainer.appendChild(renderHistory(history));
+    }
+
+    function renderPlanOverview(planContext) {
+      const wrapper = document.createElement('div');
+      if (!planContext || !planContext.activePlan) {
+        wrapper.textContent = 'No active plan yet.';
+        return wrapper;
+      }
+      const plan = planContext.activePlan;
+      const card = document.createElement('div');
+      card.className = 'plan-card';
+      const title = document.createElement('div');
+      title.style.fontWeight = '700';
+      title.textContent = plan.title;
+      card.appendChild(title);
+      const summary = document.createElement('div');
+      summary.textContent = plan.summary || 'No plan summary available.';
+      card.appendChild(summary);
+      const status = document.createElement('div');
+      status.className = 'plan-progress';
+      status.textContent = `Status: ${plan.status}, step ${plan.currentStepIndex} of ${plan.steps.length}`;
+      card.appendChild(status);
+      return card;
+    }
+
+    function renderPlanSteps(planContext) {
+      const wrapper = document.createElement('div');
+      if (!planContext || !planContext.activePlan) {
+        wrapper.textContent = 'No active plan steps.';
+        return wrapper;
+      }
+      const plan = planContext.activePlan;
+      const container = document.createElement('div');
+      container.className = 'plan-panel';
+      plan.steps.forEach((step) => {
+        const stepNode = document.createElement('div');
+        stepNode.className = `plan-step ${step.status || 'pending'}`;
+        const title = document.createElement('div');
+        title.style.fontWeight = '700';
+        title.textContent = step.description || step.type;
+        stepNode.appendChild(title);
+        const details = document.createElement('div');
+        details.textContent = `Target: ${step.target || 'all'} | Status: ${step.status || 'pending'}`;
+        stepNode.appendChild(details);
+        if (step.result?.message) {
+          const resultMeta = document.createElement('div');
+          resultMeta.textContent = step.result.message;
+          stepNode.appendChild(resultMeta);
+        }
+        container.appendChild(stepNode);
+      });
+      wrapper.appendChild(container);
+      return wrapper;
+    }
+
+    function renderPlanProgress(planContext) {
+      const wrapper = document.createElement('div');
+      if (!planContext || !planContext.activePlan) {
+        wrapper.textContent = 'No active plan progress.';
+        return wrapper;
+      }
+      const plan = planContext.activePlan;
+      const progress = document.createElement('div');
+      progress.className = 'plan-progress';
+      progress.textContent = `Progress: ${plan.currentStepIndex} / ${plan.steps.length} steps completed.`;
+      wrapper.appendChild(progress);
+      return wrapper;
+    }
+
+    function renderPlanHistory(planHistory) {
+      const wrapper = document.createElement('div');
+      if (!Array.isArray(planHistory) || planHistory.length === 0) {
+        wrapper.textContent = 'No plan history yet.';
+        return wrapper;
+      }
+      planHistory.slice().reverse().forEach((plan) => {
+        const item = document.createElement('div');
+        item.className = 'plan-history-item';
+        const title = document.createElement('strong');
+        title.textContent = `${plan.title} · ${plan.status}`;
+        item.appendChild(title);
+        const summary = document.createElement('div');
+        summary.textContent = plan.summary || 'No summary available.';
+        item.appendChild(summary);
+        const meta = document.createElement('div');
+        meta.textContent = `Completed ${plan.steps.filter((s) => s.status === 'completed').length}/${plan.steps.length} steps.`;
+        item.appendChild(meta);
+        wrapper.appendChild(item);
+      });
+      return wrapper;
+    }
+
+    function updatePlanDisplays(data) {
+      const planOverviewContainer = document.getElementById('planOverviewContent');
+      const planStepsContainer = document.getElementById('planStepsContent');
+      const planProgressContainer = document.getElementById('planProgressContent');
+      const planHistoryContainer = document.getElementById('planHistoryContent');
+      if (planOverviewContainer) {
+        planOverviewContainer.innerHTML = '';
+        planOverviewContainer.appendChild(renderPlanOverview(data?.planContext || data?.planContext || {}));
+      }
+      if (planStepsContainer) {
+        planStepsContainer.innerHTML = '';
+        planStepsContainer.appendChild(renderPlanSteps(data?.planContext || {}));
+      }
+      if (planProgressContainer) {
+        planProgressContainer.innerHTML = '';
+        planProgressContainer.appendChild(renderPlanProgress(data?.planContext || {}));
+      }
+      if (planHistoryContainer) {
+        planHistoryContainer.innerHTML = '';
+        planHistoryContainer.appendChild(renderPlanHistory(data?.planContext?.planHistory || []));
+      }
+    }
+
+    function renderGlobalSummary(data) {
+      const wrapper = document.createElement('div');
+      if (!data) {
+        wrapper.textContent = 'No global operations yet.';
+        return wrapper;
+      }
+      const p = document.createElement('div');
+      p.textContent = data.message || JSON.stringify(data);
+      wrapper.appendChild(p);
+      if (data.source) {
+        const s = document.createElement('div');
+        s.textContent = `Source: ${getBranchName(data.source)}`;
+        wrapper.appendChild(s);
+      }
+      if (Array.isArray(data.targets)) {
+        const t = document.createElement('div');
+        t.textContent = `Targets: ${data.targets.map(getBranchName).join(', ')}`;
+        wrapper.appendChild(t);
+      }
+      return wrapper;
+    }
+
+    function renderZoneSummary(data) {
+      const wrapper = document.createElement('div');
+      if (!data || !data.zones) {
+        wrapper.textContent = 'No zone data available.';
+        return wrapper;
+      }
+      if (data.message) {
+        const message = document.createElement('div');
+        message.textContent = data.message;
+        wrapper.appendChild(message);
+      }
+      if (data.branchId) {
+        const branch = document.createElement('div');
+        branch.textContent = `Branch: ${getBranchName(data.branchId)}`;
+        wrapper.appendChild(branch);
+      }
+      if (Array.isArray(data.zones)) {
+        const list = document.createElement('div');
+        list.style.marginTop = '8px';
+        data.zones.forEach((zone) => {
+          const zoneItem = document.createElement('div');
+          zoneItem.style.marginBottom = '8px';
+          const title = document.createElement('strong');
+          title.textContent = zone.type ? `${zone.type.toUpperCase()} Zone` : 'Zone';
+          zoneItem.appendChild(title);
+          if (zone.radius !== undefined) {
+            const radius = document.createElement('div');
+            radius.textContent = `Radius: ${zone.radius} meters`;
+            zoneItem.appendChild(radius);
+          }
+          if (zone.center) {
+            const center = document.createElement('div');
+            center.textContent = `Center: ${zone.center.lat}, ${zone.center.lng}`;
+            zoneItem.appendChild(center);
+          }
+          if (Array.isArray(zone.coords)) {
+            const coords = document.createElement('div');
+            coords.textContent = `Coords: ${zone.coords.map(c => `(${c.lat}, ${c.lng})`).join(' → ')}`;
+            zoneItem.appendChild(coords);
+          }
+          list.appendChild(zoneItem);
+        });
+        wrapper.appendChild(list);
+      }
+      return wrapper;
+    }
+
+    function renderCrossDomainPanel(crossDomainContext) {
+      const wrapper = document.createElement('div');
+      if (!crossDomainContext || !Array.isArray(crossDomainContext.conflicts) || crossDomainContext.conflicts.length === 0) {
+        wrapper.textContent = 'No cross-domain reasoning yet.';
+        return wrapper;
+      }
+      const container = document.createElement('div');
+      container.className = 'crossdomain-panel';
+
+      const summaryCard = document.createElement('div');
+      summaryCard.className = 'crossdomain-item';
+      const summaryTitle = document.createElement('strong');
+      summaryTitle.textContent = `Goal: ${crossDomainContext.goal || 'Cross-domain optimization'}`;
+      summaryCard.appendChild(summaryTitle);
+      const branchMeta = document.createElement('div');
+      branchMeta.textContent = crossDomainContext.branchId ? `Branch: ${getBranchName(crossDomainContext.branchId)}` : 'Branch: all';
+      summaryCard.appendChild(branchMeta);
+      if (crossDomainContext.plan?.summary) {
+        const planSummary = document.createElement('div');
+        planSummary.textContent = crossDomainContext.plan.summary;
+        summaryCard.appendChild(planSummary);
+      }
+      container.appendChild(summaryCard);
+
+      const conflictCard = document.createElement('div');
+      conflictCard.className = 'crossdomain-item';
+      const conflictTitle = document.createElement('strong');
+      conflictTitle.textContent = 'Detected Conflicts';
+      conflictCard.appendChild(conflictTitle);
+      crossDomainContext.conflicts.forEach((conflict) => {
+        const item = document.createElement('div');
+        item.textContent = `${conflict.title}: ${conflict.detail}`;
+        conflictCard.appendChild(item);
+      });
+      container.appendChild(conflictCard);
+
+      const reasoningCard = document.createElement('div');
+      reasoningCard.className = 'crossdomain-item';
+      const reasoningTitle = document.createElement('strong');
+      reasoningTitle.textContent = 'Reasoning Chain';
+      reasoningCard.appendChild(reasoningTitle);
+      crossDomainContext.reasoningChain.forEach((step) => {
+        const stepItem = document.createElement('div');
+        stepItem.textContent = `• ${step}`;
+        reasoningCard.appendChild(stepItem);
+      });
+      container.appendChild(reasoningCard);
+
+      return container;
+    }
+
+    function renderSimulationPanel(simulationContext) {
+      const wrapper = document.createElement('div');
+      if (!simulationContext || !simulationContext.predictedImpact) {
+        wrapper.textContent = simulationContext?.summary || 'No simulation forecasts yet.';
+        return wrapper;
+      }
+      const container = document.createElement('div');
+      container.className = 'simulation-panel';
+
+      const summaryCard = document.createElement('div');
+      summaryCard.className = 'simulation-item';
+      const summaryTitle = document.createElement('strong');
+      summaryTitle.textContent = `Scenario: ${simulationContext.scenario || 'Simulation forecast'}`;
+      summaryCard.appendChild(summaryTitle);
+      if (simulationContext.branchId) {
+        const branchMeta = document.createElement('div');
+        branchMeta.textContent = `Branch: ${getBranchName(simulationContext.branchId)}`;
+        summaryCard.appendChild(branchMeta);
+      }
+      if (simulationContext.summary) {
+        const summaryDetail = document.createElement('div');
+        summaryDetail.textContent = simulationContext.summary;
+        summaryCard.appendChild(summaryDetail);
+      }
+      container.appendChild(summaryCard);
+
+      const impactCard = document.createElement('div');
+      impactCard.className = 'simulation-item';
+      const impactTitle = document.createElement('strong');
+      impactTitle.textContent = 'Forecast Summary';
+      impactCard.appendChild(impactTitle);
+      Object.entries(simulationContext.predictedImpact).forEach(([key, value]) => {
+        const row = document.createElement('div');
+        row.textContent = `${key}: ${value}`;
+        impactCard.appendChild(row);
+      });
+      container.appendChild(impactCard);
+
+      if (Array.isArray(simulationContext.riskFactors) && simulationContext.riskFactors.length) {
+        const riskCard = document.createElement('div');
+        riskCard.className = 'simulation-item';
+        const riskTitle = document.createElement('strong');
+        riskTitle.textContent = 'Risk Factors';
+        riskCard.appendChild(riskTitle);
+        simulationContext.riskFactors.forEach((risk) => {
+          const riskItem = document.createElement('div');
+          riskItem.textContent = `• ${risk}`;
+          riskCard.appendChild(riskItem);
+        });
+        container.appendChild(riskCard);
+      }
+
+      if (Array.isArray(simulationContext.recommendedAdjustments) && simulationContext.recommendedAdjustments.length) {
+        const adjustCard = document.createElement('div');
+        adjustCard.className = 'simulation-item';
+        const adjustTitle = document.createElement('strong');
+        adjustTitle.textContent = 'Recommended Adjustments';
+        adjustCard.appendChild(adjustTitle);
+        simulationContext.recommendedAdjustments.forEach((recommendation) => {
+          const recItem = document.createElement('div');
+          recItem.textContent = `• ${recommendation}`;
+          adjustCard.appendChild(recItem);
+        });
+        container.appendChild(adjustCard);
+      }
+
+      if (Array.isArray(simulationContext.comparisonDetails) && simulationContext.comparisonDetails.length) {
+        const compareCard = document.createElement('div');
+        compareCard.className = 'simulation-item';
+        const compareTitle = document.createElement('strong');
+        compareTitle.textContent = 'Comparison';
+        compareCard.appendChild(compareTitle);
+        simulationContext.comparisonDetails.forEach((detail) => {
+          const compareItem = document.createElement('div');
+          compareItem.textContent = `• ${detail}`;
+          compareCard.appendChild(compareItem);
+        });
+        container.appendChild(compareCard);
+      }
+
+      return container;
+    }
+
+    function renderReportPanel(report) {
+      const wrapper = document.createElement('div');
+      if (!report || !report.title) {
+        wrapper.textContent = 'No reports yet.';
+        return wrapper;
+      }
+      const container = document.createElement('div');
+      container.className = 'simulation-panel';
+
+      const header = document.createElement('div');
+      header.className = 'simulation-item';
+      const title = document.createElement('strong');
+      title.textContent = report.title;
+      header.appendChild(title);
+      if (report.summary) {
+        const sum = document.createElement('div');
+        sum.textContent = report.summary;
+        header.appendChild(sum);
+      }
+      container.appendChild(header);
+
+      if (Array.isArray(report.sections)) {
+        report.sections.forEach((s, idx) => {
+          const sec = document.createElement('div');
+          sec.className = 'simulation-item';
+          const secTitle = document.createElement('strong');
+          secTitle.textContent = `${idx + 1}. ${s.title}`;
+          sec.appendChild(secTitle);
+          const secDetail = document.createElement('div');
+          secDetail.textContent = s.detail;
+          sec.appendChild(secDetail);
+          container.appendChild(sec);
+        });
+      }
+
+      if (Array.isArray(report.recommendations)) {
+        const recCard = document.createElement('div');
+        recCard.className = 'simulation-item';
+        const recTitle = document.createElement('strong');
+        recTitle.textContent = 'Recommendations';
+        recCard.appendChild(recTitle);
+        report.recommendations.forEach(r => {
+          const ritem = document.createElement('div');
+          ritem.textContent = `• ${r}`;
+          recCard.appendChild(ritem);
+        });
+        container.appendChild(recCard);
+      }
+
+      if (Array.isArray(report.nextSteps)) {
+        const ns = document.createElement('div');
+        ns.className = 'simulation-item';
+        const nst = document.createElement('strong');
+        nst.textContent = 'Next Steps';
+        ns.appendChild(nst);
+        report.nextSteps.forEach(n => {
+          const nitem = document.createElement('div');
+          nitem.textContent = `• ${n}`;
+          ns.appendChild(nitem);
+        });
+        container.appendChild(ns);
+      }
+
+      return container;
+    }
+
+    function renderRecommendationPanel(recommendationContext) {
+      const wrapper = document.createElement('div');
+      if (!recommendationContext || !Array.isArray(recommendationContext.lastRecommendations) || recommendationContext.lastRecommendations.length === 0) {
+        wrapper.textContent = 'No recommendations yet.';
+        return wrapper;
+      }
+      const container = document.createElement('div');
+      container.className = 'recommendation-panel';
+      recommendationContext.lastRecommendations.forEach((rec) => {
+        const item = document.createElement('div');
+        item.className = 'recommendation-item';
+        const title = document.createElement('strong');
+        title.textContent = rec.title;
+        item.appendChild(title);
+        const detail = document.createElement('div');
+        detail.textContent = rec.detail;
+        item.appendChild(detail);
+        if (rec.why) {
+          const why = document.createElement('div');
+          why.style.fontStyle = 'italic';
+          why.style.marginTop = '6px';
+          why.textContent = `Why: ${rec.why}`;
+          item.appendChild(why);
+        }
+        container.appendChild(item);
+      });
+      wrapper.appendChild(container);
+      return wrapper;
+    }
+
+    function renderLongTermPanel(data) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'memory-panel';
+      if (!data || (!data.insights && !data.memoryConsolidationContext && !data.memoryGraph && !data.moreHistory)) {
+        wrapper.textContent = 'No long-term memory activity yet.';
+        return wrapper;
+      }
+
+      if (Array.isArray(data.insights) && data.insights.length) {
+        const insightsCard = document.createElement('div');
+        insightsCard.className = 'memory-card';
+        const title = document.createElement('strong');
+        title.textContent = 'Historical Insights';
+        insightsCard.appendChild(title);
+        data.insights.forEach((insight) => {
+          const item = document.createElement('div');
+          item.textContent = insight;
+          insightsCard.appendChild(item);
+        });
+        wrapper.appendChild(insightsCard);
+      }
+
+      if (data.memoryConsolidationContext) {
+        const summaryCard = document.createElement('div');
+        summaryCard.className = 'memory-card';
+        const title = document.createElement('strong');
+        title.textContent = 'Patterns & Trends';
+        summaryCard.appendChild(title);
+        const notes = [];
+        notes.push(`Total memory items: ${data.memoryConsolidationContext.totalFacts ?? 0}`);
+        if (data.memoryConsolidationContext.topicCounts) {
+          notes.push(`Topics: ${Object.entries(data.memoryConsolidationContext.topicCounts).map(([topic, count]) => `${topic} (${count})`).join(', ')}`);
+        }
+        if (data.memoryConsolidationContext.branchCounts) {
+          notes.push(`Branch behavior flagged: ${Object.entries(data.memoryConsolidationContext.branchCounts).map(([branch, count]) => `${branch} (${count})`).join(', ')}`);
+        }
+        if (data.memoryConsolidationContext.seasonalCounts) {
+          notes.push(`Seasonal trends: ${Object.entries(data.memoryConsolidationContext.seasonalCounts).map(([month, count]) => `${month} (${count})`).join(', ')}`);
+        }
+        notes.forEach((note) => {
+          const line = document.createElement('div');
+          line.textContent = note;
+          summaryCard.appendChild(line);
+        });
+        wrapper.appendChild(summaryCard);
+      }
+
+      if (data.memoryGraph) {
+        const graphCard = document.createElement('div');
+        graphCard.className = 'memory-card';
+        const title = document.createElement('strong');
+        title.textContent = 'Knowledge Graph';
+        graphCard.appendChild(title);
+        const nodeCount = Array.isArray(data.memoryGraph.nodes) ? data.memoryGraph.nodes.length : 0;
+        const edgeCount = Array.isArray(data.memoryGraph.edges) ? data.memoryGraph.edges.length : 0;
+        const meta = document.createElement('div');
+        meta.textContent = `Nodes: ${nodeCount}, Edges: ${edgeCount}`;
+        graphCard.appendChild(meta);
+        if (Array.isArray(data.memoryGraph.nodes) && data.memoryGraph.nodes.length) {
+          const list = document.createElement('div');
+          list.textContent = `Sample nodes: ${data.memoryGraph.nodes.slice(0, 3).map((node) => node.label || node.id).join(', ')}`;
+          graphCard.appendChild(list);
+        }
+        wrapper.appendChild(graphCard);
+      }
+
+      if (Array.isArray(data.moreHistory) && data.moreHistory.length) {
+        const historyCard = document.createElement('div');
+        historyCard.className = 'memory-card';
+        const title = document.createElement('strong');
+        title.textContent = 'Historical Memory';
+        historyCard.appendChild(title);
+        data.moreHistory.slice().reverse().slice(0, 5).forEach((entry) => {
+          const item = document.createElement('div');
+          item.textContent = `${new Date(entry.timestamp).toLocaleDateString()} • ${entry.summary || entry.type}`;
+          historyCard.appendChild(item);
+        });
+        wrapper.appendChild(historyCard);
+      }
+
+      return wrapper;
+    }
+
+    function renderBranchComparison(data) {
+      const wrapper = document.createElement('div');
+      if (!data || !Array.isArray(data.diffs) || data.diffs.length === 0) {
+        wrapper.textContent = 'No differences detected.';
+        return wrapper;
+      }
+      data.diffs.forEach((d) => {
+        const block = document.createElement('div');
+        block.style.marginBottom = '12px';
+        const title = document.createElement('strong');
+        title.textContent = `${getBranchName(d.base)} ≠ ${getBranchName(d.compareTo)}`;
+        block.appendChild(title);
+        if (d.weeklyDiff && d.weeklyDiff.length) {
+          const ul = document.createElement('ul');
+          d.weeklyDiff.forEach((w) => {
+            const li = document.createElement('li');
+            li.textContent = `${w.day}: ${w.base.open || '-'}-${w.base.close || '-'} vs ${w.target ? (w.target.open || '-') + '-' + (w.target.close || '-') : 'missing'}`;
+            ul.appendChild(li);
+          });
+          block.appendChild(ul);
+        }
+        if (d.missingOverrides && d.missingOverrides.length) {
+          const miss = document.createElement('div');
+          miss.textContent = `Missing overrides in ${getBranchName(d.compareTo)}: ${d.missingOverrides.join(', ')}`;
+          block.appendChild(miss);
+        }
+        if (d.mismatchOverrides && d.mismatchOverrides.length) {
+          const mis = document.createElement('div');
+          mis.textContent = `Mismatched overrides: ${d.mismatchOverrides.map(m => m.date).join(', ')}`;
+          block.appendChild(mis);
+        }
+        wrapper.appendChild(block);
+      });
+      return wrapper;
+    }
+
+    function renderOrchestratorQueue(queue) {
+      const wrapper = document.createElement('div');
+      if (!Array.isArray(queue) || queue.length === 0) {
+        wrapper.textContent = 'No orchestrator tasks queued.';
+        return wrapper;
+      }
+      const list = document.createElement('div');
+      queue.slice().sort((a,b)=>a.scheduledAt - b.scheduledAt).forEach((q) => {
+        const item = document.createElement('div');
+        item.className = 'history-item';
+        const title = document.createElement('strong');
+        title.textContent = `${q.id} · ${q.type} · ${q.status}`;
+        item.appendChild(title);
+        const meta = document.createElement('div');
+        meta.textContent = `Scheduled: ${new Date(q.scheduledAt).toLocaleString()}${q.recurringMs? ' · recurring':''}`;
+        item.appendChild(meta);
+        if (Array.isArray(q.dependencies) && q.dependencies.length) {
+          const deps = document.createElement('div');
+          deps.textContent = `Depends on: ${q.dependencies.join(', ')}`;
+          item.appendChild(deps);
+        }
+        list.appendChild(item);
+      });
+      wrapper.appendChild(list);
+      return wrapper;
+    }
+
+    function renderActiveTasks(active) {
+      const wrapper = document.createElement('div');
+      const keys = Object.keys(active || {});
+      if (keys.length === 0) { wrapper.textContent = 'No active tasks.'; return wrapper; }
+      keys.forEach((k) => {
+        const t = active[k];
+        const item = document.createElement('div');
+        item.className = 'history-item';
+        const title = document.createElement('strong');
+        title.textContent = `${t.id} · ${t.type}`;
+        item.appendChild(title);
+        const meta = document.createElement('div');
+        meta.textContent = `Started: ${t.startedAt ? new Date(t.startedAt).toLocaleString() : 'N/A'}`;
+        item.appendChild(meta);
+        wrapper.appendChild(item);
+      });
+      return wrapper;
+    }
+
+    function renderScheduledTasks(queue) {
+      return renderOrchestratorQueue(queue);
+    }
+
+    function renderTaskDependencies(queue) {
+      const wrapper = document.createElement('div');
+      const deps = [];
+      (queue || []).forEach((q) => {
+        if (Array.isArray(q.dependencies) && q.dependencies.length) deps.push({ id: q.id, deps: q.dependencies });
+      });
+      if (!deps.length) { wrapper.textContent = 'No dependencies.'; return wrapper; }
+      deps.forEach((d) => {
+        const item = document.createElement('div');
+        item.textContent = `${d.id} => ${d.deps.join(', ')}`;
+        wrapper.appendChild(item);
+      });
+      return wrapper;
+    }
+
+    function renderTaskTimeline(history) {
+      const wrapper = document.createElement('div');
+      if (!Array.isArray(history) || history.length === 0) { wrapper.textContent = 'No timeline yet.'; return wrapper; }
+      history.slice().reverse().forEach((h) => {
+        const item = document.createElement('div');
+        item.className = 'history-item';
+        const title = document.createElement('strong');
+        title.textContent = `${h.id} · ${h.type} · ${h.status}`;
+        item.appendChild(title);
+        const meta = document.createElement('div');
+        meta.textContent = `Created: ${new Date(h.createdAt).toLocaleString()} Completed: ${h.completedAt? new Date(h.completedAt).toLocaleString(): 'N/A'}`;
+        item.appendChild(meta);
+        wrapper.appendChild(item);
+      });
+      return wrapper;
+    }
+
+    function updateOrchestratorDisplays(data) {
+      const queueContainer = document.getElementById('orchestratorQueueContent');
+      const activeContainer = document.getElementById('activeTasksContent');
+      const scheduledContainer = document.getElementById('scheduledTasksContent');
+      const depsContainer = document.getElementById('taskDepsContent');
+      const timelineContainer = document.getElementById('taskTimelineContent');
+      if (queueContainer) { queueContainer.innerHTML = ''; queueContainer.appendChild(renderOrchestratorQueue(data?.orchestrator?.queue || [])); }
+      if (activeContainer) { activeContainer.innerHTML = ''; activeContainer.appendChild(renderActiveTasks(data?.orchestrator?.active || {})); }
+      if (scheduledContainer) { scheduledContainer.innerHTML = ''; scheduledContainer.appendChild(renderScheduledTasks(data?.orchestrator?.queue || [])); }
+      if (depsContainer) { depsContainer.innerHTML = ''; depsContainer.appendChild(renderTaskDependencies(data?.orchestrator?.queue || [])); }
+      if (timelineContainer) { timelineContainer.innerHTML = ''; timelineContainer.appendChild(renderTaskTimeline(data?.orchestrator?.history || [])); }
+    }
+
+    function renderConversationContext(data) {
+      const wrapper = document.createElement('div');
+      if (!data || !data.lastIntent) {
+        wrapper.textContent = 'No conversational context yet.';
+        return wrapper;
+      }
+      const lines = [];
+      lines.push(`Last intent: ${data.lastIntent}`);
+      if (data.lastBranchId) {
+        lines.push(`Branch: ${getBranchName(data.lastBranchId)}`);
+      }
+      if (data.lastCorrection) {
+        lines.push(`Last correction: ${data.lastCorrection}`);
+      }
+      if (data.lastClarification) {
+        lines.push(`Last clarification: ${data.lastClarification}`);
+      }
+      if (data.lastAmbiguity) {
+        lines.push(`Last ambiguity: ${data.lastAmbiguity}`);
+      }
+      wrapper.innerHTML = lines.map((line) => `<div>${line}</div>`).join('');
+      return wrapper;
+    }
+
+    async function sendMessage() {
+      const message = input.value.trim();
+      if (!message) return;
+      appendMessage('user', message);
+      input.value = '';
+      input.focus();
+
+      try {
+        const response = await fetch('/agent', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message })
+        });
+
+        const data = await response.json();
+        const branchId = data?.data?.branchId || data?.branchId || data?.preview?.branchId || data?.data?.preview?.branchId || '';
+        const branchName = branchId ? getBranchName(branchId) : '';
+
+        const isSoftError = data.softError || data?.data?.softError;
+        if (!data.success) {
+          const errorText = data.error || 'Unknown error';
+          appendMessage(isSoftError ? 'agent soft-error' : 'agent', errorText, branchName ? `Branch: ${branchName}` : 'Error', isSoftError ? 'soft-error' : 'error');
+          updateHistoryDisplay(data?.data?.history || []);
+          return;
+        }
+
+        const isPreview = data.intent === 'preview_update' || data.preview || (data.data && data.data.preview);
+        const title = isPreview
+          ? branchName
+            ? `Agent previewed a schedule update for ${branchName}`
+            : 'Agent previewed a schedule update.'
+          : branchName
+            ? `Agent updated schedule for ${branchName}`
+            : 'Agent responded successfully.';
+        const shift = data?.data?.relativeShift || data?.relativeShift;
+        const shiftParts = [];
+        if (shift?.relativeOpenMinutes !== undefined) {
+          shiftParts.push(`open ${shift.relativeOpenMinutes > 0 ? 'later' : 'earlier'} ${Math.abs(shift.relativeOpenMinutes / 60)}h`);
+        }
+        if (shift?.relativeCloseMinutes !== undefined) {
+          shiftParts.push(`close ${shift.relativeCloseMinutes > 0 ? 'later' : 'earlier'} ${Math.abs(shift.relativeCloseMinutes / 60)}h`);
+        }
+        const shiftSummary = shiftParts.length ? ` | Shift: ${shiftParts.join(', ')}` : '';
+        const details = branchId ? `Intent: ${data.intent} | Branch: ${branchName}${shiftSummary}` : `Intent: ${data.intent}${shiftSummary}`;
+        const bubbleText = data.message || data?.data?.message || title;
+
+        let extraNode = null;
+        const preview = data?.preview || data?.data?.preview;
+        const hours = preview?.hours || data?.data?.updated?.hours || data?.updated?.hours || data?.data?.hours;
+        const changedDays = preview?.changedDays || data?.data?.changedDays || data?.changedDays || [];
+        if (Array.isArray(hours)) {
+          extraNode = renderScheduleTable(hours, changedDays);
+          if (isPreview) {
+            const previewActions = document.createElement('div');
+            previewActions.className = 'preview-actions';
+            previewActions.appendChild(createActionButton('Apply changes', 'Yes'));
+            previewActions.appendChild(createActionButton('Cancel', 'No'));
+            extraNode.appendChild(previewActions);
+          }
+        }
+
+        const followups = data?.followups || data?.data?.followups || [];
+        if (Array.isArray(followups) && followups.length) {
+          const followupActions = document.createElement('div');
+          followupActions.className = 'followup-actions';
+          followups.forEach((item) => {
+            followupActions.appendChild(createActionButton(item.label, item.intent));
+          });
+          if (extraNode) {
+            extraNode.appendChild(followupActions);
+          } else {
+            extraNode = followupActions;
+          }
+        }
+
+        const memoryHints = data?.memoryHints || data?.data?.memoryHints || [];
+        if (Array.isArray(memoryHints) && memoryHints.length) {
+          const hintNode = renderMemoryHints(memoryHints);
+          if (extraNode) {
+            extraNode.appendChild(hintNode);
+          } else {
+            extraNode = hintNode;
+          }
+        }
+
+        const holidayOverrides = data?.data?.holidayOverrides || data?.holidayOverrides;
+        if (Array.isArray(holidayOverrides) && holidayOverrides.length) {
+          const holidayNode = renderHolidayOverrides(holidayOverrides);
+          if (holidayNode) {
+            if (extraNode) {
+              extraNode.appendChild(holidayNode);
+            } else {
+              extraNode = holidayNode;
+            }
+          }
+        }
+
+        if (data?.memoryReset || data?.data?.memoryReset) {
+          const resetNode = renderMemoryResetHint('Conversation memory cleared.');
+          if (extraNode) {
+            extraNode.appendChild(resetNode);
+          } else {
+            extraNode = resetNode;
+          }
+        }
+
+        updateHistoryDisplay(data?.data?.history || []);
+        updatePlanDisplays(data?.data || {});
+        const globalContainer = document.getElementById('globalContent');
+        if (globalContainer) {
+          globalContainer.innerHTML = '';
+          if (data?.data?.source || data?.data?.message) globalContainer.appendChild(renderGlobalSummary(data?.data));
+        }
+        const compareContainer = document.getElementById('compareContent');
+        if (compareContainer) {
+          compareContainer.innerHTML = '';
+          if (data?.data?.diffs) compareContainer.appendChild(renderBranchComparison(data.data));
+        }
+        const conversationContainer = document.getElementById('conversationContent');
+        if (conversationContainer) {
+          conversationContainer.innerHTML = '';
+          conversationContainer.appendChild(renderConversationContext(data?.data?.conversationContext || {}));
+        }
+        const recommendationContainer = document.getElementById('recommendationContent');
+        if (recommendationContainer) {
+          recommendationContainer.innerHTML = '';
+          recommendationContainer.appendChild(renderRecommendationPanel(data?.data?.recommendationContext || {}));
+        }
+        const crossDomainContainer = document.getElementById('crossDomainContent');
+        if (crossDomainContainer) {
+          crossDomainContainer.innerHTML = '';
+          crossDomainContainer.appendChild(renderCrossDomainPanel(data?.data?.crossDomainContext || {}));
+        }
+        const simulationContainer = document.getElementById('simulationContent');
+        if (simulationContainer) {
+          simulationContainer.innerHTML = '';
+          simulationContainer.appendChild(renderSimulationPanel(data?.data?.simulationContext || {}));
+        }
+        const memoryContainer = document.getElementById('longTermMemoryContent');
+        if (memoryContainer) {
+          memoryContainer.innerHTML = '';
+          memoryContainer.appendChild(renderLongTermPanel(data?.data || {}));
+        }
+        const zonesContainer = document.getElementById('zonesContent');
+        if (zonesContainer) {
+          zonesContainer.innerHTML = '';
+          if (data?.data?.zones) {
+            zonesContainer.appendChild(renderZoneSummary(data.data));
+          } else if (data?.data?.message && data?.intent?.includes('zone')) {
+            zonesContainer.textContent = data.data.message;
+          } else {
+            zonesContainer.textContent = 'No delivery zone activity yet.';
+          }
+        }
+        // orchestrator UI
+        const orchestratorData = data?.data?.orchestrator || {};
+        updateOrchestratorDisplays({ orchestrator: { queue: orchestratorData.queue || [], active: orchestratorData.active || {}, history: orchestratorData.history || [] } });
+        appendMessage(isSoftError ? 'agent soft-error' : 'agent', bubbleText, details, isSoftError ? 'soft-error' : 'success', extraNode, isPreview);
+      } catch (error) {
+        appendMessage('agent', error.message || 'Network error', 'Error', 'error');
+      }
+    }
+
+    button.addEventListener('click', sendMessage);
+    input.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        sendMessage();
+      }
+    });
+
+    // --- Multi-Agent Collaboration Panel ---
+    const multiAgentPanel = document.createElement('div');
+    multiAgentPanel.id = 'multi-agent-panel';
+    multiAgentPanel.style = 'margin:32px 0;padding:20px;background:#e9f5ff;border-radius:12px;border:1px solid #b6e0fe;';
+    multiAgentPanel.innerHTML = `
+      <h2 style="margin-top:0;color:#2563eb;">Multi-Agent Collaboration</h2>
+      <div><b>Active Sub-Agents:</b> <span id="sub-agents-list">(none)</span></div>
+      <div><b>Delegated Tasks:</b> <span id="delegated-tasks-list">(none)</span></div>
+      <div><b>Distributed Plan:</b> <span id="distributed-plan">(none)</span></div>
+      <div><b>Merged Results:</b> <span id="merged-results">(none)</span></div>
+      <div><b>Conflict Resolution:</b> <span id="conflict-resolution">(none)</span></div>
+    `;
+    document.body.insertBefore(multiAgentPanel, document.body.firstChild.nextSibling);
+
+    // Example update function (replace with real data wiring)
+    function updateMultiAgentPanel({ subAgents = [], tasks = [], plan = null, merged = null, conflict = null }) {
+      document.getElementById('sub-agents-list').textContent = subAgents.length ? subAgents.map(a => a.type).join(', ') : '(none)';
+      document.getElementById('delegated-tasks-list').textContent = tasks.length ? tasks.map(t => t.type).join(', ') : '(none)';
+      document.getElementById('distributed-plan').textContent = plan ? JSON.stringify(plan) : '(none)';
+      document.getElementById('merged-results').textContent = merged ? JSON.stringify(merged) : '(none)';
+      document.getElementById('conflict-resolution').textContent = conflict ? JSON.stringify(conflict) : '(none)';
+    }
+
+    // TODO: Wire this to backend agent state updates
+    // updateMultiAgentPanel({ subAgents: [...], tasks: [...], plan: ..., merged: ..., conflict: ... });
+
+    loadBranches();
+  </script>
+</body>
+</html>

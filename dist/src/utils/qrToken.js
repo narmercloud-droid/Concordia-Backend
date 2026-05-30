@@ -1,4 +1,0 @@
-import crypto from "crypto";
-export function generateQrToken() {
-    return crypto.randomBytes(16).toString("hex");
-}

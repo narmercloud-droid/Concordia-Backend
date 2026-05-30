@@ -1,4 +1,5 @@
 import { prisma } from "../prisma/client.js";
+import { randomUUID } from "crypto";
 export class ManagerDashboardService {
     // MENU ITEMS FOR BRANCH
     async menu(branchId) {
@@ -49,7 +50,7 @@ export class ManagerDashboardService {
     async updateSchedule(branchId, schedule) {
         await prisma.branchSchedule.deleteMany({ where: { branchId } });
         return prisma.branchSchedule.createMany({
-            data: schedule.map(s => ({ ...s, branchId }))
+            data: schedule.map(s => ({ id: randomUUID(), ...s, branchId }))
         });
     }
 }

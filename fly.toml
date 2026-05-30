@@ -1,0 +1,29 @@
+app = "concordia-backend"
+
+[build]
+  image = "node:18-alpine"
+
+[env]
+  NODE_ENV = "production"
+
+[experimental]
+  auto_rollback = true
+
+[processes]
+  web = "node dist/index.js"
+  worker = "node dist/worker.js"
+
+[[services]]
+  internal_port = 4000
+  protocol = "tcp"
+  processes = ["web"]
+
+  [[services.ports]]
+    port = 80
+    handlers = ["http"]
+
+  [services.tcp_checks]
+    interval = "30s"
+    timeout = "5s"
+    grace_period = "5s"
+    restart_limit = 0

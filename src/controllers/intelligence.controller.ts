@@ -1,6 +1,7 @@
-import { intelligenceService } from "../services/intelligence.service.js";
+﻿import { intelligenceService } from "../services/intelligence.service.js";
 import { prisma } from "../prisma/client.js";
-import { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response  } from "express";
+import { success } from "./controllerHelper.js";
 
 export const IntelligenceController = {
   summary: async (req: Request, res: Response, next: NextFunction) => {
@@ -8,7 +9,7 @@ export const IntelligenceController = {
       const branchId = req.user!.branchId;
       const result = await intelligenceService.summary(branchId);
       await intelligenceService.logView(branchId, "summary");
-      res.json(result);
+      return success(res, result);
     } catch (err: unknown) {
       next(err);
     }
@@ -19,7 +20,7 @@ export const IntelligenceController = {
       const branchId = req.user!.branchId;
       const result = await intelligenceService.generateReport(branchId);
       await intelligenceService.logView(branchId, "report");
-      res.json(result);
+      return success(res, result);
     } catch (err: unknown) {
       next(err);
     }
@@ -32,12 +33,17 @@ export const IntelligenceController = {
         where: { branchId },
         orderBy: { createdAt: "desc" },
       });
-      res.json(logs);
+      return success(res, logs);
     } catch (err: unknown) {
       next(err);
     }
   },
 };
+
+
+
+
+
 
 
 

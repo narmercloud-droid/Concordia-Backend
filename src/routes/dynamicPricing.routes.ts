@@ -1,4 +1,4 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { DynamicPricingController } from "../controllers/dynamicPricing.controller.js";
 import { adminAuth } from "../middleware/adminAuth.js";
 import { adminRole } from "../middleware/adminRole.js";
@@ -20,4 +20,10 @@ router.post(
 );
 
 export default router;
+
+
+
+
+
+
 

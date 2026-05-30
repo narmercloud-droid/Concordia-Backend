@@ -1,5 +1,6 @@
-import { Request, Response, NextFunction } from "express";
+﻿import type { Request, Response, NextFunction  } from "express";
 import { TerminalAdminService } from "../../services/admin/terminalAdmin.service.js";
+import { success } from "../controllerHelper.js";
 
 export class TerminalAdminController {
   // -----------------------------------------------------
@@ -8,9 +9,7 @@ export class TerminalAdminController {
   static async getAllTerminals(_req: Request, res: Response, next: NextFunction) {
     try {
       const terminals = await TerminalAdminService.getAllTerminals();
-
-      res.json(terminals);
-      return;
+      return success(res, terminals);
     } catch (err: unknown) {
       next(err);
     }
@@ -22,12 +21,15 @@ export class TerminalAdminController {
   static async getTerminalActivity(_req: Request, res: Response, next: NextFunction) {
     try {
       const activity = await TerminalAdminService.getTerminalActivity();
-
-      res.json(activity);
-      return;
+      return success(res, activity);
     } catch (err: unknown) {
       next(err);
     }
   }
 }
+
+
+
+
+
 

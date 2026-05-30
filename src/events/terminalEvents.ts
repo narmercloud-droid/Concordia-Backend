@@ -1,4 +1,4 @@
-import { Server, Socket } from "socket.io";
+﻿import { Server, Socket } from "socket.io";
 import { prisma } from "../prisma/client.js";
 import { TerminalService } from "../services/terminal/terminal.service.js";
 
@@ -112,3 +112,7 @@ export async function emitTerminalStatusUpdate(io: Server, terminal_id: string, 
     lastSeen,
   });
 }
+
+
+
+

@@ -1,4 +1,5 @@
-import { prisma } from "../prisma/client.js";
+﻿import { prisma } from "../prisma/client.js";
+import { randomUUID } from "crypto";
 
 interface ScheduleData {
   day: number;
@@ -64,10 +65,14 @@ export class ManagerDashboardService {
     await prisma.branchSchedule.deleteMany({ where: { branchId } });
 
     return prisma.branchSchedule.createMany({
-      data: schedule.map(s => ({ ...s, branchId }))
+      data: schedule.map(s => ({ id: randomUUID(), ...s, branchId }))
     });
   }
 }
 
 export const managerDashboardService = new ManagerDashboardService();
+
+
+
+
 

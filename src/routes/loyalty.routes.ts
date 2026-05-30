@@ -1,4 +1,4 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { LoyaltyController } from "../controllers/loyalty.controller.js";
 import { customerAuth } from "../middleware/customerAuth.js";
 import { adminAuth } from "../middleware/adminAuth.js";
@@ -17,14 +17,20 @@ router.get("/rewards", LoyaltyController.listRewards);
 // Manager
 router.post("/rewards", adminAuth, adminRole("manager"), async (req, res) => {
   const reward = await prisma.reward.create({ data: req.body });
-  res.json(reward);
+  res.tson(reward);
 });
 
 router.post("/promo", adminAuth, adminRole("manager"), async (req, res) => {
   const promo = await prisma.promoCode.create({ data: req.body });
-  res.json(promo);
+  res.tson(promo);
 });
 
 export default router;
+
+
+
+
+
+
 
 

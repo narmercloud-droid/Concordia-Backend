@@ -1,9 +1,9 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import DashboardLayout from "./layouts/DashboardLayout";
-import Orders from "./pages/Orders";
-import Menu from "./pages/Menu";
-import CustomerMenu from "./pages/CustomerMenu";
-import TrackOrder from "./pages/TrackOrder"; // ⭐ ADD THIS
+import DashboardLayout from "./layouts/DashboardLayout.js";
+import Orders from "./pages/Orders.js";
+import Menu from "./pages/Menu.js";
+import CustomerMenu from "./pages/CustomerMenu.js";
+import TrackOrder from "./pages/TrackOrder.js"; // ⭐ ADD THIS
 
 export default function App() {
   return (

@@ -1,4 +1,4 @@
-import { z } from "zod";
+﻿import { z } from "zod";
 import { queryStringOptional } from "./common.schema.js";
 
 export const managerItemAvailabilitySchema = z.object({
@@ -11,3 +11,7 @@ export const managerScheduleUpdateSchema = z.array(z.unknown()).or(z.record(z.st
 export const managerOrdersQuerySchema = z.object({
   status: queryStringOptional
 });
+
+
+
+

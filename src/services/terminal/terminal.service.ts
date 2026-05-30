@@ -1,5 +1,7 @@
+﻿import { randomUUID } from "crypto";
 import { prisma } from "../../prisma/client.js";
 import { signToken, verifyToken } from "../../utils/jwt.js";
+import { OrderLifecycleService } from "../order/orderLifecycle.service.js";
 
 export class TerminalService {
   static async activateTerminal(branchId: string) {
@@ -42,6 +44,7 @@ export class TerminalService {
 
     return prisma.terminal.create({
       data: {
+        id: randomUUID(),
         name: terminal_name,
         activation_token,
         branchId: branch.id,
@@ -92,19 +95,8 @@ export class TerminalService {
       throw new Error("Order not found");
     }
 
-    return prisma.order.update({
-      where: { id: order_id },
-      data: {
-        status: "acknowledged",
-        terminal_id,
-      },
-      include: {
-        items: {
-          include: {
-            item: true,
-          },
-        },
-      },
+    return OrderLifecycleService.updateStatus(order_id, "acknowledged", undefined, {
+      terminal_id
     });
   }
 
@@ -129,19 +121,8 @@ export class TerminalService {
       throw new Error("Order is already assigned to a terminal");
     }
 
-    const updatedOrder = await prisma.order.update({
-      where: { id: order_id },
-      data: {
-        terminal_id,
-        status: "assigned",
-      },
-      include: {
-        items: {
-          include: {
-            item: true,
-          },
-        },
-      },
+    const updatedOrder = await OrderLifecycleService.updateStatus(order_id, "assigned", undefined, {
+      terminal_id
     });
 
     const { getIO } = await import("../../lib/socket.js");
@@ -173,17 +154,7 @@ export class TerminalService {
       throw new Error("Terminal not assigned to this order");
     }
 
-    const updatedOrder = await prisma.order.update({
-      where: { id: order_id },
-      data: { status: "accepted" },
-      include: {
-        items: {
-          include: {
-            item: true,
-          },
-        },
-      },
-    });
+    const updatedOrder = await OrderLifecycleService.updateStatus(order_id, "accepted");
 
     const { getIO } = await import("../../lib/socket.js");
     const payload = {
@@ -214,19 +185,8 @@ export class TerminalService {
       throw new Error("Terminal not assigned to this order");
     }
 
-    const updatedOrder = await prisma.order.update({
-      where: { id: order_id },
-      data: {
-        status: "rejected",
-        terminal_id: null,
-      },
-      include: {
-        items: {
-          include: {
-            item: true,
-          },
-        },
-      },
+    const updatedOrder = await OrderLifecycleService.updateStatus(order_id, "rejected", undefined, {
+      terminal_id: null
     });
 
     const { getIO } = await import("../../lib/socket.js");
@@ -247,3 +207,7 @@ export class TerminalService {
     return updatedOrder;
   }
 }
+
+
+
+

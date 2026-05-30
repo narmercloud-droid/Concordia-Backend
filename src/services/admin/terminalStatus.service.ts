@@ -1,4 +1,4 @@
-import { prisma } from "../../prisma/client.js";
+﻿import { prisma } from "../../prisma/client.js";
 
 export class TerminalStatusService {
   static async getTerminalStatus() {
@@ -24,3 +24,7 @@ export class TerminalStatusService {
     };
   }
 }
+
+
+
+

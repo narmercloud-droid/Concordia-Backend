@@ -1,17 +1,23 @@
-import type { AuthenticatedRequest } from "../globalTypes.js";
+﻿import type { AuthenticatedRequest } from "../globalTypes.js";
 import { menuOptimizationService } from "../services/menuOptimization.service.js";
-import { NextFunction, Response } from "express";
+import type { NextFunction, Response  } from "express";
+import { success } from "./controllerHelper.js";
 
 export const MenuOptimizationController = {
   optimize: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const branchId = req.user!.branchId;
       const result = await menuOptimizationService.optimize(branchId);
-      res.json(result);
+      return success(res, result);
     } catch (err: unknown) {
       next(err);
     }
   },
 };
+
+
+
+
+
 
 

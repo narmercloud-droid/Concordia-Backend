@@ -1,4 +1,4 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { BehaviorPredictionController } from "../controllers/behaviorPrediction.controller.js";
 import { adminAuth } from "../middleware/adminAuth.js";
 import { adminRole } from "../middleware/adminRole.js";
@@ -13,4 +13,10 @@ router.get(
 );
 
 export default router;
+
+
+
+
+
+
 

@@ -1,4 +1,4 @@
-import { prisma } from "../prisma/client.js";
+﻿import { prisma } from "../prisma/client.js";
 
 export function startTerminalStatusJob() {
   setInterval(async () => {
@@ -27,3 +27,7 @@ export function startTerminalStatusJob() {
 
   console.log("Terminal status cleanup job started");
 }
+
+
+
+

@@ -1,4 +1,4 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { NotificationsController } from "../controllers/notifications.controller.js";
 import { customerAuth } from "../middleware/customerAuth.js";
 import { adminAuth } from "../middleware/adminAuth.js";
@@ -18,4 +18,10 @@ router.post(
 );
 
 export default router;
+
+
+
+
+
+
 

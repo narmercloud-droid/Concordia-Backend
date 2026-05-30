@@ -1,32 +1,41 @@
-import { prisma } from "../../prisma/client.js";
+﻿import { prisma } from "../../prisma/client.js";
 
 export class ToppingService {
   static async getAll() {
-    return prisma.topping.findMany({
+    const db: any = prisma as any;
+    return db.topping.findMany({
       orderBy: { name: "asc" },
     });
   }
 
   static async getById(id: string) {
-    return prisma.topping.findUnique({
+    const db: any = prisma as any;
+    return db.topping.findUnique({
       where: { id },
     });
   }
 
   static async create(data: any) {
-    return prisma.topping.create({ data });
+    const db: any = prisma as any;
+    return db.topping.create({ data });
   }
 
   static async update(id: string, data: any) {
-    return prisma.topping.update({
+    const db: any = prisma as any;
+    return db.topping.update({
       where: { id },
       data,
     });
   }
 
   static async remove(id: string) {
-    return prisma.topping.delete({
+    const db: any = prisma as any;
+    return db.topping.delete({
       where: { id },
     });
   }
 }
+
+
+
+

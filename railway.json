@@ -1,0 +1,13 @@
+{
+  "buildCommand": "npm run build",
+  "services": [
+    {
+      "name": "web",
+      "startCommand": "npm run start"
+    },
+    {
+      "name": "worker",
+      "startCommand": "npm run start:worker"
+    }
+  ]
+}

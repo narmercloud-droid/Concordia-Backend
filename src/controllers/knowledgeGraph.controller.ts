@@ -1,14 +1,15 @@
-import type { AuthenticatedRequest } from "../globalTypes.js";
+﻿import type { AuthenticatedRequest } from "../globalTypes.js";
 import { knowledgeGraphService } from "../services/knowledgeGraph.service.js";
 import { prisma } from "../prisma/client.js";
-import { NextFunction, Response } from "express";
+import type { NextFunction, Response  } from "express";
+import { success } from "./controllerHelper.js";
 
 export const KnowledgeGraphController = {
   analyze: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const branchId = req.user!.branchId;
       const result = await knowledgeGraphService.analyze(branchId);
-      res.json(result);
+      return success(res, result);
     } catch (err: unknown) {
       next(err);
     }
@@ -21,12 +22,17 @@ export const KnowledgeGraphController = {
         where: { branchId },
         orderBy: { createdAt: "desc" },
       });
-      res.json(logs);
+      return success(res, logs);
     } catch (err: unknown) {
       next(err);
     }
   },
 };
+
+
+
+
+
 
 
 

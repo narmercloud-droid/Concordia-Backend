@@ -1,4 +1,4 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { PaymentsController } from "../controllers/payments.controller.js";
 import { adminAuth } from "../middleware/adminAuth.js";
 import { adminRole } from "../middleware/adminRole.js";
@@ -16,4 +16,10 @@ router.post("/paypal/capture", PaymentsController.capturePayPalOrder);
 router.post("/refund/:id", adminAuth, adminRole("manager"), PaymentsController.refund);
 
 export default router;
+
+
+
+
+
+
 

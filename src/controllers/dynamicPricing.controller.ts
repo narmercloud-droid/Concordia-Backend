@@ -1,12 +1,13 @@
-import { dynamicPricingService } from "../services/dynamicPricing.service.js";
-import { NextFunction, Request, Response } from "express";
+﻿import { dynamicPricingService } from "../services/dynamicPricing.service.js";
+import type { NextFunction, Request, Response  } from "express";
+import { success } from "./controllerHelper.js";
 
 export const DynamicPricingController = {
   optimizeItem: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { itemId } = req.body;
       const result = await dynamicPricingService.applyPrice(itemId, "Manual optimize");
-      res.json(result);
+      return success(res, result);
     } catch (err: unknown) {
       next(err);
     }
@@ -16,11 +17,16 @@ export const DynamicPricingController = {
     try {
       const branchId = req.user!.branchId;
       const result = await dynamicPricingService.optimizeBranch(branchId);
-      res.json(result);
+      return success(res, result);
     } catch (err: unknown) {
       next(err);
     }
   },
 };
+
+
+
+
+
 
 

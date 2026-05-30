@@ -1,5 +1,6 @@
 import { prisma } from "../prisma/client.js";
 import { notificationsService } from "../services/notifications.service.js";
+import { success } from "./controllerHelper.js";
 export const NotificationsController = {
     updatePreferences: async (req, res, next) => {
         try {
@@ -12,7 +13,7 @@ export const NotificationsController = {
                     ...req.body
                 }
             });
-            res.json(prefs);
+            return success(res, prefs);
         }
         catch (err) {
             next(err);
@@ -42,7 +43,7 @@ export const NotificationsController = {
                 .filter(c => c.phone)
                 .map(c => c.phone);
             await notificationsService.sendMarketingSMS(phones, message);
-            res.json({ success: true, sent: phones.length });
+            return success(res, { success: true, sent: phones.length });
         }
         catch (err) {
             next(err);

@@ -1,6 +1,7 @@
-import { Request, Response, NextFunction } from "express";
+﻿import type { Request, Response, NextFunction  } from "express";
 import { deliveryFeeService } from "../services/deliveryFee.service.js";
 import { prisma } from "../prisma/client.js";
+import { success, fail } from "./controllerHelper.js";
 
 export const DeliveryFeeController = {
   calculate: async (req: Request, res: Response, next: NextFunction) => {
@@ -11,14 +12,14 @@ export const DeliveryFeeController = {
         where: { id: addressId }
       });
 
-      if (!address) return res.status(400).json({ error: "Invalid address" });
+      if (!address) return fail(res, "Invalid address", 400);
 
       const result = await deliveryFeeService.calculate(branchId, {
         ...address,
         orderTotal
       });
 
-      res.json(result);
+      return success(res, result);
     } catch (err: unknown) {
       next(err);
     }
@@ -34,7 +35,7 @@ export const DeliveryFeeController = {
         create: { branchId, ...req.body }
       });
 
-      res.json(zone);
+      return success(res, zone);
     } catch (err: unknown) {
       next(err);
     }
@@ -44,11 +45,16 @@ export const DeliveryFeeController = {
     try {
       const { branchId } = req.params;
       const zone = await prisma.deliveryZone.findUnique({ where: { branchId } });
-      res.json(zone);
+      return success(res, zone);
     } catch (err: unknown) {
       next(err);
     }
   }
 };
+
+
+
+
+
 
 

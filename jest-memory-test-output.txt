@@ -1,0 +1,575 @@
+﻿node.exe : ts-jest[ts-jest-transformer] (WARN) Define `ts-jest` config under 
+`globals` is deprecated. Please do
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ts-jest[ts-jest...ated. Please do 
+   :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+transform: {
+    <transform_regex>: ['ts-jest', { /* ts-jest config goes here in Jest */ }],
+},
+See more at 
+https://kulshekhar.github.io/ts-jest/docs/getting-started/presets#advanced
+ts-jest[config] (WARN) 
+    The "ts-jest" config option "isolatedModules" is deprecated and will be 
+removed in v30.0.0. Please use "isolatedModules: true" in 
+D:/Concordia/Concordia-Backend/tsconfig.json instead, see 
+https://www.typescriptlang.org/tsconfig/#isolatedModules
+  
+  console.log
+    [AgentBrain] Memory before update: {}
+
+      at AgentBrain.run (src/agent/AgentBrain.ts:77:13)
+
+  console.log
+    [AgentBrain] Memory reset. Previous memory: {}
+
+      at AgentBrain.resetMemory (src/agent/AgentBrain.ts:32:13)
+
+  console.log
+    [AgentBrain] Memory after update: {
+      lastIntent: 'preview_update',
+      lastBranchId: 'kempen',
+      lastPreviewPayload: {
+        branchId: 'kempen',
+        hours: [
+          [Object], [Object],
+          [Object], [Object],
+          [Object], [Object],
+          [Object]
+        ]
+      },
+      lastPreviewInstruction: {
+        branchId: 'kempen',
+        updateDays: [ 'saturday', 'sunday' ],
+        open: '12:00',
+        close: '22:00',
+        closed: false
+      },
+      lastChangedDays: [ 'saturday', 'sunday' ]
+    }
+
+      at AgentBrain.run (src/agent/AgentBrain.ts:126:13)
+
+  console.log
+    [AgentBrain] Memory before update: {}
+
+      at AgentBrain.run (src/agent/AgentBrain.ts:77:13)
+
+  console.log
+    [AgentBrain] Memory reset. Previous memory: {}
+
+      at AgentBrain.resetMemory (src/agent/AgentBrain.ts:32:13)
+
+  console.log
+    [AgentBrain] Memory after update: {
+      lastIntent: 'preview_update',
+      lastBranchId: 'kempen',
+      lastPreviewPayload: {
+        branchId: 'kempen',
+        hours: [
+          [Object], [Object],
+          [Object], [Object],
+          [Object], [Object],
+          [Object]
+        ]
+      },
+      lastPreviewInstruction: {
+        branchId: 'kempen',
+        updateDays: [ 'saturday', 'sunday' ],
+        open: '12:00',
+        close: '22:00',
+        closed: false
+      },
+      lastChangedDays: [ 'saturday', 'sunday' ]
+    }
+
+      at AgentBrain.run (src/agent/AgentBrain.ts:126:13)
+
+  console.log
+    [AgentBrain] Memory before update: {
+      lastIntent: 'preview_update',
+      lastBranchId: 'kempen',
+      lastPreviewPayload: {
+        branchId: 'kempen',
+        hours: [
+          [Object], [Object],
+          [Object], [Object],
+          [Object], [Object],
+          [Object]
+        ]
+      },
+      lastPreviewInstruction: {
+        branchId: 'kempen',
+        updateDays: [ 'saturday', 'sunday' ],
+        open: '12:00',
+        close: '22:00',
+        closed: false
+      },
+      lastChangedDays: [ 'saturday', 'sunday' ]
+    }
+
+      at AgentBrain.run (src/agent/AgentBrain.ts:77:13)
+
+  console.log
+    [AgentBrain] Memory after update: {
+      lastIntent: 'confirm_update',
+      lastBranchId: 'kempen',
+      lastChangedDays: [ 'saturday', 'sunday' ],
+      lastConfirmedSchedule: {
+        branchId: 'kempen',
+        hours: [
+          [Object], [Object],
+          [Object], [Object],
+          [Object], [Object],
+          [Object]
+        ]
+      }
+    }
+
+      at AgentBrain.run (src/agent/AgentBrain.ts:126:13)
+
+  console.log
+    [AgentBrain] Memory before update: {}
+
+      at AgentBrain.run (src/agent/AgentBrain.ts:77:13)
+
+  console.log
+    [AgentBrain] Memory reset. Previous memory: {}
+
+      at AgentBrain.resetMemory (src/agent/AgentBrain.ts:32:13)
+
+  console.log
+    [AgentBrain] Memory after update: {
+      lastIntent: 'preview_update',
+      lastBranchId: 'kempen',
+      lastPreviewPayload: {
+        branchId: 'kempen',
+        hours: [
+          [Object], [Object],
+          [Object], [Object],
+          [Object], [Object],
+          [Object]
+        ]
+      },
+      lastPreviewInstruction: {
+        branchId: 'kempen',
+        updateDays: [ 'saturday', 'sunday' ],
+        open: '12:00',
+        close: '22:00',
+        closed: false
+      },
+      lastChangedDays: [ 'saturday', 'sunday' ]
+    }
+
+      at AgentBrain.run (src/agent/AgentBrain.ts:126:13)
+
+  console.log
+    [AgentBrain] Memory before update: {
+      lastIntent: 'preview_update',
+      lastBranchId: 'kempen',
+      lastPreviewPayload: {
+        branchId: 'kempen',
+        hours: [
+          [Object], [Object],
+          [Object], [Object],
+          [Object], [Object],
+          [Object]
+        ]
+      },
+      lastPreviewInstruction: {
+        branchId: 'kempen',
+        updateDays: [ 'saturday', 'sunday' ],
+        open: '12:00',
+        close: '22:00',
+        closed: false
+      },
+      lastChangedDays: [ 'saturday', 'sunday' ]
+    }
+
+      at AgentBrain.run (src/agent/AgentBrain.ts:77:13)
+
+  console.log
+    [AgentBrain] Memory after update: {
+      lastIntent: 'preview_update',
+      lastBranchId: 'straelen',
+      lastPreviewPayload: {
+        branchId: 'straelen',
+        hours: [
+          [Object], [Object],
+          [Object], [Object],
+          [Object], [Object],
+          [Object]
+        ]
+      },
+      lastPreviewInstruction: { copySourceBranchId: 'kempen', copyTargetBranchId: 'straelen' },
+      lastChangedDays: [
+        'monday',
+        'tuesday',
+        'wednesday',
+        'thursday',
+        'friday',
+        'saturday',
+        'sunday'
+      ]
+    }
+
+      at AgentBrain.run (src/agent/AgentBrain.ts:126:13)
+
+  console.log
+    [AgentBrain] Memory before update: {}
+
+      at AgentBrain.run (src/agent/AgentBrain.ts:77:13)
+
+  console.log
+    [AgentBrain] Memory after update: {
+      lastIntent: 'preview_update',
+      lastBranchId: 'default',
+      lastPreviewPayload: {
+        branchId: 'default',
+        hours: [
+          [Object], [Object],
+          [Object], [Object],
+          [Object], [Object],
+          [Object]
+        ]
+      },
+      lastPreviewInstruction: {
+        branchId: 'default',
+        updateDays: [ 'saturday', 'sunday' ],
+        open: '12:00',
+        close: '22:00',
+        closed: false
+      },
+      lastChangedDays: [ 'saturday', 'sunday' ]
+    }
+
+      at AgentBrain.run (src/agent/AgentBrain.ts:126:13)
+
+  console.log
+    [AgentBrain] Memory before update: {
+      lastIntent: 'preview_update',
+      lastBranchId: 'default',
+      lastPreviewPayload: {
+        branchId: 'default',
+        hours: [
+          [Object], [Object],
+          [Object], [Object],
+          [Object], [Object],
+          [Object]
+        ]
+      },
+      lastPreviewInstruction: {
+        branchId: 'default',
+        updateDays: [ 'saturday', 'sunday' ],
+        open: '12:00',
+        close: '22:00',
+        closed: false
+      },
+      lastChangedDays: [ 'saturday', 'sunday' ]
+    }
+
+      at AgentBrain.run (src/agent/AgentBrain.ts:77:13)
+
+  console.log
+    [AgentBrain] Memory after update: {
+      lastIntent: 'preview_update',
+      lastBranchId: 'default',
+      lastPreviewPayload: {
+        branchId: 'default',
+        hours: [
+          [Object], [Object],
+          [Object], [Object],
+          [Object], [Object],
+          [Object]
+        ]
+      },
+      lastPreviewInstruction: {
+        branchId: 'default',
+        hours: [
+          [Object], [Object],
+          [Object], [Object],
+          [Object], [Object],
+          [Object]
+        ],
+        updateDays: [ 'saturday', 'sunday' ],
+        relativeOpenMinutes: -60,
+        relativeCloseMinutes: -60
+      },
+      lastChangedDays: [ 'saturday', 'sunday' ]
+    }
+
+      at AgentBrain.run (src/agent/AgentBrain.ts:126:13)
+
+  console.log
+    [AgentBrain] Memory before update: {}
+
+      at AgentBrain.run (src/agent/AgentBrain.ts:77:13)
+
+  console.log
+    [AgentBrain] Memory after update: {
+      lastIntent: 'preview_update',
+      lastBranchId: 'default',
+      lastPreviewPayload: {
+        branchId: 'default',
+        hours: [
+          [Object], [Object],
+          [Object], [Object],
+          [Object], [Object],
+          [Object]
+        ]
+      },
+      lastPreviewInstruction: { branchId: 'default', updateDays: [ 'sunday' ], closed: true },
+      lastChangedDays: [ 'sunday' ]
+    }
+
+      at AgentBrain.run (src/agent/AgentBrain.ts:126:13)
+
+  console.log
+    [AgentBrain] Memory before update: {
+      lastIntent: 'preview_update',
+      lastBranchId: 'default',
+      lastPreviewPayload: {
+        branchId: 'default',
+        hours: [
+          [Object], [Object],
+          [Object], [Object],
+          [Object], [Object],
+          [Object]
+        ]
+      },
+      lastPreviewInstruction: { branchId: 'default', updateDays: [ 'sunday' ], closed: true },
+      lastChangedDays: [ 'sunday' ]
+    }
+
+      at AgentBrain.run (src/agent/AgentBrain.ts:77:13)
+
+  console.log
+    [AgentBrain] Memory after update: {
+      lastIntent: 'preview_update',
+      lastBranchId: 'default',
+      lastPreviewPayload: {
+        branchId: 'default',
+        hours: [
+          [Object], [Object],
+          [Object], [Object],
+          [Object], [Object],
+          [Object]
+        ]
+      },
+      lastPreviewInstruction: {
+        branchId: 'default',
+        hours: [
+          [Object], [Object],
+          [Object], [Object],
+          [Object], [Object],
+          [Object]
+        ],
+        updateDays: [ 'monday', 'tuesday', 'wednesday', 'thursday', 'friday' ],
+        closed: true
+      },
+      lastChangedDays: [ 'monday', 'tuesday', 'wednesday', 'thursday', 'friday' ]
+    }
+
+      at AgentBrain.run (src/agent/AgentBrain.ts:126:13)
+
+  console.log
+    [AgentBrain] Memory before update: {}
+
+      at AgentBrain.run (src/agent/AgentBrain.ts:77:13)
+
+  console.log
+    [AgentBrain] Memory after update: {
+      lastIntent: 'preview_update',
+      lastBranchId: 'default',
+      lastPreviewPayload: {
+        branchId: 'default',
+        hours: [
+          [Object], [Object],
+          [Object], [Object],
+          [Object], [Object],
+          [Object]
+        ]
+      },
+      lastPreviewInstruction: {
+        branchId: 'default',
+        updateDays: [ 'saturday', 'sunday' ],
+        open: '12:00',
+        close: '22:00',
+        closed: false
+      },
+      lastChangedDays: [ 'saturday', 'sunday' ]
+    }
+
+      at AgentBrain.run (src/agent/AgentBrain.ts:126:13)
+
+  console.log
+    [AgentBrain] Memory before update: {
+      lastIntent: 'preview_update',
+      lastBranchId: 'default',
+      lastPreviewPayload: {
+        branchId: 'default',
+        hours: [
+          [Object], [Object],
+          [Object], [Object],
+          [Object], [Object],
+          [Object]
+        ]
+      },
+      lastPreviewInstruction: {
+        branchId: 'default',
+        updateDays: [ 'saturday', 'sunday' ],
+        open: '12:00',
+        close: '22:00',
+        closed: false
+      },
+      lastChangedDays: [ 'saturday', 'sunday' ]
+    }
+
+      at AgentBrain.run (src/agent/AgentBrain.ts:77:13)
+
+  console.log
+    [AgentBrain] Memory reset. Previous memory: {
+      lastIntent: 'preview_update',
+      lastBranchId: 'default',
+      lastPreviewPayload: {
+        branchId: 'default',
+        hours: [
+          [Object], [Object],
+          [Object], [Object],
+          [Object], [Object],
+          [Object]
+        ]
+      },
+      lastPreviewInstruction: {
+        branchId: 'default',
+        updateDays: [ 'saturday', 'sunday' ],
+        open: '12:00',
+        close: '22:00',
+        closed: false
+      },
+      lastChangedDays: [ 'saturday', 'sunday' ]
+    }
+
+      at AgentBrain.resetMemory (src/agent/AgentBrain.ts:32:13)
+
+  console.log
+    [AgentBrain] Memory after update: {}
+
+      at AgentBrain.run (src/agent/AgentBrain.ts:126:13)
+
+  console.log
+    [AgentBrain] Memory before update: {}
+
+      at AgentBrain.run (src/agent/AgentBrain.ts:77:13)
+
+  console.log
+    [AgentBrain] Memory before update: {}
+
+      at AgentBrain.run (src/agent/AgentBrain.ts:77:13)
+
+  console.log
+    [AgentBrain] Memory reset. Previous memory: {}
+
+      at AgentBrain.resetMemory (src/agent/AgentBrain.ts:32:13)
+
+  console.log
+    [AgentBrain] Memory after update: {
+      lastIntent: 'preview_update',
+      lastBranchId: 'kempen',
+      lastPreviewPayload: {
+        branchId: 'kempen',
+        hours: [
+          [Object], [Object],
+          [Object], [Object],
+          [Object], [Object],
+          [Object]
+        ]
+      },
+      lastPreviewInstruction: {
+        branchId: 'kempen',
+        updateDays: [ 'saturday', 'sunday' ],
+        open: '12:00',
+        close: '22:00',
+        closed: false
+      },
+      lastChangedDays: [ 'saturday', 'sunday' ]
+    }
+
+      at AgentBrain.run (src/agent/AgentBrain.ts:126:13)
+
+  console.log
+    [AgentBrain] Memory before update: {
+      lastIntent: 'preview_update',
+      lastBranchId: 'kempen',
+      lastPreviewPayload: {
+        branchId: 'kempen',
+        hours: [
+          [Object], [Object],
+          [Object], [Object],
+          [Object], [Object],
+          [Object]
+        ]
+      },
+      lastPreviewInstruction: {
+        branchId: 'kempen',
+        updateDays: [ 'saturday', 'sunday' ],
+        open: '12:00',
+        close: '22:00',
+        closed: false
+      },
+      lastChangedDays: [ 'saturday', 'sunday' ]
+    }
+
+      at AgentBrain.run (src/agent/AgentBrain.ts:77:13)
+
+  console.log
+    [AgentBrain] Memory reset. Previous memory: {
+      lastIntent: 'preview_update',
+      lastBranchId: 'kempen',
+      lastPreviewPayload: {
+        branchId: 'kempen',
+        hours: [
+          [Object], [Object],
+          [Object], [Object],
+          [Object], [Object],
+          [Object]
+        ]
+      },
+      lastPreviewInstruction: {
+        branchId: 'kempen',
+        updateDays: [ 'saturday', 'sunday' ],
+        open: '12:00',
+        close: '22:00',
+        closed: false
+      },
+      lastChangedDays: [ 'saturday', 'sunday' ]
+    }
+
+      at AgentBrain.resetMemory (src/agent/AgentBrain.ts:32:13)
+
+  console.log
+    [AgentBrain] Memory after update: { lastIntent: 'update_opening_hours' }
+
+      at AgentBrain.run (src/agent/AgentBrain.ts:126:13)
+
+(node:51196) ExperimentalWarning: VM Modules is an experimental feature and 
+might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS src/agent/tests/memory.test.ts
+  Conversation memory stability
+    ÔêÜ lastBranchId and lastPreviewPayload persist after preview (24 ms)
+    ÔêÜ lastConfirmedSchedule persists after confirmation (4 ms)
+    ÔêÜ Flow A ÔÇö branch memory copies Kempen schedule to Straelen (4 ms)
+    ÔêÜ Flow B ÔÇö preview memory revises a previous preview (8 ms)
+    ÔêÜ Flow C ÔÇö day-group memory applies previous preview to weekdays (3 ms)
+    ÔêÜ Flow D ÔÇö cancel clears memory and prevents revision (3 ms)
+    ÔêÜ Flow E ÔÇö explicit branch override resets branch memory (5 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       7 passed, 7 total
+Snapshots:   0 total
+Time:        0.616 s, estimated 1 s
+Ran all test suites matching src/agent/tests/memory.test.ts.

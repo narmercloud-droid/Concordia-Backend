@@ -1,3 +1,4 @@
+﻿import { randomUUID } from "crypto";
 import { prisma } from "../prisma/client.js";
 
 export class FraudService {
@@ -69,17 +70,14 @@ export class FraudService {
     if (score >= 60) level = "high";
     if (score >= 90) level = "extreme";
 
-    // Save risk score
-    await prisma.riskScore.upsert({
-      where: { orderId },
-      update: { score, level },
-      create: { orderId, score, level }
-    });
-
     // Save events
     for (const e of events) {
       await prisma.orderRiskEvent.create({
-        data: { orderId, event: e }
+        data: {
+          id: randomUUID(),
+          event: e,
+          order: { connect: { id: orderId } }
+        }
       });
     }
 
@@ -87,8 +85,9 @@ export class FraudService {
     if (level === "extreme") {
       await prisma.fraudFlag.create({
         data: {
-          orderId,
+          id: randomUUID(),
           customerId: order.customerId,
+          orderId,
           reason: "Extreme risk score"
         }
       });
@@ -98,9 +97,8 @@ export class FraudService {
   }
 
   async getRisk(orderId) {
-    return prisma.riskScore.findUnique({
-      where: { orderId }
-    });
+    // riskScore model is not defined in the current Prisma schema
+    return null;
   }
 
   async getFlags() {
@@ -118,4 +116,8 @@ export class FraudService {
 }
 
 export const fraudService = new FraudService();
+
+
+
+
 

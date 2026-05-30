@@ -1,4 +1,4 @@
-import { prisma } from "../prisma/client.js";
+﻿import { prisma } from "../prisma/client.js";
 import * as bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
 import { TokenPair } from "../types/common.js";
@@ -59,5 +59,9 @@ export class AdminService {
 }
 
 export const adminService = new AdminService();
+
+
+
+
 
 

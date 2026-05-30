@@ -1,0 +1,46 @@
+﻿{
+  "kempen": {
+    "hours": [
+      { "day": "monday", "open": "09:00", "close": "18:00", "closed": false },
+      { "day": "tuesday", "open": "09:00", "close": "18:00", "closed": false },
+      { "day": "wednesday", "open": "09:00", "close": "18:00", "closed": false },
+      { "day": "thursday", "open": "09:00", "close": "18:00", "closed": false },
+      { "day": "friday", "open": "09:00", "close": "18:00", "closed": false },
+      { "day": "saturday", "open": "09:00", "close": "18:00", "closed": false },
+      { "day": "sunday", "open": "09:00", "close": "18:00", "closed": false }
+    ]
+  },
+  "straelen": {
+    "hours": [
+      { "day": "monday", "open": "00:00", "close": "00:00", "closed": true },
+      { "day": "tuesday", "open": "00:00", "close": "00:00", "closed": true },
+      { "day": "wednesday", "open": "00:00", "close": "00:00", "closed": true },
+      { "day": "thursday", "open": "00:00", "close": "00:00", "closed": true },
+      { "day": "friday", "open": "00:00", "close": "00:00", "closed": true },
+      { "day": "saturday", "open": "00:00", "close": "00:00", "closed": true },
+      { "day": "sunday", "open": "00:00", "close": "00:00", "closed": true }
+    ]
+  },
+  "geldern": {
+    "hours": [
+      { "day": "monday", "open": "09:00", "close": "18:00", "closed": false },
+      { "day": "tuesday", "open": "09:00", "close": "18:00", "closed": false },
+      { "day": "wednesday", "open": "09:00", "close": "18:00", "closed": false },
+      { "day": "thursday", "open": "09:00", "close": "18:00", "closed": false },
+      { "day": "friday", "open": "09:00", "close": "18:00", "closed": false },
+      { "day": "saturday", "open": "09:00", "close": "18:00", "closed": false },
+      { "day": "sunday", "open": "09:00", "close": "18:00", "closed": false }
+    ]
+  },
+  "kamp-lintfort": {
+    "hours": [
+      { "day": "monday", "open": "09:00", "close": "18:00", "closed": false },
+      { "day": "tuesday", "open": "09:00", "close": "18:00", "closed": false },
+      { "day": "wednesday", "open": "09:00", "close": "18:00", "closed": false },
+      { "day": "thursday", "open": "09:00", "close": "18:00", "closed": false },
+      { "day": "friday", "open": "09:00", "close": "18:00", "closed": false },
+      { "day": "saturday", "open": "09:00", "close": "18:00", "closed": false },
+      { "day": "sunday", "open": "09:00", "close": "18:00", "closed": false }
+    ]
+  }
+}

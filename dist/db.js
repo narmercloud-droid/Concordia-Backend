@@ -1,7 +1,6 @@
-import dotenv from "dotenv";
+import * as dotenv from "dotenv";
 dotenv.config(); // Load .env before anything else
-import pkg from "pg";
-const { Pool } = pkg;
+import { Pool } from "pg";
 const connectionString = process.env.DATABASE_URL;
 console.log("🔌 Using DATABASE_URL:", connectionString);
 const pool = new Pool({

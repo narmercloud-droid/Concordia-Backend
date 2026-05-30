@@ -1,5 +1,5 @@
 import { Server } from "socket.io";
-import { Request } from "express";
+import type { Request } from "express";
 
 // ------------------------------------------------------
 // Global Socket.IO Declaration (ESM compatible)

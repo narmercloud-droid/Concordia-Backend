@@ -1,13 +1,14 @@
-import { decisionEngineService } from "../services/decisionEngine.service.js";
+﻿import { decisionEngineService } from "../services/decisionEngine.service.js";
 import { prisma } from "../prisma/client.js";
-import { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response  } from "express";
+import { success } from "./controllerHelper.js";
 
 export const DecisionEngineController = {
   run: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const branchId = req.user!.branchId;
       const result = await decisionEngineService.run(branchId);
-      res.json(result);
+      return success(res, result);
     } catch (err: unknown) {
       next(err);
     }
@@ -20,12 +21,17 @@ export const DecisionEngineController = {
         where: { branchId },
         orderBy: { createdAt: "desc" },
       });
-      res.json(logs);
+      return success(res, logs);
     } catch (err: unknown) {
       next(err);
     }
   },
 };
+
+
+
+
+
 
 
 

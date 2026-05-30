@@ -1,12 +1,13 @@
-import { Request, Response, NextFunction } from "express";
+﻿import type { Request, Response, NextFunction  } from "express";
 import { adminService } from "../services/admins.service.js";
 import { prisma } from "../prisma/client.js";
+import { success, fail } from "./controllerHelper.js";
 
 export const AdminController = {
   create: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const admin = await adminService.createAdmin(req.body);
-      res.json(admin);
+      return success(res, admin);
     } catch (err: unknown) {
       next(err);
     }
@@ -15,16 +16,16 @@ export const AdminController = {
   login: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const admin = await adminService.getAdminByEmail(req.body.email);
-      if (!admin) return res.status(401).json({ error: "Invalid credentials" });
+      if (!admin) return fail(res, "Invalid credentials", 401);
 
       const valid = await adminService.validatePassword(
         req.body.password,
         admin.password
       );
-      if (!valid) return res.status(401).json({ error: "Invalid credentials" });
+      if (!valid) return fail(res, "Invalid credentials", 401);
 
       const tokens = await adminService.generateTokens(admin);
-      res.json({ admin, ...tokens });
+      return success(res, { admin, ...tokens });
     } catch (err: unknown) {
       next(err);
     }
@@ -33,11 +34,11 @@ export const AdminController = {
   refresh: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { refreshToken } = req.body;
-      if (!refreshToken) return res.status(401).json({ error: "Missing token" });
+      if (!refreshToken) return fail(res, "Missing token", 401);
 
       // Admin model in prisma/schema.prisma has no refreshToken field.
       // Reject to avoid Prisma type mismatch.
-      return res.status(403).json({ error: "Invalid token" });
+      return fail(res, "Invalid token", 403);
     } catch (err: unknown) {
       next(err);
     }
@@ -46,7 +47,7 @@ export const AdminController = {
   getById: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const admin = await adminService.getAdminById(req.params.id);
-      res.json(admin);
+      return success(res, admin);
     } catch (err: unknown) {
       next(err);
     }
@@ -55,7 +56,7 @@ export const AdminController = {
   list: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const admins = await adminService.listAdmins();
-      res.json(admins);
+      return success(res, admins);
     } catch (err: unknown) {
       next(err);
     }
@@ -64,7 +65,7 @@ export const AdminController = {
   update: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const admin = await adminService.updateAdmin(req.params.id, req.body);
-      res.json(admin);
+      return success(res, admin);
     } catch (err: unknown) {
       next(err);
     }
@@ -73,11 +74,16 @@ export const AdminController = {
   delete: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const admin = await adminService.deleteAdmin(req.params.id);
-      res.json(admin);
+      return success(res, admin);
     } catch (err: unknown) {
       next(err);
     }
   }
 };
+
+
+
+
+
 
 

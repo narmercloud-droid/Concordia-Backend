@@ -1,4 +1,4 @@
-import { prisma } from "../prisma/client.js";
+﻿import { prisma } from "../prisma/client.js";
 
 export class RecommendationService {
   // 1. Popular items (fallback)
@@ -120,3 +120,7 @@ export class RecommendationService {
 }
 
 export const recommendationService = new RecommendationService();
+
+
+
+

@@ -1,4 +1,4 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { SearchController } from "../controllers/search.controller.js";
 import { adminAuth } from "../middleware/adminAuth.js";
 import { adminRole } from "../middleware/adminRole.js";
@@ -19,4 +19,10 @@ router.get(
 );
 
 export default router;
+
+
+
+
+
+
 

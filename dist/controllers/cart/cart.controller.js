@@ -1,11 +1,12 @@
 import { CartService } from "../../services/cart/cart.service.js";
 import { PricingService } from "../../services/cart/pricing.service.js";
+import { success, fail } from "../controllerHelper.js";
 export class CartController {
     static async loadCart(req, res, next) {
         try {
             const { cartId } = req.query;
             const cart = await CartService.getOrCreateCart(cartId);
-            res.json(cart);
+            return success(res, cart);
         }
         catch (err) {
             next(err);
@@ -16,10 +17,10 @@ export class CartController {
             const { cartId } = req.params;
             const cart = await CartService.getCart(cartId);
             if (!cart) {
-                return res.status(404).json({ error: "Cart not found" });
+                return fail(res, "Cart not found", 404);
             }
             const totals = await PricingService.calculateCart(cart);
-            res.json({ cart, totals });
+            return success(res, { cart, totals });
         }
         catch (err) {
             next(err);
@@ -30,7 +31,7 @@ export class CartController {
             const { cartId } = req.params;
             const { itemId, quantity } = req.body;
             const item = await CartService.addItem(cartId, itemId, quantity);
-            res.status(201).json(item);
+            return success(res, item);
         }
         catch (err) {
             next(err);
@@ -41,7 +42,7 @@ export class CartController {
             const cartItemId = req.params.cartItemId;
             const { quantity } = req.body;
             const result = await CartService.updateQuantity(cartItemId, quantity);
-            res.json(result);
+            return success(res, result);
         }
         catch (err) {
             next(err);
@@ -51,7 +52,7 @@ export class CartController {
         try {
             const cartItemId = req.params.cartItemId;
             await CartService.removeItem(cartItemId);
-            res.json({ success: true });
+            return success(res, { success: true });
         }
         catch (err) {
             next(err);

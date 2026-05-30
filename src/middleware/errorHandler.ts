@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+﻿import type { Request, Response, NextFunction  } from "express";
 import { AppError } from "../lib/AppError.js";
 import logger from "../utils/logger.js";
 
@@ -19,9 +19,14 @@ export function errorHandler(
     method: req.method
   });
 
-  res.status(statusCode).json({
+  res.status(statusCode).tson({
     success: false,
     error: message
   });
 }
+
+
+
+
+
 
