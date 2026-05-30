@@ -1,39 +1,28 @@
-# Allow prisma_clean folder
-!prisma_clean
-!prisma_clean/**
-
 # Node dependencies
-/node_modules
+node_modules
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
 # Build output
-/dist
-/build
-/coverage
-/.nyc_output
+dist
+build
+coverage
+.nyc_output
 
 # Environment files
 .env
 .env.*
 
 # Logs
-/logs
+logs
 *.log
 
 # Git
-/.git
+.git
 .gitignore
 .gitmodules
 .gitworktrees
-
-# IDE / Editor
-/.vscode
-/.idea
-*.swp
-*.swo
-*~
 
 # OS files
 .DS_Store
@@ -42,31 +31,11 @@ Thumbs.db
 # Docker
 docker-compose*
 
-# Kubernetes
-/k8s
-
 # Temporary files
-/tmp
-/temp
+tmp
+temp
 *.tmp
 
-# Copilot / VS Code workspace junk
-**/workspaceStorage
-**/chat-session-resources
-**/.cache
-
-# FRONTEND FOLDERS (root-anchored)
-/admin-dashboard
-/admin-ui
-/concordia-courier-ui
-/frontend
-
-# Other folders that must be root-anchored
-/data
-/public
-/scripts
-/tests
-
-# Test artifacts
-/*.ps1
-/*.md
+# Allow prisma_clean
+!prisma_clean
+!prisma_clean/**
