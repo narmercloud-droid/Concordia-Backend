@@ -1,48 +1,23 @@
-# ============================
-# 1. Builder Stage
-# ============================
+# 1. Base image
 FROM node:20-bullseye AS builder
+
 WORKDIR /app
 
-# Install dependencies
+# 2. Copy package files first
 COPY package*.json ./
+
+# 3. Copy prisma BEFORE npm ci
+COPY prisma_clean ./prisma
+
+# 4. Install dependencies (this runs postinstall → prisma generate)
 RUN npm ci
 
-# Copy required project files
-COPY prisma_clean ./prisma
-COPY src ./src
+# 5. Copy the rest of the source
 COPY tsconfig*.json ./
+COPY src ./src
 
-# Generate Prisma client
-RUN npx prisma generate
-
-# Build TypeScript
+# 6. Build
 RUN npm run build
 
-# Remove dev dependencies
+# 7. Prune dev deps
 RUN npm prune --production
-
-
-# ============================
-# 2. Runtime Stage
-# ============================
-FROM node:20-bullseye AS runtime
-WORKDIR /app
-
-# Create non-root user
-RUN addgroup --system concordia && adduser --system --ingroup concordia concordia
-
-# Copy runtime artifacts
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
-
-# ❗ DO NOT COPY prisma again — it overwrote your schema
-# (This line was removed)
-# COPY --from=builder /app/prisma ./prisma
-
-# Permissions
-RUN chown -R concordia:concordia /app
-USER concordia
-
-EXPOSE 4000
-CMD ["node", "dist/main.js"]
