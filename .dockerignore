@@ -1,3 +1,6 @@
+# --- FIX: allow prisma folder ---
+!prisma/**
+
 # Node dependencies
 node_modules
 npm-debug.log*
@@ -43,10 +46,6 @@ docker-compose*
 
 # Kubernetes
 k8s
-
-# Prisma
-prisma/migrations
-prisma/dev.db
 
 # Temporary files
 tmp
