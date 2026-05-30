@@ -57,10 +57,10 @@ temp
 **/.cache
 
 # FRONTEND FOLDERS (critical)
-admin-dashboard
-admin-ui
-concordia-courier-ui
-frontend
+/admin-dashboard
+/admin-ui
+/concordia-courier-ui
+/frontend
 
 # Test artifacts (safe to ignore)
 tests
