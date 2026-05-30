@@ -44,7 +44,6 @@ Thumbs.db
 
 # Docker
 docker-compose*
-.dockerignore
 
 # Kubernetes
 k8s
