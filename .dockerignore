@@ -1,4 +1,5 @@
 # --- FIX: allow prisma folder ---
+!prisma
 !prisma/**
 
 # Node dependencies
