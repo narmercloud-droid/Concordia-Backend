@@ -57,6 +57,7 @@ temp
 **/.cache
 
 # FRONTEND FOLDERS (critical)
+# Root-anchored so they don't match prisma_clean
 /admin-dashboard
 /admin-ui
 /concordia-courier-ui
