@@ -35,7 +35,10 @@ RUN addgroup --system concordia && adduser --system --ingroup concordia concordi
 # Copy runtime artifacts
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/prisma ./prisma
+
+# ❗ DO NOT COPY prisma again — it overwrote your schema
+# (This line was removed)
+# COPY --from=builder /app/prisma ./prisma
 
 # Permissions
 RUN chown -R concordia:concordia /app
