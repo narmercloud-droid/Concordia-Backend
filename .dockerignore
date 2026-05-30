@@ -3,34 +3,34 @@
 !prisma_clean/**
 
 # Node dependencies
-node_modules
+/node_modules
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
 # Build output
-dist
-build
-coverage
-.nyc_output
+/dist
+/build
+/coverage
+/.nyc_output
 
 # Environment files
 .env
 .env.*
 
 # Logs
-logs
+/logs
 *.log
 
 # Git
-.git
+/.git
 .gitignore
 .gitmodules
 .gitworktrees
 
 # IDE / Editor
-.vscode
-.idea
+/.vscode
+/.idea
 *.swp
 *.swo
 *~
@@ -44,11 +44,11 @@ Thumbs.db
 docker-compose*
 
 # Kubernetes
-k8s
+/k8s
 
 # Temporary files
-tmp
-temp
+/tmp
+/temp
 *.tmp
 
 # Copilot / VS Code workspace junk
@@ -56,14 +56,18 @@ temp
 **/chat-session-resources
 **/.cache
 
-# FRONTEND FOLDERS (critical)
-# Root-anchored so they don't match prisma_clean
-/admin-dashboard
-/admin-ui
-/concordia-courier-ui
-/frontend
+# FRONTEND FOLDERS (root-anchored)
+#/admin-dashboard
+#/admin-ui
+#/concordia-courier-ui
+#/frontend
 
-# Test artifacts (safe to ignore)
-tests
+# Other folders that must be root-anchored
+/data
+/public
+/scripts
+/tests
+
+# Test artifacts
 *.ps1
 *.md
