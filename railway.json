@@ -1,9 +1,12 @@
 {
-  "buildCommand": "npm run build",
+  "build": {
+    "builder": "docker",
+    "dockerfilePath": "Dockerfile"
+  },
   "services": [
     {
       "name": "web",
-      "startCommand": "npm run start"
+      "startCommand": "node dist/main.js"
     },
     {
       "name": "worker",
