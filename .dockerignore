@@ -69,5 +69,5 @@ docker-compose*
 /tests
 
 # Test artifacts
-*.ps1
-*.md
+/*.ps1
+/*.md
