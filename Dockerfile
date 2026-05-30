@@ -9,7 +9,7 @@ COPY package*.json ./
 RUN npm ci
 
 # Copy required project files
-COPY prisma ./prisma
+COPY prisma2 ./prisma
 COPY src ./src
 COPY tsconfig*.json ./
 
