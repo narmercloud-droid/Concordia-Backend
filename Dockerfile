@@ -8,11 +8,9 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 
-# Copy only what is required for build
+# Copy required project files
 COPY prisma ./prisma
 COPY src ./src
-COPY migrations ./migrations
-COPY seed ./seed
 COPY tsconfig*.json ./
 
 # Generate Prisma client
