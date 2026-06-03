@@ -1,5 +1,5 @@
 ﻿import Bonjour from "bonjour";
-import { kitchenPrinters } from "../../config/printers.js";
+import { kitchenPrinters } from "../../config/printers.ts";
 
 const bonjour = new Bonjour();
 

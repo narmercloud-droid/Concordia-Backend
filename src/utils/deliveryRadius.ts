@@ -1,4 +1,4 @@
-﻿import { prisma } from "../prisma/client.js";
+﻿import { prisma } from "../prisma/client.ts";
 
 export function haversineDistanceKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
   const toRad = (value: number) => (value * Math.PI) / 180;
@@ -23,7 +23,7 @@ export async function isAddressWithinDeliveryRadius(addressId: string, branchId:
   if (address.lat == null || address.lng == null) throw new Error("Address lacks geo coordinates");
   if ((branch as any).lat == null || (branch as any).lng == null) throw new Error("Branch lacks geo coordinates");
 
-  const distance = haversineDistanceKm(address.lat, address.lng, (branch as any).lat, (branch as any).lng);
+  haversineDistanceKm(address.lat, address.lng, (branch as any).lat, (branch as any).lng);
   return true;
 }
 

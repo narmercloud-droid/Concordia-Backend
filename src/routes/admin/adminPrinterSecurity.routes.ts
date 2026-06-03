@@ -1,6 +1,7 @@
-﻿import { Router } from "express";
-import { adminAuth } from "../../middleware/adminAuth.js";
-import { listUnapprovedPrinters, approvePrinterController } from "../../controllers/admin/adminPrinterSecurity.controller.js";
+﻿import express from "express";
+const { Router } = express;
+import { adminAuth } from "../../middleware/adminAuth.ts";
+import { listUnapprovedPrinters, approvePrinterController } from "../../controllers/admin/adminPrinterSecurity.controller.ts";
 
 const router = Router();
 

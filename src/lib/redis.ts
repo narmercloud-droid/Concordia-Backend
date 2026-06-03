@@ -1,27 +1,82 @@
 ﻿import { createClient } from "redis";
-import { trackRedisOperation, trackRedisOperationError, trackCacheHit } from "../metrics/metrics.js";
-import { getCurrentRequestProfile } from "./profile.js";
+import { env } from "../config/env.ts";
+import { trackRedisOperation, trackRedisOperationError, trackCacheHit } from "../metrics/metrics.ts";
+import { getCurrentRequestProfile } from "./profile.ts";
+import logger from "../logger.ts";
 
-const redisUrl = process.env.REDIS_URL || "redis://localhost:6379";
+const redisUrl = String(env.REDIS_URL || "").trim();
 
-const client = createClient({
-  url: redisUrl,
-  // Performance tuning
-  socket: {
-    reconnectStrategy: (retries) => Math.min(retries * 50, 500),
-  },
-  // Use a larger command queue for heavy bursts and pipelining throughput
-  commandsQueueMaxLength: 10000,
-});
+const isRedisUrlValid = redisUrl.length > 0 && redisUrl.startsWith("redis://");
 
-client.on("error", (err) => console.error("Redis Client Error", err));
+let client: any;
+let redisEnabled = false;
+
+if (isRedisUrlValid) {
+  redisEnabled = true;
+  client = createClient({
+    url: redisUrl,
+    // Performance tuning
+    socket: {
+      reconnectStrategy: (retries: number) => Math.min(retries * 50, 500),
+    },
+    // Use a larger command queue for heavy bursts and pipelining throughput
+    commandsQueueMaxLength: 10000,
+  });
+
+  if (client.on) client.on("error", (err: any) => logger.error({ err }, "Redis Client Error"));
+} else {
+  redisEnabled = false;
+  logger.warn({ REDIS_URL: redisUrl }, "Redis disabled: REDIS_URL missing or invalid; continuing without Redis");
+
+  // Stub client with the subset of methods used by the app
+  const pipelineStub = () => {
+    const p: any = {
+      commands: [] as any[],
+      setEx(k: string, ttl: number, v: string) {
+        this.commands.push(["setEx", k, ttl, v]);
+        return this;
+      },
+      set(k: string, v: string) {
+        this.commands.push(["set", k, v]);
+        return this;
+      },
+      get(k: string) {
+        this.commands.push(["get", k]);
+        return this;
+      },
+      del(k: string) {
+        this.commands.push(["del", k]);
+        return this;
+      },
+      async exec() {
+        return [] as any[];
+      },
+    };
+    return p;
+  };
+
+  client = {
+    connect: async () => {},
+    get: async (_k: string) => null,
+    set: async (_k: string, _v: string) => "OK",
+    setEx: async (_k: string, _ttl: number, _v: string) => "OK",
+    del: async (_k: string | string[]) => 0,
+    keys: async (_pattern: string) => [] as string[],
+    multi: () => pipelineStub(),
+    // Some code may call .on; provide a no-op
+    on: (_ev: string, _cb: (...args: any[]) => void) => {},
+  };
+}
 
 export const connectRedis = async () => {
+  if (!redisEnabled) {
+    return;
+  }
   try {
     await client.connect();
-    console.log("Connected to Redis");
+    logger.info("Connected to Redis");
   } catch (error) {
-    console.error("Failed to connect to Redis:", error);
+    logger.error({ error }, "Failed to connect to Redis");
   }
 };
 
@@ -44,7 +99,7 @@ export const getCache = async (key: string): Promise<string | null> => {
     trackRedisOperation("GET", duration, false);
     const errorType = error instanceof Error ? error.constructor.name : "unknown";
     trackRedisOperationError("GET", errorType);
-    console.error("Redis GET error:", error);
+    logger.error({ error, key }, "Redis GET error");
     return null;
   }
 };
@@ -68,7 +123,7 @@ export const setCache = async (key: string, value: string, ttl?: number): Promis
     trackRedisOperation("SET", duration, false);
     const errorType = error instanceof Error ? error.constructor.name : "unknown";
     trackRedisOperationError("SET", errorType);
-    console.error("Redis SET error:", error);
+    logger.error({ error, key }, "Redis SET error");
   }
 };
 
@@ -87,7 +142,7 @@ export const deleteCache = async (key: string): Promise<void> => {
     trackRedisOperation("DEL", duration, false);
     const errorType = error instanceof Error ? error.constructor.name : "unknown";
     trackRedisOperationError("DEL", errorType);
-    console.error("Redis DEL error:", error);
+    logger.error({ error, key }, "Redis DEL error");
   }
 };
 
@@ -109,7 +164,7 @@ export const clearCache = async (pattern: string): Promise<void> => {
     trackRedisOperation("CLEAR", duration, false);
     const errorType = error instanceof Error ? error.constructor.name : "unknown";
     trackRedisOperationError("CLEAR", errorType);
-    console.error("Redis CLEAR error:", error);
+    logger.error({ error, pattern }, "Redis CLEAR error");
   }
 };
 
@@ -133,7 +188,7 @@ export const batchSet = async (entries: Array<{ key: string; value: string; ttl?
     trackRedisOperation("BATCH_SET", duration, false);
     const errorType = error instanceof Error ? error.constructor.name : "unknown";
     trackRedisOperationError("BATCH_SET", errorType);
-    console.error("Redis batch SET error:", error);
+    logger.error({ error }, "Redis batch SET error");
   }
 };
 
@@ -159,7 +214,7 @@ export const batchGet = async (keys: string[]): Promise<(string | null)[]> => {
     trackRedisOperation("BATCH_GET", duration, false);
     const errorType = error instanceof Error ? error.constructor.name : "unknown";
     trackRedisOperationError("BATCH_GET", errorType);
-    console.error("Redis batch GET error:", error);
+    logger.error({ error }, "Redis batch GET error");
     return keys.map(() => null);
   }
 };
@@ -181,7 +236,7 @@ export const batchDelete = async (keys: string[]): Promise<void> => {
     trackRedisOperation("BATCH_DEL", duration, false);
     const errorType = error instanceof Error ? error.constructor.name : "unknown";
     trackRedisOperationError("BATCH_DEL", errorType);
-    console.error("Redis batch DELETE error:", error);
+    logger.error({ error }, "Redis batch DELETE error");
   }
 };
 

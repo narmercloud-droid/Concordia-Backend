@@ -1,4 +1,5 @@
-﻿import { prisma } from "../prisma/client.js";
+﻿import { prisma } from "../prisma/client.ts";
+import logger from "../logger.ts";
 
 export function startTerminalStatusJob() {
   setInterval(async () => {
@@ -18,14 +19,14 @@ export function startTerminalStatusJob() {
       });
 
       if (result.count > 0) {
-        console.log(`Cleanup job: Marked ${result.count} terminals offline`);
+        logger.info({ count: result.count }, "Cleanup job: Marked terminals offline");
       }
     } catch (err: any) {
-      console.error("Terminal status cleanup job error:", err.message);
+      logger.error({ err }, "Terminal status cleanup job error");
     }
   }, 60 * 1000); // Every 60 seconds
 
-  console.log("Terminal status cleanup job started");
+  logger.info("Terminal status cleanup job started");
 }
 
 

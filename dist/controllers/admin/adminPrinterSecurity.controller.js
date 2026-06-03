@@ -1,14 +1,14 @@
 import { prisma } from "../../prisma/client.js";
 import { approvePrinter } from "../../services/printer/printerSecurity.service.js";
-import { success } from "../controllerHelper.js";
-export const listUnapprovedPrinters = async (req, res) => {
+import { wrap } from "../../contracts/api.js";
+export const listUnapprovedPrinters = wrap(async () => {
     const printers = await prisma.printerSecurity.findMany({
         where: { approved: false }
     });
-    return success(res, printers);
-};
-export const approvePrinterController = async (req, res) => {
+    return printers;
+});
+export const approvePrinterController = wrap(async (req) => {
     const { id } = req.params;
     const updated = await approvePrinter(Number(id));
-    return success(res, updated);
-};
+    return updated;
+});

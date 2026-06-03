@@ -1,5 +1,5 @@
-﻿import { prisma } from "../../prisma/client.js";
-import { kitchenPrinters } from "../../config/printers.js";
+﻿import { prisma } from "../../prisma/client.ts";
+import { kitchenPrinters } from "../../config/printers.ts";
 
 export async function syncPrintersToCloud(branchId) {
   const all = [];

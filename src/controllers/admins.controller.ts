@@ -1,84 +1,52 @@
-﻿import type { Request, Response, NextFunction  } from "express";
-import { adminService } from "../services/admins.service.js";
-import { prisma } from "../prisma/client.js";
-import { success, fail } from "./controllerHelper.js";
+﻿import type { Request } from "express";
+import { adminService } from "../services/admins.service.ts";
+import { wrap, fail } from "../contracts/api.js";
 
 export const AdminController = {
-  create: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const admin = await adminService.createAdmin(req.body);
-      return success(res, admin);
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  create: wrap(async (req: Request) => {
+    const admin = await adminService.createAdmin(req.body);
+    return admin;
+  }),
 
-  login: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const admin = await adminService.getAdminByEmail(req.body.email);
-      if (!admin) return fail(res, "Invalid credentials", 401);
+  login: wrap(async (req: Request) => {
+    const admin = await adminService.getAdminByEmail(req.body.email);
+    if (!admin) throw fail('UNAUTHORIZED', 'Invalid credentials');
 
-      const valid = await adminService.validatePassword(
-        req.body.password,
-        admin.password
-      );
-      if (!valid) return fail(res, "Invalid credentials", 401);
+    const valid = await adminService.validatePassword(req.body.password, admin.password);
+    if (!valid) throw fail('UNAUTHORIZED', 'Invalid credentials');
 
-      const tokens = await adminService.generateTokens(admin);
-      return success(res, { admin, ...tokens });
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+    const tokens = await adminService.generateTokens(admin);
+    return { admin, ...tokens };
+  }),
 
-  refresh: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { refreshToken } = req.body;
-      if (!refreshToken) return fail(res, "Missing token", 401);
+  refresh: wrap(async (req: Request) => {
+    const { refreshToken } = req.body;
+    if (!refreshToken) throw fail('UNAUTHORIZED', 'Missing token');
 
-      // Admin model in prisma/schema.prisma has no refreshToken field.
-      // Reject to avoid Prisma type mismatch.
-      return fail(res, "Invalid token", 403);
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+    // Admin model in prisma/schema.prisma has no refreshToken field.
+    // Reject to avoid Prisma type mismatch.
+    throw fail('FORBIDDEN', 'Invalid token');
+  }),
 
-  getById: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const admin = await adminService.getAdminById(req.params.id);
-      return success(res, admin);
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  getById: wrap(async (req: Request) => {
+    const admin = await adminService.getAdminById(req.params.id);
+    return admin;
+  }),
 
-  list: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const admins = await adminService.listAdmins();
-      return success(res, admins);
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  list: wrap(async () => {
+    const admins = await adminService.listAdmins();
+    return admins;
+  }),
 
-  update: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const admin = await adminService.updateAdmin(req.params.id, req.body);
-      return success(res, admin);
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  update: wrap(async (req: Request) => {
+    const admin = await adminService.updateAdmin(req.params.id, req.body);
+    return admin;
+  }),
 
-  delete: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const admin = await adminService.deleteAdmin(req.params.id);
-      return success(res, admin);
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+  delete: wrap(async (req: Request) => {
+    const admin = await adminService.deleteAdmin(req.params.id);
+    return admin;
+  })
 };
 
 

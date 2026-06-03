@@ -22,10 +22,11 @@ const ROOM_CLEANUP_CHECK_INTERVAL = 30000; // Check every 30 seconds
  * Get or create a room (lazy creation)
  */
 export const getOrCreateRoom = (
-  namespace: Namespace,
+  _namespace: Namespace,
   roomName: string,
   branchId?: string
 ): RoomState => {
+  void _namespace;
   if (!rooms.has(roomName)) {
     rooms.set(roomName, {
       name: roomName,
@@ -200,8 +201,9 @@ export const updateSocketRoomCount = (roomName: string): void => {
 /**
  * Start automatic cleanup of inactive rooms
  */
-export const startRoomCleanup = (namespace: Namespace): NodeJS.Timer => {
-  return setInterval(() => {
+export const startRoomCleanup = (_namespace: Namespace): NodeJS.Timer => {
+  void _namespace;
+  return setInterval(async () => {
     const now = Date.now();
     const toDelete: string[] = [];
 
@@ -212,7 +214,20 @@ export const startRoomCleanup = (namespace: Namespace): NodeJS.Timer => {
       }
       // Delete inactive rooms after timeout
       else if (now - room.lastActivity > ROOM_CLEANUP_TIMEOUT) {
-        console.log(`Auto-cleanup: room "${roomName}" inactive for ${(now - room.lastActivity) / 1000}s`);
+        // Use structured logging for cleanup notices
+        // eslint-disable-next-line no-console
+        // (leave message for visibility if logger isn't configured yet)
+        // Replace with pino logger
+        // Import logger dynamically to avoid circular deps
+        try {
+          const logger = (await import("../../logger.ts")).default;
+          logger.info({ roomName, idleSeconds: (now - room.lastActivity) / 1000 }, "Auto-cleanup: inactive room");
+        } catch (_e) {
+          void _e;
+          // Fallback to console if logger import fails
+          // eslint-disable-next-line no-console
+          console.log(`Auto-cleanup: room "${roomName}" inactive for ${(now - room.lastActivity) / 1000}s`);
+        }
         toDelete.push(roomName);
       }
     }

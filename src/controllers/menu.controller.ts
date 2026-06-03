@@ -1,72 +1,72 @@
-﻿import type { Request, Response, NextFunction  } from "express";
-import { menuService } from "../services/menu.service.js";
-import { success } from "./controllerHelper.js";
+﻿import type { Request  } from "express";
+import { menuService } from "../services/menu.service.ts";
+import { wrap } from "../contracts/api.js";
 
 export const MenuController = {
   // Categories
-  createCategory: async (req: Request, res: Response, next: NextFunction) => {
+  createCategory: wrap(async (req: Request) => {
     const category = await menuService.createCategory(req.body);
-    return success(res, category);
-  },
+    return category;
+  }),
 
-  updateCategory: async (req: Request, res: Response, next: NextFunction) => {
+  updateCategory: wrap(async (req: Request) => {
     const category = await menuService.updateCategory(req.params.id, req.body);
-    return success(res, category);
-  },
+    return category;
+  }),
 
-  deleteCategory: async (req: Request, res: Response, next: NextFunction) => {
-    const category = await menuService.deleteCategory(req.params.id);
-    return success(res, category);
-  },
+  deleteCategory: wrap(async (req: Request) => {
+    await menuService.deleteCategory(req.params.id);
+    return { success: true };
+  }),
 
   // Items
-  createItem: async (req: Request, res: Response, next: NextFunction) => {
+  createItem: wrap(async (req: Request) => {
     const item = await menuService.createItem(req.body);
-    return success(res, item);
-  },
+    return item;
+  }),
 
-  updateItem: async (req: Request, res: Response, next: NextFunction) => {
+  updateItem: wrap(async (req: Request) => {
     const item = await menuService.updateItem(req.params.id, req.body);
-    return success(res, item);
-  },
+    return item;
+  }),
 
-  deleteItem: async (req: Request, res: Response, next: NextFunction) => {
-    const item = await menuService.deleteItem(req.params.id);
-    return success(res, item);
-  },
+  deleteItem: wrap(async (req: Request) => {
+    await menuService.deleteItem(req.params.id);
+    return { success: true };
+  }),
 
   // Variants
-  createVariant: async (req: Request, res: Response, next: NextFunction) => {
+  createVariant: wrap(async (req: Request) => {
     const variant = await menuService.createVariant(req.body);
-    return success(res, variant);
-  },
+    return variant;
+  }),
 
-  updateVariant: async (req: Request, res: Response, next: NextFunction) => {
+  updateVariant: wrap(async (req: Request) => {
     const variant = await menuService.updateVariant(req.params.id, req.body);
-    return success(res, variant);
-  },
+    return variant;
+  }),
 
-  deleteVariant: async (req: Request, res: Response, next: NextFunction) => {
-    const variant = await menuService.deleteVariant(req.params.id);
-    return success(res, variant);
-  },
+  deleteVariant: wrap(async (req: Request) => {
+    await menuService.deleteVariant(req.params.id);
+    return { success: true };
+  }),
 
   // Availability
-  setItemAvailability: async (req: Request, res: Response, next: NextFunction) => {
-    const item = await menuService.setItemAvailability(req.params.id, req.body.available);
-    return success(res, item);
-  },
+  setItemAvailability: wrap(async (req: Request) => {
+    const updated = await menuService.setItemAvailability(req.params.id, req.body.available);
+    return updated;
+  }),
 
-  setVariantAvailability: async (req: Request, res: Response, next: NextFunction) => {
-    const variant = await menuService.setVariantAvailability(req.params.id, req.body.available);
-    return success(res, variant);
-  },
+  setVariantAvailability: wrap(async (req: Request) => {
+    const updated = await menuService.setVariantAvailability(req.params.id, req.body.available);
+    return updated;
+  }),
 
   // Customer menu browsing
-  listMenu: async (req: Request, res: Response, next: NextFunction) => {
+  listMenu: wrap(async (_req: Request) => {
     const menu = await menuService.listCategories();
-    return success(res, menu);
-  }
+    return menu;
+  })
 };
 
 

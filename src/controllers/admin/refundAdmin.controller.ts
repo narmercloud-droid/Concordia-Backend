@@ -1,5 +1,4 @@
-﻿import { prisma } from "../../prisma/client.js";
-import { refundOrder } from "../order/orderLifecycle.controller.js";
+﻿import { refundOrder } from "../order/orderLifecycle.controller.ts";
 
 export const adminRefundOrder = refundOrder;
 

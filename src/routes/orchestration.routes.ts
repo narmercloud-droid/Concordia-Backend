@@ -1,7 +1,8 @@
-﻿import { Router } from "express";
-import { OrchestrationController } from "../controllers/orchestration.controller.js";
-import { adminAuth } from "../middleware/adminAuth.js";
-import { adminRole } from "../middleware/adminRole.js";
+﻿import express from "express";
+const { Router } = express;
+import { OrchestrationController } from "../controllers/orchestration.controller.ts";
+import { adminAuth } from "../middleware/adminAuth.ts";
+import { adminRole } from "../middleware/adminRole.ts";
 
 const router = Router();
 

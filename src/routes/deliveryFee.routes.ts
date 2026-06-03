@@ -1,8 +1,9 @@
-﻿import { Router } from "express";
-import { DeliveryFeeController } from "../controllers/deliveryFee.controller.js";
-import { adminAuth } from "../middleware/adminAuth.js";
-import { adminRole } from "../middleware/adminRole.js";
-import { customerAuth } from "../middleware/customerAuth.js";
+﻿import express from "express";
+const { Router } = express;
+import { DeliveryFeeController } from "../controllers/deliveryFee.controller.ts";
+import { adminAuth } from "../middleware/adminAuth.ts";
+import { adminRole } from "../middleware/adminRole.ts";
+import { customerAuth } from "../middleware/customerAuth.ts";
 
 const router = Router();
 

@@ -1,4 +1,5 @@
 import { Server } from "socket.io";
+import logger from "../logger.ts";
 
 let io;
 
@@ -8,7 +9,7 @@ export function initSocket(server) {
   });
 
   io.on("connection", (socket) => {
-    console.log("Socket connected:", socket.id);
+    logger.info({ socketId: socket.id }, "Socket connected");
 
     socket.on("join_terminal_branch", (branchId) => {
       socket.join(`terminal_${branchId}`);

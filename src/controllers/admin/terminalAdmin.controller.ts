@@ -1,31 +1,23 @@
-﻿import type { Request, Response, NextFunction  } from "express";
-import { TerminalAdminService } from "../../services/admin/terminalAdmin.service.js";
-import { success } from "../controllerHelper.js";
+﻿import type { Request } from "express";
+import { TerminalAdminService } from "../../services/admin/terminalAdmin.service.ts";
+import { wrap } from "../../contracts/api.js";
 
 export class TerminalAdminController {
   // -----------------------------------------------------
   // GET ALL TERMINALS
   // -----------------------------------------------------
-  static async getAllTerminals(_req: Request, res: Response, next: NextFunction) {
-    try {
-      const terminals = await TerminalAdminService.getAllTerminals();
-      return success(res, terminals);
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+  static getAllTerminals = wrap(async (_req: Request) => {
+    const terminals = await TerminalAdminService.getAllTerminals();
+    return terminals;
+  });
 
   // -----------------------------------------------------
   // GET TERMINAL ACTIVITY
   // -----------------------------------------------------
-  static async getTerminalActivity(_req: Request, res: Response, next: NextFunction) {
-    try {
-      const activity = await TerminalAdminService.getTerminalActivity();
-      return success(res, activity);
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+  static getTerminalActivity = wrap(async (_req: Request) => {
+    const activity = await TerminalAdminService.getTerminalActivity();
+    return activity;
+  });
 }
 
 

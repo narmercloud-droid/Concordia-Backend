@@ -1,5 +1,5 @@
 export const knowledgeGraphService = {
-  query: (...args: any[]) => null,
-  generateInsights: (...args: any[]) => null,
-  analyze: (...args: any[]) => null
+  query: (..._args: any[]) => null,
+  generateInsights: (..._args: any[]) => null,
+  analyze: (..._args: any[]) => null
 };

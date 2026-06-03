@@ -1,5 +1,5 @@
 ﻿import { randomUUID } from "crypto";
-import { prisma } from "../prisma/client.js";
+import { prisma } from "../prisma/client.ts";
 
 export class FavoritesService {
   async addFavorite(customerId: string, itemId: string): Promise<any> {

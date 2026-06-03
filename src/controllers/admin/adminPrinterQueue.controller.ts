@@ -1,10 +1,10 @@
-﻿import { prisma } from "../../prisma/client.js";
-import { success } from "../controllerHelper.js";
+﻿import { prisma } from "../../prisma/client.ts";
+import { wrap } from "../../contracts/api.js";
 
-export const getPrinterQueue = async (req, res) => {
+export const getPrinterQueue = wrap(async () => {
   const jobs = await prisma.printerQueue.findMany({
     orderBy: { createdAt: "desc" }
   });
-  return success(res, jobs);
-};
+  return jobs;
+});
 

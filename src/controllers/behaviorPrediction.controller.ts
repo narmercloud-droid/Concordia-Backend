@@ -1,17 +1,13 @@
-﻿import { behaviorPredictionService } from "../services/behaviorPrediction.service.js";
-import type { NextFunction, Request, Response  } from "express";
-import { success } from "./controllerHelper.js";
+﻿import { behaviorPredictionService } from "../services/behaviorPrediction.service.ts";
+import type { Request } from "express";
+import { wrap } from "./../contracts/api.js";
 
 export const BehaviorPredictionController = {
-  profile: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const customerId = req.params.customerId as string;
-      const result = await behaviorPredictionService.fullProfile(customerId);
-      return success(res, result);
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  profile: wrap(async (req: Request) => {
+    const customerId = req.params.customerId as string;
+    const result = await behaviorPredictionService.fullProfile(customerId);
+    return result;
+  }),
 };
 
 

@@ -1,5 +1,6 @@
-﻿import { prisma } from "../prisma/client.js";
-import { segmentService } from "./segment.service.js";
+﻿import { prisma } from "../prisma/client.ts";
+import { segmentService } from "./segment.service.ts";
+import logger from "../logger.ts";
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const FROM_ADDRESS = process.env.CAMPAIGN_FROM_EMAIL || "marketing@concordia.app";
@@ -37,7 +38,7 @@ export class EmailCampaignService {
 
   private async sendCampaignEmail(email: string, campaign: any) {
     if (!RESEND_API_KEY) {
-      console.log(`[Campaign] Skipping email for ${email} because RESEND_API_KEY is not configured.`);
+      logger.warn({ email }, `Skipping campaign email: RESEND_API_KEY not configured`);
       return;
     }
 

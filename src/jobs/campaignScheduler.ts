@@ -1,5 +1,6 @@
-﻿import { prisma } from "../prisma/client.js";
-import { emailCampaignService } from "../services/emailCampaign.service.js";
+﻿import { prisma } from "../prisma/client.ts";
+import { emailCampaignService } from "../services/emailCampaign.service.ts";
+import logger from "../logger.ts";
 
 export async function runScheduledCampaigns() {
   const campaigns = await prisma.campaign.findMany({
@@ -14,21 +15,21 @@ export async function runScheduledCampaigns() {
   for (const campaign of campaigns) {
     try {
       await emailCampaignService.sendCampaign(campaign.id);
-      console.log(`[CampaignScheduler] Sent campaign ${campaign.id} (${campaign.name})`);
+      logger.info({ campaignId: campaign.id, name: campaign.name }, "Sent campaign");
     } catch (error: unknown) {
-      console.error(`[CampaignScheduler] Failed to send campaign ${campaign.id}:`, error);
+      logger.error({ campaignId: campaign.id, error }, "Failed to send campaign");
     }
   }
 }
 
 export function startCampaignScheduler() {
   runScheduledCampaigns().catch(error => {
-    console.error("[CampaignScheduler] Initial polling failed:", error);
+    logger.error({ error }, "[CampaignScheduler] Initial polling failed");
   });
 
   setInterval(() => {
     runScheduledCampaigns().catch(error => {
-      console.error("[CampaignScheduler] Scheduled poll failed:", error);
+      logger.error({ error }, "[CampaignScheduler] Scheduled poll failed");
     });
   }, 60_000);
 }

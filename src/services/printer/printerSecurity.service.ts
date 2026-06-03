@@ -1,4 +1,4 @@
-﻿import { prisma } from "../../prisma/client.js";
+﻿import { prisma } from "../../prisma/client.ts";
 import crypto from "crypto";
 
 export function generatePrinterToken() {

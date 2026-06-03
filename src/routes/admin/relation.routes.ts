@@ -1,6 +1,7 @@
-﻿import { Router } from "express";
-import { RelationController } from "../../controllers/admin/relation.controller.js";
-import { verifyAdmin } from "../../middleware/auth.js";
+﻿import express from "express";
+const { Router } = express;
+import { RelationController } from "../../controllers/admin/relation.controller.ts";
+import { verifyAdmin } from "../../middleware/auth.ts";
 
 const router = Router();
 

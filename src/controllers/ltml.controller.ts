@@ -1,26 +1,26 @@
-﻿import type { Request, Response, NextFunction  } from "express";
-import { ltmlService } from "../services/ltml.service.js";
-import { success } from "./controllerHelper.js";
+﻿import type { Request } from "express";
+import { ltmlService } from "../services/ltml.service.ts";
+import { wrap } from "../contracts/api.js";
 
 export const LTMLController = {
-  save: async (req: Request, res: Response, next: NextFunction) => {
-    const branchId = req.user.branchId;
+  save: wrap(async (req: Request) => {
+    const branchId = (req as any).user.branchId;
     const { module, key, value } = req.body;
     const result = await ltmlService.save(branchId, module, key, value);
-    return success(res, result);
-  },
+    return result;
+  }),
 
-  trends: async (req: Request, res: Response, next: NextFunction) => {
-    const branchId = req.user.branchId;
+  trends: wrap(async (req: Request) => {
+    const branchId = (req as any).user.branchId;
     const result = await ltmlService.generateTrends(branchId);
-    return success(res, result);
-  },
+    return result;
+  }),
 
-  summary: async (req: Request, res: Response, next: NextFunction) => {
-    const branchId = req.user.branchId;
+  summary: wrap(async (req: Request) => {
+    const branchId = (req as any).user.branchId;
     const result = await ltmlService.summary(branchId);
-    return success(res, result);
-  }
+    return result;
+  })
 };
 
 

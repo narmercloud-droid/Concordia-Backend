@@ -1,6 +1,5 @@
-﻿import { prisma } from "../../prisma/client.js";
-import { printKitchenTicket } from "./printer.service.js";
-import { enqueuePrintJob } from "./printerQueue.service.js";
+﻿import { prisma } from "../../prisma/client.ts";
+import { enqueuePrintJob } from "./printerQueue.service.ts";
 
 export async function routeOrderToKitchens(orderId) {
   const order = await prisma.order.findUnique({
@@ -14,7 +13,6 @@ export async function routeOrderToKitchens(orderId) {
 
   if (!order) return;
 
-  const kitchenAItems = order.items.filter(i => i.item.kitchen === "A");
   const kitchenBItems = order.items.filter(i => i.item.kitchen === "B");
 
   if (kitchenBItems.length > 0) {

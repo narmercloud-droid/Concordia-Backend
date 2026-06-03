@@ -1,5 +1,5 @@
-﻿import type { AuthenticatedRequest } from "../globalTypes.js";
-import { staffingPrepService } from "../services/staffingPrep.service.js";
+﻿import type { AuthenticatedRequest } from "../globalTypes.ts";
+import { staffingPrepService } from "../services/staffingPrep.service.ts";
 import type { NextFunction, Response  } from "express";
 
 export const StaffingPrepController = {

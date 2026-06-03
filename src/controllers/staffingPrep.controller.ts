@@ -1,18 +1,13 @@
-﻿import type { AuthenticatedRequest } from "../globalTypes.js";
-import { staffingPrepService } from "../services/staffingPrep.service.js";
-import type { NextFunction, Response  } from "express";
-import { success } from "./controllerHelper.js";
+﻿import type { AuthenticatedRequest } from "../globalTypes.ts";
+import { staffingPrepService } from "../services/staffingPrep.service.ts";
+import { wrap } from "../contracts/api.js";
 
 export const StaffingPrepController = {
-  fullPlan: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    try {
-      const branchId = req.user!.branchId;
-      const result = await staffingPrepService.fullPlan(branchId);
-      return success(res, result);
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  fullPlan: wrap(async (req: AuthenticatedRequest) => {
+    const branchId = req.user!.branchId;
+    const result = await staffingPrepService.fullPlan(branchId);
+    return result;
+  }),
 };
 
 

@@ -1,5 +1,5 @@
-﻿import { prisma } from "../prisma/client.js";
-import { scaleUp, scaleDown } from "../services/printer/printerAutoscale.service.js";
+﻿import { prisma } from "../prisma/client.ts";
+import { scaleUp, scaleDown } from "../services/printer/printerAutoscale.service.ts";
 
 export function startPrinterAutoscaleWorker() {
   setInterval(async () => {

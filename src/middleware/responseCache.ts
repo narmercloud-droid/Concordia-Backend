@@ -1,5 +1,5 @@
 ﻿import type { Request, Response, NextFunction  } from "express";
-import { redisClient } from "../lib/redis.js";
+import { redisClient } from "../lib/redis.ts";
 import { createHash } from "crypto";
 
 // Cache key generation

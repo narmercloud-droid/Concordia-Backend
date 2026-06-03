@@ -168,7 +168,7 @@ export class OrderLifecycleService {
     }
 
     return prisma.$transaction(async (tx) => {
-      const updatedOrder = await tx.order.update({
+      await tx.order.update({
         where: { id: orderId },
         data: {
           status: resolvedStatus,

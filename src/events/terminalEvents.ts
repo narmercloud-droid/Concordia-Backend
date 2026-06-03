@@ -1,13 +1,14 @@
 ﻿import { Server, Socket } from "socket.io";
-import { prisma } from "../prisma/client.js";
-import { TerminalService } from "../services/terminal/terminal.service.js";
+import { prisma } from "../prisma/client.ts";
+import { TerminalService } from "../services/terminal/terminal.service.ts";
+import logger from "../logger.ts";
 
 export function registerTerminalEvents(io: Server, socket: Socket) {
   socket.on("terminal_connected", async () => {
     const terminalToken = socket.handshake.auth?.terminal_token;
 
     if (!terminalToken) {
-      console.log("Terminal socket connection failed: no terminal_token");
+      logger.warn("Terminal socket connection failed: no terminal_token");
       socket.disconnect();
       return;
     }
@@ -19,14 +20,14 @@ export function registerTerminalEvents(io: Server, socket: Socket) {
       socket.join(`terminal_${terminal.id}`);
       socket.join(`branch_${terminal.branchId}`);
 
-      const { getIO } = await import("../lib/socket.js");
+      const { getIO } = await import("../lib/socket.ts");
       getIO().to("admin_dashboard").emit("terminal_online", {
         terminal_id: terminal.id,
         isOnline: true,
         lastSeen: new Date(),
       });
     } catch (err: any) {
-      console.log(`Terminal socket connection failed: ${err.message}`);
+      logger.warn({ err }, "Terminal socket connection failed");
       socket.disconnect();
     }
   });
@@ -43,7 +44,7 @@ export function registerTerminalEvents(io: Server, socket: Socket) {
       };
       io.to("admin_dashboard").emit("printer_status_update", payload);
     } catch (err: any) {
-      console.error(`Error forwarding printer status: ${err.message}`);
+      logger.error({ err }, "Error forwarding printer status");
     }
   });
 
@@ -65,7 +66,7 @@ export function registerTerminalEvents(io: Server, socket: Socket) {
         });
       }
     } catch (err: any) {
-      console.error(`Error updating terminal offline status: ${err.message}`);
+      logger.error({ err }, "Error updating terminal offline status");
     }
   });
 }

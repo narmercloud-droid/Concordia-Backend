@@ -1,19 +1,15 @@
-﻿import type { Request, Response, NextFunction  } from "express";
-import { recommendationService } from "../services/recommendation.service.js";
-import { success } from "./controllerHelper.js";
+﻿import type { Request  } from "express";
+import { recommendationService } from "../services/recommendation.service.ts";
+import { wrap } from "../contracts/api.js";
 
 export const RecommendationController = {
-  recommend: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const customerId = req.user.id;
-      const { branchId } = req.query;
+  recommend: wrap(async (req: Request) => {
+    const customerId = req.user.id;
+    const { branchId } = req.query;
 
-      const rec = await recommendationService.recommend(customerId, branchId);
-      return success(res, rec);
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+    const rec = await recommendationService.recommend(customerId, branchId);
+    return rec;
+  })
 };
 
 

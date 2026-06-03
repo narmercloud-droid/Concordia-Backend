@@ -1,32 +1,24 @@
-﻿import type { Request, Response, NextFunction  } from "express";
-import { nlaeService } from "../services/nlae.service.js";
-import { prisma } from "../prisma/client.js";
-import { success } from "./controllerHelper.js";
+﻿import type { Request } from "express";
+import { nlaeService } from "../services/nlae.service.ts";
+import { prisma } from "../prisma/client.ts";
+import { wrap } from "../contracts/api.js";
 
 export const NLAEController = {
-  ask: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const branchId = req.user.branchId;
-      const { question } = req.body;
-      const answer = await nlaeService.ask(branchId, question);
-      return success(res, { question, answer });
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  ask: wrap(async (req: Request) => {
+    const branchId = req.user.branchId;
+    const { question } = req.body;
+    const answer = await nlaeService.ask(branchId, question);
+    return { question, answer };
+  }),
 
-  history: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const branchId = req.user.branchId;
-      const logs = await prisma.analyticsQueryLog.findMany({
-        where: { branchId },
-        orderBy: { createdAt: "desc" }
-      });
-      return success(res, logs);
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+  history: wrap(async (req: Request) => {
+    const branchId = req.user.branchId;
+    const logs = await prisma.analyticsQueryLog.findMany({
+      where: { branchId },
+      orderBy: { createdAt: "desc" }
+    });
+    return logs;
+  })
 };
 
 

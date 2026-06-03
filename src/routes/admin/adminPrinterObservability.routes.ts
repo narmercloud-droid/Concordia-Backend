@@ -1,6 +1,7 @@
-﻿import { Router } from "express";
-import { adminAuth } from "../../middleware/adminAuth.js";
-import { getTraces, getHealth, getAnomalies } from "../../controllers/admin/adminPrinterObservability.controller.js";
+﻿import express from "express";
+const { Router } = express;
+import { adminAuth } from "../../middleware/adminAuth.ts";
+import { getTraces, getHealth, getAnomalies } from "../../controllers/admin/adminPrinterObservability.controller.ts";
 
 const router = Router();
 

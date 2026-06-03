@@ -1,4 +1,4 @@
-﻿import pool from "../db.js";
+﻿import pool from "../db.ts";
 
 export class PreferencesService {
   static async addPreference(userId: string, item: string, type: string) {

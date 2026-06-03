@@ -1,50 +1,34 @@
-﻿import type { Request, Response, NextFunction  } from "express";
-import { favoritesService } from "../services/favorites.service.js";
-import { success } from "./controllerHelper.js";
+﻿import type { Request  } from "express";
+import { favoritesService } from "../services/favorites.service.ts";
+import { wrap } from "../contracts/api.js";
 
 export const FavoritesController = {
-  add: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const customerId = req.user.id;
-      const { itemId } = req.body;
+  add: wrap(async (req: Request) => {
+    const customerId = req.user.id;
+    const { itemId } = req.body;
 
-      const fav = await favoritesService.addFavorite(customerId, itemId);
-      return success(res, fav);
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+    const fav = await favoritesService.addFavorite(customerId, itemId);
+    return fav;
+  }),
 
-  remove: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const customerId = req.user.id;
-      const { itemId } = req.body;
+  remove: wrap(async (req: Request) => {
+    const customerId = req.user.id;
+    const { itemId } = req.body;
 
-      await favoritesService.removeFavorite(customerId, itemId);
-      return success(res, { success: true });
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+    await favoritesService.removeFavorite(customerId, itemId);
+    return { success: true };
+  }),
 
-  list: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const customerId = req.user.id;
-      const list = await favoritesService.listFavorites(customerId);
-      return success(res, list);
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  list: wrap(async (req: Request) => {
+    const customerId = req.user.id;
+    const list = await favoritesService.listFavorites(customerId);
+    return list;
+  }),
 
-  mostFavorited: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const data = await favoritesService.mostFavoritedItems();
-      return success(res, data);
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+  mostFavorited: wrap(async () => {
+    const data = await favoritesService.mostFavoritedItems();
+    return data;
+  })
 };
 
 

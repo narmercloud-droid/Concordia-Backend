@@ -1,17 +1,17 @@
-﻿import { prisma } from "../../prisma/client.js";
+﻿import { prisma } from "../../prisma/client.ts";
 import crypto from "crypto";
-import { success } from "../controllerHelper.js";
+import { wrap } from "../../contracts/api.js";
 
-export const adminListTerminals = async (req, res) => {
+export const adminListTerminals = wrap(async () => {
   const terminals = await prisma.terminal.findMany({
     include: {
       branch: true
     }
   });
-  return success(res, terminals);
-};
+  return terminals;
+});
 
-export const adminResetTerminalToken = async (req, res) => {
+export const adminResetTerminalToken = wrap(async (req) => {
   const { terminalId } = req.params;
   const newToken = crypto.randomUUID();
 
@@ -20,10 +20,10 @@ export const adminResetTerminalToken = async (req, res) => {
     data: { activation_token: newToken }
   });
 
-  return success(res, updated);
-};
+  return updated;
+});
 
-export const adminAssignTerminalKitchen = async (req, res) => {
+export const adminAssignTerminalKitchen = wrap(async (req) => {
   const { terminalId } = req.params;
   const { kitchen } = req.body;
 
@@ -32,6 +32,6 @@ export const adminAssignTerminalKitchen = async (req, res) => {
     data: { assignedKitchen: kitchen }
   });
 
-  return success(res, { ok: true, updated });
-};
+  return { ok: true, updated };
+});
 

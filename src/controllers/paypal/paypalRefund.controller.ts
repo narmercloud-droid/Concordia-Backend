@@ -1,18 +1,18 @@
-﻿import { prisma } from "../../prisma/client.js";
-import { paypalRequest } from "../../services/paypal/paypalClient.js";
-import { WalletService } from "../../services/wallet.service.js";
-import { OrderLifecycleService } from "../../services/order/orderLifecycle.service.js";
-import { success, fail } from "../controllerHelper.js";
+﻿import { prisma } from "../../prisma/client.ts";
+import { paypalRequest } from "../../services/paypal/paypalClient.ts";
+import { WalletService } from "../../services/wallet.service.ts";
+import { OrderLifecycleService } from "../../services/order/orderLifecycle.service.ts";
+import { wrap, fail } from "../../contracts/api.js";
 
-export const refundPayPalPayment = async (req, res) => {
+export const refundPayPalPayment = wrap(async (req) => {
   try {
     const { orderId } = req.body;
 
     const order = await prisma.order.findUnique({ where: { id: orderId } });
-    if (!order) return fail(res, "Order not found", 404);
+    if (!order) throw fail('NOT_FOUND', 'Order not found');
 
     if (!order.paypalCaptureId) {
-      return fail(res, "No PayPal capture to refund", 400);
+      throw fail('INVALID_INPUT', 'No PayPal capture to refund');
     }
 
     const result = await paypalRequest(
@@ -31,10 +31,10 @@ export const refundPayPalPayment = async (req, res) => {
       orderId
     );
 
-    return success(res, { success: true, refund: result });
+    return { success: true, refund: result };
   } catch (err) {
     console.error(err);
-    return fail(res, "Refund error", 500);
+    throw fail('INTERNAL_ERROR', 'Refund error');
   }
-};
+});
 

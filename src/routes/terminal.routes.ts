@@ -1,12 +1,13 @@
-﻿import { Router } from "express";
-import { TerminalController } from "../controllers/terminal/terminal.controller.js";
-import { validateTerminalToken, terminalAuth } from "../middleware/terminalAuth.js";
-import { validate } from "../middleware/validate.js";
-import { activateTerminalSchema, registerTerminalSchema, loginTerminalSchema } from "../schemas/terminalSchemas.js";
-import { assignOrderSchema, acceptOrderSchema, rejectOrderSchema } from "../schemas/orderWorkflowSchemas.js";
-import { updateTerminalHeartbeat } from "../services/terminal/terminalStatus.service.js";
-import { reportTerminalError } from "../services/terminal/terminalError.service.js";
-import { acceptOrder, rejectOrder } from "../controllers/terminal/terminalOrders.controller.js";
+﻿import express from "express";
+const { Router } = express;
+import { TerminalController } from "../controllers/terminal/terminal.controller.ts";
+import { validateTerminalToken, terminalAuth } from "../middleware/terminalAuth.ts";
+import { validate } from "../middleware/validate.ts";
+import { activateTerminalSchema, registerTerminalSchema, loginTerminalSchema } from "../schemas/terminalSchemas.ts";
+import { assignOrderSchema, acceptOrderSchema, rejectOrderSchema } from "../schemas/orderWorkflowSchemas.ts";
+import { updateTerminalHeartbeat } from "../services/terminal/terminalStatus.service.ts";
+import { reportTerminalError } from "../services/terminal/terminalError.service.ts";
+import { acceptOrder, rejectOrder } from "../controllers/terminal/terminalOrders.controller.ts";
 
 const router = Router();
 

@@ -1,5 +1,5 @@
-﻿import { prisma } from "../prisma/client.js";
-import { recordAnomaly } from "../services/printer/printerObservability.service.js";
+﻿import { prisma } from "../prisma/client.ts";
+import { recordAnomaly } from "../services/printer/printerObservability.service.ts";
 
 export function startPrinterSLAWorker() {
   setInterval(async () => {

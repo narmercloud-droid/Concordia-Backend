@@ -1,60 +1,38 @@
-﻿import type { Request, Response, NextFunction  } from "express";
-import { ItemService } from "../../services/admin/item.service.js";
-import { success, fail } from "../controllerHelper.js";
+﻿import type { Request } from "express";
+import { ItemService } from "../../services/admin/item.service.ts";
+import { wrap, fail } from "../../contracts/api.js";
 
 export class ItemController {
-  static async getAll(_req: Request, res: Response, next: NextFunction) {
-    try {
-      const items = await ItemService.getAll();
-      return success(res, items);
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+  static getAll = wrap(async (_req: Request) => {
+    const items = await ItemService.getAll();
+    return items;
+  });
 
-  static async getById(req: Request, res: Response, next: NextFunction) {
-    try {
-      const id = req.params.id;
-      const item = await ItemService.getById(id);
+  static getById = wrap(async (req: Request) => {
+    const id = req.params.id;
+    const item = await ItemService.getById(id);
 
-      if (!item) {
-        return fail(res, "Item not found", 404);
-      }
+    if (!item) throw fail('NOT_FOUND', 'Item not found');
 
-      return success(res, item);
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+    return item;
+  });
 
-  static async create(req: Request, res: Response, next: NextFunction) {
-    try {
-      const item = await ItemService.create(req.body);
-      return success(res, item);
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+  static create = wrap(async (req: Request) => {
+    const item = await ItemService.create(req.body);
+    return item;
+  });
 
-  static async update(req: Request, res: Response, next: NextFunction) {
-    try {
-      const id = req.params.id;
-      const item = await ItemService.update(id, req.body);
-      return success(res, item);
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+  static update = wrap(async (req: Request) => {
+    const id = req.params.id;
+    const item = await ItemService.update(id, req.body);
+    return item;
+  });
 
-  static async remove(req: Request, res: Response, next: NextFunction) {
-    try {
-      const id = req.params.id;
-      await ItemService.remove(id);
-      return success(res, { success: true });
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+  static remove = wrap(async (req: Request) => {
+    const id = req.params.id;
+    await ItemService.remove(id);
+    return { success: true };
+  });
 }
 
 

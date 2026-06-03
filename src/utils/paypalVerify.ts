@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import fetch from "node-fetch";
-import crc32 = require("buffer-crc32");
+import * as crc32 from "buffer-crc32";
 
 export async function verifyPayPalWebhook(req) {
   const headers = req.headers;
@@ -14,7 +14,7 @@ export async function verifyPayPalWebhook(req) {
 
   const body = req.body; // raw Buffer
 
-  const expected = `${transmissionId}|${timestamp}|${webhookId}|${crc32(body).toString("hex")}`;
+  const expected = `${transmissionId}|${timestamp}|${webhookId}|${(crc32 as any)(body).toString("hex")}`;
 
   const cert = await fetch(certUrl).then(r => r.text());
   const verifier = crypto.createVerify(authAlgo);

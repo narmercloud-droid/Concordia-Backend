@@ -1,6 +1,7 @@
-﻿import { Router } from "express";
-import { ExtraController } from "../../controllers/admin/extra.controller.js";
-import { verifyAdmin } from "../../middleware/auth.js";
+﻿import express from "express";
+const { Router } = express;
+import { ExtraController } from "../../controllers/admin/extra.controller.ts";
+import { verifyAdmin } from "../../middleware/auth.ts";
 
 const router = Router();
 

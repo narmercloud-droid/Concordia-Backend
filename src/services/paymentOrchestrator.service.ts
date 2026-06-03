@@ -1,4 +1,4 @@
-﻿import { WalletService } from "./wallet.service.js";
+﻿import { WalletService } from "./wallet.service.ts";
 
 export class PaymentOrchestrator {
   /**

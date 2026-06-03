@@ -1,60 +1,38 @@
-﻿import type { Request, Response, NextFunction  } from "express";
-import { CategoryService } from "../../services/admin/category.service.js";
-import { success, fail } from "../controllerHelper.js";
+﻿import type { Request } from "express";
+import { CategoryService } from "../../services/admin/category.service.ts";
+import { wrap, fail } from "../../contracts/api.js";
 
 export class CategoryController {
-  static async getAll(_req: Request, res: Response, next: NextFunction) {
-    try {
-      const categories = await CategoryService.getAll();
-      return success(res, categories);
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+  static getAll = wrap(async (_req: Request) => {
+    const categories = await CategoryService.getAll();
+    return categories;
+  });
 
-  static async getById(req: Request, res: Response, next: NextFunction) {
-    try {
-      const id = req.params.id;
-      const category = await CategoryService.getById(id);
+  static getById = wrap(async (req: Request) => {
+    const id = req.params.id;
+    const category = await CategoryService.getById(id);
 
-      if (!category) {
-        return fail(res, "Category not found", 404);
-      }
+    if (!category) throw fail('NOT_FOUND', 'Category not found');
 
-      return success(res, category);
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+    return category;
+  });
 
-  static async create(req: Request, res: Response, next: NextFunction) {
-    try {
-      const category = await CategoryService.create(req.body);
-      return success(res, category);
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+  static create = wrap(async (req: Request) => {
+    const category = await CategoryService.create(req.body);
+    return category;
+  });
 
-  static async update(req: Request, res: Response, next: NextFunction) {
-    try {
-      const id = req.params.id;
-      const category = await CategoryService.update(id, req.body);
-      return success(res, category);
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+  static update = wrap(async (req: Request) => {
+    const id = req.params.id;
+    const category = await CategoryService.update(id, req.body);
+    return category;
+  });
 
-  static async remove(req: Request, res: Response, next: NextFunction) {
-    try {
-      const id = req.params.id;
-      await CategoryService.remove(id);
-      return success(res, { success: true });
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+  static remove = wrap(async (req: Request) => {
+    const id = req.params.id;
+    await CategoryService.remove(id);
+    return { success: true };
+  });
 }
 
 

@@ -1,14 +1,9 @@
 import { behaviorPredictionService } from "../services/behaviorPrediction.service.js";
-import { success } from "./controllerHelper.js";
+import { wrap } from "./../contracts/api.js";
 export const BehaviorPredictionController = {
-    profile: async (req, res, next) => {
-        try {
-            const customerId = req.params.customerId;
-            const result = await behaviorPredictionService.fullProfile(customerId);
-            return success(res, result);
-        }
-        catch (err) {
-            next(err);
-        }
-    },
+    profile: wrap(async (req) => {
+        const customerId = req.params.customerId;
+        const result = await behaviorPredictionService.fullProfile(customerId);
+        return result;
+    }),
 };

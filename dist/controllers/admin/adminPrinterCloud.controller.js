@@ -1,6 +1,6 @@
 import { getCloudPrinters } from "../../services/printer/printerCloudSync.service.js";
-import { success } from "../controllerHelper.js";
-export const listCloudPrinters = async (req, res) => {
+import { wrap } from "../../contracts/api.js";
+export const listCloudPrinters = wrap(async () => {
     const printers = await getCloudPrinters();
-    return success(res, printers);
-};
+    return printers;
+});

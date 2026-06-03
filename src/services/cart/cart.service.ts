@@ -1,4 +1,4 @@
-﻿import { prisma } from "../../prisma/client.js";
+﻿import { prisma } from "../../prisma/client.ts";
 import { randomUUID } from "crypto";
 import { v4 as uuid } from "uuid";
 

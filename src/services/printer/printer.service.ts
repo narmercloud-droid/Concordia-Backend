@@ -1,6 +1,5 @@
 ﻿import escpos from "escpos";
 import escposNetwork from "escpos-network";
-import { kitchenPrinters } from "../../config/printers.js";
 
 escpos.Network = escposNetwork;
 

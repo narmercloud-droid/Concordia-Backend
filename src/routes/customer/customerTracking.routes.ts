@@ -1,5 +1,6 @@
-﻿import { Router } from "express";
-import { getCustomerTracking } from "../../controllers/customer/customerTracking.controller.js";
+﻿import express from "express";
+const { Router } = express;
+import { getCustomerTracking } from "../../controllers/customer/customerTracking.controller.ts";
 
 const router = Router();
 

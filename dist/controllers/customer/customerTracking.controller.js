@@ -1,7 +1,7 @@
 import { prisma } from "../../prisma/client.js";
 import { broadcastToCustomer } from "../../services/realtime/realtime.service.js";
-import { success, fail } from "../controllerHelper.js";
-export const getCustomerTracking = async (req, res) => {
+import { wrap, fail } from "../../contracts/api.js";
+export const getCustomerTracking = wrap(async (req) => {
     try {
         const { token } = req.params;
         const order = await prisma.order.findFirst({
@@ -15,7 +15,7 @@ export const getCustomerTracking = async (req, res) => {
             }
         });
         if (!order)
-            return fail(res, "Invalid tracking token", 404);
+            throw fail('NOT_FOUND', 'Invalid tracking token');
         const response = {
             orderId: order.id,
             status: order.status,
@@ -36,10 +36,10 @@ export const getCustomerTracking = async (req, res) => {
             customerAddress: order.customer.addresses?.[0] || null
         };
         broadcastToCustomer(token, "tracking_update", response);
-        return success(res, response);
+        return response;
     }
     catch (err) {
         console.error(err);
-        return fail(res, "Server error", 500);
+        throw fail('INTERNAL_ERROR', 'Server error');
     }
-};
+});

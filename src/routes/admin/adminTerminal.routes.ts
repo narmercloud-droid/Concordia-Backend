@@ -1,6 +1,7 @@
-﻿import { Router } from "express";
-import { adminAuth } from "../../middleware/adminAuth.js";
-import { listTerminals, listTerminalErrors } from "../../controllers/admin/adminTerminal.controller.js";
+﻿import express from "express";
+const { Router } = express;
+import { adminAuth } from "../../middleware/adminAuth.ts";
+import { listTerminals, listTerminalErrors } from "../../controllers/admin/adminTerminal.controller.ts";
 
 const router = Router();
 

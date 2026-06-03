@@ -1,4 +1,4 @@
-﻿import { courierService } from "../services/couriers.service.js";
+﻿import { courierService } from "../services/couriers.service.ts";
 
 export async function courierAuth(req, res, next) {
   const { orderId, courierToken } = req.body;

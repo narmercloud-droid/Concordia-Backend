@@ -1,17 +1,17 @@
 import { testKitchenPrinter } from "../../services/printer/printerTest.service.js";
-import { success, fail } from "../controllerHelper.js";
-export const runPrinterTest = async (req, res) => {
+import { wrap, fail } from "../../contracts/api.js";
+export const runPrinterTest = wrap(async (req) => {
     try {
         const { kitchen } = req.params;
         const result = await testKitchenPrinter(kitchen);
-        return success(res, {
+        return {
             success: true,
             kitchen,
             message: "Test print sent"
-        });
+        };
     }
     catch (err) {
         console.error(err);
-        return fail(res, err.message || "Server error", 500);
+        throw fail('INTERNAL_ERROR', err.message || "Server error");
     }
-};
+});

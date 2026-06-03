@@ -1,6 +1,7 @@
-﻿import { Router } from "express";
-import { VoucherService } from "../services/voucher.service.js";
-import { customerAuth } from "../middleware/customerAuth.js";
+﻿import express from "express";
+const { Router } = express;
+import { VoucherService } from "../services/voucher.service.ts";
+import { customerAuth } from "../middleware/customerAuth.ts";
 
 const router = Router();
 

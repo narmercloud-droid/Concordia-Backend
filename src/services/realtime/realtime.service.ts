@@ -1,4 +1,4 @@
-﻿import { getIO } from "../../websocket/socketServer.js";
+﻿import { getIO } from "../../websocket/socketServer.ts";
 
 export function broadcastToTerminal(branchId, event, payload) {
   getIO().to(`terminal_${branchId}`).emit(event, payload);

@@ -1,6 +1,6 @@
 ﻿import QRCode from "qrcode";
-import { SunmiPrinter } from "../../printers/sunmiPrinter.js";
-import { prisma } from "../../prisma/client.js";
+import { SunmiPrinter } from "../../printers/sunmiPrinter.ts";
+import { prisma } from "../../prisma/client.ts";
 
 const printer = new SunmiPrinter();
 

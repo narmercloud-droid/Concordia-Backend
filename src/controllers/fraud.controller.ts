@@ -1,46 +1,30 @@
-﻿import type { Request, Response, NextFunction  } from "express";
-import { fraudService } from "../services/fraud.service.js";
-import { success } from "./controllerHelper.js";
+﻿import type { Request } from "express";
+import { fraudService } from "../services/fraud.service.ts";
+import { wrap } from "../contracts/api.js";
 
 export const FraudController = {
-  scoreOrder: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { orderId } = req.body;
-      const result = await fraudService.scoreOrder(orderId);
-      return success(res, result);
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  scoreOrder: wrap(async (req: Request) => {
+    const { orderId } = req.body;
+    const result = await fraudService.scoreOrder(orderId);
+    return result;
+  }),
 
-  getRisk: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { orderId } = req.params;
-      const result = await fraudService.getRisk(orderId);
-      return success(res, result);
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  getRisk: wrap(async (req: Request) => {
+    const { orderId } = req.params;
+    const result = await fraudService.getRisk(orderId);
+    return result;
+  }),
 
-  flags: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const flags = await fraudService.getFlags();
-      return success(res, flags);
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  flags: wrap(async () => {
+    const flags = await fraudService.getFlags();
+    return flags;
+  }),
 
-  events: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { orderId } = req.params;
-      const events = await fraudService.getOrderEvents(orderId);
-      return success(res, events);
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+  events: wrap(async (req: Request) => {
+    const { orderId } = req.params;
+    const events = await fraudService.getOrderEvents(orderId);
+    return events;
+  })
 };
 
 

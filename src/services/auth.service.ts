@@ -1,9 +1,10 @@
-﻿import { prisma } from "../prisma/client.js";
+﻿import { prisma } from "../prisma/client.ts";
 import jwt from "jsonwebtoken";
+import { env } from "../config/env.ts";
 import { v4 as uuidv4 } from "uuid";
-import { sendMagicLink } from "../utils/email.js";
+import { sendMagicLink } from "../utils/email.ts";
 
-const DEFAULT_JWT_SECRET = process.env.JWT_SECRET || "dev-secret";
+const DEFAULT_JWT_SECRET = env.JWT_SECRET as string;
 const MAGIC_LINK_TTL_MS = 15 * 60 * 1000;
 
 export class AuthService {
@@ -77,8 +78,8 @@ export class AuthService {
         branchId: admin.branchId,
         purpose: "admin_magic_link"
       },
-      DEFAULT_JWT_SECRET,
-      { expiresIn: "15m" }
+      DEFAULT_JWT_SECRET as string,
+      { expiresIn: "15m" } as jwt.SignOptions
     );
 
     await sendMagicLink(normalizedEmail, magicToken, "/admin/auth/callback");
@@ -86,7 +87,7 @@ export class AuthService {
   }
 
   async verifyAdminToken(token: string) {
-    const decoded = jwt.verify(token, DEFAULT_JWT_SECRET) as Record<string, unknown>;
+    const decoded = jwt.verify(token, DEFAULT_JWT_SECRET as jwt.Secret) as Record<string, unknown>;
     if (!decoded || decoded.purpose !== "admin_magic_link" || typeof decoded.email !== "string") {
       throw new Error("Invalid admin token");
     }
@@ -102,8 +103,8 @@ export class AuthService {
 
     const sessionToken = jwt.sign(
       { id: admin.id, role: admin.role, branchId: admin.branchId },
-      DEFAULT_JWT_SECRET,
-      { expiresIn: "7d" }
+      DEFAULT_JWT_SECRET as string,
+      { expiresIn: "7d" } as jwt.SignOptions
     );
 
     return { token: sessionToken, admin };
@@ -112,8 +113,8 @@ export class AuthService {
   createSession(customerId: string) {
     return jwt.sign(
       { id: customerId, role: "customer", branchId: "customer" },
-      DEFAULT_JWT_SECRET,
-      { expiresIn: "7d" }
+      DEFAULT_JWT_SECRET as string,
+      { expiresIn: "7d" } as jwt.SignOptions
     );
   }
 

@@ -1,22 +1,22 @@
 import { prisma } from "../../prisma/client.js";
-import { success } from "../controllerHelper.js";
-export const getTraces = async (req, res) => {
+import { wrap } from "../../contracts/api.js";
+export const getTraces = wrap(async () => {
     const traces = await prisma.printerTrace.findMany({
         orderBy: { createdAt: "desc" },
         take: 200
     });
-    return success(res, traces);
-};
-export const getHealth = async (req, res) => {
+    return traces;
+});
+export const getHealth = wrap(async () => {
     const health = await prisma.printerHealth.findMany({
         orderBy: { score: "asc" }
     });
-    return success(res, health);
-};
-export const getAnomalies = async (req, res) => {
+    return health;
+});
+export const getAnomalies = wrap(async () => {
     const anomalies = await prisma.printerAnomaly.findMany({
         orderBy: { createdAt: "desc" },
         take: 100
     });
-    return success(res, anomalies);
-};
+    return anomalies;
+});

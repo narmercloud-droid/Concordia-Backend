@@ -1,7 +1,8 @@
 ﻿import { randomUUID } from "crypto";
-import { Router } from "express";
-import { prisma } from "../prisma/client.js";
-import { OrderLifecycleService } from "../services/order/orderLifecycle.service.js";
+import express from "express";
+const { Router } = express;
+import { prisma } from "../prisma/client.ts";
+import { OrderLifecycleService } from "../services/order/orderLifecycle.service.ts";
 
 const router = Router();
 

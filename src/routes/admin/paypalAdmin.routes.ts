@@ -1,7 +1,8 @@
-﻿import { Router } from "express";
-import { adminAuth } from "../../middleware/adminAuth.js";
-import { capturePayPalPayment } from "../../controllers/paypal/paypalCapture.controller.js";
-import { refundPayPalPayment } from "../../controllers/paypal/paypalRefund.controller.js";
+﻿import express from "express";
+const { Router } = express;
+import { adminAuth } from "../../middleware/adminAuth.ts";
+import { capturePayPalPayment } from "../../controllers/paypal/paypalCapture.controller.ts";
+import { refundPayPalPayment } from "../../controllers/paypal/paypalRefund.controller.ts";
 
 const router = Router();
 

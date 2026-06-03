@@ -1,7 +1,8 @@
-﻿import { Router } from "express";
-import { adminAuth } from "../../middleware/adminAuth.js";
-import { createVoucher, invalidateVoucher, listVouchers } from "../../controllers/admin/voucherAdmin.controller.js";
-import { adminRefundOrder } from "../../controllers/admin/refundAdmin.controller.js";
+﻿import express from "express";
+const { Router } = express;
+import { adminAuth } from "../../middleware/adminAuth.ts";
+import { createVoucher, invalidateVoucher, listVouchers } from "../../controllers/admin/voucherAdmin.controller.ts";
+import { adminRefundOrder } from "../../controllers/admin/refundAdmin.controller.ts";
 
 const router = Router();
 

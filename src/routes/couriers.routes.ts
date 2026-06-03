@@ -1,6 +1,7 @@
-﻿import { Router } from "express";
-import { CouriersController } from "../controllers/couriers.controller.js";
-import { courierAuth } from "../middleware/courierAuth.js";
+﻿import express from "express";
+const { Router } = express;
+import { CouriersController } from "../controllers/couriers.controller.ts";
+import { courierAuth } from "../middleware/courierAuth.ts";
 
 const router = Router();
 

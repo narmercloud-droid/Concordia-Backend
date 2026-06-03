@@ -1,17 +1,17 @@
 ﻿import { randomUUID } from "crypto";
-import { prisma } from "../../prisma/client.js";
-import { validateCourierToken } from "../../services/courier/courierToken.service.js";
-import { autoUpdateStatus } from "../../services/courier/autoStatus.service.js";
-import { broadcastToTerminal, broadcastToCustomer } from "../../services/realtime/realtime.service.js";
-import { success, fail } from "../controllerHelper.js";
+import { prisma } from "../../prisma/client.ts";
+import { validateCourierToken } from "../../services/courier/courierToken.service.ts";
+import { autoUpdateStatus } from "../../services/courier/autoStatus.service.ts";
+import { broadcastToTerminal, broadcastToCustomer } from "../../services/realtime/realtime.service.ts";
+import { wrap, fail } from "../../contracts/api.js";
 
-export const updateCourierLocation = async (req, res) => {
+export const updateCourierLocation = wrap(async (req) => {
   try {
     const { token, lat, lng, accuracy } = req.body;
 
     const order = await validateCourierToken(token);
     if (!order) {
-      return fail(res, "Invalid or expired token", 401);
+      throw fail('UNAUTHORIZED', 'Invalid or expired token');
     }
 
     // Save location (schema uses latitude/longitude)
@@ -51,13 +51,13 @@ export const updateCourierLocation = async (req, res) => {
       });
     }
 
-    return success(res, {
+    return {
       success: true,
       statusChanged
-    });
+    };
   } catch (err) {
     console.error(err);
-    return fail(res, "Server error", 500);
+    throw fail('INTERNAL_ERROR', 'Server error');
   }
-};
+});
 

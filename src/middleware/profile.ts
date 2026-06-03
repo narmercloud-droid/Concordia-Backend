@@ -1,6 +1,6 @@
 ﻿import type { Request, Response, NextFunction  } from "express";
-import { requestProfile, createRequestProfile } from "../lib/profile.js";
-import { apiRequestDuration, apiRouteLatency, trackApiRoute } from "../metrics/metrics.js";
+import { requestProfile, createRequestProfile } from "../lib/profile.ts";
+import { apiRequestDuration, apiRouteLatency, trackApiRoute } from "../metrics/metrics.ts";
 
 export const profileMiddleware = (req: Request, res: Response, next: NextFunction) => {
   const profile = createRequestProfile();

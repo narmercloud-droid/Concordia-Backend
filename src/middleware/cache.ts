@@ -1,7 +1,7 @@
 ﻿import type { Request, Response, NextFunction  } from "express";
 import { createHash } from "crypto";
-import { clearCache, getCache, setCache } from "../lib/redis.js";
-import { trackApiCacheHit, trackApiCacheMiss } from "../metrics/metrics.js";
+import { clearCache, getCache, setCache } from "../lib/redis.ts";
+import { trackApiCacheHit, trackApiCacheMiss } from "../metrics/metrics.ts";
 
 const generateCacheKey = (req: Request): string => {
   const hash = createHash("sha256");

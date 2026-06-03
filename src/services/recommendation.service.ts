@@ -1,4 +1,4 @@
-﻿import { prisma } from "../prisma/client.js";
+﻿import { prisma } from "../prisma/client.ts";
 
 export class RecommendationService {
   // 1. Popular items (fallback)
@@ -70,7 +70,8 @@ export class RecommendationService {
   }
 
   // 5. Search-based recommendations
-  async searchBased(customerId) {
+  async searchBased(_customerId) {
+    void _customerId;
     const lastSearch = await prisma.searchLog.findFirst({
       where: {},
       orderBy: { createdAt: "desc" }

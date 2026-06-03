@@ -1,11 +1,10 @@
-import * as dotenv from "dotenv";
-dotenv.config(); // Load .env before anything else
-
 import { Pool } from "pg";
+import logger from "./logger.ts";
+import { env } from "./config/env.ts";
 
-const connectionString = process.env.DATABASE_URL;
+const connectionString = env.DATABASE_URL;
 
-console.log("🔌 Using DATABASE_URL:", connectionString);
+logger.info({ connectionString: connectionString ?? null }, "Using DATABASE_URL");
 
 const pool = new Pool({
   connectionString,
@@ -15,7 +14,7 @@ const pool = new Pool({
 });
 
 pool.connect()
-  .then(() => console.log("✅ Connected to Neon PostgreSQL"))
-  .catch(err => console.error("❌ PostgreSQL connection error:", err));
+  .then(() => logger.info("Connected to PostgreSQL"))
+  .catch(err => logger.error({ err }, "PostgreSQL connection error"));
 
 export default pool;

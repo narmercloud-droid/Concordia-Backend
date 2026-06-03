@@ -1,4 +1,4 @@
-﻿import { prisma } from "../prisma/client.js";
+﻿import { prisma } from "../prisma/client.ts";
 
 export class OfferService {
   async validateOffer(code: string, order: any): Promise<any> {

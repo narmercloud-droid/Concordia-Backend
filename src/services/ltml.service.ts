@@ -1,10 +1,10 @@
 ﻿import { randomUUID } from "crypto";
-import { prisma } from "../prisma/client.js";
-// import { forecastingService } from "./forecasting.service.js";
-// import { ltvChurnService } from "./ltvChurn.service.js";
-// import { behaviorPredictionService } from "./behaviorPrediction.service.js";
-// import { dynamicPricingService } from "./dynamicPricing.service.js";
-// import { knowledgeGraphService } from "./knowledgeGraph.service.js";
+import { prisma } from "../prisma/client.ts";
+// import { forecastingService } from "./forecasting.service.ts";
+// import { ltvChurnService } from "./ltvChurn.service.ts";
+// import { behaviorPredictionService } from "./behaviorPrediction.service.ts";
+// import { dynamicPricingService } from "./dynamicPricing.service.ts";
+// import { knowledgeGraphService } from "./knowledgeGraph.service.ts";
 
 interface TrendData {
   category: string;

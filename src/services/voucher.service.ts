@@ -1,5 +1,5 @@
-﻿import { prisma } from "../prisma/client.js";
-import { WalletService } from "./wallet.service.js";
+﻿import { prisma } from "../prisma/client.ts";
+import { WalletService } from "./wallet.service.ts";
 
 export class VoucherService {
   static async validate(code: string) {

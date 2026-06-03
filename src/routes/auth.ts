@@ -1,22 +1,46 @@
-﻿import { Router } from "express";
+﻿import express from "express";
+const { Router } = express;
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { authService } from "../services/auth.service.js";
-import { prisma } from "../prisma/client.js";
+import { authService } from "../services/auth.service.ts";
+import { prisma } from "../prisma/client.ts";
+import logger from "../logger.ts";
+import { env } from "../config/env.ts";
+import {
+  isBlockedByIp,
+  incrFailureForIp,
+  resetFailuresForIp,
+  isBlockedByUser,
+  incrFailureForUser,
+  resetFailuresForUser
+} from "../middleware/bruteForce.ts";
 
 const router = Router();
 
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
+  const ip = req.ip || String(req.headers["x-forwarded-for"] || req.socket.remoteAddress || "unknown");
+
+  if (await isBlockedByIp(ip)) {
+    return res.status(429).tson({ error: "Too many login attempts from this IP" });
+  }
+
+  if (await isBlockedByUser(email)) {
+    return res.status(429).tson({ error: "Too many login attempts for this account" });
+  }
 
   const admin = await prisma.admin.findUnique({ where: { email } });
-  console.log("LOGIN ROUTE ADMIN FROM DB:", admin);
+  logger.debug({ adminId: admin?.id }, "LOGIN ROUTE: fetched admin from DB");
   if (!admin) {
+    await incrFailureForIp(ip);
+    await incrFailureForUser(email);
     return res.status(401).tson({ error: "Invalid credentials" });
   }
 
   const match = await bcrypt.compare(password, admin.password);
   if (!match) {
+    await incrFailureForIp(ip);
+    await incrFailureForUser(email);
     return res.status(401).tson({ error: "Invalid credentials" });
   }
 
@@ -30,9 +54,17 @@ router.post("/login", async (req, res) => {
     return res.status(500).tson({ error: "Invalid admin token payload" });
   }
 
-  const token = jwt.sign(payload, process.env.JWT_SECRET || "dev-secret", {
-    expiresIn: "7d"
-  });
+  // Reset failure counters on successful login
+  try {
+    await resetFailuresForIp(ip);
+    await resetFailuresForUser(email);
+  } catch (e) {
+    logger.warn({ e }, "Failed to reset brute-force counters");
+  }
+
+  const token = jwt.sign(payload, env.JWT_SECRET as string, {
+    expiresIn: env.JWT_EXPIRES_IN || "7d"
+  } as jwt.SignOptions);
 
   res.tson({ token, user: payload });
 });
@@ -45,7 +77,7 @@ router.post("/request-link", async (req, res) => {
     await authService.requestMagicLink(email);
     res.tson({ message: "Magic link sent. Check your email." });
   } catch (error: unknown) {
-    console.error(error);
+    logger.error({ error }, "Error requesting magic link");
     res.status(500).tson({ error: "Unable to request magic link" });
   }
 });
@@ -71,7 +103,7 @@ router.get("/verify", async (req, res) => {
     const result = await authService.verifyToken(token);
     res.tson({ token: result.token, customer: { id: result.customer.id, email: result.customer.email, name: result.customer.name, phoneNumber: result.customer.phoneNumber } });
   } catch (error: unknown) {
-    console.error(error);
+    logger.error({ error }, "Token verification failed");
     res.status(401).tson({ error: "Invalid or expired token" });
   }
 });
@@ -84,7 +116,7 @@ router.get("/admin/verify", async (req, res) => {
     const result = await authService.verifyAdminToken(token);
     res.tson({ token: result.token, admin: { id: result.admin.id, email: result.admin.email, role: result.admin.role, branchId: result.admin.branchId } });
   } catch (error: unknown) {
-    console.error(error);
+    logger.error({ error }, "Admin token verification failed");
     res.status(401).tson({ error: "Invalid or expired admin token" });
   }
 });

@@ -1,6 +1,6 @@
 ﻿import express from "express";
-import { OrderLifecycleController } from "../../controllers/order/orderLifecycle.controller.js";
-import { customerAuth } from "../../middleware/customerAuth.js";
+import { OrderLifecycleController } from "../../controllers/order/orderLifecycle.controller.ts";
+import { customerAuth } from "../../middleware/customerAuth.ts";
 
 const router = express.Router();
 

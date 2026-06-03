@@ -1,60 +1,38 @@
-﻿import type { Request, Response, NextFunction  } from "express";
-import { VariantService } from "../../services/admin/variant.service.js";
-import { success, fail } from "../controllerHelper.js";
+﻿import type { Request  } from "express";
+import { VariantService } from "../../services/admin/variant.service.ts";
+import { wrap, fail } from "../../contracts/api.js";
 
 export class VariantController {
-  static async getAll(_req: Request, res: Response, next: NextFunction) {
-    try {
-      const variants = await VariantService.getAll();
-      return success(res, variants);
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+  static getAll = wrap(async (_req: Request) => {
+    const variants = await VariantService.getAll();
+    return variants;
+  });
 
-  static async getById(req: Request, res: Response, next: NextFunction) {
-    try {
-      const id = req.params.id;
-      const variant = await VariantService.getById(id);
+  static getById = wrap(async (req: Request) => {
+    const id = req.params.id;
+    const variant = await VariantService.getById(id);
 
-      if (!variant) {
-        return fail(res, "Variant not found", 404);
-      }
+    if (!variant) throw fail('NOT_FOUND', 'Variant not found');
 
-      return success(res, variant);
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+    return variant;
+  });
 
-  static async create(req: Request, res: Response, next: NextFunction) {
-    try {
-      const variant = await VariantService.create(req.body);
-      return success(res, variant);
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+  static create = wrap(async (req: Request) => {
+    const variant = await VariantService.create(req.body);
+    return variant;
+  });
 
-  static async update(req: Request, res: Response, next: NextFunction) {
-    try {
-      const id = req.params.id;
-      const variant = await VariantService.update(id, req.body);
-      return success(res, variant);
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+  static update = wrap(async (req: Request) => {
+    const id = req.params.id;
+    const variant = await VariantService.update(id, req.body);
+    return variant;
+  });
 
-  static async remove(req: Request, res: Response, next: NextFunction) {
-    try {
-      const id = req.params.id;
-      await VariantService.remove(id);
-      return success(res, { success: true });
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+  static remove = wrap(async (req: Request) => {
+    const id = req.params.id;
+    await VariantService.remove(id);
+    return { success: true };
+  });
 }
 
 

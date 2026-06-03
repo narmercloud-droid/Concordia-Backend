@@ -1,12 +1,13 @@
-﻿import { Router } from "express";
-import { adminAuth } from "../middleware/adminAuth.js";
-import { prisma } from "../prisma/client.js";
-import { emailCampaignService } from "../services/emailCampaign.service.js";
+﻿import express from "express";
+const { Router } = express;
+import { adminAuth } from "../middleware/adminAuth.ts";
+import { prisma } from "../prisma/client.ts";
+import { emailCampaignService } from "../services/emailCampaign.service.ts";
 
 const router = Router();
 router.use(adminAuth);
 
-router.get("/campaigns", async (req, res) => {
+router.get("/campaigns", async (_req, res) => {
   const campaigns = await prisma.campaign.findMany({ include: { segment: true } });
   res.json(campaigns);
 });
@@ -76,12 +77,13 @@ router.post("/campaigns/:id/send-now", async (req, res) => {
   try {
     const result = await emailCampaignService.sendCampaign(id);
     res.json(result);
-  } catch (error: unknown) {
+  } catch (_error: unknown) {
+    void _error;
     res.status(500).json({ error: "Unable to send campaign now." });
   }
 });
 
-router.get("/segments", async (req, res) => {
+router.get("/segments", async (_req, res) => {
   const segments = await prisma.segment.findMany();
   res.json(segments);
 });

@@ -1,6 +1,6 @@
 ﻿import { randomBytes } from "crypto";
-import { prisma } from "../../prisma/client.js";
-import { OrderLifecycleService } from "../order/orderLifecycle.service.js";
+import { prisma } from "../../prisma/client.ts";
+import { OrderLifecycleService } from "../order/orderLifecycle.service.ts";
 
 export async function generateCourierToken(orderId: string) {
   const token = randomBytes(24).toString("hex");

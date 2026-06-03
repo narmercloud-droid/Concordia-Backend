@@ -1,54 +1,167 @@
 import { PrismaClient } from "@prisma/client";
-import { randomUUID } from "crypto";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("🌱 Starting database seed...");
+  console.log("🌱 Seeding database (full restaurant)...");
 
-  const categoryId = randomUUID();
-  const itemId = randomUUID();
-
-  // Variants are not supported by the current Prisma schema.
-  // This seed creates one category and one menu item for the menu list.
-
-  // Create a minimal menu seed. Do not purge all existing data here,
-  // because the current schema contains many related tables and the
-  // backend only requires one seeded menu item to unblock the order flow.
-
-  const category = await prisma.category.create({
-    data: {
-      id: categoryId,
-      name: "Pizza",
-      position: 1,
-      description: "Popular pizza items",
-    },
+  // Branch (ensure seed branch exists)
+  const branch = await prisma.branch.upsert({
+    where: { id: "branch-001" },
+    update: {},
+    create: {
+      id: "branch-001",
+      name: "Test Branch",
+      printerType: "network",
+      printerUrl: "http://localhost",
+      avgPrepTimeBaseline: 10,
+      currentLoadLevel: 0
+    }
   });
 
-  const item = await prisma.menuItem.create({
-    data: {
-      id: itemId,
-      name: "Margherita Pizza",
-      description: "Classic pizza with tomato sauce, mozzarella, and basil.",
-      price: 12.5,
-      tags: ["vegetarian", "popular"],
-      stock: 50,
-      lowStockThreshold: 5,
-      autoDisable: false,
-      kitchen: "A",
-      categoryId: category.id,
-    },
+  // Customer
+  await prisma.customer.upsert({
+    where: { id: "test-customer" },
+    update: {},
+    create: {
+      id: "test-customer",
+      name: "Test Customer",
+      email: "test@example.com",
+      phone: "+10000000000",
+      phoneNumber: "+10000000000",
+      loginToken: null,
+      loginTokenExpires: null,
+      marketingEmail: false,
+      marketingSMS: false,
+      marketingWhatsApp: false,
+      marketingConsent: false,
+      marketingConsentAt: null,
+      loyaltyPoints: 0,
+      lifetimePoints: 0,
+      loyaltyTier: "bronze"
+    }
   });
 
-  console.log("Seed complete:", {
-    category: { id: category.id, name: category.name },
-    item: { id: item.id, name: item.name, price: item.price },
-  });
+  // Categories
+  const categories = [
+    { name: "Burgers", description: "Juicy grilled burgers" },
+    { name: "Drinks", description: "Refreshing beverages" },
+    { name: "Desserts", description: "Sweet treats" }
+  ];
+
+  for (const cat of categories) {
+    await prisma.category.upsert({
+      where: { name: cat.name },
+      update: { description: cat.description },
+      create: {
+        name: cat.name,
+        description: cat.description
+      }
+    });
+  }
+
+  // Menu items (use explicit IDs for deterministic upserts)
+  const items = [
+    { id: 1001, name: "Classic Burger", description: "Beef patty, lettuce, tomato", basePrice: 8.5, category: "Burgers" },
+    { id: 1002, name: "Cheeseburger", description: "Beef patty with cheese", basePrice: 9.5, category: "Burgers" },
+    { id: 2001, name: "Coke", description: "330ml can", basePrice: 2.0, category: "Drinks" },
+    { id: 3001, name: "Chocolate Cake", description: "Rich chocolate slice", basePrice: 4.5, category: "Desserts" }
+  ];
+
+  for (const it of items) {
+    await prisma.menuItem.upsert({
+      where: { id: it.id },
+      update: { name: it.name, description: it.description, basePrice: it.basePrice },
+      create: {
+        id: it.id,
+        name: it.name,
+        description: it.description,
+        basePrice: it.basePrice
+      }
+    });
+  }
+
+  // Variant groups and variants (Size: Small/Medium/Large) for burger items
+  const burgerItemIds = [1001, 1002];
+  for (const menuItemId of burgerItemIds) {
+    const groupId = `size-group-${menuItemId}`;
+    const variantGroup = await prisma.variantGroup.upsert({
+      where: { id: groupId },
+      update: {},
+      create: {
+        id: groupId,
+        name: "Size",
+        itemId: menuItemId
+      }
+    });
+
+    const sizes = [
+      { id: `v-small-${menuItemId}`, name: "Small", price: 0 },
+      { id: `v-medium-${menuItemId}`, name: "Medium", price: 1.5 },
+      { id: `v-large-${menuItemId}`, name: "Large", price: 3.0 }
+    ];
+
+    for (const s of sizes) {
+      await prisma.variant.upsert({
+        where: { id: s.id },
+        update: { name: s.name, price: s.price, groupId: variantGroup.id },
+        create: { id: s.id, name: s.name, price: s.price, groupId: variantGroup.id }
+      });
+    }
+  }
+
+  // Add-on groups and add-ons (global style attached to burger items)
+  for (const menuItemId of burgerItemIds) {
+    const addOnGroupId = `addons-${menuItemId}`;
+    const addOnGroup = await prisma.addOnGroup.upsert({
+      where: { id: addOnGroupId },
+      update: {},
+      create: {
+        id: addOnGroupId,
+        name: "Extras",
+        itemId: menuItemId
+      }
+    });
+
+    const addons = [
+      { id: `a-cheese-${menuItemId}`, name: "Cheese", price: 1.0 },
+      { id: `a-bacon-${menuItemId}`, name: "Bacon", price: 1.5 },
+      { id: `a-sauce-${menuItemId}`, name: "Extra Sauce", price: 0.5 }
+    ];
+
+    for (const a of addons) {
+      await prisma.addOn.upsert({
+        where: { id: a.id },
+        update: { name: a.name, price: a.price, groupId: addOnGroup.id },
+        create: { id: a.id, name: a.name, price: a.price, groupId: addOnGroup.id }
+      });
+    }
+  }
+
+  // Branch pricing and availability for each menu item
+  const branchId = branch.id;
+  for (const it of items) {
+    const pricingId = `${branchId}-${it.id}-pricing`;
+    await prisma.branchItemPricing.upsert({
+      where: { id: pricingId },
+      update: { price: it.basePrice },
+      create: { id: pricingId, branchId, menuItemId: it.id, price: it.basePrice }
+    });
+
+    const availabilityId = `${branchId}-${it.id}-avail`;
+    await prisma.branchItemAvailability.upsert({
+      where: { id: availabilityId },
+      update: { isAvailable: true },
+      create: { id: availabilityId, branchId, menuItemId: it.id, isAvailable: true }
+    });
+  }
+
+  console.log("🌱 Full restaurant seed completed.");
 }
 
 main()
-  .catch((error) => {
-    console.error(error);
+  .catch((e) => {
+    console.error(e);
     process.exit(1);
   })
   .finally(async () => {

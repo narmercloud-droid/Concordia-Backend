@@ -1,79 +1,43 @@
-﻿import type { Request, Response, NextFunction  } from "express";
-import { dashboardService } from "../services/dashboard.service.js";
-import { success } from "./controllerHelper.js";
+﻿import type { Request  } from "express";
+import { dashboardService } from "../services/dashboard.service.ts";
+import { wrap } from "../contracts/api.js";
 
 export const DashboardController = {
-  globalRevenue: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      return success(res, await dashboardService.globalRevenue());
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  globalRevenue: wrap(async () => {
+    return await dashboardService.globalRevenue();
+  }),
 
-  branchRevenue: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      return success(res, await dashboardService.branchRevenue(req.params.branchId));
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  branchRevenue: wrap(async (req: Request) => {
+    return await dashboardService.branchRevenue(req.params.branchId);
+  }),
 
-  globalOrders: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      return success(res, await dashboardService.globalOrders());
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  globalOrders: wrap(async () => {
+    return await dashboardService.globalOrders();
+  }),
 
-  branchOrders: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      return success(res, await dashboardService.branchOrders(req.params.branchId));
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  branchOrders: wrap(async (req: Request) => {
+    return await dashboardService.branchOrders(req.params.branchId);
+  }),
 
-  menuPerformance: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      return success(res, await dashboardService.menuPerformance(req.params.branchId));
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  menuPerformance: wrap(async (req: Request) => {
+    return await dashboardService.menuPerformance(req.params.branchId);
+  }),
 
-  courierPerformance: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      return success(res, await dashboardService.courierPerformance(req.params.branchId));
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  courierPerformance: wrap(async (req: Request) => {
+    return await dashboardService.courierPerformance(req.params.branchId);
+  }),
 
-  topSearches: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      return success(res, await dashboardService.topSearches());
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  topSearches: wrap(async () => {
+    return await dashboardService.topSearches();
+  }),
 
-  loyaltyStats: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      return success(res, await dashboardService.loyaltyStats());
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  loyaltyStats: wrap(async () => {
+    return await dashboardService.loyaltyStats();
+  }),
 
-  customerStats: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      return success(res, await dashboardService.customerStats());
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+  customerStats: wrap(async () => {
+    return await dashboardService.customerStats();
+  })
 };
 
 

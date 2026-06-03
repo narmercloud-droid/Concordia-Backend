@@ -1,7 +1,7 @@
-﻿import { prisma } from "../../prisma/client.js";
-import { success, fail } from "../controllerHelper.js";
+﻿import { prisma } from "../../prisma/client.ts";
+import { wrap, fail } from "../../contracts/api.js";
 
-export const getCourierLocation = async (req, res) => {
+export const getCourierLocation = wrap(async (req) => {
   try {
     const { orderId } = req.params;
 
@@ -10,14 +10,14 @@ export const getCourierLocation = async (req, res) => {
       orderBy: { createdAt: "desc" }
     });
 
-    return success(res, loc || {});
+    return loc || {};
   } catch (err) {
     console.error(err);
-    return fail(res, "Server error", 500);
+    throw fail('INTERNAL_ERROR', 'Server error');
   }
-};
+});
 
-export const getOrderTimeline = async (req, res) => {
+export const getOrderTimeline = wrap(async (req) => {
   try {
     const { orderId } = req.params;
 
@@ -26,10 +26,10 @@ export const getOrderTimeline = async (req, res) => {
       orderBy: { timestamp: "asc" }
     });
 
-    return success(res, events);
+    return events;
   } catch (err) {
     console.error(err);
-    return fail(res, "Server error", 500);
+    throw fail('INTERNAL_ERROR', 'Server error');
   }
-};
+});
 

@@ -1,5 +1,5 @@
 ﻿import type { Request, Response, NextFunction  } from "express";
-import { prisma } from "../prisma/client.js";
+import { prisma } from "../prisma/client.ts";
 
 export async function validateTerminalToken(req: Request, res: Response, next: NextFunction) {
   const token = req.headers["x-terminal-token"] as string;

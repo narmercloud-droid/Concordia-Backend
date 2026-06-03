@@ -1,4 +1,4 @@
-﻿import { kitchenPrinters } from "../../config/printers.js";
+﻿import { kitchenPrinters } from "../../config/printers.ts";
 
 const rrIndex = {};
 

@@ -1,0 +1,13 @@
+export enum ApiErrorCode {
+  INVALID_INPUT = 'INVALID_INPUT',
+  NOT_FOUND = 'NOT_FOUND',
+  UNAUTHORIZED = 'UNAUTHORIZED',
+  FORBIDDEN = 'FORBIDDEN',
+  CONFLICT = 'CONFLICT',
+  VALIDATION_ERROR = 'VALIDATION_ERROR',
+  INTERNAL_ERROR = 'INTERNAL_ERROR',
+}
+
+export type ErrorCode = ApiErrorCode;
+
+export const DEFAULT_INTERNAL_ERROR_MESSAGE = 'An internal error occurred';

@@ -1,0 +1,23 @@
+{
+  "config": {
+    "target": "http://localhost:4000",
+    "phases": [
+      { "duration": 60, "arrivalRate": 20 }
+    ]
+  },
+  "scenarios": [
+    {
+      "name": "GET health",
+      "flow": [
+        { "get": { "url": "/health" } }
+      ]
+    },
+    {
+      "name": "Login and access",
+      "flow": [
+        { "post": { "url": "/api/auth/login", "json": { "email": "user@example.com", "password": "password" } } },
+        { "get": { "url": "/api/v1/customers", "headers": { "Authorization": "Bearer {{ token }}" } } }
+      ]
+    }
+  ]
+}

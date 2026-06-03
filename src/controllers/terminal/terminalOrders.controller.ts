@@ -1,9 +1,9 @@
-﻿import { prisma } from "../../prisma/client.js";
-import { broadcastToTerminal } from "../../services/realtime/realtime.service.js";
-import { OrderLifecycleService } from "../../services/order/orderLifecycle.service.js";
-import { success, fail } from "../controllerHelper.js";
+﻿import { prisma } from "../../prisma/client.ts";
+import { broadcastToTerminal } from "../../services/realtime/realtime.service.ts";
+import { OrderLifecycleService } from "../../services/order/orderLifecycle.service.ts";
+import { wrap, fail } from "../../contracts/api.js";
 
-export const getTerminalOrders = async (req, res) => {
+export const getTerminalOrders = wrap(async (req) => {
   try {
     const { branchId } = req.query;
 
@@ -19,14 +19,14 @@ export const getTerminalOrders = async (req, res) => {
       orderBy: { createdAt: "desc" }
     });
 
-    return success(res, orders);
+    return orders;
   } catch (err) {
     console.error(err);
-    return fail(res, "Server error", 500);
+    throw fail('INTERNAL_ERROR', 'Server error');
   }
-};
+});
 
-export const getTerminalOrderDetails = async (req, res) => {
+export const getTerminalOrderDetails = wrap(async (req) => {
   try {
     const { id } = req.params;
 
@@ -47,34 +47,34 @@ export const getTerminalOrderDetails = async (req, res) => {
       }
     });
 
-    if (!order) return fail(res, "Order not found", 404);
+    if (!order) throw fail('NOT_FOUND', 'Order not found');
 
     const response = order;
     broadcastToTerminal(order.branchId, "order_update", order);
-    return success(res, response);
+    return response;
   } catch (err) {
     console.error(err);
-    return fail(res, "Server error", 500);
+    throw fail('INTERNAL_ERROR', 'Server error');
   }
-};
+});
 
-export const acceptOrder = async (req, res) => {
+export const acceptOrder = wrap(async (req) => {
   const { orderId } = req.params;
 
   const updated = await OrderLifecycleService.updateStatus(orderId, "accepted");
 
   req.io.to(`branch_${req.terminal.branchId}`).emit("order_updated", updated);
 
-  return success(res, updated);
-};
+  return updated;
+});
 
-export const rejectOrder = async (req, res) => {
+export const rejectOrder = wrap(async (req) => {
   const { orderId } = req.params;
 
   const updated = await OrderLifecycleService.updateStatus(orderId, "rejected");
 
   req.io.to(`branch_${req.terminal.branchId}`).emit("order_updated", updated);
 
-  return success(res, updated);
-};
+  return updated;
+});
 

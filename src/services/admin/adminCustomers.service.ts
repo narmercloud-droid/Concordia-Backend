@@ -1,4 +1,4 @@
-﻿import { prisma } from "../../prisma/client.js";
+﻿import { prisma } from "../../prisma/client.ts";
 
 export class AdminCustomersService {
   static async getAll(branchId: string, filters: { page?: number; limit?: number; search?: string }) {
@@ -62,14 +62,14 @@ export class AdminCustomersService {
     });
   }
 
-  static async update(customerId: string, branchId: string, data: any) {
+  static async update(customerId: string, _branchId: string, data: any) {
     return prisma.customer.update({
       where: { id: customerId },
       data
     });
   }
 
-  static async toggleBan(customerId: string, branchId: string) {
+  static async toggleBan(customerId: string, _branchId: string) {
     const customer = await prisma.customer.findUnique({ where: { id: customerId } });
     if (!customer) throw new Error("Customer not found");
 

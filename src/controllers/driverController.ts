@@ -1,21 +1,20 @@
-﻿import type { Request, Response, NextFunction  } from "express";
+﻿import type { Request } from "express";
 import {
   getAvailableDrivers,
   getDriver
-} from "../services/driverService.js";
-import { success, fail } from "./controllerHelper.js";
+} from "../services/driverService.ts";
+import { wrap, fail } from "../contracts/api.js";
 
-export function getAvailableDriversController(req: Request, res: Response, next: NextFunction) {
-  const drivers = getAvailableDrivers();
-  return success(res, drivers);
-}
+export const getAvailableDriversController = wrap(async (_req: Request) => {
+  const drivers = await getAvailableDrivers();
+  return drivers;
+});
 
-export function getDriverController(req: Request, res: Response, next: NextFunction) {
-  const driver = getDriver(req.params.driverId);
-  if (!driver) return fail(res, "Driver not found", 404);
-
-  return success(res, driver);
-}
+export const getDriverController = wrap(async (req: Request) => {
+  const driver = await getDriver(req.params.driverId);
+  if (!driver) throw fail('NOT_FOUND', 'Driver not found');
+  return driver;
+});
 
 
 

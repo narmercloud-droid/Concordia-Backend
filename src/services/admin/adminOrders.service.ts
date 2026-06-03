@@ -1,5 +1,5 @@
-﻿import { prisma } from "../../prisma/client.js";
-import { OrderLifecycleService } from "../order/orderLifecycle.service.js";
+﻿import { prisma } from "../../prisma/client.ts";
+import { OrderLifecycleService } from "../order/orderLifecycle.service.ts";
 
 export class AdminOrdersService {
   static async getAll(branchId: string, filters: {
@@ -59,7 +59,7 @@ export class AdminOrdersService {
     const order = await prisma.order.findFirst({ where: { id: orderId, branchId } });
     if (!order) throw new Error("Order not found for branch");
 
-    const updated = await OrderLifecycleService.updateStatus(
+    await OrderLifecycleService.updateStatus(
       orderId,
       status,
       estimatedTime ? new Date(Date.now() + estimatedTime * 60000) : undefined

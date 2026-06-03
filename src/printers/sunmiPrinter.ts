@@ -10,7 +10,8 @@ export class SunmiPrinter {
       escpos.USB = escposUSB;
       this.device = new escpos.USB();
       this.printer = new escpos.Printer(this.device);
-    } catch (err) {
+    } catch (_err) {
+      void _err;
       console.warn("⚠ Sunmi printer not detected. Running in NO-PRINTER mode.");
       this.device = null;
       this.printer = null;

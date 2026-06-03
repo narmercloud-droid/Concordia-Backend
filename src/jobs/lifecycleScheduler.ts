@@ -1,5 +1,6 @@
-import { prisma } from "../prisma/client.js";
-import { OrderLifecycleService } from "../services/order/orderLifecycle.service.js";
+import { prisma } from "../prisma/client.ts";
+import { OrderLifecycleService } from "../services/order/orderLifecycle.service.ts";
+import logger from "../logger.ts";
 
 const POLL_INTERVAL_MS = Number(process.env.LIFECYCLE_POLL_MS || 60_000); // default 1 minute
 
@@ -10,10 +11,10 @@ export async function runLifecycleChecks() {
     const acceptedOrders = await prisma.order.findMany({ where: { status: "accepted", updatedAt: { lt: acceptedCutoff } } });
     for (const o of acceptedOrders) {
       try {
-        console.log(`Auto-advancing order ${o.id} accepted -> preparing`);
+        logger.info({ orderId: o.id }, "Auto-advancing order accepted -> preparing");
         await OrderLifecycleService.updateStatus(o.id, "preparing");
       } catch (err) {
-        console.warn(`Failed auto-advance for order ${o.id}:`, err?.message ?? err);
+        logger.warn({ orderId: o.id, err }, "Failed auto-advance for order");
       }
     }
 
@@ -22,10 +23,10 @@ export async function runLifecycleChecks() {
     const preparingOrders = await prisma.order.findMany({ where: { status: "preparing", updatedAt: { lt: preparingCutoff } } });
     for (const o of preparingOrders) {
       try {
-        console.log(`Auto-advancing order ${o.id} preparing -> ready_for_pickup`);
+        logger.info({ orderId: o.id }, "Auto-advancing order preparing -> ready_for_pickup");
         await OrderLifecycleService.updateStatus(o.id, "ready_for_pickup");
       } catch (err) {
-        console.warn(`Failed auto-advance for order ${o.id}:`, err?.message ?? err);
+        logger.warn({ orderId: o.id, err }, "Failed auto-advance for order");
       }
     }
 
@@ -35,23 +36,24 @@ export async function runLifecycleChecks() {
     const expiredTokenOrders = await prisma.order.findMany({ where: { courierToken: { not: null }, courierTokenExpiresAt: { lt: now } } });
     for (const o of expiredTokenOrders) {
       try {
-        console.log(`Clearing expired courier token for order ${o.id}`);
+        logger.info({ orderId: o.id }, "Clearing expired courier token for order");
         await OrderLifecycleService.clearCourierToken(o.id);
       } catch (err) {
-        console.warn(`Failed to clear courier token for order ${o.id}:`, err?.message ?? err);
+        logger.warn({ orderId: o.id, err }, "Failed to clear courier token for order");
       }
     }
   } catch (err) {
-    console.error("Lifecycle checks failed:", err);
+    logger.error({ err }, "Lifecycle checks failed");
   }
 }
 
 export function startLifecycleScheduler() {
   if (process.env.LIFECYCLE_AUTOMATION_ENABLED === "false") {
-    console.log("Lifecycle automation disabled via LIFECYCLE_AUTOMATION_ENABLED=false");
-    return;
+    logger.info("Lifecycle automation disabled via LIFECYCLE_AUTOMATION_ENABLED=false");
+    return null;
   }
-  console.log(`Starting lifecycle scheduler (interval ${POLL_INTERVAL_MS}ms)`);
-  runLifecycleChecks().catch((e) => console.error(e));
-  setInterval(() => runLifecycleChecks(), POLL_INTERVAL_MS);
+  logger.info({ intervalMs: POLL_INTERVAL_MS }, "Starting lifecycle scheduler");
+  runLifecycleChecks().catch((e) => logger.error({ e }, "Lifecycle initial run failed"));
+  const timer = setInterval(() => runLifecycleChecks(), POLL_INTERVAL_MS);
+  return timer;
 }

@@ -1,10 +1,11 @@
-﻿import { Router } from "express";
-import { OrderController } from "../../controllers/order/order.controller.js";
-import { confirmExternalPayment } from "../../controllers/order/orderLifecycle.controller.js";
-import { customerAuth } from "../../middleware/customerAuth.js";
-import { adminAuth } from "../../middleware/adminAuth.js";
-import { validate } from "../../middleware/validate.js";
-import { createOrderSchema, updateOrderStatusSchema } from "../../schemas/orderSchemas.js";
+﻿import express from "express";
+const { Router } = express;
+import { OrderController } from "../../controllers/order/order.controller.ts";
+import { confirmExternalPayment } from "../../controllers/order/orderLifecycle.controller.ts";
+import { customerAuth } from "../../middleware/customerAuth.ts";
+import { adminAuth } from "../../middleware/adminAuth.ts";
+import { validate } from "../../middleware/validate.ts";
+import { createOrderSchema, updateOrderStatusSchema } from "../../schemas/orderSchemas.ts";
 
 const router = Router();
 

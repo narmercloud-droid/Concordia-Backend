@@ -1,5 +1,6 @@
-﻿import { Router } from "express";
-import { offerService } from "../services/offer.service.js";
+﻿import express from "express";
+const { Router } = express;
+import { offerService } from "../services/offer.service.ts";
 
 const router = Router();
 
@@ -14,7 +15,8 @@ router.post("/validate", async (req, res) => {
     }
 
     res.json(offer);
-  } catch (err: unknown) {
+  } catch (_err: unknown) {
+    void _err;
     res.status(500).json({ error: "Unable to validate offer." });
   }
 });

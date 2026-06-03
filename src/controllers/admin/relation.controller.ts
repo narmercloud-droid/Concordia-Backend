@@ -1,17 +1,13 @@
-﻿import type { Request, Response, NextFunction  } from "express";
-import { RelationService } from "../../services/admin/relation.service.js";
-import { success } from "../controllerHelper.js";
+﻿import type { Request } from "express";
+import { RelationService } from "../../services/admin/relation.service.ts";
+import { wrap } from "../../contracts/api.js";
 
 export class RelationController {
-  static async getItemRelations(req: Request, res: Response, next: NextFunction) {
-    try {
-      const itemId = req.params.itemId;
-      const relations = await RelationService.getItemRelations(itemId);
-      return success(res, relations);
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+  static getItemRelations = wrap(async (req: Request) => {
+    const itemId = req.params.itemId;
+    const relations = await RelationService.getItemRelations(itemId);
+    return relations;
+  });
 }
 
 

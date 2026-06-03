@@ -1,6 +1,7 @@
-﻿import { Router } from "express";
-import { WalletService } from "../services/wallet.service.js";
-import { customerAuth } from "../middleware/customerAuth.js";
+﻿import express from "express";
+const { Router } = express;
+import { WalletService } from "../services/wallet.service.ts";
+import { customerAuth } from "../middleware/customerAuth.ts";
 
 const router = Router();
 

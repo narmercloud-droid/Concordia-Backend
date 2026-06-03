@@ -1,28 +1,19 @@
-﻿import type { AuthenticatedRequest } from "../globalTypes.js";
-import { ltvChurnService } from "../services/ltvChurn.service.js";
-import type { NextFunction, Response  } from "express";
-import { success } from "./controllerHelper.js";
+﻿import type { AuthenticatedRequest } from "../globalTypes.ts";
+import { ltvChurnService } from "../services/ltvChurn.service.ts";
+import { wrap } from "../contracts/api.js";
 
 export const LtvChurnController = {
-  segment: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    try {
-      const customerId = req.params.customerId as string;
-      const result = await ltvChurnService.segment(customerId);
-      return success(res, result);
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  segment: wrap(async (req: AuthenticatedRequest) => {
+    const customerId = req.params.customerId as string;
+    const result = await ltvChurnService.segment(customerId);
+    return result;
+  }),
 
-  branchSegments: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    try {
-      const branchId = req.user!.branchId;
-      const result = await ltvChurnService.branchSegments(branchId);
-      return success(res, result);
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  branchSegments: wrap(async (req: AuthenticatedRequest) => {
+    const branchId = req.user!.branchId;
+    const result = await ltvChurnService.branchSegments(branchId);
+    return result;
+  }),
 };
 
 

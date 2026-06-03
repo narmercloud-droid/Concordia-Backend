@@ -1,6 +1,7 @@
-﻿import { Router } from "express";
-import { adminAuth } from "../../middleware/adminAuth.js";
-import { listFleet, setPolicy, setFirmware, sendCommand } from "../../controllers/admin/adminPrinterFleet.controller.js";
+﻿import express from "express";
+const { Router } = express;
+import { adminAuth } from "../../middleware/adminAuth.ts";
+import { listFleet, setPolicy, setFirmware, sendCommand } from "../../controllers/admin/adminPrinterFleet.controller.ts";
 
 const router = Router();
 

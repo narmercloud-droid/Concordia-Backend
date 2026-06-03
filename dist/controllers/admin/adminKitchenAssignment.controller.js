@@ -1,20 +1,20 @@
 import { prisma } from "../../prisma/client.js";
-import { success, fail } from "../controllerHelper.js";
-export const updateKitchenAssignment = async (req, res) => {
+import { wrap, fail } from "../../contracts/api.js";
+export const updateKitchenAssignment = wrap(async (req) => {
     try {
         const { itemId } = req.params;
         const { kitchen } = req.body;
         if (!["A", "B"].includes(kitchen)) {
-            return fail(res, "Invalid kitchen", 400);
+            throw fail('INVALID_INPUT', 'Invalid kitchen');
         }
         const updated = await prisma.menuItem.update({
             where: { id: itemId },
             data: { kitchen }
         });
-        return success(res, updated);
+        return updated;
     }
     catch (err) {
         console.error(err);
-        return fail(res, "Server error", 500);
+        throw fail('INTERNAL_ERROR', 'Server error');
     }
-};
+});

@@ -1,7 +1,7 @@
 export const paymentsService = {
-  charge: (...args: any[]) => null,
-  createStripePaymentIntent: (...args: any[]) => null,
-  createPayPalOrder: (...args: any[]) => null,
-  capturePayPalOrder: (...args: any[]) => null,
-  refund: (...args: any[]) => null
+  charge: (..._args: any[]) => null,
+  createStripePaymentIntent: (..._args: any[]) => null,
+  createPayPalOrder: (..._args: any[]) => null,
+  capturePayPalOrder: (..._args: any[]) => null,
+  refund: (..._args: any[]) => null
 };

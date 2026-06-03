@@ -1,7 +1,7 @@
 ﻿import { randomUUID } from "crypto";
-import { prisma } from "../../prisma/client.js";
-import { signToken, verifyToken } from "../../utils/jwt.js";
-import { OrderLifecycleService } from "../order/orderLifecycle.service.js";
+import { prisma } from "../../prisma/client.ts";
+import { signToken, verifyToken } from "../../utils/jwt.ts";
+import { OrderLifecycleService } from "../order/orderLifecycle.service.ts";
 
 export class TerminalService {
   static async activateTerminal(branchId: string) {
@@ -125,7 +125,7 @@ export class TerminalService {
       terminal_id
     });
 
-    const { getIO } = await import("../../lib/socket.js");
+    const { getIO } = await import("../../lib/socket.ts");
     const payload = {
       order_id: updatedOrder.id,
       terminal_id: updatedOrder.terminal_id,
@@ -135,7 +135,7 @@ export class TerminalService {
     getIO().to(`terminal_${terminal_id}`).emit("order_assigned", payload);
     getIO().to(`branch_${updatedOrder.branchId}`).emit("order_assigned", payload);
 
-    const { OrderService } = await import("../order/order.service.js");
+    const { OrderService } = await import("../order/order.service.ts");
     OrderService.emitOrderStatus(updatedOrder);
 
     return updatedOrder;
@@ -156,7 +156,7 @@ export class TerminalService {
 
     const updatedOrder = await OrderLifecycleService.updateStatus(order_id, "accepted");
 
-    const { getIO } = await import("../../lib/socket.js");
+    const { getIO } = await import("../../lib/socket.ts");
     const payload = {
       order_id: updatedOrder.id,
       terminal_id: updatedOrder.terminal_id,
@@ -166,7 +166,7 @@ export class TerminalService {
     getIO().to(`terminal_${terminal_id}`).emit("order_accepted", payload);
     getIO().to(`branch_${updatedOrder.branchId}`).emit("order_accepted", payload);
 
-    const { OrderService } = await import("../order/order.service.js");
+    const { OrderService } = await import("../order/order.service.ts");
     OrderService.emitOrderStatus(updatedOrder);
 
     return updatedOrder;
@@ -189,7 +189,7 @@ export class TerminalService {
       terminal_id: null
     });
 
-    const { getIO } = await import("../../lib/socket.js");
+    const { getIO } = await import("../../lib/socket.ts");
     const payload = {
       order_id: updatedOrder.id,
       terminal_id: updatedOrder.terminal_id,
@@ -201,7 +201,7 @@ export class TerminalService {
     }
     getIO().to(`branch_${updatedOrder.branchId}`).emit("order_rejected", payload);
 
-    const { OrderService } = await import("../order/order.service.js");
+    const { OrderService } = await import("../order/order.service.ts");
     OrderService.emitOrderStatus(updatedOrder);
 
     return updatedOrder;

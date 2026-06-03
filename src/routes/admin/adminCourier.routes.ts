@@ -1,7 +1,8 @@
-﻿import { Router } from "express";
-import { adminAuth } from "../../middleware/adminAuth.js";
-import { assignCourier } from "../../controllers/admin/adminCourier.controller.js";
-import { getCourierLocation, getOrderTimeline } from "../../controllers/admin/adminCourierInsight.controller.js";
+﻿import express from "express";
+const { Router } = express;
+import { adminAuth } from "../../middleware/adminAuth.ts";
+import { assignCourier } from "../../controllers/admin/adminCourier.controller.ts";
+import { getCourierLocation, getOrderTimeline } from "../../controllers/admin/adminCourierInsight.controller.ts";
 
 const router = Router();
 

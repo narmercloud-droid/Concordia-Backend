@@ -1,6 +1,6 @@
-﻿import { prisma } from "../prisma/client.js";
+﻿import { prisma } from "../prisma/client.ts";
 import { v4 as uuid } from "uuid";
-import { OrderLifecycleService } from "./order/orderLifecycle.service.js";
+import { OrderLifecycleService } from "./order/orderLifecycle.service.ts";
 
 const TOKEN_VALIDITY_MS = 60 * 60 * 1000; // 1 hour
 

@@ -1,60 +1,38 @@
-﻿import type { Request, Response, NextFunction  } from "express";
-import { DealService } from "../../services/admin/deal.service.js";
-import { success, fail } from "../controllerHelper.js";
+﻿import type { Request } from "express";
+import { DealService } from "../../services/admin/deal.service.ts";
+import { wrap, fail } from "../../contracts/api.js";
 
 export class DealController {
-  static async getAll(_req: Request, res: Response, next: NextFunction) {
-    try {
-      const deals = await DealService.getAll();
-      return success(res, deals);
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+  static getAll = wrap(async (_req: Request) => {
+    const deals = await DealService.getAll();
+    return deals;
+  });
 
-  static async getById(req: Request, res: Response, next: NextFunction) {
-    try {
-      const id = req.params.id;
-      const deal = await DealService.getById(id);
+  static getById = wrap(async (req: Request) => {
+    const id = req.params.id;
+    const deal = await DealService.getById(id);
 
-      if (!deal) {
-        return fail(res, "Deal not found", 404);
-      }
+    if (!deal) throw fail('NOT_FOUND', 'Deal not found');
 
-      return success(res, deal);
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+    return deal;
+  });
 
-  static async create(req: Request, res: Response, next: NextFunction) {
-    try {
-      const deal = await DealService.create(req.body);
-      return success(res, deal);
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+  static create = wrap(async (req: Request) => {
+    const deal = await DealService.create(req.body);
+    return deal;
+  });
 
-  static async update(req: Request, res: Response, next: NextFunction) {
-    try {
-      const id = req.params.id;
-      const deal = await DealService.update(id, req.body);
-      return success(res, deal);
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+  static update = wrap(async (req: Request) => {
+    const id = req.params.id;
+    const deal = await DealService.update(id, req.body);
+    return deal;
+  });
 
-  static async remove(req: Request, res: Response, next: NextFunction) {
-    try {
-      const id = req.params.id;
-      await DealService.remove(id);
-      return success(res, { success: true });
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+  static remove = wrap(async (req: Request) => {
+    const id = req.params.id;
+    await DealService.remove(id);
+    return { success: true };
+  });
 }
 
 

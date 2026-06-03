@@ -1,46 +1,26 @@
 import { paymentsService } from "../services/payments.service.js";
-import { success } from "./controllerHelper.js";
+import { wrap } from "../contracts/api.js";
 export const PaymentsController = {
     // STRIPE
-    createStripeIntent: async (req, res, next) => {
-        try {
-            const { orderId, amount } = req.body;
-            const intent = await paymentsService.createStripePaymentIntent(orderId, amount);
-            return success(res, { clientSecret: intent.client_secret });
-        }
-        catch (err) {
-            next(err);
-        }
-    },
+    createStripeIntent: wrap(async (req) => {
+        const { orderId, amount } = req.body;
+        const intent = await paymentsService.createStripePaymentIntent(orderId, amount);
+        return { clientSecret: intent.client_secret };
+    }),
     // PAYPAL
-    createPayPalOrder: async (req, res, next) => {
-        try {
-            const { orderId, amount } = req.body;
-            const order = await paymentsService.createPayPalOrder(orderId, amount);
-            return success(res, order);
-        }
-        catch (err) {
-            next(err);
-        }
-    },
-    capturePayPalOrder: async (req, res, next) => {
-        try {
-            const { orderId } = req.body;
-            const result = await paymentsService.capturePayPalOrder(orderId);
-            return success(res, result);
-        }
-        catch (err) {
-            next(err);
-        }
-    },
+    createPayPalOrder: wrap(async (req) => {
+        const { orderId, amount } = req.body;
+        const order = await paymentsService.createPayPalOrder(orderId, amount);
+        return order;
+    }),
+    capturePayPalOrder: wrap(async (req) => {
+        const { orderId } = req.body;
+        const result = await paymentsService.capturePayPalOrder(orderId);
+        return result;
+    }),
     // REFUND
-    refund: async (req, res, next) => {
-        try {
-            const order = await paymentsService.refund(req.params.id);
-            return success(res, order);
-        }
-        catch (err) {
-            next(err);
-        }
-    }
+    refund: wrap(async (req) => {
+        const order = await paymentsService.refund(req.params.id);
+        return order;
+    })
 };

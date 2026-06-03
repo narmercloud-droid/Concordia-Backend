@@ -1,5 +1,6 @@
-﻿import { prisma } from "../../prisma/client.js";
-import { kitchenPrinters } from "../../config/printers.js";
+﻿import { prisma } from "../../prisma/client.ts";
+import { kitchenPrinters } from "../../config/printers.ts";
+import logger from "../../logger.ts";
 
 export async function scaleUp(kitchen) {
   const instanceId = "vp-" + Math.random().toString(36).substring(2, 10);
@@ -24,7 +25,7 @@ export async function scaleUp(kitchen) {
     }
   });
 
-  console.log("Scaled UP virtual printer:", instanceId);
+  logger.info({ instanceId, kitchen }, "Scaled UP virtual printer");
 }
 
 export async function scaleDown(kitchen) {
@@ -43,6 +44,6 @@ export async function scaleDown(kitchen) {
   const idx = kitchenPrinters[kitchen].findIndex(p => p.id === vp.instanceId);
   if (idx !== -1) kitchenPrinters[kitchen].splice(idx, 1);
 
-  console.log("Scaled DOWN virtual printer:", vp.instanceId);
+  logger.info({ instanceId: vp.instanceId, kitchen }, "Scaled DOWN virtual printer");
 }
 

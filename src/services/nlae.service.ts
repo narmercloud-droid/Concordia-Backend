@@ -1,10 +1,9 @@
 ﻿import { randomUUID } from "crypto";
-import { prisma } from "../prisma/client.js";
-import { forecastingService } from "./forecasting.service.js";
-import { ltvChurnService } from "./ltvChurn.service.js";
-import { menuOptimizationService } from "./menuOptimization.service.js";
-import { knowledgeGraphService } from "./knowledgeGraph.service.js";
-import { decisionEngineService } from "./decisionEngine.service.js";
+import { prisma } from "../prisma/client.ts";
+import { forecastingService } from "./forecasting.service.ts";
+import { ltvChurnService } from "./ltvChurn.service.ts";
+import { menuOptimizationService } from "./menuOptimization.service.ts";
+import { knowledgeGraphService } from "./knowledgeGraph.service.ts";
 
 export class NLAEService {
   // 1. Classify question

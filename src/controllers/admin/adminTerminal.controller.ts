@@ -1,16 +1,16 @@
-﻿import { prisma } from "../../prisma/client.js";
-import { success } from "../controllerHelper.js";
+﻿import { prisma } from "../../prisma/client.ts";
+import { wrap } from "../../contracts/api.js";
 
-export const listTerminals = async (req, res) => {
+export const listTerminals = wrap(async () => {
   const terminals = await prisma.terminalStatus.findMany();
-  return success(res, terminals);
-};
+  return terminals;
+});
 
-export const listTerminalErrors = async (req, res) => {
+export const listTerminalErrors = wrap(async () => {
   const errors = await prisma.terminalError.findMany({
     orderBy: { createdAt: "desc" },
     take: 200
   });
-  return success(res, errors);
-};
+  return errors;
+});
 

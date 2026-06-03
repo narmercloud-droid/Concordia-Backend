@@ -1,5 +1,5 @@
 ﻿import net from "net";
-import { kitchenPrinters } from "../../config/printers.js";
+import { kitchenPrinters } from "../../config/printers.ts";
 
 export async function checkPrinterStatus(kitchen) {
   const cfg = kitchenPrinters[kitchen];
@@ -7,7 +7,6 @@ export async function checkPrinterStatus(kitchen) {
 
   return new Promise((resolve) => {
     const socket = new net.Socket();
-    const start = Date.now();
 
     socket.setTimeout(2000);
 

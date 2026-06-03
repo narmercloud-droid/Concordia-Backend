@@ -1,35 +1,27 @@
-﻿import type { Request, Response, NextFunction  } from "express";
-import { courierService } from "../services/couriers.service.js";
-import { success, fail } from "./controllerHelper.js";
+﻿import type { Request } from "express";
+import { courierService } from "../services/couriers.service.ts";
+import { wrap, fail } from "../contracts/api.js";
 
 export const CouriersController = {
-  claim: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { orderId, courierToken } = req.body;
+  claim: wrap(async (req: Request) => {
+    const { orderId, courierToken } = req.body;
 
-      const order = await courierService.validateCourierToken(orderId, courierToken);
-      if (!order) return fail(res, "Invalid or expired token", 403);
+    const order = await courierService.validateCourierToken(orderId, courierToken);
+    if (!order) throw fail('FORBIDDEN', 'Invalid or expired token');
 
-      const updated = await courierService.claimOrder(orderId);
-      return success(res, updated);
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+    const updated = await courierService.claimOrder(orderId);
+    return updated;
+  }),
 
-  updateStatus: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { orderId, courierToken, status } = req.body;
+  updateStatus: wrap(async (req: Request) => {
+    const { orderId, courierToken, status } = req.body;
 
-      const order = await courierService.validateCourierToken(orderId, courierToken);
-      if (!order) return fail(res, "Invalid or expired token", 403);
+    const order = await courierService.validateCourierToken(orderId, courierToken);
+    if (!order) throw fail('FORBIDDEN', 'Invalid or expired token');
 
-      const updated = await courierService.updateStatus(orderId, status);
-      return success(res, updated);
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+    const updated = await courierService.updateStatus(orderId, status);
+    return updated;
+  })
 };
 
 

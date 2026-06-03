@@ -1,30 +1,30 @@
 import { prisma } from "../../prisma/client.js";
-import { success, fail } from "../controllerHelper.js";
-export const getCourierLocation = async (req, res) => {
+import { wrap, fail } from "../../contracts/api.js";
+export const getCourierLocation = wrap(async (req) => {
     try {
         const { orderId } = req.params;
         const loc = await prisma.courierLocation.findFirst({
             where: { orderId },
             orderBy: { createdAt: "desc" }
         });
-        return success(res, loc || {});
+        return loc || {};
     }
     catch (err) {
         console.error(err);
-        return fail(res, "Server error", 500);
+        throw fail('INTERNAL_ERROR', 'Server error');
     }
-};
-export const getOrderTimeline = async (req, res) => {
+});
+export const getOrderTimeline = wrap(async (req) => {
     try {
         const { orderId } = req.params;
         const events = await prisma.orderTrackingEvent.findMany({
             where: { orderId },
             orderBy: { timestamp: "asc" }
         });
-        return success(res, events);
+        return events;
     }
     catch (err) {
         console.error(err);
-        return fail(res, "Server error", 500);
+        throw fail('INTERNAL_ERROR', 'Server error');
     }
-};
+});

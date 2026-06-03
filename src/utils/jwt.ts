@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
+import { env } from "../config/env.ts";
 
-const JWT_SECRET = process.env.JWT_SECRET || "dev-secret";
+const JWT_SECRET = env.JWT_SECRET as string;
 
 export type AuthJwtPayload = {
   id: string;
@@ -32,9 +33,11 @@ export function validateJwtPayload(payload: unknown): asserts payload is AuthJwt
 }
 
 export function signToken(payload: JwtPayload) {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
+  return jwt.sign(payload, JWT_SECRET as string, {
+    expiresIn: env.JWT_EXPIRES_IN || "7d"
+  } as jwt.SignOptions);
 }
 
 export function verifyToken(token: string) {
-  return jwt.verify(token, JWT_SECRET);
+  return jwt.verify(token, JWT_SECRET as jwt.Secret);
 }

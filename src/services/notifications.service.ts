@@ -1,4 +1,4 @@
 export const notificationsService = {
-  send: (...args: any[]) => null,
-  sendMarketingSMS: (...args: any[]) => null
+  send: (..._args: any[]) => null,
+  sendMarketingSMS: (..._args: any[]) => null
 };

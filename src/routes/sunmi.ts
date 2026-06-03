@@ -1,12 +1,14 @@
-﻿import { Router } from "express";
-import { SunmiPrinter } from "../printers/sunmiPrinter.js";
-import { PrintService } from "../services/print/print.service.js";
+﻿import express from "express";
+const { Router } = express;
+import { SunmiPrinter } from "../printers/sunmiPrinter.ts";
+import { PrintService } from "../services/print/print.service.ts";
 
 const router = Router();
 
 const printer = new SunmiPrinter();
 
-router.get("/status", (req, res) => {
+router.get("/status", (_req, res) => {
+  void _req;
   const connected = !!(printer as any).printer;
   res.tson({ success: true, connected, message: connected ? "Sunmi printer connected" : "No Sunmi printer" });
 });
@@ -28,7 +30,7 @@ export default router;
 // NEW: Sunmi Order Sync Endpoints
 // ------------------------------
 
-import { pool } from "../db/index.js";
+import { pool } from "../db/index.ts";
 
 // Backend â†’ Sunmi: notify terminal of a new order
 router.post("/order-push", async (req, res) => {
@@ -46,7 +48,8 @@ router.post("/order-push", async (req, res) => {
     );
 
     res.json({ success: true, message: "Order queued for Sunmi push" });
-  } catch (err) {
+  } catch (_err) {
+    void _err;
     res.status(500).json({ error: "Failed to queue order for Sunmi" });
   }
 });
@@ -66,7 +69,8 @@ router.post("/order-status", async (req, res) => {
     );
 
     res.json({ success: true, message: "Order status updated" });
-  } catch (err) {
+  } catch (_err) {
+    void _err;
     res.status(500).json({ error: "Failed to update order status" });
   }
 });

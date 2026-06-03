@@ -1,36 +1,36 @@
-﻿import type { Request, Response, NextFunction  } from "express";
-import { courierTrackingService } from "../services/courierTracking.service.js";
-import { success } from "./controllerHelper.js";
+﻿import type { Request } from "express";
+import { courierTrackingService } from "../services/courierTracking.service.ts";
+import { wrap } from "../contracts/api.js";
 
 export const CourierTrackingController = {
   // Courier updates GPS
-  updateLocation: async (req: Request, res: Response, next: NextFunction) => {
-    const courierId = req.user.id;
+  updateLocation: wrap(async (req: Request) => {
+    const courierId = (req as any).user.id;
     const data = req.body;
     const result = await courierTrackingService.updateLocation(courierId, data);
-    return success(res, result);
-  },
+    return result;
+  }),
 
   // Customer tracking screen
-  customerTracking: async (req: Request, res: Response, next: NextFunction) => {
+  customerTracking: wrap(async (req: Request) => {
     const { orderId } = req.params;
     const result = await courierTrackingService.getCustomerTracking(orderId);
-    return success(res, result);
-  },
+    return result;
+  }),
 
   // Add tracking event (courier or system)
-  addEvent: async (req: Request, res: Response, next: NextFunction) => {
+  addEvent: wrap(async (req: Request) => {
     const { orderId, status } = req.body;
     const event = await courierTrackingService.addTrackingEvent(orderId, status);
-    return success(res, event);
-  },
+    return event;
+  }),
 
   // Manager live map
-  managerLiveMap: async (req: Request, res: Response, next: NextFunction) => {
-    const branchId = req.user.branchId;
+  managerLiveMap: wrap(async (req: Request) => {
+    const branchId = (req as any).user.branchId;
     const couriers = await courierTrackingService.getActiveCouriers(branchId);
-    return success(res, couriers);
-  }
+    return couriers;
+  })
 };
 
 

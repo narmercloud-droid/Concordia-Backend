@@ -1,6 +1,7 @@
-﻿import { Router } from "express";
-import { PaymentOrchestrator } from "../services/paymentOrchestrator.service.js";
-import { customerAuth } from "../middleware/customerAuth.js";
+﻿import express from "express";
+const { Router } = express;
+import { PaymentOrchestrator } from "../services/paymentOrchestrator.service.ts";
+import { customerAuth } from "../middleware/customerAuth.ts";
 
 const router = Router();
 

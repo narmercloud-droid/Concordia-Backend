@@ -1,7 +1,8 @@
-﻿import { Router } from "express";
-import { SearchController } from "../controllers/search.controller.js";
-import { adminAuth } from "../middleware/adminAuth.js";
-import { adminRole } from "../middleware/adminRole.js";
+﻿import express from "express";
+const { Router } = express;
+import { SearchController } from "../controllers/search.controller.ts";
+import { adminAuth } from "../middleware/adminAuth.ts";
+import { adminRole } from "../middleware/adminRole.ts";
 
 const router = Router();
 

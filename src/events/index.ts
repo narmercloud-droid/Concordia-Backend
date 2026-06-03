@@ -1,8 +1,9 @@
 ﻿import { Server, Socket } from "socket.io";
-import { registerDriverEvents } from "./driverEvents.js";
-import { registerTerminalEvents } from "./terminalEvents.js";
-import { registerAdminEvents } from "./adminEvents.js";
-import { registerKDSEvents } from "./kdsEvents.js";
+import logger from "../logger.ts";
+import { registerDriverEvents } from "./driverEvents.ts";
+import { registerTerminalEvents } from "./terminalEvents.ts";
+import { registerAdminEvents } from "./adminEvents.ts";
+import { registerKDSEvents } from "./kdsEvents.ts";
 
 export function registerEvents(io: Server) {
   registerAdminEvents(io);
@@ -14,7 +15,7 @@ export function registerEvents(io: Server) {
 
     socket.on("kds_join", ({ branchId }) => {
       socket.join(`branch_${branchId}`);
-      console.log("KDS joined branch:", branchId);
+      logger.info({ branchId }, "KDS joined branch");
     });
   });
 }

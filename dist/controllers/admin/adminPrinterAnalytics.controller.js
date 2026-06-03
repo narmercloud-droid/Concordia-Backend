@@ -1,6 +1,6 @@
 import { getPrinterAnalytics } from "../../services/printer/printerAnalytics.service.js";
-import { success } from "../controllerHelper.js";
-export const getPrinterAnalyticsController = async (req, res) => {
+import { wrap } from "../../contracts/api.js";
+export const getPrinterAnalyticsController = wrap(async () => {
     const data = await getPrinterAnalytics();
-    return success(res, data);
-};
+    return data;
+});

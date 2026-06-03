@@ -1,7 +1,7 @@
 import { routeOrderToKitchens } from "../../services/printer/kitchenRouting.service.js";
-import { success } from "../controllerHelper.js";
-export const reprintKitchenTickets = async (req, res) => {
+import { wrap } from "../../contracts/api.js";
+export const reprintKitchenTickets = wrap(async (req) => {
     const { orderId } = req.params;
     await routeOrderToKitchens(orderId);
-    return success(res, { success: true });
-};
+    return { success: true };
+});

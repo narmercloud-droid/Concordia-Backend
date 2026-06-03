@@ -1,5 +1,6 @@
-﻿import { Router } from "express";
-import { getTerminalOrders, getTerminalOrderDetails } from "../../controllers/terminal/terminalOrders.controller.js";
+﻿import express from "express";
+const { Router } = express;
+import { getTerminalOrders, getTerminalOrderDetails } from "../../controllers/terminal/terminalOrders.controller.ts";
 
 const router = Router();
 

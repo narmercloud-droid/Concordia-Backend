@@ -1,65 +1,43 @@
-﻿import type { Request, Response, NextFunction  } from "express";
-import { CartService } from "../../services/cart/cart.service.js";
-import { PricingService } from "../../services/cart/pricing.service.js";
-import { success, fail } from "../controllerHelper.js";
+﻿import type { Request } from "express";
+import { CartService } from "../../services/cart/cart.service.ts";
+import { PricingService } from "../../services/cart/pricing.service.ts";
+import { wrap, fail } from "../../contracts/api.js";
 
 export class CartController {
-  static async loadCart(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { cartId } = req.query;
-      const cart = await CartService.getOrCreateCart(cartId as string);
-      return success(res, cart);
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+  static loadCart = wrap(async (req: Request) => {
+    const { cartId } = req.query;
+    const cart = await CartService.getOrCreateCart(cartId as string);
+    return cart;
+  });
 
-  static async getCart(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { cartId } = req.params;
-      const cart = await CartService.getCart(cartId);
-      if (!cart) {
-        return fail(res, "Cart not found", 404);
-      }
+  static getCart = wrap(async (req: Request) => {
+    const { cartId } = req.params;
+    const cart = await CartService.getCart(cartId);
+    if (!cart) throw fail('NOT_FOUND', 'Cart not found');
 
-      const totals = await PricingService.calculateCart(cart);
-      return success(res, { cart, totals });
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+    const totals = await PricingService.calculateCart(cart);
+    return { cart, totals };
+  });
 
-  static async addItem(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { cartId } = req.params;
-      const { itemId, quantity } = req.body;
-      const item = await CartService.addItem(cartId, itemId, quantity);
-      return success(res, item);
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+  static addItem = wrap(async (req: Request) => {
+    const { cartId } = req.params;
+    const { itemId, quantity } = req.body;
+    const item = await CartService.addItem(cartId, itemId, quantity);
+    return item;
+  });
 
-  static async updateQuantity(req: Request, res: Response, next: NextFunction) {
-    try {
-      const cartItemId = req.params.cartItemId;
-      const { quantity } = req.body;
-      const result = await CartService.updateQuantity(cartItemId, quantity);
-      return success(res, result);
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+  static updateQuantity = wrap(async (req: Request) => {
+    const cartItemId = req.params.cartItemId;
+    const { quantity } = req.body;
+    const result = await CartService.updateQuantity(cartItemId, quantity);
+    return result;
+  });
 
-  static async removeItem(req: Request, res: Response, next: NextFunction) {
-    try {
-      const cartItemId = req.params.cartItemId;
-      await CartService.removeItem(cartItemId);
-      return success(res, { success: true });
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+  static removeItem = wrap(async (req: Request) => {
+    const cartItemId = req.params.cartItemId;
+    await CartService.removeItem(cartItemId);
+    return { success: true };
+  });
 }
 
 

@@ -1,5 +1,5 @@
-﻿import { prisma } from "../../prisma/client.js";
-import { cacheDashboardMetrics, getDashboardMetrics } from "../../lib/redis.js";
+﻿import { prisma } from "../../prisma/client.ts";
+import { cacheDashboardMetrics, getDashboardMetrics } from "../../lib/redis.ts";
 
 export class AdminDashboardService {
   static async getMetrics(branchId: string) {
@@ -53,7 +53,7 @@ export class AdminDashboardService {
     return metrics;
   }
 
-  static async getSalesChart(period: "daily" | "weekly" | "monthly", branchId: string) {
+  static async getSalesChart(_period: "daily" | "weekly" | "monthly", _branchId: string) {
     const data = [];
     for (let i = 0; i < 30; i++) {
       const date = new Date();
@@ -66,7 +66,7 @@ export class AdminDashboardService {
     return data.reverse();
   }
 
-  static async getOrderChart(period: "daily" | "weekly" | "monthly", branchId: string) {
+  static async getOrderChart(_period: "daily" | "weekly" | "monthly", _branchId: string) {
     const data = [];
     for (let i = 0; i < 30; i++) {
       const date = new Date();
@@ -80,7 +80,7 @@ export class AdminDashboardService {
   }
 
   static async emitMetricsUpdate(branchId: string) {
-    const { getAdminNamespace } = await import("../../socket/index.js");
+    const { getAdminNamespace } = await import("../../socket/index.ts");
     const metrics = await this.getMetrics(branchId);
 
     const eventData = {
@@ -93,7 +93,7 @@ export class AdminDashboardService {
   }
 
   static async emitOrderUpdate(order: any) {
-    const { getAdminNamespace } = await import("../../socket/index.js");
+    const { getAdminNamespace } = await import("../../socket/index.ts");
 
     const eventData = {
       success: true,
@@ -111,7 +111,7 @@ export class AdminDashboardService {
   }
 
   static async emitCourierUpdate(courier: any) {
-    const { getAdminNamespace } = await import("../../socket/index.js");
+    const { getAdminNamespace } = await import("../../socket/index.ts");
 
     const eventData = {
       success: true,

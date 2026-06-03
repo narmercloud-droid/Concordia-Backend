@@ -6,9 +6,7 @@ module.exports = {
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
   extensionsToTreatAsEsm: [".ts", ".tsx"],
   moduleNameMapper: {
-    "^(\\.{1,2}/prisma/.*)\\.js$": "$1.ts",
-    "^(\\.{1,2}/(AgentBrain|AgentWorkflow|IntentDetector))\\.js$": "$1.ts",
-    "^(\\.{1,2}/src/.*)\\.js$": "$1.ts"
+    "^((?:\\.{1,2}/)+(?:prisma|context|config|logger|src|AgentBrain|AgentWorkflow|IntentDetector)(?:/.*)?)\\.js$": "$1.ts"
   },
   transform: {
     "^.+\\.(ts|tsx)$": ["ts-jest", {

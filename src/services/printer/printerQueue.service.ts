@@ -1,8 +1,8 @@
-﻿import { prisma } from "../../prisma/client.js";
-import { printKitchenTicket } from "./printer.service.js";
-import { selectPrinter } from "./printerSelector.service.js";
-import { verifyPrinter, markTampered } from "./printerSecurity.service.js";
-import { recordTrace, updateHealth, recordAnomaly } from "./printerObservability.service.js";
+﻿import { prisma } from "../../prisma/client.ts";
+import { printKitchenTicket } from "./printer.service.ts";
+import { selectPrinter } from "./printerSelector.service.ts";
+import { verifyPrinter, markTampered } from "./printerSecurity.service.ts";
+import { recordTrace, updateHealth, recordAnomaly } from "./printerObservability.service.ts";
 
 export async function enqueuePrintJob(kitchen, order, items) {
   return prisma.printerQueue.create({
@@ -15,7 +15,7 @@ export async function enqueuePrintJob(kitchen, order, items) {
 
 export async function processPrintJob(job) {
   try {
-    const { kitchen, payload } = job;
+    const { payload } = job;
     const start = Date.now();
     const printer = selectPrinter(job.kitchen);
 

@@ -1,17 +1,17 @@
-﻿import { prisma } from "../../prisma/client.js";
-import { paypalRequest } from "../../services/paypal/paypalClient.js";
-import { OrderLifecycleService } from "../../services/order/orderLifecycle.service.js";
-import { success, fail } from "../controllerHelper.js";
+﻿import { prisma } from "../../prisma/client.ts";
+import { paypalRequest } from "../../services/paypal/paypalClient.ts";
+import { OrderLifecycleService } from "../../services/order/orderLifecycle.service.ts";
+import { wrap, fail } from "../../contracts/api.js";
 
-export const capturePayPalPayment = async (req, res) => {
+export const capturePayPalPayment = wrap(async (req) => {
   try {
     const { orderId } = req.body;
 
     const order = await prisma.order.findUnique({ where: { id: orderId } });
-    if (!order) return fail(res, "Order not found", 404);
+    if (!order) throw fail('NOT_FOUND', 'Order not found');
 
     if (!order.paypalOrderId) {
-      return fail(res, "Missing PayPal order ID", 400);
+      throw fail('INVALID_INPUT', 'Missing PayPal order ID');
     }
 
     const result = await paypalRequest(
@@ -21,7 +21,7 @@ export const capturePayPalPayment = async (req, res) => {
 
     const capture = result?.purchase_units?.[0]?.payments?.captures?.[0];
     if (!capture) {
-      return fail(res, "Capture failed", 400);
+      throw fail('PAYMENT_FAILED', 'Capture failed');
     }
 
     await OrderLifecycleService.updatePaymentStatus(orderId, "paid", {
@@ -30,10 +30,10 @@ export const capturePayPalPayment = async (req, res) => {
       transactionId: capture.id
     });
 
-    return success(res, { success: true, capture });
+    return { success: true, capture };
   } catch (err) {
     console.error(err);
-    return fail(res, "Capture error", 500);
+    throw fail('INTERNAL_ERROR', 'Capture error');
   }
-};
+});
 

@@ -1,49 +1,33 @@
-﻿import type { Request, Response, NextFunction  } from "express";
-import { addressService } from "../services/address.service.js";
-import { success } from "./controllerHelper.js";
+﻿import type { Request } from "express";
+import { addressService } from "../services/address.service.ts";
+import { wrap } from "../contracts/api.js";
 
 export const AddressController = {
-  add: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const customerId = req.user.id;
-      const address = await addressService.addAddress(customerId, req.body);
-      return success(res, address);
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  add: wrap(async (req: Request) => {
+    const customerId = req.user.id;
+    const address = await addressService.addAddress(customerId, req.body);
+    return address;
+  }),
 
-  update: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const customerId = req.user.id;
-      const { id } = req.params;
-      await addressService.updateAddress(customerId, id, req.body);
-      return success(res, { success: true });
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  update: wrap(async (req: Request) => {
+    const customerId = req.user.id;
+    const { id } = req.params;
+    await addressService.updateAddress(customerId, id, req.body);
+    return { success: true };
+  }),
 
-  delete: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const customerId = req.user.id;
-      const { id } = req.params;
-      await addressService.deleteAddress(customerId, id);
-      return success(res, { success: true });
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  delete: wrap(async (req: Request) => {
+    const customerId = req.user.id;
+    const { id } = req.params;
+    await addressService.deleteAddress(customerId, id);
+    return { success: true };
+  }),
 
-  list: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const customerId = req.user.id;
-      const list = await addressService.listAddresses(customerId);
-      return success(res, list);
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+  list: wrap(async (req: Request) => {
+    const customerId = req.user.id;
+    const list = await addressService.listAddresses(customerId);
+    return list;
+  })
 };
 
 

@@ -1,5 +1,5 @@
-﻿import { prisma } from "../../prisma/client.js";
-import { OrderLifecycleService } from "../order/orderLifecycle.service.js";
+﻿import { prisma } from "../../prisma/client.ts";
+import { OrderLifecycleService } from "../order/orderLifecycle.service.ts";
 
 export const KdsService = {
   getActiveOrders: async (branchId: string) => {

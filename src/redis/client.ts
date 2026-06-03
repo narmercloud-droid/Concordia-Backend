@@ -1,6 +1,6 @@
 import { createClient } from "redis";
-import logger from "../utils/logger.js";
-import { env } from "../config/env.js";
+import logger from "../utils/logger.ts";
+import { env } from "../config/env.ts";
 
 const isRedisUrl = typeof env.REDIS_URL === "string" && (env.REDIS_URL.startsWith("redis://") || env.REDIS_URL.startsWith("rediss://"));
 
@@ -28,7 +28,6 @@ if (isRedisUrl) {
 } else {
   // Export a noop stub when REDIS_URL is not a redis:// URL (development fallback)
   logger.warn("REDIS_URL does not appear to be a redis:// URL — Redis disabled locally");
-  const noop = async () => undefined;
   const stub = {
     connect: async () => undefined,
     on: () => undefined,

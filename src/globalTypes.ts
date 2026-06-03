@@ -5,7 +5,7 @@ import type { Request } from "express";
 // Global Socket.IO Declaration (ESM compatible)
 // ------------------------------------------------------
 declare global {
-  var io: Server;
+  let io: Server;
 }
 
 // ------------------------------------------------------

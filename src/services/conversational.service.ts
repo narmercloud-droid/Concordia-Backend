@@ -1,9 +1,9 @@
-﻿import { prisma } from "../prisma/client.js";
+﻿import { prisma } from "../prisma/client.ts";
 import { randomUUID } from "crypto";
-import { intelligenceService } from "./intelligence.service.js";
-import { nlaeService } from "./nlae.service.js";
-import { orchestrationService } from "./orchestration.service.js";
-import { ltmlService } from "./ltml.service.js";
+import { intelligenceService } from "./intelligence.service.ts";
+import { nlaeService } from "./nlae.service.ts";
+import { orchestrationService } from "./orchestration.service.ts";
+import { ltmlService } from "./ltml.service.ts";
 
 export class ConversationalService {
   // Personality style

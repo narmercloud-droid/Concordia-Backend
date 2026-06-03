@@ -1,8 +1,6 @@
-﻿import { randomUUID } from "crypto";
-import { prisma } from "../../prisma/client.js";
-import { broadcastToTerminal, broadcastToCustomer } from "../realtime/realtime.service.js";
-import { haversineDistance } from "../../utils/distance.js";
-import { OrderLifecycleService } from "../order/orderLifecycle.service.js";
+﻿import { broadcastToTerminal, broadcastToCustomer } from "../realtime/realtime.service.ts";
+import { haversineDistance } from "../../utils/distance.ts";
+import { OrderLifecycleService } from "../order/orderLifecycle.service.ts";
 
 export async function autoUpdateStatus(order, courierLat, courierLng) {
   const customerAddress = order.customer?.addresses?.[0];

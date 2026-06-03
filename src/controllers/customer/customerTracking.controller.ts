@@ -1,8 +1,8 @@
-﻿import { prisma } from "../../prisma/client.js";
-import { broadcastToCustomer } from "../../services/realtime/realtime.service.js";
-import { success, fail } from "../controllerHelper.js";
+﻿import { prisma } from "../../prisma/client.ts";
+import { broadcastToCustomer } from "../../services/realtime/realtime.service.ts";
+import { wrap, fail } from "../../contracts/api.js";
 
-export const getCustomerTracking = async (req, res) => {
+export const getCustomerTracking = wrap(async (req) => {
   try {
     const { token } = req.params;
 
@@ -17,7 +17,7 @@ export const getCustomerTracking = async (req, res) => {
       }
     });
 
-    if (!order) return fail(res, "Invalid tracking token", 404);
+    if (!order) throw fail('NOT_FOUND', 'Invalid tracking token');
 
     const response = {
       orderId: order.id,
@@ -40,10 +40,10 @@ export const getCustomerTracking = async (req, res) => {
     };
 
     broadcastToCustomer(token, "tracking_update", response);
-    return success(res, response);
+    return response;
   } catch (err) {
     console.error(err);
-    return fail(res, "Server error", 500);
+    throw fail('INTERNAL_ERROR', 'Server error');
   }
-};
+});
 

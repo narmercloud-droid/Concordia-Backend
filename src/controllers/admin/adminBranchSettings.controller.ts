@@ -1,17 +1,17 @@
-﻿import { prisma } from "../../prisma/client.js";
-import { success } from "../controllerHelper.js";
+﻿import { prisma } from "../../prisma/client.ts";
+import { wrap } from "../../contracts/api.js";
 
-export const getBranchSettings = async (req, res) => {
+export const getBranchSettings = wrap(async (req) => {
   const { branchId } = req.params;
 
   const settings = await prisma.branchSettings.findUnique({
     where: { branchId: Number(branchId) }
   });
 
-  return success(res, settings);
-};
+  return settings;
+});
 
-export const updateBranchSettings = async (req, res) => {
+export const updateBranchSettings = wrap(async (req) => {
   const { branchId } = req.params;
   const data = req.body;
 
@@ -20,6 +20,6 @@ export const updateBranchSettings = async (req, res) => {
     data
   });
 
-  return success(res, updated);
-};
+  return updated;
+});
 

@@ -1,4 +1,4 @@
-﻿import pool from "../db.js";
+﻿import pool from "../db.ts";
 
 export class ReceiptService {
   static async saveReceipt(orderId: number, receipt: any) {

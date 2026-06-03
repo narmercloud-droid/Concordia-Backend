@@ -1,6 +1,6 @@
 ﻿import type { Request, Response, NextFunction  } from "express";
-import { validateJwtPayload, verifyToken } from "../utils/jwt.js";
-import type { AuthJwtPayload } from "../utils/jwt.js";
+import { validateJwtPayload, verifyToken } from "../utils/jwt.ts";
+import type { AuthJwtPayload } from "../utils/jwt.ts";
 
 export function customerAuth(req: Request, res: Response, next: NextFunction) {
   const header = req.headers.authorization;

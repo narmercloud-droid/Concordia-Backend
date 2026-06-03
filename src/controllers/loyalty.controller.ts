@@ -1,60 +1,37 @@
-﻿import type { AuthenticatedRequest } from "../globalTypes.js";
-import type { Response, NextFunction  } from "express";
-import { prisma } from "../prisma/client.js";
-import { loyaltyService } from "../services/loyalty.service.js";
-import { success, fail } from "./controllerHelper.js";
+﻿import type { AuthenticatedRequest } from "../globalTypes.ts";
+import { prisma } from "../prisma/client.ts";
+import { loyaltyService } from "../services/loyalty.service.ts";
+import { wrap, fail } from "../contracts/api.js";
 
 export const LoyaltyController = {
-  getPoints: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    try {
-      const customerId = req.user.id;
-      const points = await prisma.loyaltyPoints.findUnique({
-        where: { customerId }
-      });
-      return success(res, points || { points: 0 });
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  getPoints: wrap(async (req: AuthenticatedRequest) => {
+    const customerId = req.user.id;
+    const points = await prisma.loyaltyPoints.findUnique({ where: { customerId } });
+    return points || { points: 0 };
+  }),
 
-  redeemReward: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    try {
-      const customerId = req.user.id;
-      const reward = await loyaltyService.redeemReward(customerId, req.body.rewardId);
-      return success(res, reward);
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  redeemReward: wrap(async (req: AuthenticatedRequest) => {
+    const customerId = req.user.id;
+    const reward = await loyaltyService.redeemReward(customerId, req.body.rewardId);
+    return reward;
+  }),
 
-  applyPromoCode: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    try {
-      const promo = await loyaltyService.applyPromoCode(req.body.code);
-      if (!promo) return fail(res, "Invalid promo code", 400);
-      return success(res, promo);
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  applyPromoCode: wrap(async (req: AuthenticatedRequest) => {
+    const promo = await loyaltyService.applyPromoCode(req.body.code);
+    if (!promo) throw fail('INVALID_INPUT', 'Invalid promo code');
+    return promo;
+  }),
 
-  applyReferral: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    try {
-      const successRes = await loyaltyService.applyReferral(req.body.code, req.user.id);
-      if (!successRes) return fail(res, "Invalid referral code", 400);
-      return success(res, { success: true });
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  applyReferral: wrap(async (req: AuthenticatedRequest) => {
+    const successRes = await loyaltyService.applyReferral(req.body.code, req.user.id);
+    if (!successRes) throw fail('INVALID_INPUT', 'Invalid referral code');
+    return { success: true };
+  }),
 
-  listRewards: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    try {
-      const rewards = await prisma.reward.findMany();
-      return success(res, rewards);
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+  listRewards: wrap(async () => {
+    const rewards = await prisma.reward.findMany();
+    return rewards;
+  })
 };
 
 

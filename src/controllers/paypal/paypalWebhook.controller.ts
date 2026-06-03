@@ -1,6 +1,5 @@
-﻿import { prisma } from "../../prisma/client.js";
-import { verifyPayPalWebhook } from "../../utils/paypalVerify.js";
-import { OrderLifecycleService } from "../../services/order/orderLifecycle.service.js";
+﻿import { verifyPayPalWebhook } from "../../utils/paypalVerify.ts";
+import { OrderLifecycleService } from "../../services/order/orderLifecycle.service.ts";
 
 export const paypalWebhookHandler = async (req, res) => {
   try {

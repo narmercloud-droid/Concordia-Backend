@@ -1,4 +1,4 @@
-﻿import { prisma } from "../../prisma/client.js";
+﻿import { prisma } from "../../prisma/client.ts";
 
 export async function getPrinterAnalytics() {
   const total = await prisma.printerQueue.count();

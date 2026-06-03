@@ -1,4 +1,4 @@
-﻿import { getIO } from "../lib/socket.js";
+﻿import { getIO } from "../lib/socket.ts";
 
 export class OrderSocket {
   // -----------------------------------------------------

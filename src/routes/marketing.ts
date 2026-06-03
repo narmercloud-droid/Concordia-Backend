@@ -1,6 +1,7 @@
-﻿import { Router } from "express";
-import { customerAuth } from "../middleware/customerAuth.js";
-import { prisma } from "../prisma/client.js";
+﻿import express from "express";
+const { Router } = express;
+import { customerAuth } from "../middleware/customerAuth.ts";
+import { prisma } from "../prisma/client.ts";
 
 const router = Router();
 

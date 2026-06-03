@@ -1,4 +1,4 @@
-﻿import { processPendingJobs } from "../services/printer/printerQueue.service.js";
+﻿import { processPendingJobs } from "../services/printer/printerQueue.service.ts";
 
 export function startPrinterQueueWorker() {
   setInterval(async () => {

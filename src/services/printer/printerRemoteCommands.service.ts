@@ -1,11 +1,13 @@
+import logger from "../../logger.ts";
+
 export async function remoteRestart(printer) {
-  console.log("REMOTE COMMAND: Restart printer", printer.id);
+  logger.info({ printerId: printer.id }, "REMOTE COMMAND: Restart printer");
 }
 
 export async function remoteReset(printer) {
-  console.log("REMOTE COMMAND: Reset printer", printer.id);
+  logger.info({ printerId: printer.id }, "REMOTE COMMAND: Reset printer");
 }
 
 export async function remoteTestPrint(printer) {
-  console.log("REMOTE COMMAND: Test print on", printer.id);
+  logger.info({ printerId: printer.id }, "REMOTE COMMAND: Test print");
 }

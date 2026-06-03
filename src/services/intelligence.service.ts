@@ -1,16 +1,15 @@
 ﻿import { randomUUID } from "crypto";
-import { prisma } from "../prisma/client.js";
-import { forecastingService } from "./forecasting.service.js";
-import { dynamicPricingService } from "./dynamicPricing.service.js";
-// import { menuOptimizationService } from "./menuOptimization.service.js";
-// import { staffingPrepService } from "./staffingPrep.service.js";
-import { ltvChurnService } from "./ltvChurn.service.js";
-import { behaviorPredictionService } from "./behaviorPrediction.service.js";
-import { knowledgeGraphService } from "./knowledgeGraph.service.js";
-import { decisionEngineService } from "./decisionEngine.service.js";
-// import { optimizationLoopService } from "./optimizationLoop.service.js";
-// import { ltmlService } from "./ltml.service.js";
-// import { orchestrationService } from "./orchestration.service.js";
+import { prisma } from "../prisma/client.ts";
+import { forecastingService } from "./forecasting.service.ts";
+import { dynamicPricingService } from "./dynamicPricing.service.ts";
+// import { menuOptimizationService } from "./menuOptimization.service.ts";
+// import { staffingPrepService } from "./staffingPrep.service.ts";
+import { ltvChurnService } from "./ltvChurn.service.ts";
+import { knowledgeGraphService } from "./knowledgeGraph.service.ts";
+import { decisionEngineService } from "./decisionEngine.service.ts";
+// import { optimizationLoopService } from "./optimizationLoop.service.ts";
+// import { ltmlService } from "./ltml.service.ts";
+// import { orchestrationService } from "./orchestration.service.ts";
 
 export class IntelligenceService {
   // 1. Unified intelligence summary

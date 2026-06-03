@@ -1,6 +1,7 @@
-﻿import { Router } from "express";
-import { adminAuth } from "../../middleware/adminAuth.js";
-import { reprintKitchenTickets } from "../../controllers/admin/adminPrinter.controller.js";
+﻿import express from "express";
+const { Router } = express;
+import { adminAuth } from "../../middleware/adminAuth.ts";
+import { reprintKitchenTickets } from "../../controllers/admin/adminPrinter.controller.ts";
 
 const router = Router();
 

@@ -1,4 +1,4 @@
-﻿import { prisma } from "../../prisma/client.js";
+﻿import { prisma } from "../../prisma/client.ts";
 
 export class RelationService {
   static async getItemRelations(itemId: string) {

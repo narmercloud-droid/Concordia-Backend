@@ -1,4 +1,5 @@
-import { Router } from "express";
+import express from "express";
+const { Router } = express;
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -23,7 +24,8 @@ function loadHolidayOverrides(): any[] {
   if (!fs.existsSync(holidayOverridesFile)) return [];
   try {
     return JSON.parse(fs.readFileSync(holidayOverridesFile, "utf8")) || [];
-  } catch (err) {
+  } catch (_err) {
+    void _err;
     return [];
   }
 }
@@ -64,7 +66,8 @@ function loadAllowedBranches(): string[] {
     const raw = fs.readFileSync(BRANCHES_CONFIG, "utf8");
     const cfg = JSON.parse(raw) as Record<string, string>;
     return Object.keys(cfg);
-  } catch (err) {
+  } catch (_err) {
+    void _err;
     return [];
   }
 }
@@ -123,8 +126,8 @@ function validateUpdateDays(days: any): string | null {
 function shiftTimeString(time: string, minutesDelta: number): string {
   const match = time.match(/^(\d{1,2}):(\d{2})$/);
   if (!match) return time;
-  let hh = parseInt(match[1], 10);
-  let mm = parseInt(match[2], 10);
+  const hh = parseInt(match[1], 10);
+  const mm = parseInt(match[2], 10);
   let total = hh * 60 + mm + minutesDelta;
   if (total < 0) total = 0;
   if (total > 23 * 60 + 59) total = 23 * 60 + 59;
@@ -233,9 +236,7 @@ function getHoursArrayValidationError(hours: any): string | null {
   return null;
 }
 
-function validateHoursArray(hours: any): boolean {
-  return getHoursArrayValidationError(hours) === null;
-}
+// helper removed: _validateHoursArray is unused
 
 function validateAndCleanBranches(rawBranches: Record<string, any>, allowed: string[]) {
   const cleaned: Record<string, any> = {};
@@ -248,7 +249,7 @@ function validateAndCleanBranches(rawBranches: Record<string, any>, allowed: str
   return cleaned;
 }
 
-router.get("/opening-hours", (req, res) => {
+router.get("/opening-hours", (_req, res) => {
   let branches: Record<string, any> = {};
   const allowed = loadAllowedBranches();
 
@@ -448,7 +449,7 @@ router.delete("/holiday-overrides", (req, res) => {
 // Delivery Zones
 // ----------------------
 
-router.get("/delivery-zones", (req, res) => {
+router.get("/delivery-zones", (_req, res) => {
   if (!fs.existsSync(zonesFile)) {
     return res.tson({ success: true, zones: [] });
   }
@@ -471,10 +472,6 @@ router.get("/me", (req, res) => {
 });
 
 // ----------------------
-
-router.get("/", (req, res) => {
-  res.tson({ message: "Admin route working" });
-});
 
 export default router;
 

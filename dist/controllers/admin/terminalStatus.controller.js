@@ -1,16 +1,13 @@
+var _a;
 import { TerminalStatusService } from "../../services/admin/terminalStatus.service.js";
-import { success } from "../controllerHelper.js";
+import { wrap } from "../../contracts/api.js";
 export class TerminalStatusController {
-    // -----------------------------------------------------
-    // GET TERMINAL STATUS
-    // -----------------------------------------------------
-    static async getTerminalStatus(_req, res, next) {
-        try {
-            const status = await TerminalStatusService.getTerminalStatus();
-            return success(res, status);
-        }
-        catch (err) {
-            next(err);
-        }
-    }
 }
+_a = TerminalStatusController;
+// -----------------------------------------------------
+// GET TERMINAL STATUS
+// -----------------------------------------------------
+TerminalStatusController.getTerminalStatus = wrap(async (_req) => {
+    const status = await TerminalStatusService.getTerminalStatus();
+    return status;
+});

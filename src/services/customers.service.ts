@@ -1,8 +1,9 @@
 ﻿import { randomUUID } from "crypto";
-import { prisma } from "../prisma/client.js";
-import pool from "../db.js";
+import { prisma } from "../prisma/client.ts";
+import pool from "../db.ts";
 import * as bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
+import { env } from "../config/env.ts";
 
 const ACCESS_TOKEN_EXPIRES = "15m";
 const REFRESH_TOKEN_EXPIRES = "30d";
@@ -32,17 +33,8 @@ export class CustomerService {
   }
 
   async generateTokens(customer: { id: string; email: string }): Promise<any> {
-    const accessToken = jwt.sign(
-      { id: customer.id, email: customer.email, type: "customer" },
-      process.env.JWT_SECRET || "secret",
-      { expiresIn: ACCESS_TOKEN_EXPIRES }
-    );
-
-    const refreshToken = jwt.sign(
-      { id: customer.id, type: "customer" },
-      process.env.JWT_REFRESH_SECRET || "refresh_secret",
-      { expiresIn: REFRESH_TOKEN_EXPIRES }
-    );
+    const accessToken = jwt.sign({ id: customer.id, email: customer.email, type: "customer" }, env.JWT_SECRET as string, { expiresIn: ACCESS_TOKEN_EXPIRES } as jwt.SignOptions);
+    const refreshToken = jwt.sign({ id: customer.id, type: "customer" }, (env.JWT_REFRESH_SECRET as string) || (env.JWT_SECRET as string), { expiresIn: REFRESH_TOKEN_EXPIRES } as jwt.SignOptions);
 
     return { accessToken, refreshToken };
   }
@@ -79,7 +71,7 @@ export class CustomerService {
     return prisma.address.findFirst({ where: { id: addressId, customerId } });
   }
 
-  async deleteAddress(customerId: string, id: string): Promise<any> {
+  async deleteAddress(_customerId: string, id: string): Promise<any> {
     return prisma.address.delete({
       where: { id }
     });

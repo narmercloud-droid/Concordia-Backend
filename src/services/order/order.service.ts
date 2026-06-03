@@ -1,7 +1,7 @@
-﻿import { prisma } from "../../prisma/client.js";
+﻿import { prisma } from "../../prisma/client.ts";
 import { randomUUID } from "crypto";
-import { OrderSocket } from "../../socket/order.socket.js";
-import { OrderLifecycleService } from "./orderLifecycle.service.js";
+import { OrderSocket } from "../../socket/order.socket.ts";
+import { OrderLifecycleService } from "./orderLifecycle.service.ts";
 
 function buildOrderItems(items: any[]) {
   return items.map(item => ({
@@ -40,7 +40,7 @@ export class OrderService {
       throw new Error("Order must have at least one item");
     }
 
-    const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
 
     const order = await prisma.order.create({
       data: {
@@ -65,7 +65,7 @@ export class OrderService {
   }
 
   static async emitOrderStatus(order: any) {
-    const { getIO } = await import("../../lib/socket.js");
+    const { getIO } = await import("../../lib/socket.ts");
     const payload = {
       orderId: order.id,
       terminal_id: order.terminal_id,
@@ -84,7 +84,7 @@ export class OrderService {
 
     if (status === "preparing") {
       try {
-        const { PrintService } = await import("../../services/print/print.service.js");
+        const { PrintService } = await import("../../services/print/print.service.ts");
         await PrintService.printOrder(updatedOrder.id);
       } catch (error) {
         console.error("Failed to print order:", error);

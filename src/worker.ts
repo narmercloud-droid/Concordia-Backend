@@ -1,6 +1,6 @@
-import { env } from "./config/env.js";
-import logger from "./utils/logger.js";
-import { runLifecycleChecks } from "./jobs/lifecycleScheduler.js";
+import { env } from "./config/env.ts";
+import logger from "./utils/logger.ts";
+import { runLifecycleChecks } from "./jobs/lifecycleScheduler.ts";
 
 async function main() {
   logger.info({ environment: env.NODE_ENV }, "Worker dyno starting");

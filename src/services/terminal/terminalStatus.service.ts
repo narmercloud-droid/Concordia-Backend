@@ -1,4 +1,4 @@
-﻿import { prisma } from "../../prisma/client.js";
+﻿import { prisma } from "../../prisma/client.ts";
 
 export async function updateTerminalHeartbeat(terminal) {
   return prisma.terminalStatus.upsert({

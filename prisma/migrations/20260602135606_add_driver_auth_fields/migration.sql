@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "Driver" ADD COLUMN     "earnings" DOUBLE PRECISION NOT NULL DEFAULT 0,
+ADD COLUMN     "password" TEXT,
+ALTER COLUMN "email" DROP NOT NULL;

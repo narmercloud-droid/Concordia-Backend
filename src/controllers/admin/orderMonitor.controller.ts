@@ -1,19 +1,15 @@
-﻿import type { Request, Response, NextFunction  } from "express";
-import { OrderMonitorService } from "../../services/admin/orderMonitor.service.js";
-import { success } from "../controllerHelper.js";
+﻿import type { Request } from "express";
+import { OrderMonitorService } from "../../services/admin/orderMonitor.service.ts";
+import { wrap } from "../../contracts/api.js";
 
 export class OrderMonitorController {
   // -----------------------------------------------------
   // GET LIVE ORDERS
   // -----------------------------------------------------
-  static async getLiveOrders(_req: Request, res: Response, next: NextFunction) {
-    try {
-      const orders = await OrderMonitorService.getLiveOrders();
-      return success(res, orders);
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+  static getLiveOrders = wrap(async (_req: Request) => {
+    const orders = await OrderMonitorService.getLiveOrders();
+    return orders;
+  });
 }
 
 

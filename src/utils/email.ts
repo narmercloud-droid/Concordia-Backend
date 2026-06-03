@@ -1,3 +1,5 @@
+import logger from "../logger.ts";
+
 export async function sendMagicLink(email: string, token: string, callbackPath = "/auth/callback") {
   const frontendBase = process.env.FRONTEND_BASE_URL || "http://localhost:3000";
   const link = `${frontendBase}${callbackPath}?token=${token}`;
@@ -10,7 +12,7 @@ export async function sendMagicLink(email: string, token: string, callbackPath =
 
   const resendApiKey = process.env.RESEND_API_KEY;
   if (!resendApiKey) {
-    console.log(`[MagicLink] Unable to send email because RESEND_API_KEY is not set. Magic link for ${email}: ${link}`);
+    logger.warn({ email, link }, "MagicLink disabled: RESEND_API_KEY not set");
     return;
   }
 

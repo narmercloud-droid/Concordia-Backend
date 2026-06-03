@@ -1,6 +1,6 @@
-﻿import { getAdminNamespace } from "./index.js";
-import { batchSet, batchGet } from "../lib/redis.js";
-import { trackSocketBroadcast } from "../metrics/metrics.js";
+﻿import { getAdminNamespace } from "./index.ts";
+import { batchSet, batchGet } from "../lib/redis.ts";
+import { trackSocketBroadcast } from "../metrics/metrics.ts";
 
 // ===== PHASE 8: SOCKET-LEVEL CACHING =====
 // Cache last event per room to avoid redundant broadcasts

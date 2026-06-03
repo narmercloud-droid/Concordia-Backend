@@ -1,119 +1,86 @@
-﻿import type { Request, Response, NextFunction  } from "express";
-import { TerminalService } from "../../services/terminal/terminal.service.js";
-import { success, fail } from "../controllerHelper.js";
+﻿import type { Request  } from "express";
+import { TerminalService } from "../../services/terminal/terminal.service.ts";
+import { wrap, fail } from "../../contracts/api.js";
 
 export class TerminalController {
-  static async activate(req: Request, res: Response, next: NextFunction) {
+  static activate = wrap(async (req: Request) => {
     const { branchId } = req.body;
 
-    if (!branchId) {
-      return fail(res, "branchId is required", 400);
-    }
+    if (!branchId) throw fail('INVALID_INPUT', 'branchId is required');
 
-    try {
-      const activationToken = await TerminalService.activateTerminal(branchId);
-      return success(res, { token: activationToken });
-    } catch (err: any) {
-      const status = err.message === "Branch not found" ? 404 : 500;
-      return fail(res, err.message || "Failed to generate terminal activation token", status);
-    }
-  }
+    const activationToken = await TerminalService.activateTerminal(branchId);
+    return { token: activationToken };
+  });
 
-  static async register(req: Request, res: Response, next: NextFunction) {
+  static register = wrap(async (req: Request) => {
     const { activation_token, terminal_name } = req.body;
 
-    if (!activation_token || !terminal_name) {
-      return fail(res, "activation_token and terminal_name are required", 400);
-    }
+    if (!activation_token || !terminal_name) throw fail('INVALID_INPUT', 'activation_token and terminal_name are required');
 
     try {
       const terminal = await TerminalService.registerTerminal(activation_token, terminal_name);
-      return success(res, { terminal_id: terminal.id, branchId: terminal.branchId }, "Created", 201);
+      return { terminal_id: terminal.id, branchId: terminal.branchId };
     } catch (err: any) {
-      let status = 400;
-      if (err.message === "Branch not found") status = 404;
-      if (err.message === "Terminal has already been registered") status = 409;
-      return fail(res, err.message || "Failed to register terminal", status);
+      if (err.message === 'Branch not found') throw fail('NOT_FOUND', err.message);
+      if (err.message === 'Terminal has already been registered') throw fail('CONFLICT', err.message);
+      throw fail('INTERNAL_ERROR', err.message || 'Failed to register terminal');
     }
-  }
+  });
 
-  static async login(req: Request, res: Response, next: NextFunction) {
+  static login = wrap(async (req: Request) => {
     const { terminal_token } = req.body;
 
-    if (!terminal_token) {
-      return fail(res, "terminal_token is required", 400);
-    }
+    if (!terminal_token) throw fail('INVALID_INPUT', 'terminal_token is required');
 
     try {
       const terminal = await TerminalService.loginTerminal(terminal_token);
-      return success(res, { terminal_id: terminal.id, branchId: terminal.branchId });
+      return { terminal_id: terminal.id, branchId: terminal.branchId };
     } catch (err: any) {
-      return fail(res, err.message || "Failed to login terminal", 401);
+      throw fail('UNAUTHORIZED', err.message || 'Failed to login terminal');
     }
-  }
+  });
 
-  static async acknowledgeOrder(req: Request, res: Response, next: NextFunction) {
+  static acknowledgeOrder = wrap(async (req: Request) => {
     const { order_id } = req.params;
     const terminal_id = req.user?.id as string;
 
-    try {
-      const order = await TerminalService.acknowledgeOrder(order_id, terminal_id);
-      return success(res, order);
-    } catch (err: any) {
-      return fail(res, err.message, 400);
-    }
-  }
+    const order = await TerminalService.acknowledgeOrder(order_id, terminal_id);
+    return order;
+  });
 
-  static async assignOrder(req: Request, res: Response, next: NextFunction) {
+  static assignOrder = wrap(async (req: Request) => {
     const { order_id } = req.params;
     const terminal_id = req.user?.id as string;
 
-    try {
-      await TerminalService.assignOrder(order_id, terminal_id);
-      return success(res, { status: "assigned" });
-    } catch (err: any) {
-      return fail(res, err.message, 400);
-    }
-  }
+    await TerminalService.assignOrder(order_id, terminal_id);
+    return { status: 'assigned' };
+  });
 
-  static async acceptOrder(req: Request, res: Response, next: NextFunction) {
+  static acceptOrder = wrap(async (req: Request) => {
     const { order_id } = req.params;
     const terminal_id = req.user?.id as string;
 
-    try {
-      const order = await TerminalService.acceptOrder(order_id, terminal_id);
-      return success(res, order);
-    } catch (err: any) {
-      return fail(res, err.message, 400);
-    }
-  }
+    const order = await TerminalService.acceptOrder(order_id, terminal_id);
+    return order;
+  });
 
-  static async rejectOrder(req: Request, res: Response, next: NextFunction) {
+  static rejectOrder = wrap(async (req: Request) => {
     const { order_id } = req.params;
     const terminal_id = req.user?.id as string;
 
-    try {
-      const order = await TerminalService.rejectOrder(order_id, terminal_id);
-      return success(res, order);
-    } catch (err: any) {
-      return fail(res, err.message, 400);
-    }
-  }
+    const order = await TerminalService.rejectOrder(order_id, terminal_id);
+    return order;
+  });
 
-  static async heartbeat(req: Request, res: Response, next: NextFunction) {
+  static heartbeat = wrap(async (req: Request) => {
     const terminal_id = req.user?.id as string;
+    await TerminalService.updateHeartbeat(terminal_id);
+    return { status: 'ok' };
+  });
 
-    try {
-      await TerminalService.updateHeartbeat(terminal_id);
-      return success(res, { status: "ok" });
-    } catch (err: any) {
-      return fail(res, err.message, 500);
-    }
-  }
-
-  static async ordersStream(req: Request, res: Response, next: NextFunction) {
-    return fail(res, "Not implemented", 501);
-  }
+  static ordersStream = wrap(async () => {
+    throw fail('NOT_IMPLEMENTED', 'Not implemented');
+  });
 }
 
 

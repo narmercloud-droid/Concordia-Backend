@@ -1,4 +1,4 @@
-﻿import { prisma } from "../../prisma/client.js";
+﻿import { prisma } from "../../prisma/client.ts";
 
 export class AdminCouriersService {
   static async getAll(branchId: string) {
@@ -21,7 +21,8 @@ export class AdminCouriersService {
   }
 
   static async create(branchId: string, data: any) {
-    const { password, ...courierData } = data;
+    const { password: _password, ...courierData } = data;
+    void _password;
     return prisma.courier.create({
       data: {
         ...courierData,

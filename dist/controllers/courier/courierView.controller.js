@@ -1,12 +1,12 @@
 import { validateCourierToken } from "../../services/courier/courierToken.service.js";
 import { broadcastToCourier } from "../../services/realtime/realtime.service.js";
-import { success, fail } from "../controllerHelper.js";
-export const getCourierOrderView = async (req, res) => {
+import { wrap, fail } from "../../contracts/api.js";
+export const getCourierOrderView = wrap(async (req) => {
     try {
         const token = req.query.token;
         const order = await validateCourierToken(token);
         if (!order) {
-            return fail(res, "Invalid or expired token", 401);
+            throw fail('UNAUTHORIZED', 'Invalid or expired token');
         }
         const response = {
             orderId: order.id,
@@ -32,10 +32,10 @@ export const getCourierOrderView = async (req, res) => {
             navigationUrl: `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(order.customer?.addresses?.[0]?.street || "")}`
         };
         broadcastToCourier(token, "connected", { ok: true });
-        return success(res, response);
+        return response;
     }
     catch (err) {
         console.error(err);
-        return fail(res, "Server error", 500);
+        throw fail('INTERNAL_ERROR', 'Server error');
     }
-};
+});

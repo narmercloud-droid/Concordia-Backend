@@ -1,29 +1,29 @@
 import { courierTrackingService } from "../services/courierTracking.service.js";
-import { success } from "./controllerHelper.js";
+import { wrap } from "../contracts/api.js";
 export const CourierTrackingController = {
     // Courier updates GPS
-    updateLocation: async (req, res, next) => {
+    updateLocation: wrap(async (req) => {
         const courierId = req.user.id;
         const data = req.body;
         const result = await courierTrackingService.updateLocation(courierId, data);
-        return success(res, result);
-    },
+        return result;
+    }),
     // Customer tracking screen
-    customerTracking: async (req, res, next) => {
+    customerTracking: wrap(async (req) => {
         const { orderId } = req.params;
         const result = await courierTrackingService.getCustomerTracking(orderId);
-        return success(res, result);
-    },
+        return result;
+    }),
     // Add tracking event (courier or system)
-    addEvent: async (req, res, next) => {
+    addEvent: wrap(async (req) => {
         const { orderId, status } = req.body;
         const event = await courierTrackingService.addTrackingEvent(orderId, status);
-        return success(res, event);
-    },
+        return event;
+    }),
     // Manager live map
-    managerLiveMap: async (req, res, next) => {
+    managerLiveMap: wrap(async (req) => {
         const branchId = req.user.branchId;
         const couriers = await courierTrackingService.getActiveCouriers(branchId);
-        return success(res, couriers);
-    }
+        return couriers;
+    })
 };

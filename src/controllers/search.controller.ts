@@ -1,52 +1,36 @@
-﻿import type { Request, Response, NextFunction  } from "express";
-import { searchService } from "../services/search.service.js";
-import { success } from "./controllerHelper.js";
+﻿import type { Request  } from "express";
+import { searchService } from "../services/search.service.ts";
+import { wrap } from "../contracts/api.js";
 
 export const SearchController = {
-  menu: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const q = req.query.q as string;
-      const customerId = req.user?.id;
+  menu: wrap(async (req: Request) => {
+    const q = req.query.q as string;
+    const customerId = req.user?.id;
 
-      await searchService.recordSearch(q);
+    await searchService.recordSearch(q);
 
-      const results = await searchService.searchMenu(q, customerId);
-      return success(res, results);
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+    const results = await searchService.searchMenu(q, customerId);
+    return results;
+  }),
 
-  branches: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const q = req.query.q as string;
-      await searchService.recordSearch(q);
-      const results = await searchService.searchBranches(q);
-      return success(res, results);
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  branches: wrap(async (req: Request) => {
+    const q = req.query.q as string;
+    await searchService.recordSearch(q);
+    const results = await searchService.searchBranches(q);
+    return results;
+  }),
 
-  categories: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const q = req.query.q as string;
-      await searchService.recordSearch(q);
-      const results = await searchService.searchCategories(q);
-      return success(res, results);
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  categories: wrap(async (req: Request) => {
+    const q = req.query.q as string;
+    await searchService.recordSearch(q);
+    const results = await searchService.searchCategories(q);
+    return results;
+  }),
 
-  topSearches: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const results = await searchService.topSearches();
-      return success(res, results);
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+  topSearches: wrap(async () => {
+    const results = await searchService.topSearches();
+    return results;
+  })
 };
 
 

@@ -543,8 +543,9 @@ export const sampleNodejsResources = () => {
     nodejsMemoryUsage.labels('rss').set(memUsage.rss);
 
     // active handles and requests are exposed by prom-client default metrics
-  } catch (error) {
-    console.error("Error sampling Node.ts resources:", error);
+  } catch (_error) {
+    void _error;
+    console.error("Error sampling Node.ts resources:", _error);
   }
 };
 
@@ -559,12 +560,13 @@ export const getMetrics = async () => {
 };
 
 // Register metrics endpoint handler
-export const metricsHandler = async (req: any, res: any) => {
+export const metricsHandler = async (_req: any, res: any) => {
   try {
     res.set('Content-Type', register.contentType);
     const metrics = await getMetrics();
     res.end(metrics);
-  } catch (error) {
+  } catch (_error) {
+    void _error;
     res.status(500).end('Error generating metrics');
   }
 };

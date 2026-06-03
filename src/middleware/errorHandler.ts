@@ -1,28 +1,42 @@
-﻿import type { Request, Response, NextFunction  } from "express";
-import { AppError } from "../lib/AppError.js";
-import logger from "../utils/logger.js";
+﻿import type { Request, Response, NextFunction } from "express";
+import logger from "../logger.ts";
+import { env } from "../config/env.ts";
 
-export function errorHandler(
-  err: Error | AppError,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  const statusCode = err instanceof AppError ? err.statusCode : 500;
-  const message = err instanceof AppError ? err.message : "Internal server error";
+export default function errorHandler(err: any, req: Request, res: Response, _next: NextFunction) {
+  const reqId = (req as any).id || req.headers["x-request-id"] || null;
+  const log = (req as any).log || logger;
 
-  // Log full error details
-  logger.error({
-    message: err.message,
-    stack: err.stack,
-    path: req.originalUrl,
-    method: req.method
-  });
+  // Log full error with context (stack only in non-production)
+  log.error({ err, reqId }, "Unhandled error");
 
-  res.status(statusCode).tson({
+  // Prisma-specific logging (best-effort)
+  try {
+    if (err && (err.name?.includes("Prisma") || err.code)) {
+      log.error({ prisma: err }, "Prisma error");
+    }
+  } catch (e) {
+    log.error({ e }, "Error while logging prisma error");
+  }
+
+  const status = err?.status || err?.statusCode || 500;
+  let message = err?.message || "Error";
+
+  if (status === 500) {
+    message = "Internal Server Error";
+  }
+
+  // Do not leak stack traces in production responses
+  const payload: any = {
     success: false,
-    error: message
-  });
+    message,
+    requestId: reqId
+  };
+
+  if (env.NODE_ENV !== "production" && err?.stack) {
+    payload.stack = err.stack;
+  }
+
+  res.status(status).json(payload);
 }
 
 

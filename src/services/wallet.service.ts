@@ -1,6 +1,6 @@
 ﻿import { randomUUID } from "crypto";
 import type { TransactionType } from "@prisma/client";
-import { prisma } from "../prisma/client.js";
+import { prisma } from "../prisma/client.ts";
 
 export class WalletService {
   static async getWallet(customerId: string) {

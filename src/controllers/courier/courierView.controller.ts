@@ -1,15 +1,14 @@
-﻿import { validateCourierToken } from "../../services/courier/courierToken.service.js";
-import { broadcastToCourier } from "../../services/realtime/realtime.service.js";
-import { prisma } from "../../prisma/client.js";
-import { success, fail } from "../controllerHelper.js";
+﻿import { validateCourierToken } from "../../services/courier/courierToken.service.ts";
+import { broadcastToCourier } from "../../services/realtime/realtime.service.ts";
+import { wrap, fail } from "../../contracts/api.js";
 
-export const getCourierOrderView = async (req, res) => {
+export const getCourierOrderView = wrap(async (req) => {
   try {
     const token = req.query.token as string;
     const order = await validateCourierToken(token);
 
     if (!order) {
-      return fail(res, "Invalid or expired token", 401);
+      throw fail('UNAUTHORIZED', 'Invalid or expired token');
     }
 
     const response = {
@@ -37,10 +36,10 @@ export const getCourierOrderView = async (req, res) => {
     };
 
     broadcastToCourier(token, "connected", { ok: true });
-    return success(res, response);
+    return response;
   } catch (err) {
     console.error(err);
-    return fail(res, "Server error", 500);
+    throw fail('INTERNAL_ERROR', 'Server error');
   }
-};
+});
 

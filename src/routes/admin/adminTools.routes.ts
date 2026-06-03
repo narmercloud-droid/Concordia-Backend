@@ -1,15 +1,16 @@
-﻿import { Router } from "express";
-import { adminAuth } from "../../middleware/adminAuth.js";
+﻿import express from "express";
+const { Router } = express;
+import { adminAuth } from "../../middleware/adminAuth.ts";
 import {
   adminListTerminals,
   adminResetTerminalToken,
   adminAssignTerminalKitchen
-} from "../../controllers/admin/adminTerminalManagement.controller.js";
+} from "../../controllers/admin/adminTerminalManagement.controller.ts";
 
 import {
   getBranchSettings,
   updateBranchSettings
-} from "../../controllers/admin/adminBranchSettings.controller.js";
+} from "../../controllers/admin/adminBranchSettings.controller.ts";
 
 const router = Router();
 

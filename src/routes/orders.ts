@@ -1,7 +1,8 @@
-﻿import { Router } from "express";
-import pool from "../db.js";
-import { prisma } from "../prisma/client.js";
-import { customerAuth } from "../middleware/customerAuth.js";
+﻿import express from "express";
+const { Router } = express;
+import pool from "../db.ts";
+import { prisma } from "../prisma/client.ts";
+import { customerAuth } from "../middleware/customerAuth.ts";
 
 const router = Router();
 
@@ -27,7 +28,8 @@ router.post("/create", async (req, res) => {
     }
 
     res.json({ order_id: orderId });
-  } catch (err) {
+  } catch (_err) {
+    void _err;
     res.status(500).json({ error: "Failed to create order" });
   }
 });
@@ -41,7 +43,8 @@ router.get("/customer/:id", customerAuth, async (req, res) => {
       include: { items: true }
     });
     res.json({ orders });
-  } catch (error) {
+  } catch (_error) {
+    void _error;
     res.status(500).json({ error: "Unable to fetch order history" });
   }
 });

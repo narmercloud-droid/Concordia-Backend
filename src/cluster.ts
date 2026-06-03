@@ -1,23 +1,19 @@
 import cluster from "cluster";
 import os from "os";
-import { fileURLToPath } from "url";
-import { dirname } from "path";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import logger from "./logger.ts";
 
 const numCPUs = os.cpus().length;
 
 if (cluster.isPrimary) {
   // Primary cluster management code
-  console.log(`🚀 Primary process ${process.pid} is running`);
+  logger.info({ pid: process.pid }, "Primary process is running");
 
   // Fork workers
   const numWorkers = process.env.CLUSTER_WORKERS 
     ? parseInt(process.env.CLUSTER_WORKERS)
     : Math.max(Math.floor(numCPUs * 0.75), 2); // Use 75% of CPUs, minimum 2
 
-  console.log(`🔄 Spawning ${numWorkers} worker processes...`);
+  logger.info({ numWorkers }, "Spawning worker processes");
 
   for (let i = 0; i < numWorkers; i++) {
     cluster.fork();
@@ -26,20 +22,20 @@ if (cluster.isPrimary) {
   // Handle worker exit and respawn
   cluster.on("exit", (worker, code, signal) => {
     if (signal) {
-      console.log(`⚠️  Worker ${worker.process.pid} was killed by signal: ${signal}`);
+      logger.warn({ pid: worker.process.pid, signal }, "Worker killed by signal");
     } else if (code !== 0) {
-      console.log(`❌ Worker ${worker.process.pid} exited with error code: ${code}`);
+      logger.error({ pid: worker.process.pid, code }, "Worker exited with error code");
       // Respawn worker on error
-      console.log(`🔄 Respawning worker...`);
+      logger.info("Respawning worker");
       cluster.fork();
     } else {
-      console.log(`✅ Worker ${worker.process.pid} exited successfully`);
+      logger.info({ pid: worker.process.pid }, "Worker exited successfully");
     }
   });
 
   // Graceful shutdown
   process.on("SIGTERM", () => {
-    console.log("SIGTERM signal received: closing HTTP server");
+    logger.info("SIGTERM signal received: closing workers");
     
     // Close all workers
     for (const id in cluster.workers) {
@@ -51,22 +47,22 @@ if (cluster.isPrimary) {
 
   // Monitor worker health
   setInterval(() => {
-    console.log(`✅ Health check: ${Object.keys(cluster.workers).length} workers online`);
+    logger.info({ workersOnline: Object.keys(cluster.workers).length }, "Worker health check");
   }, 60000); // Every minute
 
 } else {
   // Worker process - load the main application
-  console.log(`🔧 Worker process ${process.pid} started`);
+  logger.info({ pid: process.pid }, "Worker process started");
 
   // Import and start the app
-  import("./index.js").catch((error) => {
-    console.error("Failed to start worker:", error);
+  import("./index.ts").catch((error) => {
+    logger.error({ error }, "Failed to start worker");
     process.exit(1);
   });
 
   // Handle graceful shutdown in worker
   process.on("SIGTERM", () => {
-    console.log(`Worker ${process.pid} received SIGTERM, shutting down gracefully`);
+    logger.info({ pid: process.pid }, "Worker received SIGTERM, shutting down gracefully");
     process.exit(0);
   });
 }

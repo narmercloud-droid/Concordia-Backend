@@ -1,15 +1,14 @@
-﻿import { randomUUID } from "crypto";
-import { prisma } from "../../prisma/client.js";
-import { generateCourierToken } from "../../services/courier/courierToken.service.js";
-import { OrderLifecycleService } from "../../services/order/orderLifecycle.service.js";
-import { success, fail } from "../controllerHelper.js";
+﻿import { prisma } from "../../prisma/client.ts";
+import { generateCourierToken } from "../../services/courier/courierToken.service.ts";
+import { OrderLifecycleService } from "../../services/order/orderLifecycle.service.ts";
+import { wrap, fail } from "../../contracts/api.js";
 
-export const assignCourier = async (req, res) => {
+export const assignCourier = wrap(async (req) => {
   try {
     const { orderId, courierId } = req.body;
 
     const order = await prisma.order.findUnique({ where: { id: orderId } });
-    if (!order) return fail(res, "Order not found", 404);
+    if (!order) throw fail('NOT_FOUND', 'Order not found');
 
     const token = await generateCourierToken(orderId);
 
@@ -18,14 +17,14 @@ export const assignCourier = async (req, res) => {
       courierStatus: "assigned"
     });
 
-    return success(res, {
+    return {
       success: true,
       courierToken: token,
       qrUrl: `${process.env.PUBLIC_URL}/courier/order?token=${token}`
-    });
+    };
   } catch (err) {
     console.error(err);
-    return fail(res, "Server error", 500);
+    throw fail('INTERNAL_ERROR', 'Server error');
   }
-};
+});
 

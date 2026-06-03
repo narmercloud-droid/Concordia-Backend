@@ -1,8 +1,9 @@
-﻿import { prisma } from "../prisma/client.js";
+﻿import { prisma } from "../prisma/client.ts";
 import crypto from "crypto";
 import { v4 as uuid } from "uuid";
 import { randomUUID } from "crypto";
-import { OrderLifecycleService } from "./order/orderLifecycle.service.js";
+import { OrderLifecycleService } from "./order/orderLifecycle.service.ts";
+import logger from "../logger.ts";
 
 function buildOrderItems(items: any[]) {
   return items.map(i => {
@@ -66,7 +67,7 @@ export class OrdersService {
       }
     } as any;
 
-    console.log('PRISMA_CREATE_PAYLOAD', JSON.stringify(createPayload));
+    logger.debug({ payload: createPayload }, 'PRISMA_CREATE_PAYLOAD');
 
     const order = await prisma.order.create({
       data: createPayload,

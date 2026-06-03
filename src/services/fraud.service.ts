@@ -1,5 +1,5 @@
 ﻿import { randomUUID } from "crypto";
-import { prisma } from "../prisma/client.js";
+import { prisma } from "../prisma/client.ts";
 
 export class FraudService {
   async scoreOrder(orderId: string): Promise<any> {
@@ -96,7 +96,8 @@ export class FraudService {
     return { score, level, events };
   }
 
-  async getRisk(orderId) {
+  async getRisk(_orderId) {
+    void _orderId;
     // riskScore model is not defined in the current Prisma schema
     return null;
   }
