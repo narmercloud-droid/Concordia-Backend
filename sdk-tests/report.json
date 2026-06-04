@@ -1,0 +1,2402 @@
+{
+  "generatedAt": "2026-06-04T19:51:06.518Z",
+  "summary": {
+    "total": 136,
+    "passed": 136,
+    "failed": 0
+  },
+  "bySdk": {
+    "typescript": {
+      "total": 68,
+      "passed": 68,
+      "failed": 0
+    },
+    "python": {
+      "total": 68,
+      "passed": 68,
+      "failed": 0
+    }
+  },
+  "byOperation": {
+    "adminLogin": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "requestMagicLink": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "verifyMagicToken": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "verifyAdminMagicToken": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "authLogout": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "adminAuthLogin": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "adminAuthLogout": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "adminListOrders": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "adminGetOrder": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "adminPatchOrderStatus": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "adminGetMenu": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "adminCreateMenu": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "adminPatchMenuItem": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "adminDeleteMenuItem": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "adminListBranches": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "adminCreateBranch": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "adminPatchBranch": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "adminMetricsOverview": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "adminMetricsOrders": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "adminMetricsCustomers": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "webhookOrderCreated": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "webhookOrderUpdated": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "webhookOrderStatusChanged": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "webhookPaymentSucceeded": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "webhookPaymentFailed": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "webhookCourierAssigned": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "webhookCourierLocationUpdated": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "webhookBranchOpeningHoursChanged": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "createOrder": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "adminListBranchOrders": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "setOrderStatus": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "courierClaimAssignment": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "courierPickedUp": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "courierDelivered": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "getOpeningHours": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "updateOpeningHours": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "listHolidayOverrides": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "createHolidayOverride": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "createVoucher": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "invalidateVoucher": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "listVouchers": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "refundOrder": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "assignCourier": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "getMenu": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "createCategory": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "updateCategory": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "createMenuItem": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "updateMenuItem": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "createVariant": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "setVariantAvailability": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "validateOffer": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "getMetrics": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "authLogin": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "getRoot": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "postRoot": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "patchRoot": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "updateAddress": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "deleteAddress": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "requestOtp": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "verifyOtp": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "postRefresh": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "getOrder": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "postReport": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "getBranch": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "registerCustomer": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "getOrderStatus": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "applyOffer": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "getBranchSlots": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    }
+  },
+  "results": [
+    {
+      "sdk": "typescript",
+      "operationId": "adminLogin",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "statusCode": 200,
+      "body": {
+        "token": "str_177"
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "requestMagicLink",
+      "method": "POST",
+      "path": "/api/auth/request-link",
+      "statusCode": 200,
+      "body": {
+        "message": "str_178"
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "verifyMagicToken",
+      "method": "GET",
+      "path": "/api/auth/verify",
+      "statusCode": 200,
+      "body": {
+        "token": "str_179",
+        "customer": {}
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "verifyAdminMagicToken",
+      "method": "GET",
+      "path": "/api/auth/admin/verify",
+      "statusCode": 200,
+      "body": {
+        "token": "str_180"
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "authLogout",
+      "method": "POST",
+      "path": "/api/auth/logout",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "adminAuthLogin",
+      "method": "POST",
+      "path": "/api/admin/auth/login",
+      "statusCode": 200,
+      "body": {
+        "token": "str_181"
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "adminAuthLogout",
+      "method": "POST",
+      "path": "/api/admin/auth/logout",
+      "statusCode": 200,
+      "body": {
+        "user": {}
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "adminListOrders",
+      "method": "GET",
+      "path": "/api/admin/orders",
+      "statusCode": 200,
+      "body": [
+        {
+          "id": "ord_20260604_0001",
+          "createdAt": "2026-06-04T12:34:56Z",
+          "status": "pending",
+          "branchId": "branch_abc",
+          "customerId": "cust_001",
+          "items": [
+            {
+              "itemId": "itm_123",
+              "variantId": "var_456",
+              "quantity": 2,
+              "price": 9.5
+            }
+          ],
+          "externalAmount": 19,
+          "paymentStatus": "pending"
+        }
+      ],
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "adminGetOrder",
+      "method": "GET",
+      "path": "/api/admin/orders/{orderId}",
+      "statusCode": 200,
+      "body": {
+        "id": "ord_20260604_0001",
+        "createdAt": "2026-06-04T12:34:56Z",
+        "status": "pending",
+        "branchId": "branch_abc",
+        "customerId": "cust_001",
+        "items": [
+          {
+            "itemId": "itm_123",
+            "variantId": "var_456",
+            "quantity": 2,
+            "price": 9.5
+          }
+        ],
+        "externalAmount": 19,
+        "paymentStatus": "pending"
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "adminPatchOrderStatus",
+      "method": "PATCH",
+      "path": "/api/admin/orders/{orderId}/status",
+      "statusCode": 200,
+      "body": {
+        "id": "ord_20260604_0001",
+        "createdAt": "2026-06-04T12:34:56Z",
+        "status": "pending",
+        "branchId": "branch_abc",
+        "customerId": "cust_001",
+        "items": [
+          {
+            "itemId": "itm_123",
+            "variantId": "var_456",
+            "quantity": 2,
+            "price": 9.5
+          }
+        ],
+        "externalAmount": 19,
+        "paymentStatus": "pending"
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "adminGetMenu",
+      "method": "GET",
+      "path": "/api/admin/menu",
+      "statusCode": 200,
+      "body": [
+        {
+          "id": 123,
+          "name": "Margherita Pizza",
+          "description": "Classic margherita with tomato, mozzarella and basil",
+          "basePrice": 10.5,
+          "imageUrl": "https://cdn.example.com/images/margherita.jpg",
+          "isAvailable": true,
+          "variantGroups": [
+            {
+              "id": "vg_1",
+              "name": "Size",
+              "required": true,
+              "minSelect": 1,
+              "maxSelect": 1,
+              "variants": [
+                {
+                  "id": "var_small",
+                  "name": "Small",
+                  "price": 0
+                },
+                {
+                  "id": "var_large",
+                  "name": "Large",
+                  "price": 3
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "adminCreateMenu",
+      "method": "POST",
+      "path": "/api/admin/menu",
+      "statusCode": 200,
+      "body": {
+        "id": 123,
+        "name": "Margherita Pizza",
+        "description": "Classic margherita with tomato, mozzarella and basil",
+        "basePrice": 10.5,
+        "imageUrl": "https://cdn.example.com/images/margherita.jpg",
+        "isAvailable": true,
+        "variantGroups": [
+          {
+            "id": "vg_1",
+            "name": "Size",
+            "required": true,
+            "minSelect": 1,
+            "maxSelect": 1,
+            "variants": [
+              {
+                "id": "var_small",
+                "name": "Small",
+                "price": 0
+              },
+              {
+                "id": "var_large",
+                "name": "Large",
+                "price": 3
+              }
+            ]
+          }
+        ]
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "adminPatchMenuItem",
+      "method": "PATCH",
+      "path": "/api/admin/menu/{itemId}",
+      "statusCode": 200,
+      "body": {
+        "id": 123,
+        "name": "Margherita Pizza",
+        "description": "Classic margherita with tomato, mozzarella and basil",
+        "basePrice": 10.5,
+        "imageUrl": "https://cdn.example.com/images/margherita.jpg",
+        "isAvailable": true,
+        "variantGroups": [
+          {
+            "id": "vg_1",
+            "name": "Size",
+            "required": true,
+            "minSelect": 1,
+            "maxSelect": 1,
+            "variants": [
+              {
+                "id": "var_small",
+                "name": "Small",
+                "price": 0
+              },
+              {
+                "id": "var_large",
+                "name": "Large",
+                "price": 3
+              }
+            ]
+          }
+        ]
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "adminDeleteMenuItem",
+      "method": "DELETE",
+      "path": "/api/admin/menu/{itemId}",
+      "statusCode": 200,
+      "body": {
+        "user": {}
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "adminListBranches",
+      "method": "GET",
+      "path": "/api/admin/branches",
+      "statusCode": 200,
+      "body": [
+        {
+          "street": "str_182",
+          "city": "str_183",
+          "postalCode": "str_184",
+          "id": "str_185",
+          "label": "str_186",
+          "lat": 1,
+          "lng": 1,
+          "instructions": "str_187",
+          "isDefault": true
+        }
+      ],
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "adminCreateBranch",
+      "method": "POST",
+      "path": "/api/admin/branches",
+      "statusCode": 200,
+      "body": {
+        "street": "str_188",
+        "city": "str_189",
+        "postalCode": "str_190",
+        "id": "str_191",
+        "label": "str_192",
+        "lat": 1,
+        "lng": 1,
+        "instructions": "str_193",
+        "isDefault": true
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "adminPatchBranch",
+      "method": "PATCH",
+      "path": "/api/admin/branches/{branchId}",
+      "statusCode": 200,
+      "body": {
+        "street": "str_194",
+        "city": "str_195",
+        "postalCode": "str_196",
+        "id": "str_197",
+        "label": "str_198",
+        "lat": 1,
+        "lng": 1,
+        "instructions": "str_199",
+        "isDefault": true
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "adminMetricsOverview",
+      "method": "GET",
+      "path": "/api/admin/metrics/overview",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "adminMetricsOrders",
+      "method": "GET",
+      "path": "/api/admin/metrics/orders",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "adminMetricsCustomers",
+      "method": "GET",
+      "path": "/api/admin/metrics/customers",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "webhookOrderCreated",
+      "method": "POST",
+      "path": "/webhooks/order.created",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "webhookOrderUpdated",
+      "method": "POST",
+      "path": "/webhooks/order.updated",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "webhookOrderStatusChanged",
+      "method": "POST",
+      "path": "/webhooks/order.status_changed",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "webhookPaymentSucceeded",
+      "method": "POST",
+      "path": "/webhooks/payment.succeeded",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "webhookPaymentFailed",
+      "method": "POST",
+      "path": "/webhooks/payment.failed",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "webhookCourierAssigned",
+      "method": "POST",
+      "path": "/webhooks/courier.assigned",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "webhookCourierLocationUpdated",
+      "method": "POST",
+      "path": "/webhooks/courier.location_updated",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "webhookBranchOpeningHoursChanged",
+      "method": "POST",
+      "path": "/webhooks/branch.opening_hours_changed",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "createOrder",
+      "method": "POST",
+      "path": "/api/orders",
+      "statusCode": 200,
+      "body": {
+        "id": "ord_20260604_0001",
+        "createdAt": "2026-06-04T12:34:56Z",
+        "status": "pending",
+        "branchId": "branch_abc",
+        "customerId": "cust_001",
+        "items": [
+          {
+            "itemId": "itm_123",
+            "variantId": "var_456",
+            "quantity": 2,
+            "price": 9.5
+          }
+        ],
+        "externalAmount": 19,
+        "paymentStatus": "pending"
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "adminListBranchOrders",
+      "method": "GET",
+      "path": "/api/branches/{branchId}/orders",
+      "statusCode": 200,
+      "body": [
+        {
+          "id": "ord_20260604_0001",
+          "createdAt": "2026-06-04T12:34:56Z",
+          "status": "pending",
+          "branchId": "branch_abc",
+          "customerId": "cust_001",
+          "items": [
+            {
+              "itemId": "itm_123",
+              "variantId": "var_456",
+              "quantity": 2,
+              "price": 9.5
+            }
+          ],
+          "externalAmount": 19,
+          "paymentStatus": "pending"
+        }
+      ],
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "setOrderStatus",
+      "method": "PUT",
+      "path": "/api/orders/{orderId}/status",
+      "statusCode": 200,
+      "body": {
+        "id": "ord_20260604_0001",
+        "createdAt": "2026-06-04T12:34:56Z",
+        "status": "pending",
+        "branchId": "branch_abc",
+        "customerId": "cust_001",
+        "items": [
+          {
+            "itemId": "itm_123",
+            "variantId": "var_456",
+            "quantity": 2,
+            "price": 9.5
+          }
+        ],
+        "externalAmount": 19,
+        "paymentStatus": "pending"
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "courierClaimAssignment",
+      "method": "POST",
+      "path": "/api/orders/courier/claim",
+      "statusCode": 200,
+      "body": {
+        "id": "ord_20260604_0001",
+        "createdAt": "2026-06-04T12:34:56Z",
+        "status": "pending",
+        "branchId": "branch_abc",
+        "customerId": "cust_001",
+        "items": [
+          {
+            "itemId": "itm_123",
+            "variantId": "var_456",
+            "quantity": 2,
+            "price": 9.5
+          }
+        ],
+        "externalAmount": 19,
+        "paymentStatus": "pending"
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "courierPickedUp",
+      "method": "POST",
+      "path": "/api/orders/courier/picked-up",
+      "statusCode": 200,
+      "body": {
+        "id": "ord_20260604_0001",
+        "createdAt": "2026-06-04T12:34:56Z",
+        "status": "pending",
+        "branchId": "branch_abc",
+        "customerId": "cust_001",
+        "items": [
+          {
+            "itemId": "itm_123",
+            "variantId": "var_456",
+            "quantity": 2,
+            "price": 9.5
+          }
+        ],
+        "externalAmount": 19,
+        "paymentStatus": "pending"
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "courierDelivered",
+      "method": "POST",
+      "path": "/api/orders/courier/delivered",
+      "statusCode": 200,
+      "body": {
+        "id": "ord_20260604_0001",
+        "createdAt": "2026-06-04T12:34:56Z",
+        "status": "pending",
+        "branchId": "branch_abc",
+        "customerId": "cust_001",
+        "items": [
+          {
+            "itemId": "itm_123",
+            "variantId": "var_456",
+            "quantity": 2,
+            "price": 9.5
+          }
+        ],
+        "externalAmount": 19,
+        "paymentStatus": "pending"
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "getOpeningHours",
+      "method": "GET",
+      "path": "/api/admin/opening-hours",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "updateOpeningHours",
+      "method": "POST",
+      "path": "/api/admin/opening-hours",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "listHolidayOverrides",
+      "method": "GET",
+      "path": "/api/admin/holiday-overrides",
+      "statusCode": 200,
+      "body": [
+        {}
+      ],
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "createHolidayOverride",
+      "method": "POST",
+      "path": "/api/admin/holiday-overrides",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "createVoucher",
+      "method": "POST",
+      "path": "/api/admin/voucher/create",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "invalidateVoucher",
+      "method": "POST",
+      "path": "/api/admin/voucher/invalidate",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "listVouchers",
+      "method": "GET",
+      "path": "/api/admin/voucher/list",
+      "statusCode": 200,
+      "body": [
+        {}
+      ],
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "refundOrder",
+      "method": "POST",
+      "path": "/api/admin/refund",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "assignCourier",
+      "method": "POST",
+      "path": "/api/admin/assign",
+      "statusCode": 200,
+      "body": {
+        "courierToken": "str_200",
+        "qrUrl": "str_201"
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "getMenu",
+      "method": "GET",
+      "path": "/api/menu",
+      "statusCode": 200,
+      "body": [
+        {
+          "id": "str_202",
+          "name": "str_203",
+          "description": "str_204"
+        }
+      ],
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "createCategory",
+      "method": "POST",
+      "path": "/api/menu/category",
+      "statusCode": 200,
+      "body": {
+        "id": "str_205",
+        "name": "str_206",
+        "description": "str_207"
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "updateCategory",
+      "method": "PUT",
+      "path": "/api/menu/category/{id}",
+      "statusCode": 200,
+      "body": {
+        "id": "str_208",
+        "name": "str_209",
+        "description": "str_210"
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "createMenuItem",
+      "method": "POST",
+      "path": "/api/menu/item",
+      "statusCode": 200,
+      "body": {
+        "id": 123,
+        "name": "Margherita Pizza",
+        "description": "Classic margherita with tomato, mozzarella and basil",
+        "basePrice": 10.5,
+        "imageUrl": "https://cdn.example.com/images/margherita.jpg",
+        "isAvailable": true,
+        "variantGroups": [
+          {
+            "id": "vg_1",
+            "name": "Size",
+            "required": true,
+            "minSelect": 1,
+            "maxSelect": 1,
+            "variants": [
+              {
+                "id": "var_small",
+                "name": "Small",
+                "price": 0
+              },
+              {
+                "id": "var_large",
+                "name": "Large",
+                "price": 3
+              }
+            ]
+          }
+        ]
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "updateMenuItem",
+      "method": "PUT",
+      "path": "/api/menu/item/{id}",
+      "statusCode": 200,
+      "body": {
+        "id": 123,
+        "name": "Margherita Pizza",
+        "description": "Classic margherita with tomato, mozzarella and basil",
+        "basePrice": 10.5,
+        "imageUrl": "https://cdn.example.com/images/margherita.jpg",
+        "isAvailable": true,
+        "variantGroups": [
+          {
+            "id": "vg_1",
+            "name": "Size",
+            "required": true,
+            "minSelect": 1,
+            "maxSelect": 1,
+            "variants": [
+              {
+                "id": "var_small",
+                "name": "Small",
+                "price": 0
+              },
+              {
+                "id": "var_large",
+                "name": "Large",
+                "price": 3
+              }
+            ]
+          }
+        ]
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "createVariant",
+      "method": "POST",
+      "path": "/api/menu/variant",
+      "statusCode": 200,
+      "body": {
+        "id": "var_small",
+        "name": "Small",
+        "price": 0,
+        "groupId": "vg_1"
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "setVariantAvailability",
+      "method": "PUT",
+      "path": "/api/menu/variant/{id}/availability",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "validateOffer",
+      "method": "POST",
+      "path": "/api/offers/validate",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "getMetrics",
+      "method": "GET",
+      "path": "/api/metrics",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "authLogin",
+      "method": "POST",
+      "path": "/login",
+      "statusCode": 200,
+      "body": {
+        "token": "str_211",
+        "customer": {}
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "getRoot",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 200,
+      "body": {
+        "user": {}
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "postRoot",
+      "method": "POST",
+      "path": "/",
+      "statusCode": 200,
+      "body": {
+        "user": {}
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "patchRoot",
+      "method": "PATCH",
+      "path": "/",
+      "statusCode": 200,
+      "body": {
+        "user": {}
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "updateAddress",
+      "method": "PATCH",
+      "path": "/addresses/{addressId}",
+      "statusCode": 200,
+      "body": {
+        "street": "str_212",
+        "city": "str_213",
+        "postalCode": "str_214",
+        "id": "str_215",
+        "label": "str_216",
+        "lat": 1,
+        "lng": 1,
+        "instructions": "str_217",
+        "isDefault": true
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "deleteAddress",
+      "method": "DELETE",
+      "path": "/addresses/{addressId}",
+      "statusCode": 200,
+      "body": {
+        "user": {}
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "requestOtp",
+      "method": "POST",
+      "path": "/request-otp",
+      "statusCode": 200,
+      "body": {
+        "user": {}
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "verifyOtp",
+      "method": "POST",
+      "path": "/verify-otp",
+      "statusCode": 200,
+      "body": {
+        "token": "str_218",
+        "customer": {}
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "postRefresh",
+      "method": "POST",
+      "path": "/refresh",
+      "statusCode": 200,
+      "body": {
+        "token": "str_219",
+        "customer": {}
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "getOrder",
+      "method": "GET",
+      "path": "/orders/{orderId}",
+      "statusCode": 200,
+      "body": {
+        "user": {}
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "postReport",
+      "method": "POST",
+      "path": "/report",
+      "statusCode": 200,
+      "body": {
+        "user": {}
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "getBranch",
+      "method": "GET",
+      "path": "/branches/{branchId}",
+      "statusCode": 200,
+      "body": {
+        "user": {}
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "registerCustomer",
+      "method": "POST",
+      "path": "/register",
+      "statusCode": 200,
+      "body": {
+        "token": "str_220",
+        "customer": {}
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "getOrderStatus",
+      "method": "GET",
+      "path": "/orders/{orderId}/status",
+      "statusCode": 200,
+      "body": {
+        "user": {}
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "applyOffer",
+      "method": "POST",
+      "path": "/apply",
+      "statusCode": 200,
+      "body": {
+        "user": {}
+      },
+      "ok": true
+    },
+    {
+      "sdk": "typescript",
+      "operationId": "getBranchSlots",
+      "method": "GET",
+      "path": "/branches/{branchId}/slots",
+      "statusCode": 200,
+      "body": {
+        "user": {}
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "adminLogin",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "statusCode": 200,
+      "body": {
+        "token": "str_221"
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "requestMagicLink",
+      "method": "POST",
+      "path": "/api/auth/request-link",
+      "statusCode": 200,
+      "body": {
+        "message": "str_222"
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "verifyMagicToken",
+      "method": "GET",
+      "path": "/api/auth/verify",
+      "statusCode": 200,
+      "body": {
+        "token": "str_223",
+        "customer": {}
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "verifyAdminMagicToken",
+      "method": "GET",
+      "path": "/api/auth/admin/verify",
+      "statusCode": 200,
+      "body": {
+        "token": "str_224"
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "authLogout",
+      "method": "POST",
+      "path": "/api/auth/logout",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "adminAuthLogin",
+      "method": "POST",
+      "path": "/api/admin/auth/login",
+      "statusCode": 200,
+      "body": {
+        "token": "str_225"
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "adminAuthLogout",
+      "method": "POST",
+      "path": "/api/admin/auth/logout",
+      "statusCode": 200,
+      "body": {
+        "user": {}
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "adminListOrders",
+      "method": "GET",
+      "path": "/api/admin/orders",
+      "statusCode": 200,
+      "body": [
+        {
+          "id": "ord_20260604_0001",
+          "createdAt": "2026-06-04T12:34:56Z",
+          "status": "pending",
+          "branchId": "branch_abc",
+          "customerId": "cust_001",
+          "items": [
+            {
+              "itemId": "itm_123",
+              "variantId": "var_456",
+              "quantity": 2,
+              "price": 9.5
+            }
+          ],
+          "externalAmount": 19,
+          "paymentStatus": "pending"
+        }
+      ],
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "adminGetOrder",
+      "method": "GET",
+      "path": "/api/admin/orders/{orderId}",
+      "statusCode": 200,
+      "body": {
+        "id": "ord_20260604_0001",
+        "createdAt": "2026-06-04T12:34:56Z",
+        "status": "pending",
+        "branchId": "branch_abc",
+        "customerId": "cust_001",
+        "items": [
+          {
+            "itemId": "itm_123",
+            "variantId": "var_456",
+            "quantity": 2,
+            "price": 9.5
+          }
+        ],
+        "externalAmount": 19,
+        "paymentStatus": "pending"
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "adminPatchOrderStatus",
+      "method": "PATCH",
+      "path": "/api/admin/orders/{orderId}/status",
+      "statusCode": 200,
+      "body": {
+        "id": "ord_20260604_0001",
+        "createdAt": "2026-06-04T12:34:56Z",
+        "status": "pending",
+        "branchId": "branch_abc",
+        "customerId": "cust_001",
+        "items": [
+          {
+            "itemId": "itm_123",
+            "variantId": "var_456",
+            "quantity": 2,
+            "price": 9.5
+          }
+        ],
+        "externalAmount": 19,
+        "paymentStatus": "pending"
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "adminGetMenu",
+      "method": "GET",
+      "path": "/api/admin/menu",
+      "statusCode": 200,
+      "body": [
+        {
+          "id": 123,
+          "name": "Margherita Pizza",
+          "description": "Classic margherita with tomato, mozzarella and basil",
+          "basePrice": 10.5,
+          "imageUrl": "https://cdn.example.com/images/margherita.jpg",
+          "isAvailable": true,
+          "variantGroups": [
+            {
+              "id": "vg_1",
+              "name": "Size",
+              "required": true,
+              "minSelect": 1,
+              "maxSelect": 1,
+              "variants": [
+                {
+                  "id": "var_small",
+                  "name": "Small",
+                  "price": 0
+                },
+                {
+                  "id": "var_large",
+                  "name": "Large",
+                  "price": 3
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "adminCreateMenu",
+      "method": "POST",
+      "path": "/api/admin/menu",
+      "statusCode": 200,
+      "body": {
+        "id": 123,
+        "name": "Margherita Pizza",
+        "description": "Classic margherita with tomato, mozzarella and basil",
+        "basePrice": 10.5,
+        "imageUrl": "https://cdn.example.com/images/margherita.jpg",
+        "isAvailable": true,
+        "variantGroups": [
+          {
+            "id": "vg_1",
+            "name": "Size",
+            "required": true,
+            "minSelect": 1,
+            "maxSelect": 1,
+            "variants": [
+              {
+                "id": "var_small",
+                "name": "Small",
+                "price": 0
+              },
+              {
+                "id": "var_large",
+                "name": "Large",
+                "price": 3
+              }
+            ]
+          }
+        ]
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "adminPatchMenuItem",
+      "method": "PATCH",
+      "path": "/api/admin/menu/{itemId}",
+      "statusCode": 200,
+      "body": {
+        "id": 123,
+        "name": "Margherita Pizza",
+        "description": "Classic margherita with tomato, mozzarella and basil",
+        "basePrice": 10.5,
+        "imageUrl": "https://cdn.example.com/images/margherita.jpg",
+        "isAvailable": true,
+        "variantGroups": [
+          {
+            "id": "vg_1",
+            "name": "Size",
+            "required": true,
+            "minSelect": 1,
+            "maxSelect": 1,
+            "variants": [
+              {
+                "id": "var_small",
+                "name": "Small",
+                "price": 0
+              },
+              {
+                "id": "var_large",
+                "name": "Large",
+                "price": 3
+              }
+            ]
+          }
+        ]
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "adminDeleteMenuItem",
+      "method": "DELETE",
+      "path": "/api/admin/menu/{itemId}",
+      "statusCode": 200,
+      "body": {
+        "user": {}
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "adminListBranches",
+      "method": "GET",
+      "path": "/api/admin/branches",
+      "statusCode": 200,
+      "body": [
+        {
+          "street": "str_226",
+          "city": "str_227",
+          "postalCode": "str_228",
+          "id": "str_229",
+          "label": "str_230",
+          "lat": 1,
+          "lng": 1,
+          "instructions": "str_231",
+          "isDefault": true
+        }
+      ],
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "adminCreateBranch",
+      "method": "POST",
+      "path": "/api/admin/branches",
+      "statusCode": 200,
+      "body": {
+        "street": "str_232",
+        "city": "str_233",
+        "postalCode": "str_234",
+        "id": "str_235",
+        "label": "str_236",
+        "lat": 1,
+        "lng": 1,
+        "instructions": "str_237",
+        "isDefault": true
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "adminPatchBranch",
+      "method": "PATCH",
+      "path": "/api/admin/branches/{branchId}",
+      "statusCode": 200,
+      "body": {
+        "street": "str_238",
+        "city": "str_239",
+        "postalCode": "str_240",
+        "id": "str_241",
+        "label": "str_242",
+        "lat": 1,
+        "lng": 1,
+        "instructions": "str_243",
+        "isDefault": true
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "adminMetricsOverview",
+      "method": "GET",
+      "path": "/api/admin/metrics/overview",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "adminMetricsOrders",
+      "method": "GET",
+      "path": "/api/admin/metrics/orders",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "adminMetricsCustomers",
+      "method": "GET",
+      "path": "/api/admin/metrics/customers",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "webhookOrderCreated",
+      "method": "POST",
+      "path": "/webhooks/order.created",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "webhookOrderUpdated",
+      "method": "POST",
+      "path": "/webhooks/order.updated",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "webhookOrderStatusChanged",
+      "method": "POST",
+      "path": "/webhooks/order.status_changed",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "webhookPaymentSucceeded",
+      "method": "POST",
+      "path": "/webhooks/payment.succeeded",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "webhookPaymentFailed",
+      "method": "POST",
+      "path": "/webhooks/payment.failed",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "webhookCourierAssigned",
+      "method": "POST",
+      "path": "/webhooks/courier.assigned",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "webhookCourierLocationUpdated",
+      "method": "POST",
+      "path": "/webhooks/courier.location_updated",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "webhookBranchOpeningHoursChanged",
+      "method": "POST",
+      "path": "/webhooks/branch.opening_hours_changed",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "createOrder",
+      "method": "POST",
+      "path": "/api/orders",
+      "statusCode": 200,
+      "body": {
+        "id": "ord_20260604_0001",
+        "createdAt": "2026-06-04T12:34:56Z",
+        "status": "pending",
+        "branchId": "branch_abc",
+        "customerId": "cust_001",
+        "items": [
+          {
+            "itemId": "itm_123",
+            "variantId": "var_456",
+            "quantity": 2,
+            "price": 9.5
+          }
+        ],
+        "externalAmount": 19,
+        "paymentStatus": "pending"
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "adminListBranchOrders",
+      "method": "GET",
+      "path": "/api/branches/{branchId}/orders",
+      "statusCode": 200,
+      "body": [
+        {
+          "id": "ord_20260604_0001",
+          "createdAt": "2026-06-04T12:34:56Z",
+          "status": "pending",
+          "branchId": "branch_abc",
+          "customerId": "cust_001",
+          "items": [
+            {
+              "itemId": "itm_123",
+              "variantId": "var_456",
+              "quantity": 2,
+              "price": 9.5
+            }
+          ],
+          "externalAmount": 19,
+          "paymentStatus": "pending"
+        }
+      ],
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "setOrderStatus",
+      "method": "PUT",
+      "path": "/api/orders/{orderId}/status",
+      "statusCode": 200,
+      "body": {
+        "id": "ord_20260604_0001",
+        "createdAt": "2026-06-04T12:34:56Z",
+        "status": "pending",
+        "branchId": "branch_abc",
+        "customerId": "cust_001",
+        "items": [
+          {
+            "itemId": "itm_123",
+            "variantId": "var_456",
+            "quantity": 2,
+            "price": 9.5
+          }
+        ],
+        "externalAmount": 19,
+        "paymentStatus": "pending"
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "courierClaimAssignment",
+      "method": "POST",
+      "path": "/api/orders/courier/claim",
+      "statusCode": 200,
+      "body": {
+        "id": "ord_20260604_0001",
+        "createdAt": "2026-06-04T12:34:56Z",
+        "status": "pending",
+        "branchId": "branch_abc",
+        "customerId": "cust_001",
+        "items": [
+          {
+            "itemId": "itm_123",
+            "variantId": "var_456",
+            "quantity": 2,
+            "price": 9.5
+          }
+        ],
+        "externalAmount": 19,
+        "paymentStatus": "pending"
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "courierPickedUp",
+      "method": "POST",
+      "path": "/api/orders/courier/picked-up",
+      "statusCode": 200,
+      "body": {
+        "id": "ord_20260604_0001",
+        "createdAt": "2026-06-04T12:34:56Z",
+        "status": "pending",
+        "branchId": "branch_abc",
+        "customerId": "cust_001",
+        "items": [
+          {
+            "itemId": "itm_123",
+            "variantId": "var_456",
+            "quantity": 2,
+            "price": 9.5
+          }
+        ],
+        "externalAmount": 19,
+        "paymentStatus": "pending"
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "courierDelivered",
+      "method": "POST",
+      "path": "/api/orders/courier/delivered",
+      "statusCode": 200,
+      "body": {
+        "id": "ord_20260604_0001",
+        "createdAt": "2026-06-04T12:34:56Z",
+        "status": "pending",
+        "branchId": "branch_abc",
+        "customerId": "cust_001",
+        "items": [
+          {
+            "itemId": "itm_123",
+            "variantId": "var_456",
+            "quantity": 2,
+            "price": 9.5
+          }
+        ],
+        "externalAmount": 19,
+        "paymentStatus": "pending"
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "getOpeningHours",
+      "method": "GET",
+      "path": "/api/admin/opening-hours",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "updateOpeningHours",
+      "method": "POST",
+      "path": "/api/admin/opening-hours",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "listHolidayOverrides",
+      "method": "GET",
+      "path": "/api/admin/holiday-overrides",
+      "statusCode": 200,
+      "body": [
+        {}
+      ],
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "createHolidayOverride",
+      "method": "POST",
+      "path": "/api/admin/holiday-overrides",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "createVoucher",
+      "method": "POST",
+      "path": "/api/admin/voucher/create",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "invalidateVoucher",
+      "method": "POST",
+      "path": "/api/admin/voucher/invalidate",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "listVouchers",
+      "method": "GET",
+      "path": "/api/admin/voucher/list",
+      "statusCode": 200,
+      "body": [
+        {}
+      ],
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "refundOrder",
+      "method": "POST",
+      "path": "/api/admin/refund",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "assignCourier",
+      "method": "POST",
+      "path": "/api/admin/assign",
+      "statusCode": 200,
+      "body": {
+        "courierToken": "str_244",
+        "qrUrl": "str_245"
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "getMenu",
+      "method": "GET",
+      "path": "/api/menu",
+      "statusCode": 200,
+      "body": [
+        {
+          "id": "str_246",
+          "name": "str_247",
+          "description": "str_248"
+        }
+      ],
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "createCategory",
+      "method": "POST",
+      "path": "/api/menu/category",
+      "statusCode": 200,
+      "body": {
+        "id": "str_249",
+        "name": "str_250",
+        "description": "str_251"
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "updateCategory",
+      "method": "PUT",
+      "path": "/api/menu/category/{id}",
+      "statusCode": 200,
+      "body": {
+        "id": "str_252",
+        "name": "str_253",
+        "description": "str_254"
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "createMenuItem",
+      "method": "POST",
+      "path": "/api/menu/item",
+      "statusCode": 200,
+      "body": {
+        "id": 123,
+        "name": "Margherita Pizza",
+        "description": "Classic margherita with tomato, mozzarella and basil",
+        "basePrice": 10.5,
+        "imageUrl": "https://cdn.example.com/images/margherita.jpg",
+        "isAvailable": true,
+        "variantGroups": [
+          {
+            "id": "vg_1",
+            "name": "Size",
+            "required": true,
+            "minSelect": 1,
+            "maxSelect": 1,
+            "variants": [
+              {
+                "id": "var_small",
+                "name": "Small",
+                "price": 0
+              },
+              {
+                "id": "var_large",
+                "name": "Large",
+                "price": 3
+              }
+            ]
+          }
+        ]
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "updateMenuItem",
+      "method": "PUT",
+      "path": "/api/menu/item/{id}",
+      "statusCode": 200,
+      "body": {
+        "id": 123,
+        "name": "Margherita Pizza",
+        "description": "Classic margherita with tomato, mozzarella and basil",
+        "basePrice": 10.5,
+        "imageUrl": "https://cdn.example.com/images/margherita.jpg",
+        "isAvailable": true,
+        "variantGroups": [
+          {
+            "id": "vg_1",
+            "name": "Size",
+            "required": true,
+            "minSelect": 1,
+            "maxSelect": 1,
+            "variants": [
+              {
+                "id": "var_small",
+                "name": "Small",
+                "price": 0
+              },
+              {
+                "id": "var_large",
+                "name": "Large",
+                "price": 3
+              }
+            ]
+          }
+        ]
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "createVariant",
+      "method": "POST",
+      "path": "/api/menu/variant",
+      "statusCode": 200,
+      "body": {
+        "id": "var_small",
+        "name": "Small",
+        "price": 0,
+        "groupId": "vg_1"
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "setVariantAvailability",
+      "method": "PUT",
+      "path": "/api/menu/variant/{id}/availability",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "validateOffer",
+      "method": "POST",
+      "path": "/api/offers/validate",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "getMetrics",
+      "method": "GET",
+      "path": "/api/metrics",
+      "statusCode": 200,
+      "body": {},
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "authLogin",
+      "method": "POST",
+      "path": "/login",
+      "statusCode": 200,
+      "body": {
+        "token": "str_255",
+        "customer": {}
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "getRoot",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 200,
+      "body": {
+        "user": {}
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "postRoot",
+      "method": "POST",
+      "path": "/",
+      "statusCode": 200,
+      "body": {
+        "user": {}
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "patchRoot",
+      "method": "PATCH",
+      "path": "/",
+      "statusCode": 200,
+      "body": {
+        "user": {}
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "updateAddress",
+      "method": "PATCH",
+      "path": "/addresses/{addressId}",
+      "statusCode": 200,
+      "body": {
+        "street": "str_256",
+        "city": "str_257",
+        "postalCode": "str_258",
+        "id": "str_259",
+        "label": "str_260",
+        "lat": 1,
+        "lng": 1,
+        "instructions": "str_261",
+        "isDefault": true
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "deleteAddress",
+      "method": "DELETE",
+      "path": "/addresses/{addressId}",
+      "statusCode": 200,
+      "body": {
+        "user": {}
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "requestOtp",
+      "method": "POST",
+      "path": "/request-otp",
+      "statusCode": 200,
+      "body": {
+        "user": {}
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "verifyOtp",
+      "method": "POST",
+      "path": "/verify-otp",
+      "statusCode": 200,
+      "body": {
+        "token": "str_262",
+        "customer": {}
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "postRefresh",
+      "method": "POST",
+      "path": "/refresh",
+      "statusCode": 200,
+      "body": {
+        "token": "str_263",
+        "customer": {}
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "getOrder",
+      "method": "GET",
+      "path": "/orders/{orderId}",
+      "statusCode": 200,
+      "body": {
+        "user": {}
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "postReport",
+      "method": "POST",
+      "path": "/report",
+      "statusCode": 200,
+      "body": {
+        "user": {}
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "getBranch",
+      "method": "GET",
+      "path": "/branches/{branchId}",
+      "statusCode": 200,
+      "body": {
+        "user": {}
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "registerCustomer",
+      "method": "POST",
+      "path": "/register",
+      "statusCode": 200,
+      "body": {
+        "token": "str_264",
+        "customer": {}
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "getOrderStatus",
+      "method": "GET",
+      "path": "/orders/{orderId}/status",
+      "statusCode": 200,
+      "body": {
+        "user": {}
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "applyOffer",
+      "method": "POST",
+      "path": "/apply",
+      "statusCode": 200,
+      "body": {
+        "user": {}
+      },
+      "ok": true
+    },
+    {
+      "sdk": "python",
+      "operationId": "getBranchSlots",
+      "method": "GET",
+      "path": "/branches/{branchId}/slots",
+      "statusCode": 200,
+      "body": {
+        "user": {}
+      },
+      "ok": true
+    }
+  ]
+}

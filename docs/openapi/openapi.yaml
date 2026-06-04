@@ -1,0 +1,2975 @@
+openapi: 3.1.0
+info:
+  title: Concordia Backend API
+  version: 1.0.0
+  description: |
+    OpenAPI skeleton for the Concordia Backend. This file is a lightweight
+    scaffold generated from the human-maintained docs in /docs/api (01-06).
+  contact:
+    name: Concordia API Team
+    email: devops@concordia.example
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+servers:
+  - url: https://api.concordia.app
+    description: Production (placeholder)
+  - url: https://staging-api.concordia.app
+    description: Staging (placeholder)
+tags:
+  - name: Auth
+    description: Authentication endpoints (magic links, login, logout)
+  - name: Orders
+    description: Order creation and lifecycle endpoints
+  - name: Admin
+    description: Admin management endpoints (vouchers, opening hours, courier assign)
+  - name: Menu
+    description: Menu and variants CRUD
+  - name: Offers
+    description: Offer validation endpoints
+  - name: Metrics
+    description: Prometheus metrics endpoint
+  - name: Webhooks
+    description: Incoming webhook events and delivery contract
+  - name: Public
+    description: Public-facing endpoints (customer-facing)
+security:
+  - BearerAuth: []
+paths:
+  /api/auth/login:
+    post:
+      summary: Admin login
+      operationId: adminLogin
+      description: Authenticate admin by email/password. Route currently uses ad-hoc JSON response (res.tson/res.json).
+      tags:
+        - Auth
+      requestBody:
+        description: Login credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminLoginRequest'
+      responses:
+        '200':
+          description: Successful auth (token + user)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+              example:
+                token: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      security: []
+  /api/auth/request-link:
+    post:
+      summary: Request magic login link (customer)
+      operationId: requestMagicLink
+      description: Send a magic link to a customer email. Route uses ad-hoc validation and response.
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestMagicLinkRequest'
+      responses:
+        '200':
+          description: Magic link queued
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                additionalProperties: true
+              example:
+                message: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+  /api/auth/verify:
+    get:
+      summary: Verify magic token (customer)
+      operationId: verifyMagicToken
+      description: Verify magic token and return customer payload and token.
+      tags:
+        - Auth
+      parameters:
+        - name: token
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Verified token and returned customer + token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+              example:
+                token: string
+                customer: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      security: []
+  /api/auth/admin/verify:
+    get:
+      summary: Verify admin magic token
+      operationId: verifyAdminMagicToken
+      description: Verify admin magic token and return admin payload.
+      tags:
+        - Auth
+      parameters:
+        - name: token
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Admin payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+              example:
+                token: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      security: []
+  /api/auth/logout:
+    post:
+      summary: Logout
+      operationId: authLogout
+      description: Clears session cookie and returns 204 No Content.
+      tags:
+        - Auth
+      responses:
+        '204':
+          description: No content
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+              example:
+                status: ok
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      security:
+        - BearerAuth: []
+  /api/admin/auth/login:
+    post:
+      summary: Admin login
+      operationId: adminAuthLogin
+      tags:
+        - Admin
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminLoginRequest'
+      responses:
+        '200':
+          description: Admin auth response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+              example:
+                token: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/admin/auth/logout:
+    post:
+      summary: Admin logout
+      operationId: adminAuthLogout
+      tags:
+        - Admin
+        - Auth
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Logged out
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+              example:
+                user: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/admin/orders:
+    get:
+      summary: List all orders (admin)
+      operationId: adminListOrders
+      tags:
+        - Admin
+        - Orders
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Array of orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+              example:
+                - id: ord_20260604_0001
+                  createdAt: '2026-06-04T12:34:56Z'
+                  status: pending
+                  branchId: branch_abc
+                  customerId: cust_001
+                  items:
+                    - itemId: itm_123
+                      variantId: var_456
+                      quantity: 2
+                      price: 9.5
+                  externalAmount: 19
+                  paymentStatus: pending
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/admin/orders/{orderId}:
+    get:
+      summary: Get order by id (admin)
+      operationId: adminGetOrder
+      tags:
+        - Admin
+        - Orders
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+              example:
+                id: ord_20260604_0001
+                createdAt: '2026-06-04T12:34:56Z'
+                status: pending
+                branchId: branch_abc
+                customerId: cust_001
+                items:
+                  - itemId: itm_123
+                    variantId: var_456
+                    quantity: 2
+                    price: 9.5
+                externalAmount: 19
+                paymentStatus: pending
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/admin/orders/{orderId}/status:
+    patch:
+      summary: Patch order status (admin)
+      operationId: adminPatchOrderStatus
+      tags:
+        - Admin
+        - Orders
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+              additionalProperties: true
+      responses:
+        '200':
+          description: Updated order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+              example:
+                id: ord_20260604_0001
+                createdAt: '2026-06-04T12:34:56Z'
+                status: pending
+                branchId: branch_abc
+                customerId: cust_001
+                items:
+                  - itemId: itm_123
+                    variantId: var_456
+                    quantity: 2
+                    price: 9.5
+                externalAmount: 19
+                paymentStatus: pending
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/admin/menu:
+    get:
+      summary: Get menu (admin)
+      operationId: adminGetMenu
+      tags:
+        - Admin
+        - Menu
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Menu items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MenuItem'
+              example:
+                - id: 123
+                  name: Margherita Pizza
+                  description: Classic margherita with tomato, mozzarella and basil
+                  basePrice: 10.5
+                  imageUrl: https://cdn.example.com/images/margherita.jpg
+                  isAvailable: true
+                  variantGroups:
+                    - id: vg_1
+                      name: Size
+                      required: true
+                      minSelect: 1
+                      maxSelect: 1
+                      variants:
+                        - id: var_small
+                          name: Small
+                          price: 0
+                        - id: var_large
+                          name: Large
+                          price: 3
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    post:
+      summary: Create menu item (admin)
+      operationId: adminCreateMenu
+      tags:
+        - Admin
+        - Menu
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MenuItem'
+      responses:
+        '200':
+          description: Created item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MenuItem'
+              example:
+                id: 123
+                name: Margherita Pizza
+                description: Classic margherita with tomato, mozzarella and basil
+                basePrice: 10.5
+                imageUrl: https://cdn.example.com/images/margherita.jpg
+                isAvailable: true
+                variantGroups:
+                  - id: vg_1
+                    name: Size
+                    required: true
+                    minSelect: 1
+                    maxSelect: 1
+                    variants:
+                      - id: var_small
+                        name: Small
+                        price: 0
+                      - id: var_large
+                        name: Large
+                        price: 3
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/admin/menu/{itemId}:
+    patch:
+      summary: Update menu item (admin)
+      operationId: adminPatchMenuItem
+      tags:
+        - Admin
+        - Menu
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MenuItem'
+      responses:
+        '200':
+          description: Updated item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MenuItem'
+              example:
+                id: 123
+                name: Margherita Pizza
+                description: Classic margherita with tomato, mozzarella and basil
+                basePrice: 10.5
+                imageUrl: https://cdn.example.com/images/margherita.jpg
+                isAvailable: true
+                variantGroups:
+                  - id: vg_1
+                    name: Size
+                    required: true
+                    minSelect: 1
+                    maxSelect: 1
+                    variants:
+                      - id: var_small
+                        name: Small
+                        price: 0
+                      - id: var_large
+                        name: Large
+                        price: 3
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    delete:
+      summary: Delete menu item (admin)
+      operationId: adminDeleteMenuItem
+      tags:
+        - Admin
+        - Menu
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+              example:
+                user: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/admin/branches:
+    get:
+      summary: List branches (admin)
+      operationId: adminListBranches
+      tags:
+        - Admin
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Branch list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Address'
+              example:
+                - id: string
+                  label: string
+                  street: string
+                  city: string
+                  postalCode: string
+                  lat: 1
+                  lng: 1
+                  instructions: string
+                  isDefault: false
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    post:
+      summary: Create branch (admin)
+      operationId: adminCreateBranch
+      tags:
+        - Admin
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Address'
+      responses:
+        '200':
+          description: Created branch
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Address'
+              example:
+                id: string
+                label: string
+                street: string
+                city: string
+                postalCode: string
+                lat: 1
+                lng: 1
+                instructions: string
+                isDefault: false
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/admin/branches/{branchId}:
+    patch:
+      summary: Update branch (admin)
+      operationId: adminPatchBranch
+      tags:
+        - Admin
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: branchId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Address'
+      responses:
+        '200':
+          description: Updated branch
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Address'
+              example:
+                id: string
+                label: string
+                street: string
+                city: string
+                postalCode: string
+                lat: 1
+                lng: 1
+                instructions: string
+                isDefault: false
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/admin/metrics/overview:
+    get:
+      summary: Metrics overview (admin)
+      operationId: adminMetricsOverview
+      tags:
+        - Admin
+        - Metrics
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Overview metrics
+          content:
+            application/json:
+              schema:
+                type: object
+              example: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/admin/metrics/orders:
+    get:
+      summary: Orders metrics (admin)
+      operationId: adminMetricsOrders
+      tags:
+        - Admin
+        - Metrics
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Orders metrics
+          content:
+            application/json:
+              schema:
+                type: object
+              example: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/admin/metrics/customers:
+    get:
+      summary: Customers metrics (admin)
+      operationId: adminMetricsCustomers
+      tags:
+        - Admin
+        - Metrics
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Customers metrics
+          content:
+            application/json:
+              schema:
+                type: object
+              example: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /webhooks/order.created:
+    post:
+      summary: Webhook - order.created
+      operationId: webhookOrderCreated
+      tags:
+        - Webhooks
+      security:
+        - WebhookSignature: []
+      description: >
+        Receives `order.created` events from external systems.
+
+
+        Signature verification: providers MUST send `X-Signature` (HMAC-SHA256 of the raw body using your webhook
+        secret) and `X-Timestamp` (ISO8601 or unix epoch seconds). Verify signature by computing HMAC-SHA256(secret,
+        timestamp + '.' + body) and comparing in constant time.
+
+
+        Retry policy: webhooks may be retried with exponential backoff. Implement idempotency by deduping on `event.id`.
+      parameters:
+        - $ref: '#/components/parameters/WebhookSignature'
+        - $ref: '#/components/parameters/WebhookTimestamp'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCreatedEvent'
+      responses:
+        '200':
+          description: Received and processed
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+              example:
+                status: ok
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /webhooks/order.updated:
+    post:
+      summary: Webhook - order.updated
+      operationId: webhookOrderUpdated
+      tags:
+        - Webhooks
+      security:
+        - WebhookSignature: []
+      description: |
+        Receives `order.updated` events. See signature verification and idempotency notes above.
+      parameters:
+        - $ref: '#/components/parameters/WebhookSignature'
+        - $ref: '#/components/parameters/WebhookTimestamp'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderUpdatedEvent'
+      responses:
+        '200':
+          description: Received and processed
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+              example:
+                status: ok
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /webhooks/order.status_changed:
+    post:
+      summary: Webhook - order.status_changed
+      operationId: webhookOrderStatusChanged
+      tags:
+        - Webhooks
+      security:
+        - WebhookSignature: []
+      description: |
+        Receives `order.status_changed` events. Payload contains previous and new status.
+      parameters:
+        - $ref: '#/components/parameters/WebhookSignature'
+        - $ref: '#/components/parameters/WebhookTimestamp'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderStatusChangedEvent'
+      responses:
+        '200':
+          description: Received and processed
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+              example:
+                status: ok
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /webhooks/payment.succeeded:
+    post:
+      summary: Webhook - payment.succeeded
+      operationId: webhookPaymentSucceeded
+      tags:
+        - Webhooks
+      security:
+        - WebhookSignature: []
+      description: |
+        Receives `payment.succeeded` events for successful payment captures.
+      parameters:
+        - $ref: '#/components/parameters/WebhookSignature'
+        - $ref: '#/components/parameters/WebhookTimestamp'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentSucceededEvent'
+      responses:
+        '200':
+          description: Received and processed
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+              example:
+                status: ok
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /webhooks/payment.failed:
+    post:
+      summary: Webhook - payment.failed
+      operationId: webhookPaymentFailed
+      tags:
+        - Webhooks
+      security:
+        - WebhookSignature: []
+      description: |
+        Receives `payment.failed` events when a payment attempts fail.
+      parameters:
+        - $ref: '#/components/parameters/WebhookSignature'
+        - $ref: '#/components/parameters/WebhookTimestamp'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentFailedEvent'
+      responses:
+        '200':
+          description: Received and processed
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+              example:
+                status: ok
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /webhooks/courier.assigned:
+    post:
+      summary: Webhook - courier.assigned
+      operationId: webhookCourierAssigned
+      tags:
+        - Webhooks
+      security:
+        - WebhookSignature: []
+      description: |
+        Receives `courier.assigned` events when a courier is assigned to an order.
+      parameters:
+        - $ref: '#/components/parameters/WebhookSignature'
+        - $ref: '#/components/parameters/WebhookTimestamp'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourierAssignedEvent'
+      responses:
+        '200':
+          description: Received and processed
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+              example:
+                status: ok
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /webhooks/courier.location_updated:
+    post:
+      summary: Webhook - courier.location_updated
+      operationId: webhookCourierLocationUpdated
+      tags:
+        - Webhooks
+      security:
+        - WebhookSignature: []
+      description: |
+        Receives `courier.location_updated` events with courier GPS updates.
+      parameters:
+        - $ref: '#/components/parameters/WebhookSignature'
+        - $ref: '#/components/parameters/WebhookTimestamp'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourierLocationUpdatedEvent'
+      responses:
+        '200':
+          description: Received and processed
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+              example:
+                status: ok
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /webhooks/branch.opening_hours_changed:
+    post:
+      summary: Webhook - branch.opening_hours_changed
+      operationId: webhookBranchOpeningHoursChanged
+      tags:
+        - Webhooks
+      security:
+        - WebhookSignature: []
+      description: |
+        Receives `branch.opening_hours_changed` events when branch hours change.
+      parameters:
+        - $ref: '#/components/parameters/WebhookSignature'
+        - $ref: '#/components/parameters/WebhookTimestamp'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BranchOpeningHoursChangedEvent'
+      responses:
+        '200':
+          description: Received and processed
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+              example:
+                status: ok
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /api/orders:
+    post:
+      summary: Create order
+      operationId: createOrder
+      description: Create a new order. Controller uses `wrap()` and returns Api-style envelope.
+      tags:
+        - Orders
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCreateRequest'
+      responses:
+        '200':
+          description: Created Order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+              example:
+                id: ord_20260604_0001
+                createdAt: '2026-06-04T12:34:56Z'
+                status: pending
+                branchId: branch_abc
+                customerId: cust_001
+                items:
+                  - itemId: itm_123
+                    variantId: var_456
+                    quantity: 2
+                    price: 9.5
+                externalAmount: 19
+                paymentStatus: pending
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      security:
+        - BearerAuth: []
+  /api/branches/{branchId}/orders:
+    get:
+      summary: List orders for a branch (admin)
+      operationId: adminListBranchOrders
+      description: Returns recent orders for a branch. Requires admin auth.
+      tags:
+        - Admin
+        - Orders
+      parameters:
+        - name: branchId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Orders array
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+              example:
+                - id: ord_20260604_0001
+                  createdAt: '2026-06-04T12:34:56Z'
+                  status: pending
+                  branchId: branch_abc
+                  customerId: cust_001
+                  items:
+                    - itemId: itm_123
+                      variantId: var_456
+                      quantity: 2
+                      price: 9.5
+                  externalAmount: 19
+                  paymentStatus: pending
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/orders/{orderId}/status:
+    put:
+      summary: Update order status (orderId)
+      operationId: setOrderStatus
+      description: Update lifecycle status for an order. Uses controller `wrap()`.
+      tags:
+        - Orders
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+              additionalProperties: true
+      responses:
+        '200':
+          description: Updated Order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+              example:
+                id: ord_20260604_0001
+                createdAt: '2026-06-04T12:34:56Z'
+                status: pending
+                branchId: branch_abc
+                customerId: cust_001
+                items:
+                  - itemId: itm_123
+                    variantId: var_456
+                    quantity: 2
+                    price: 9.5
+                externalAmount: 19
+                paymentStatus: pending
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/orders/courier/claim:
+    post:
+      summary: Courier claim assignment
+      operationId: courierClaimAssignment
+      description: Courier claims an assigned order. Authenticated by courier token.
+      tags:
+        - Orders
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderId:
+                  type: string
+                courierToken:
+                  type: string
+              additionalProperties: true
+      responses:
+        '200':
+          description: Updated Order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+              example:
+                id: ord_20260604_0001
+                createdAt: '2026-06-04T12:34:56Z'
+                status: pending
+                branchId: branch_abc
+                customerId: cust_001
+                items:
+                  - itemId: itm_123
+                    variantId: var_456
+                    quantity: 2
+                    price: 9.5
+                externalAmount: 19
+                paymentStatus: pending
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/orders/courier/picked-up:
+    post:
+      summary: Courier picked up
+      operationId: courierPickedUp
+      description: Mark order as picked up by courier.
+      tags:
+        - Orders
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourierActionRequest'
+      responses:
+        '200':
+          description: Updated Order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+              example:
+                id: ord_20260604_0001
+                createdAt: '2026-06-04T12:34:56Z'
+                status: pending
+                branchId: branch_abc
+                customerId: cust_001
+                items:
+                  - itemId: itm_123
+                    variantId: var_456
+                    quantity: 2
+                    price: 9.5
+                externalAmount: 19
+                paymentStatus: pending
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/orders/courier/delivered:
+    post:
+      summary: Courier delivered
+      operationId: courierDelivered
+      description: Mark order as delivered and award loyalty points.
+      tags:
+        - Orders
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourierActionRequest'
+      responses:
+        '200':
+          description: Updated Order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+              example:
+                id: ord_20260604_0001
+                createdAt: '2026-06-04T12:34:56Z'
+                status: pending
+                branchId: branch_abc
+                customerId: cust_001
+                items:
+                  - itemId: itm_123
+                    variantId: var_456
+                    quantity: 2
+                    price: 9.5
+                externalAmount: 19
+                paymentStatus: pending
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/admin/opening-hours:
+    get:
+      summary: Get opening hours
+      operationId: getOpeningHours
+      description: Returns branch opening hours and holiday overrides.
+      tags:
+        - Admin
+      responses:
+        '200':
+          description: Opening hours payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OpeningHoursResponse'
+              example: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    post:
+      summary: Update opening hours
+      operationId: updateOpeningHours
+      description: Patch or replace opening hours for a branch.
+      tags:
+        - Admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OpeningHoursUpdateRequest'
+      responses:
+        '200':
+          description: Updated hours
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OpeningHoursResponse'
+              example: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/admin/holiday-overrides:
+    get:
+      summary: Get holiday overrides
+      operationId: listHolidayOverrides
+      description: Return stored holiday overrides; optional branch filter.
+      tags:
+        - Admin
+      parameters:
+        - name: branchId
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Holiday overrides array
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HolidayOverride'
+              example:
+                - {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    post:
+      summary: Create/Update holiday override
+      operationId: createHolidayOverride
+      description: Create or update a holiday override record.
+      tags:
+        - Admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HolidayOverride'
+      responses:
+        '200':
+          description: Created/updated holiday override
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HolidayOverride'
+              example: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/admin/voucher/create:
+    post:
+      summary: Create voucher
+      operationId: createVoucher
+      tags:
+        - Admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VoucherCreateRequest'
+      responses:
+        '200':
+          description: Created voucher
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Voucher'
+              example: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/admin/voucher/invalidate:
+    post:
+      summary: Invalidate voucher
+      operationId: invalidateVoucher
+      tags:
+        - Admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+              additionalProperties: true
+      responses:
+        '200':
+          description: Updated voucher
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Voucher'
+              example: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/admin/voucher/list:
+    get:
+      summary: List vouchers
+      operationId: listVouchers
+      tags:
+        - Admin
+      responses:
+        '200':
+          description: Array of vouchers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Voucher'
+              example:
+                - {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/admin/refund:
+    post:
+      summary: Refund order (admin)
+      operationId: refundOrder
+      tags:
+        - Admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderId:
+                  type: string
+              additionalProperties: true
+      responses:
+        '200':
+          description: Refund result
+          content:
+            application/json:
+              schema:
+                type: object
+              example: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/admin/assign:
+    post:
+      summary: Assign courier to order (admin)
+      operationId: assignCourier
+      tags:
+        - Admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderId:
+                  type: string
+                courierId:
+                  type: string
+              additionalProperties: true
+      responses:
+        '200':
+          description: Courier token and QR URL
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  courierToken:
+                    type: string
+                  qrUrl:
+                    type: string
+                additionalProperties: true
+              example:
+                courierToken: string
+                qrUrl: string
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/menu:
+    get:
+      summary: Get menu (public)
+      operationId: getMenu
+      tags:
+        - Menu
+      security: []
+      responses:
+        '200':
+          description: Categories array
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+              example:
+                - id: string
+                  name: string
+                  description: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/menu/category:
+    post:
+      summary: Create category
+      operationId: createCategory
+      tags:
+        - Menu
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Category'
+      responses:
+        '200':
+          description: Created category
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+              example:
+                id: string
+                name: string
+                description: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /api/menu/category/{id}:
+    put:
+      summary: Update category
+      operationId: updateCategory
+      tags:
+        - Menu
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Category'
+      responses:
+        '200':
+          description: Updated category
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+              example:
+                id: string
+                name: string
+                description: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /api/menu/item:
+    post:
+      summary: Create item
+      operationId: createMenuItem
+      tags:
+        - Menu
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MenuItem'
+      responses:
+        '200':
+          description: Created item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MenuItem'
+              example:
+                id: 123
+                name: Margherita Pizza
+                description: Classic margherita with tomato, mozzarella and basil
+                basePrice: 10.5
+                imageUrl: https://cdn.example.com/images/margherita.jpg
+                isAvailable: true
+                variantGroups:
+                  - id: vg_1
+                    name: Size
+                    required: true
+                    minSelect: 1
+                    maxSelect: 1
+                    variants:
+                      - id: var_small
+                        name: Small
+                        price: 0
+                      - id: var_large
+                        name: Large
+                        price: 3
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /api/menu/item/{id}:
+    put:
+      summary: Update item
+      operationId: updateMenuItem
+      tags:
+        - Menu
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MenuItem'
+      responses:
+        '200':
+          description: Updated item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MenuItem'
+              example:
+                id: 123
+                name: Margherita Pizza
+                description: Classic margherita with tomato, mozzarella and basil
+                basePrice: 10.5
+                imageUrl: https://cdn.example.com/images/margherita.jpg
+                isAvailable: true
+                variantGroups:
+                  - id: vg_1
+                    name: Size
+                    required: true
+                    minSelect: 1
+                    maxSelect: 1
+                    variants:
+                      - id: var_small
+                        name: Small
+                        price: 0
+                      - id: var_large
+                        name: Large
+                        price: 3
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /api/menu/variant:
+    post:
+      summary: Create variant
+      operationId: createVariant
+      tags:
+        - Menu
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Variant'
+      responses:
+        '200':
+          description: Created variant
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Variant'
+              example:
+                id: var_small
+                name: Small
+                price: 0
+                groupId: vg_1
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /api/menu/variant/{id}/availability:
+    put:
+      summary: Set variant availability
+      operationId: setVariantAvailability
+      tags:
+        - Menu
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                available:
+                  type: boolean
+              additionalProperties: true
+      responses:
+        '200':
+          description: Updated variant availability
+          content:
+            application/json:
+              schema:
+                type: object
+              example: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /api/offers/validate:
+    post:
+      summary: Validate offer
+      operationId: validateOffer
+      description: Validate a promo/offer code against an order payload. Route uses ad-hoc response (res.json).
+      tags:
+        - Offers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                order:
+                  type: object
+              additionalProperties: true
+      responses:
+        '200':
+          description: Offer validation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OfferValidationResponse'
+              example: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/metrics:
+    get:
+      summary: Prometheus metrics
+      operationId: getMetrics
+      description: Returns plain-text Prometheus exposition format. Not a JSON envelope.
+      tags:
+        - Metrics
+      responses:
+        '200':
+          description: Prometheus exposition text
+          content:
+            text/plain:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+              example:
+                status: ok
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          description: Error collecting metrics
+          content:
+            text/plain:
+              schema:
+                type: string
+  /login:
+    post:
+      summary: Auto-generated placeholder for POST /login
+      description: Placeholder path added from endpoint scan. Fill request/response schemas.
+      operationId: authLogin
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerLoginRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+              example:
+                token: string
+                customer: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      security: []
+  /:
+    get:
+      summary: Auto-generated placeholder for GET /
+      operationId: getRoot
+      description: Placeholder path added from endpoint scan. Fill request/response schemas.
+      tags:
+        - Public
+      security: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+              example:
+                user: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    post:
+      summary: Auto-generated placeholder for POST /
+      operationId: postRoot
+      description: Placeholder path added from endpoint scan. Fill request/response schemas.
+      tags:
+        - Public
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenericRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+              example:
+                user: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    patch:
+      summary: Auto-generated placeholder for PATCH /
+      operationId: patchRoot
+      description: Placeholder path added from endpoint scan. Fill request/response schemas.
+      tags:
+        - Public
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenericRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+              example:
+                user: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /addresses/{addressId}:
+    parameters:
+      - name: addressId
+        in: path
+        description: Address identifier
+        required: true
+        schema:
+          type: string
+    patch:
+      summary: Auto-generated placeholder for PATCH /addresses/{addressId}
+      operationId: updateAddress
+      description: Placeholder path added from endpoint scan. Fill request/response schemas.
+      tags:
+        - Public
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Address'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Address'
+              example:
+                id: string
+                label: string
+                street: string
+                city: string
+                postalCode: string
+                lat: 1
+                lng: 1
+                instructions: string
+                isDefault: false
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    delete:
+      summary: Auto-generated placeholder for DELETE /addresses/{addressId}
+      operationId: deleteAddress
+      description: Placeholder path added from endpoint scan. Fill request/response schemas.
+      tags:
+        - Public
+      security: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+              example:
+                user: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /request-otp:
+    post:
+      summary: Auto-generated placeholder for POST /request-otp
+      description: Placeholder path added from endpoint scan. Fill request/response schemas.
+      operationId: requestOtp
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestMagicLinkRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+              example:
+                user: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      security: []
+  /verify-otp:
+    post:
+      summary: Auto-generated placeholder for POST /verify-otp
+      description: Placeholder path added from endpoint scan. Fill request/response schemas.
+      operationId: verifyOtp
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyOtpRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+              example:
+                token: string
+                customer: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      security: []
+  /refresh:
+    post:
+      summary: Auto-generated placeholder for POST /refresh
+      operationId: postRefresh
+      description: Placeholder path added from endpoint scan. Fill request/response schemas.
+      tags:
+        - Public
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerRefreshRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+              example:
+                token: string
+                customer: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /orders/{orderId}:
+    parameters:
+      - name: orderId
+        in: path
+        description: Order identifier
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Auto-generated placeholder for GET /orders/{orderId}
+      operationId: getOrder
+      description: Placeholder path added from endpoint scan. Fill request/response schemas.
+      tags:
+        - Orders
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+              example:
+                user: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /report:
+    post:
+      summary: Auto-generated placeholder for POST /report
+      operationId: postReport
+      description: Placeholder path added from endpoint scan. Fill request/response schemas.
+      tags:
+        - Public
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenericRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+              example:
+                user: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /branches/{branchId}:
+    parameters:
+      - name: branchId
+        in: path
+        description: Branch identifier
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Auto-generated placeholder for GET /branches/{branchId}
+      operationId: getBranch
+      description: Placeholder path added from endpoint scan. Fill request/response schemas.
+      tags:
+        - Menu
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+              example:
+                user: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /register:
+    post:
+      summary: Auto-generated placeholder for POST /register
+      description: Placeholder path added from endpoint scan. Fill request/response schemas.
+      operationId: registerCustomer
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerRegisterRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+              example:
+                token: string
+                customer: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /orders/{orderId}/status:
+    parameters:
+      - name: orderId
+        in: path
+        description: Order identifier
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Auto-generated placeholder for GET /orders/{orderId}/status
+      operationId: getOrderStatus
+      description: Placeholder path added from endpoint scan. Fill request/response schemas.
+      tags:
+        - Orders
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+              example:
+                user: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /apply:
+    post:
+      summary: Auto-generated placeholder for POST /apply
+      description: Placeholder path added from endpoint scan. Fill request/response schemas.
+      operationId: applyOffer
+      tags:
+        - Offers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenericRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+              example:
+                user: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /branches/{branchId}/slots:
+    parameters:
+      - name: branchId
+        in: path
+        description: Branch identifier
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Auto-generated placeholder for GET /branches/{branchId}/slots
+      operationId: getBranchSlots
+      description: Placeholder path added from endpoint scan. Fill request/response schemas.
+      tags:
+        - Public
+      security: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+              example:
+                user: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    WebhookSignature:
+      type: apiKey
+      in: header
+      name: X-Signature
+      description: HMAC-SHA256 signature of the request body (and timestamp) using your webhook secret.
+  parameters:
+    WebhookSignature:
+      name: X-Signature
+      in: header
+      required: true
+      schema:
+        type: string
+      description: HMAC-SHA256 signature header computed by the sender.
+    WebhookTimestamp:
+      name: X-Timestamp
+      in: header
+      required: true
+      schema:
+        type: string
+      description: Timestamp provided by the sender (ISO8601 or epoch seconds). Use to mitigate replay attacks.
+  responses:
+    BadRequest:
+      description: Bad request
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/X-RateLimit-Remaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/X-RateLimit-Reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: Unauthorized
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/X-RateLimit-Remaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/X-RateLimit-Reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Forbidden:
+      description: Forbidden
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/X-RateLimit-Remaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/X-RateLimit-Reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Not found
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/X-RateLimit-Remaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/X-RateLimit-Reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    TooManyRequests:
+      description: Too many requests
+      headers:
+        Retry-After:
+          description: Seconds or HTTP-date when the client can retry
+          schema:
+            type: string
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/X-RateLimit-Remaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/X-RateLimit-Reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalError:
+      description: Internal server error
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/X-RateLimit-Remaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/X-RateLimit-Reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  headers:
+    X-RateLimit-Limit:
+      description: The rate limit ceiling for the current request
+      schema:
+        type: integer
+        format: int32
+    X-RateLimit-Remaining:
+      description: The number of requests left for the time window
+      schema:
+        type: integer
+        format: int32
+    X-RateLimit-Reset:
+      description: The time at which the current rate limit window resets (unix epoch seconds)
+      schema:
+        type: integer
+        format: int64
+  schemas:
+    AdminLoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      additionalProperties: true
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+      additionalProperties: true
+    GenericRequest:
+      type: object
+      description: Placeholder request schema - replace with concrete schema.
+      additionalProperties: true
+    GenericResponse:
+      type: object
+      description: Placeholder response schema - replace with concrete schema.
+      properties:
+        user:
+          type: object
+      additionalProperties: true
+    TokenResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        customer:
+          type: object
+      additionalProperties: true
+    CustomerLoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+      required:
+        - email
+        - password
+      additionalProperties: true
+    CustomerRegisterRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        password:
+          type: string
+      required:
+        - name
+        - email
+      additionalProperties: true
+    CustomerRefreshRequest:
+      type: object
+      properties:
+        refreshToken:
+          type: string
+      required:
+        - refreshToken
+      additionalProperties: true
+    VerifyOtpRequest:
+      type: object
+      properties:
+        phone:
+          type: string
+        otp:
+          type: string
+      required:
+        - otp
+      additionalProperties: true
+    Address:
+      type: object
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+        street:
+          type: string
+        city:
+          type: string
+        postalCode:
+          type: string
+        lat:
+          type: number
+        lng:
+          type: number
+        instructions:
+          type: string
+        isDefault:
+          type: boolean
+      required:
+        - street
+        - city
+        - postalCode
+      additionalProperties: true
+    RequestMagicLinkRequest:
+      type: object
+      properties:
+        email:
+          type: string
+      additionalProperties: true
+    OrderItem:
+      type: object
+      properties:
+        itemId:
+          type: string
+        variantId:
+          type: string
+        addOnIds:
+          type: array
+          items:
+            type: string
+        quantity:
+          type: integer
+        notes:
+          type:
+            - string
+            - 'null'
+        price:
+          type: number
+      required:
+        - itemId
+        - variantId
+        - quantity
+        - price
+      example:
+        itemId: itm_123
+        variantId: var_456
+        addOnIds:
+          - addon_1
+          - addon_2
+        quantity: 2
+        notes: no onions
+        price: 9.5
+      additionalProperties: true
+    OrderCreateRequest:
+      type: object
+      properties:
+        branchId:
+          type: string
+        customerId:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+      required:
+        - items
+      example:
+        branchId: branch_abc
+        customerId: cust_001
+        items:
+          - itemId: itm_123
+            variantId: var_456
+            quantity: 1
+            price: 7.5
+      additionalProperties: true
+    Order:
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        status:
+          type: string
+        branchId:
+          type: string
+        customerId:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        externalAmount:
+          type: number
+        paymentStatus:
+          type: string
+      required:
+        - id
+        - createdAt
+        - status
+      example:
+        id: ord_20260604_0001
+        createdAt: '2026-06-04T12:34:56Z'
+        status: pending
+        branchId: branch_abc
+        customerId: cust_001
+        items:
+          - itemId: itm_123
+            variantId: var_456
+            quantity: 2
+            price: 9.5
+        externalAmount: 19
+        paymentStatus: pending
+      additionalProperties: true
+    CourierActionRequest:
+      type: object
+      properties:
+        orderId:
+          type: string
+        courierToken:
+          type: string
+      additionalProperties: true
+    OpeningHoursResponse:
+      type: object
+      additionalProperties: true
+    OpeningHoursUpdateRequest:
+      type: object
+      additionalProperties: true
+    HolidayOverride:
+      type: object
+      additionalProperties: true
+    VoucherCreateRequest:
+      type: object
+      properties:
+        code:
+          type: string
+        amount:
+          type: number
+        expiresAt:
+          type: string
+      additionalProperties: true
+    Voucher:
+      type: object
+      description: Placeholder for Voucher Prisma model
+      additionalProperties: true
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+      required:
+        - id
+        - name
+      additionalProperties: true
+    MenuItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        basePrice:
+          type: number
+        imageUrl:
+          type: string
+        isAvailable:
+          type: boolean
+        variantGroups:
+          type: array
+          items:
+            $ref: '#/components/schemas/VariantGroup'
+      required:
+        - id
+        - name
+      example:
+        id: 123
+        name: Margherita Pizza
+        description: Classic margherita with tomato, mozzarella and basil
+        basePrice: 10.5
+        imageUrl: https://cdn.example.com/images/margherita.jpg
+        isAvailable: true
+        variantGroups:
+          - id: vg_1
+            name: Size
+            required: true
+            minSelect: 1
+            maxSelect: 1
+            variants:
+              - id: var_small
+                name: Small
+                price: 0
+              - id: var_large
+                name: Large
+                price: 3
+      additionalProperties: true
+    Variant:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        price:
+          type: number
+        groupId:
+          type: string
+      required:
+        - id
+        - name
+      example:
+        id: var_small
+        name: Small
+        price: 0
+        groupId: vg_1
+      additionalProperties: true
+    VariantGroup:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        required:
+          type: boolean
+        minSelect:
+          type: integer
+        maxSelect:
+          type: integer
+        variants:
+          type: array
+          items:
+            $ref: '#/components/schemas/Variant'
+      additionalProperties: true
+    OfferValidationResponse:
+      type: object
+      description: Placeholder for offer validation response
+      additionalProperties: true
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+        - code
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        code:
+          type: string
+        details:
+          oneOf:
+            - type: object
+            - type: array
+            - type: string
+            - type: number
+            - type: boolean
+            - type: 'null'
+      additionalProperties: true
+    OrderCreatedEvent:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          example: order.created
+        createdAt:
+          type: string
+          format: date-time
+        order:
+          $ref: '#/components/schemas/Order'
+      required:
+        - id
+        - type
+        - createdAt
+        - order
+      additionalProperties: true
+    OrderUpdatedEvent:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          example: order.updated
+        createdAt:
+          type: string
+          format: date-time
+        order:
+          $ref: '#/components/schemas/Order'
+      required:
+        - id
+        - type
+        - createdAt
+        - order
+      additionalProperties: true
+    OrderStatusChangedEvent:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          example: order.status_changed
+        createdAt:
+          type: string
+          format: date-time
+        orderId:
+          type: string
+        previousStatus:
+          type: string
+        newStatus:
+          type: string
+      required:
+        - id
+        - type
+        - createdAt
+        - orderId
+        - newStatus
+      additionalProperties: true
+    PaymentSucceededEvent:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          example: payment.succeeded
+        createdAt:
+          type: string
+          format: date-time
+        paymentId:
+          type: string
+        orderId:
+          type: string
+        amount:
+          type: number
+        currency:
+          type: string
+        provider:
+          type: string
+      required:
+        - id
+        - type
+        - createdAt
+        - paymentId
+        - orderId
+        - amount
+        - currency
+      additionalProperties: true
+    PaymentFailedEvent:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          example: payment.failed
+        createdAt:
+          type: string
+          format: date-time
+        paymentId:
+          type: string
+        orderId:
+          type: string
+        reason:
+          type: string
+      required:
+        - id
+        - type
+        - createdAt
+        - paymentId
+        - orderId
+      additionalProperties: true
+    CourierAssignedEvent:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          example: courier.assigned
+        createdAt:
+          type: string
+          format: date-time
+        orderId:
+          type: string
+        courierId:
+          type: string
+        assignedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - type
+        - createdAt
+        - orderId
+        - courierId
+      additionalProperties: true
+    CourierLocationUpdatedEvent:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          example: courier.location_updated
+        createdAt:
+          type: string
+          format: date-time
+        courierId:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+        speed:
+          type: number
+        bearing:
+          type: number
+      required:
+        - id
+        - type
+        - createdAt
+        - courierId
+        - latitude
+        - longitude
+      additionalProperties: true
+    BranchOpeningHoursChangedEvent:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          example: branch.opening_hours_changed
+        createdAt:
+          type: string
+          format: date-time
+        branchId:
+          type: string
+        openingHours:
+          $ref: '#/components/schemas/OpeningHoursResponse'
+      required:
+        - id
+        - type
+        - createdAt
+        - branchId
+        - openingHours
+      additionalProperties: true

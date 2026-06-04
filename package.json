@@ -24,7 +24,9 @@
     "env-check": "node scripts/validateEnv.js",
     "profile": "node scripts/profile.js",
     "pm2": "pm2 start ecosystem.config.js",
-    "smoke": "node scripts/smoke-test.js"
+    "smoke": "node scripts/smoke-test.js",
+    "sdk:manifest": "node sdk-tests/generate-manifest.cjs",
+    "sdk:test": "node sdk-tests/run-tests.cjs"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
@@ -73,6 +75,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@apidevtools/swagger-parser": "^12.1.0",
     "@nestjs/cli": "^11.0.21",
     "@playwright/test": "^1.59.1",
     "@types/bcrypt": "^6.0.0",
@@ -93,9 +96,12 @@
     "@types/web-push": "^3.6.4",
     "@typescript-eslint/eslint-plugin": "^8.60.1",
     "@typescript-eslint/parser": "^8.60.1",
+    "ajv": "^8.12.0",
     "eslint": "^8.57.1",
     "eslint-plugin-unused-imports": "^4.4.1",
     "jest": "^30.4.2",
+    "js-yaml": "^4.1.0",
+    "node-fetch": "^2.6.7",
     "nodemon": "^3.1.14",
     "supertest": "^7.2.2",
     "ts-jest": "^29.4.9",

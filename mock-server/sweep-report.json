@@ -1,0 +1,686 @@
+[
+  {
+    "operationId": "adminLogin",
+    "method": "POST",
+    "path": "/api/auth/login",
+    "url": "http://localhost:4000/api/auth/login",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "requestMagicLink",
+    "method": "POST",
+    "path": "/api/auth/request-link",
+    "url": "http://localhost:4000/api/auth/request-link",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "verifyMagicToken",
+    "method": "GET",
+    "path": "/api/auth/verify",
+    "url": "http://localhost:4000/api/auth/verify",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "verifyAdminMagicToken",
+    "method": "GET",
+    "path": "/api/auth/admin/verify",
+    "url": "http://localhost:4000/api/auth/admin/verify",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "authLogout",
+    "method": "POST",
+    "path": "/api/auth/logout",
+    "url": "http://localhost:4000/api/auth/logout",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "adminAuthLogin",
+    "method": "POST",
+    "path": "/api/admin/auth/login",
+    "url": "http://localhost:4000/api/admin/auth/login",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "adminAuthLogout",
+    "method": "POST",
+    "path": "/api/admin/auth/logout",
+    "url": "http://localhost:4000/api/admin/auth/logout",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "adminListOrders",
+    "method": "GET",
+    "path": "/api/admin/orders",
+    "url": "http://localhost:4000/api/admin/orders",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "adminGetOrder",
+    "method": "GET",
+    "path": "/api/admin/orders/{orderId}",
+    "url": "http://localhost:4000/api/admin/orders/test",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "adminPatchOrderStatus",
+    "method": "PATCH",
+    "path": "/api/admin/orders/{orderId}/status",
+    "url": "http://localhost:4000/api/admin/orders/test/status",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "adminGetMenu",
+    "method": "GET",
+    "path": "/api/admin/menu",
+    "url": "http://localhost:4000/api/admin/menu",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "adminCreateMenu",
+    "method": "POST",
+    "path": "/api/admin/menu",
+    "url": "http://localhost:4000/api/admin/menu",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "adminPatchMenuItem",
+    "method": "PATCH",
+    "path": "/api/admin/menu/{itemId}",
+    "url": "http://localhost:4000/api/admin/menu/test",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "adminDeleteMenuItem",
+    "method": "DELETE",
+    "path": "/api/admin/menu/{itemId}",
+    "url": "http://localhost:4000/api/admin/menu/test",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "adminListBranches",
+    "method": "GET",
+    "path": "/api/admin/branches",
+    "url": "http://localhost:4000/api/admin/branches",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "adminCreateBranch",
+    "method": "POST",
+    "path": "/api/admin/branches",
+    "url": "http://localhost:4000/api/admin/branches",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "adminPatchBranch",
+    "method": "PATCH",
+    "path": "/api/admin/branches/{branchId}",
+    "url": "http://localhost:4000/api/admin/branches/test",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "adminMetricsOverview",
+    "method": "GET",
+    "path": "/api/admin/metrics/overview",
+    "url": "http://localhost:4000/api/admin/metrics/overview",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "adminMetricsOrders",
+    "method": "GET",
+    "path": "/api/admin/metrics/orders",
+    "url": "http://localhost:4000/api/admin/metrics/orders",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "adminMetricsCustomers",
+    "method": "GET",
+    "path": "/api/admin/metrics/customers",
+    "url": "http://localhost:4000/api/admin/metrics/customers",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "webhookOrderCreated",
+    "method": "POST",
+    "path": "/webhooks/order.created",
+    "url": "http://localhost:4000/webhooks/order.created",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "webhookOrderUpdated",
+    "method": "POST",
+    "path": "/webhooks/order.updated",
+    "url": "http://localhost:4000/webhooks/order.updated",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "webhookOrderStatusChanged",
+    "method": "POST",
+    "path": "/webhooks/order.status_changed",
+    "url": "http://localhost:4000/webhooks/order.status_changed",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "webhookPaymentSucceeded",
+    "method": "POST",
+    "path": "/webhooks/payment.succeeded",
+    "url": "http://localhost:4000/webhooks/payment.succeeded",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "webhookPaymentFailed",
+    "method": "POST",
+    "path": "/webhooks/payment.failed",
+    "url": "http://localhost:4000/webhooks/payment.failed",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "webhookCourierAssigned",
+    "method": "POST",
+    "path": "/webhooks/courier.assigned",
+    "url": "http://localhost:4000/webhooks/courier.assigned",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "webhookCourierLocationUpdated",
+    "method": "POST",
+    "path": "/webhooks/courier.location_updated",
+    "url": "http://localhost:4000/webhooks/courier.location_updated",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "webhookBranchOpeningHoursChanged",
+    "method": "POST",
+    "path": "/webhooks/branch.opening_hours_changed",
+    "url": "http://localhost:4000/webhooks/branch.opening_hours_changed",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "createOrder",
+    "method": "POST",
+    "path": "/api/orders",
+    "url": "http://localhost:4000/api/orders",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "adminListBranchOrders",
+    "method": "GET",
+    "path": "/api/branches/{branchId}/orders",
+    "url": "http://localhost:4000/api/branches/test/orders",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "setOrderStatus",
+    "method": "PUT",
+    "path": "/api/orders/{orderId}/status",
+    "url": "http://localhost:4000/api/orders/test/status",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "courierClaimAssignment",
+    "method": "POST",
+    "path": "/api/orders/courier/claim",
+    "url": "http://localhost:4000/api/orders/courier/claim",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "courierPickedUp",
+    "method": "POST",
+    "path": "/api/orders/courier/picked-up",
+    "url": "http://localhost:4000/api/orders/courier/picked-up",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "courierDelivered",
+    "method": "POST",
+    "path": "/api/orders/courier/delivered",
+    "url": "http://localhost:4000/api/orders/courier/delivered",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "getOpeningHours",
+    "method": "GET",
+    "path": "/api/admin/opening-hours",
+    "url": "http://localhost:4000/api/admin/opening-hours",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "updateOpeningHours",
+    "method": "POST",
+    "path": "/api/admin/opening-hours",
+    "url": "http://localhost:4000/api/admin/opening-hours",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "listHolidayOverrides",
+    "method": "GET",
+    "path": "/api/admin/holiday-overrides",
+    "url": "http://localhost:4000/api/admin/holiday-overrides",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "createHolidayOverride",
+    "method": "POST",
+    "path": "/api/admin/holiday-overrides",
+    "url": "http://localhost:4000/api/admin/holiday-overrides",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "createVoucher",
+    "method": "POST",
+    "path": "/api/admin/voucher/create",
+    "url": "http://localhost:4000/api/admin/voucher/create",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "invalidateVoucher",
+    "method": "POST",
+    "path": "/api/admin/voucher/invalidate",
+    "url": "http://localhost:4000/api/admin/voucher/invalidate",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "listVouchers",
+    "method": "GET",
+    "path": "/api/admin/voucher/list",
+    "url": "http://localhost:4000/api/admin/voucher/list",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "refundOrder",
+    "method": "POST",
+    "path": "/api/admin/refund",
+    "url": "http://localhost:4000/api/admin/refund",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "assignCourier",
+    "method": "POST",
+    "path": "/api/admin/assign",
+    "url": "http://localhost:4000/api/admin/assign",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "getMenu",
+    "method": "GET",
+    "path": "/api/menu",
+    "url": "http://localhost:4000/api/menu",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "createCategory",
+    "method": "POST",
+    "path": "/api/menu/category",
+    "url": "http://localhost:4000/api/menu/category",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "updateCategory",
+    "method": "PUT",
+    "path": "/api/menu/category/{id}",
+    "url": "http://localhost:4000/api/menu/category/test",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "createMenuItem",
+    "method": "POST",
+    "path": "/api/menu/item",
+    "url": "http://localhost:4000/api/menu/item",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "updateMenuItem",
+    "method": "PUT",
+    "path": "/api/menu/item/{id}",
+    "url": "http://localhost:4000/api/menu/item/test",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "createVariant",
+    "method": "POST",
+    "path": "/api/menu/variant",
+    "url": "http://localhost:4000/api/menu/variant",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "setVariantAvailability",
+    "method": "PUT",
+    "path": "/api/menu/variant/{id}/availability",
+    "url": "http://localhost:4000/api/menu/variant/test/availability",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "validateOffer",
+    "method": "POST",
+    "path": "/api/offers/validate",
+    "url": "http://localhost:4000/api/offers/validate",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "getMetrics",
+    "method": "GET",
+    "path": "/api/metrics",
+    "url": "http://localhost:4000/api/metrics",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "authLogin",
+    "method": "POST",
+    "path": "/login",
+    "url": "http://localhost:4000/login",
+    "status": "OK",
+    "httpStatus": 400,
+    "notes": [
+      "missing_example"
+    ],
+    "problems": []
+  },
+  {
+    "operationId": "getRoot",
+    "method": "GET",
+    "path": "/",
+    "url": "http://localhost:4000/",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "postRoot",
+    "method": "POST",
+    "path": "/",
+    "url": "http://localhost:4000/",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "patchRoot",
+    "method": "PATCH",
+    "path": "/",
+    "url": "http://localhost:4000/",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "updateAddress",
+    "method": "PATCH",
+    "path": "/addresses/{addressId}",
+    "url": "http://localhost:4000/addresses/test",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "deleteAddress",
+    "method": "DELETE",
+    "path": "/addresses/{addressId}",
+    "url": "http://localhost:4000/addresses/test",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "requestOtp",
+    "method": "POST",
+    "path": "/request-otp",
+    "url": "http://localhost:4000/request-otp",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "verifyOtp",
+    "method": "POST",
+    "path": "/verify-otp",
+    "url": "http://localhost:4000/verify-otp",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "postRefresh",
+    "method": "POST",
+    "path": "/refresh",
+    "url": "http://localhost:4000/refresh",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "getOrder",
+    "method": "GET",
+    "path": "/orders/{orderId}",
+    "url": "http://localhost:4000/orders/test",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "postReport",
+    "method": "POST",
+    "path": "/report",
+    "url": "http://localhost:4000/report",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "getBranch",
+    "method": "GET",
+    "path": "/branches/{branchId}",
+    "url": "http://localhost:4000/branches/test",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "registerCustomer",
+    "method": "POST",
+    "path": "/register",
+    "url": "http://localhost:4000/register",
+    "status": "OK",
+    "httpStatus": 400,
+    "notes": [
+      "missing_example"
+    ],
+    "problems": []
+  },
+  {
+    "operationId": "getOrderStatus",
+    "method": "GET",
+    "path": "/orders/{orderId}/status",
+    "url": "http://localhost:4000/orders/test/status",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "applyOffer",
+    "method": "POST",
+    "path": "/apply",
+    "url": "http://localhost:4000/apply",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  },
+  {
+    "operationId": "getBranchSlots",
+    "method": "GET",
+    "path": "/branches/{branchId}/slots",
+    "url": "http://localhost:4000/branches/test/slots",
+    "status": "OK",
+    "httpStatus": 200,
+    "notes": [],
+    "problems": []
+  }
+]
