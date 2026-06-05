@@ -4,9 +4,10 @@
     "module": "CommonJS",
     "declaration": true,
     "outDir": "dist",
+    "rootDir": "src",
     "strict": false,
     "skipLibCheck": true,
-    "types": [],
+    "types": ["node"],
     "esModuleInterop": true
   },
   "include": ["src/**/*"]
