@@ -18,7 +18,6 @@
     "seed:concordia": "node scripts/seed-concordia.mjs",
     "sync:kempen-menu": "node scripts/sync-kempen-menu.mjs",
     "sync:straelen-menu": "node scripts/sync-straelen-menu.mjs",
-    "sync:all-menus": "node scripts/sync-all-branch-menus.mjs",
     "setup:straelen": "node scripts/setup-straelen-branch.mjs",
     "seed:admins": "node scripts/seed-admins.mjs",
     "import:kempen-menu": "node scripts/parse-kempen-menu.mjs",

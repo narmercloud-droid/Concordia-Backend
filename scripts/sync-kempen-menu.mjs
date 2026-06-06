@@ -1,6 +1,8 @@
 /**
- * Sync Kempen menu: flyer prices, item options (sizes/extras), promotions.
- * Safe to re-run — does not delete menu items or orders.
+ * Sync one branch menu: flyer prices, item options (sizes/extras), promotions.
+ * Each branch is independent — run per branch only (never syncs other branches).
+ * Kempen: npm run sync:kempen-menu
+ * Straelen: npm run sync:straelen-menu
  */
 import { PrismaClient } from "@prisma/client";
 import { readFileSync } from "fs";
