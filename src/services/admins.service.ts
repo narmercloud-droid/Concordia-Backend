@@ -1,7 +1,8 @@
-import { prisma } from "../prisma/client.js";
+﻿import { prisma } from "../prisma/client.ts";
 import * as bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
-import { TokenPair } from "../types/common.js";
+import { env } from "../config/env.ts";
+import { TokenPair } from "../types/common.ts";
 
 const ACCESS_TOKEN_EXPIRES = "15m";
 const REFRESH_TOKEN_EXPIRES = "30d";
@@ -19,17 +20,8 @@ export class AdminService {
   }
 
   async generateTokens(admin: { id: string; role: string }): Promise<TokenPair> {
-    const accessToken = jwt.sign(
-      { id: admin.id, role: admin.role },
-      process.env.JWT_SECRET || "secret",
-      { expiresIn: ACCESS_TOKEN_EXPIRES }
-    );
-
-    const refreshToken = jwt.sign(
-      { id: admin.id },
-      process.env.JWT_REFRESH_SECRET || "refresh_secret",
-      { expiresIn: REFRESH_TOKEN_EXPIRES }
-    );
+    const accessToken = jwt.sign({ id: admin.id, role: admin.role }, env.JWT_SECRET as string, { expiresIn: ACCESS_TOKEN_EXPIRES } as jwt.SignOptions);
+    const refreshToken = jwt.sign({ id: admin.id }, (env.JWT_REFRESH_SECRET as string) || (env.JWT_SECRET as string), { expiresIn: REFRESH_TOKEN_EXPIRES } as jwt.SignOptions);
 
     return { accessToken, refreshToken };
   }
@@ -59,5 +51,9 @@ export class AdminService {
 }
 
 export const adminService = new AdminService();
+
+
+
+
 
 

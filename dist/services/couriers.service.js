@@ -1,17 +1,12 @@
 import { prisma } from "../prisma/client.js";
 import { v4 as uuid } from "uuid";
+import { OrderLifecycleService } from "./order/orderLifecycle.service.js";
 const TOKEN_VALIDITY_MS = 60 * 60 * 1000; // 1 hour
 export class CourierService {
     async generateCourierToken(orderId) {
         const token = uuid();
         const expiresAt = new Date(Date.now() + TOKEN_VALIDITY_MS);
-        return prisma.order.update({
-            where: { id: orderId },
-            data: {
-                courierToken: token,
-                courierTokenExpiresAt: expiresAt
-            }
-        });
+        return OrderLifecycleService.setCourierToken(orderId, token, expiresAt);
     }
     async validateCourierToken(orderId, token) {
         const order = await prisma.order.findUnique({ where: { id: orderId } });
@@ -26,16 +21,10 @@ export class CourierService {
         return order;
     }
     async claimOrder(orderId) {
-        return prisma.order.update({
-            where: { id: orderId },
-            data: { courierStatus: "accepted" }
-        });
+        return OrderLifecycleService.updateCourierStatus(orderId, "accepted");
     }
     async updateStatus(orderId, status) {
-        return prisma.order.update({
-            where: { id: orderId },
-            data: { courierStatus: status }
-        });
+        return OrderLifecycleService.updateCourierStatus(orderId, status);
     }
 }
 export const courierService = new CourierService();

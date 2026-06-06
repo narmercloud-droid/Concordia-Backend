@@ -1,52 +1,85 @@
-import { Request, Response, NextFunction } from "express";
-import { customerService } from "../services/customers.service.js";
+﻿import type { Request  } from "express";
+import { customerService } from "../services/customers.service.ts";
+import { wrap, fail } from "../contracts/api.js";
 
 export const CustomersController = {
-  register: async (req: Request, res: Response, next: NextFunction) => {
+  register: wrap(async (req: Request) => {
     const customer = await customerService.register(req.body);
-    res.json(customer);
-  },
+    return customer;
+  }),
 
-  login: async (req: Request, res: Response, next: NextFunction) => {
+  login: wrap(async (req: Request) => {
     const { email, password } = req.body;
     const tokens = await customerService.login(email, password);
-    if (!tokens) return res.status(401).json({ error: "Invalid credentials" });
-    res.json(tokens);
-  },
+    if (!tokens) throw fail('UNAUTHORIZED', 'Invalid credentials');
+    return tokens;
+  }),
 
-  refresh: async (req: Request, res: Response, next: NextFunction) => {
+  refresh: wrap(async (req: Request) => {
     const { refreshToken } = req.body;
     const tokens = await customerService.refresh(refreshToken);
-    if (!tokens) return res.status(403).json({ error: "Invalid token" });
-    res.json(tokens);
-  },
+    if (!tokens) throw fail('FORBIDDEN', 'Invalid token');
+    return tokens;
+  }),
 
-  profile: async (req: Request, res: Response, next: NextFunction) => {
+  profile: wrap(async (req: Request) => {
     const customerId = req.user?.id;
-    if (!customerId) return res.status(401).json({ error: "Unauthorized" });
+    if (!customerId) throw fail('UNAUTHORIZED', 'Unauthorized');
     const profile = await customerService.getProfile(customerId);
-    res.json(profile);
-  },
+    return profile;
+  }),
 
-  addAddress: async (req: Request, res: Response, next: NextFunction) => {
+  addAddress: wrap(async (req: Request) => {
     const customerId = req.user?.id;
-    if (!customerId) return res.status(401).json({ error: "Unauthorized" });
+    if (!customerId) throw fail('UNAUTHORIZED', 'Unauthorized');
     const address = await customerService.addAddress(customerId, req.body);
-    res.json(address);
-  },
+    return address;
+  }),
 
-  listAddresses: async (req: Request, res: Response, next: NextFunction) => {
+  updateAddress: wrap(async (req: Request) => {
     const customerId = req.user?.id;
-    if (!customerId) return res.status(401).json({ error: "Unauthorized" });
+    const addressId = req.params.id;
+    if (!customerId) throw fail('UNAUTHORIZED', 'Unauthorized');
+    await customerService.updateAddress(customerId, addressId, req.body);
+    return { success: true };
+  }),
+
+  listAddresses: wrap(async (req: Request) => {
+    const customerId = req.user?.id;
+    if (!customerId) throw fail('UNAUTHORIZED', 'Unauthorized');
     const addresses = await customerService.listAddresses(customerId);
-    res.json(addresses);
-  },
+    return addresses;
+  }),
 
-  deleteAddress: async (req: Request, res: Response, next: NextFunction) => {
+  getAddress: wrap(async (req: Request) => {
     const customerId = req.user?.id;
-    if (!customerId) return res.status(401).json({ error: "Unauthorized" });
-    const address = await customerService.deleteAddress(req.params.id);
-    res.json(address);
-  }
+    const addressId = req.params.id;
+    if (!customerId) throw fail('UNAUTHORIZED', 'Unauthorized');
+    const address = await customerService.getAddress(customerId, addressId);
+    if (!address) throw fail('NOT_FOUND', 'Address not found');
+    return address;
+  }),
+
+  deleteAddress: wrap(async (req: Request) => {
+    const customerId = req.user?.id;
+    const addressId = req.params.id;
+    if (!customerId) throw fail('UNAUTHORIZED', 'Unauthorized');
+    await customerService.deleteAddress(customerId, addressId);
+    return { success: true };
+  }),
+
+  updatePhone: wrap(async (req: Request) => {
+    const customerId = req.user?.id;
+    const { phoneNumber } = req.body;
+    if (!customerId) throw fail('UNAUTHORIZED', 'Unauthorized');
+    if (!phoneNumber) throw fail('INVALID_INPUT', 'phoneNumber is required');
+    const customer = await customerService.updatePhone(customerId, String(phoneNumber));
+    return customer;
+  })
 };
+
+
+
+
+
 

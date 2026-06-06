@@ -1,56 +1,31 @@
+var _a;
 import { VariantService } from "../../services/admin/variant.service.js";
+import { wrap, fail } from "../../contracts/api.js";
 export class VariantController {
-    static async getAll(_req, res, next) {
-        try {
-            const variants = await VariantService.getAll();
-            res.json(variants);
-            return;
-        }
-        catch (err) {
-            next(err);
-        }
-    }
-    static async getById(req, res, next) {
-        try {
-            const id = req.params.id;
-            const variant = await VariantService.getById(id);
-            if (!variant) {
-                return res.status(404).json({ error: "Variant not found" });
-            }
-            res.json(variant);
-            return;
-        }
-        catch (err) {
-            next(err);
-        }
-    }
-    static async create(req, res, next) {
-        try {
-            const variant = await VariantService.create(req.body);
-            res.status(201).json(variant);
-        }
-        catch (err) {
-            next(err);
-        }
-    }
-    static async update(req, res, next) {
-        try {
-            const id = req.params.id;
-            const variant = await VariantService.update(id, req.body);
-            res.json(variant);
-        }
-        catch (err) {
-            next(err);
-        }
-    }
-    static async remove(req, res, next) {
-        try {
-            const id = req.params.id;
-            await VariantService.remove(id);
-            res.json({ success: true });
-        }
-        catch (err) {
-            next(err);
-        }
-    }
 }
+_a = VariantController;
+VariantController.getAll = wrap(async (_req) => {
+    const variants = await VariantService.getAll();
+    return variants;
+});
+VariantController.getById = wrap(async (req) => {
+    const id = req.params.id;
+    const variant = await VariantService.getById(id);
+    if (!variant)
+        throw fail('NOT_FOUND', 'Variant not found');
+    return variant;
+});
+VariantController.create = wrap(async (req) => {
+    const variant = await VariantService.create(req.body);
+    return variant;
+});
+VariantController.update = wrap(async (req) => {
+    const id = req.params.id;
+    const variant = await VariantService.update(id, req.body);
+    return variant;
+});
+VariantController.remove = wrap(async (req) => {
+    const id = req.params.id;
+    await VariantService.remove(id);
+    return { success: true };
+});

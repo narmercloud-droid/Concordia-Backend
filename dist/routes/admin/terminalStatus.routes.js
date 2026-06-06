@@ -1,4 +1,5 @@
-import { Router } from "express";
+import express from "express";
+const { Router } = express;
 import { TerminalStatusController } from "../../controllers/admin/terminalStatus.controller.js";
 import { validate } from "../../middleware/validate.js";
 import { getTerminalStatusSchema } from "../../schemas/adminTerminalSchemas.js";

@@ -1,15 +1,15 @@
-import { prisma } from "../prisma/client.js";
-import { forecastingService } from "./forecasting.service.js";
-import { dynamicPricingService } from "./dynamicPricing.service.js";
-// import { menuOptimizationService } from "./menuOptimization.service";
-// import { staffingPrepService } from "./staffingPrep.service";
-import { ltvChurnService } from "./ltvChurn.service.js";
-import { behaviorPredictionService } from "./behaviorPrediction.service.js";
-import { knowledgeGraphService } from "./knowledgeGraph.service.js";
-import { decisionEngineService } from "./decisionEngine.service.js";
-// import { optimizationLoopService } from "./optimizationLoop.service";
-// import { ltmlService } from "./ltml.service";
-// import { orchestrationService } from "./orchestration.service";
+﻿import { randomUUID } from "crypto";
+import { prisma } from "../prisma/client.ts";
+import { forecastingService } from "./forecasting.service.ts";
+import { dynamicPricingService } from "./dynamicPricing.service.ts";
+// import { menuOptimizationService } from "./menuOptimization.service.ts";
+// import { staffingPrepService } from "./staffingPrep.service.ts";
+import { ltvChurnService } from "./ltvChurn.service.ts";
+import { knowledgeGraphService } from "./knowledgeGraph.service.ts";
+import { decisionEngineService } from "./decisionEngine.service.ts";
+// import { optimizationLoopService } from "./optimizationLoop.service.ts";
+// import { ltmlService } from "./ltml.service.ts";
+// import { orchestrationService } from "./orchestration.service.ts";
 
 export class IntelligenceService {
   // 1. Unified intelligence summary
@@ -42,6 +42,7 @@ export class IntelligenceService {
 
     const report = await prisma.intelligenceReport.create({
       data: {
+        id: randomUUID(),
         branchId,
         summary: "Unified AI intelligence report generated.",
         details: summary
@@ -59,7 +60,7 @@ export class IntelligenceService {
   async logView(branchId: string, section: string): Promise<any> {
     try {
       return prisma.dashboardViewLog.create({
-        data: { branchId, section }
+        data: { id: randomUUID(), branchId, section }
       });
     } catch (err) {
       console.error("IntelligenceService logView error:", err);
@@ -69,3 +70,7 @@ export class IntelligenceService {
 }
 
 export const intelligenceService = new IntelligenceService();
+
+
+
+

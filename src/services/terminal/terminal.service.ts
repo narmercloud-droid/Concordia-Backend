@@ -1,5 +1,7 @@
-import { prisma } from "../../prisma/client.js";
-import { signToken, verifyToken } from "../../utils/jwt.js";
+﻿import { randomUUID } from "crypto";
+import { prisma } from "../../prisma/client.ts";
+import { signToken, verifyToken } from "../../utils/jwt.ts";
+import { OrderLifecycleService } from "../order/orderLifecycle.service.ts";
 
 export class TerminalService {
   static async activateTerminal(branchId: string) {
@@ -42,6 +44,7 @@ export class TerminalService {
 
     return prisma.terminal.create({
       data: {
+        id: randomUUID(),
         name: terminal_name,
         activation_token,
         branchId: branch.id,
@@ -92,19 +95,8 @@ export class TerminalService {
       throw new Error("Order not found");
     }
 
-    return prisma.order.update({
-      where: { id: order_id },
-      data: {
-        status: "acknowledged",
-        terminal_id,
-      },
-      include: {
-        items: {
-          include: {
-            item: true,
-          },
-        },
-      },
+    return OrderLifecycleService.updateStatus(order_id, "acknowledged", undefined, {
+      terminal_id
     });
   }
 
@@ -129,22 +121,11 @@ export class TerminalService {
       throw new Error("Order is already assigned to a terminal");
     }
 
-    const updatedOrder = await prisma.order.update({
-      where: { id: order_id },
-      data: {
-        terminal_id,
-        status: "assigned",
-      },
-      include: {
-        items: {
-          include: {
-            item: true,
-          },
-        },
-      },
+    const updatedOrder = await OrderLifecycleService.updateStatus(order_id, "assigned", undefined, {
+      terminal_id
     });
 
-    const { getIO } = await import("../../lib/socket.js");
+    const { getIO } = await import("../../lib/socket.ts");
     const payload = {
       order_id: updatedOrder.id,
       terminal_id: updatedOrder.terminal_id,
@@ -154,7 +135,7 @@ export class TerminalService {
     getIO().to(`terminal_${terminal_id}`).emit("order_assigned", payload);
     getIO().to(`branch_${updatedOrder.branchId}`).emit("order_assigned", payload);
 
-    const { OrderService } = await import("../order/order.service.js");
+    const { OrderService } = await import("../order/order.service.ts");
     OrderService.emitOrderStatus(updatedOrder);
 
     return updatedOrder;
@@ -173,19 +154,9 @@ export class TerminalService {
       throw new Error("Terminal not assigned to this order");
     }
 
-    const updatedOrder = await prisma.order.update({
-      where: { id: order_id },
-      data: { status: "accepted" },
-      include: {
-        items: {
-          include: {
-            item: true,
-          },
-        },
-      },
-    });
+    const updatedOrder = await OrderLifecycleService.updateStatus(order_id, "accepted");
 
-    const { getIO } = await import("../../lib/socket.js");
+    const { getIO } = await import("../../lib/socket.ts");
     const payload = {
       order_id: updatedOrder.id,
       terminal_id: updatedOrder.terminal_id,
@@ -195,7 +166,7 @@ export class TerminalService {
     getIO().to(`terminal_${terminal_id}`).emit("order_accepted", payload);
     getIO().to(`branch_${updatedOrder.branchId}`).emit("order_accepted", payload);
 
-    const { OrderService } = await import("../order/order.service.js");
+    const { OrderService } = await import("../order/order.service.ts");
     OrderService.emitOrderStatus(updatedOrder);
 
     return updatedOrder;
@@ -214,22 +185,11 @@ export class TerminalService {
       throw new Error("Terminal not assigned to this order");
     }
 
-    const updatedOrder = await prisma.order.update({
-      where: { id: order_id },
-      data: {
-        status: "rejected",
-        terminal_id: null,
-      },
-      include: {
-        items: {
-          include: {
-            item: true,
-          },
-        },
-      },
+    const updatedOrder = await OrderLifecycleService.updateStatus(order_id, "rejected", undefined, {
+      terminal_id: null
     });
 
-    const { getIO } = await import("../../lib/socket.js");
+    const { getIO } = await import("../../lib/socket.ts");
     const payload = {
       order_id: updatedOrder.id,
       terminal_id: updatedOrder.terminal_id,
@@ -241,9 +201,13 @@ export class TerminalService {
     }
     getIO().to(`branch_${updatedOrder.branchId}`).emit("order_rejected", payload);
 
-    const { OrderService } = await import("../order/order.service.js");
+    const { OrderService } = await import("../order/order.service.ts");
     OrderService.emitOrderStatus(updatedOrder);
 
     return updatedOrder;
   }
 }
+
+
+
+

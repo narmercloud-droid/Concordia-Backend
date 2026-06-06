@@ -1,5 +1,5 @@
-import { DRIVER_EVENTS } from "./eventTypes";
-import logger from "../utils/logger";
+import { DRIVER_EVENTS } from "./eventTypes.js";
+import logger from "../utils/logger.js";
 const drivers = new Map();
 export function registerDriverEvents(io, socket) {
     const driverId = socket.id; // Guest driver = socket ID

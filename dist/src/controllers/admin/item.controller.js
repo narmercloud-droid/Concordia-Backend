@@ -1,10 +1,10 @@
 import { ItemService } from "../../services/admin/item.service.js";
+import { success, fail } from "../controllerHelper.js";
 export class ItemController {
     static async getAll(_req, res, next) {
         try {
             const items = await ItemService.getAll();
-            res.json(items);
-            return;
+            return success(res, items);
         }
         catch (err) {
             next(err);
@@ -12,13 +12,12 @@ export class ItemController {
     }
     static async getById(req, res, next) {
         try {
-            const id = Number(req.params.id);
+            const id = req.params.id;
             const item = await ItemService.getById(id);
             if (!item) {
-                return res.status(404).json({ error: "Item not found" });
+                return fail(res, "Item not found", 404);
             }
-            res.json(item);
-            return;
+            return success(res, item);
         }
         catch (err) {
             next(err);
@@ -27,7 +26,7 @@ export class ItemController {
     static async create(req, res, next) {
         try {
             const item = await ItemService.create(req.body);
-            res.status(201).json(item);
+            return success(res, item);
         }
         catch (err) {
             next(err);
@@ -35,9 +34,9 @@ export class ItemController {
     }
     static async update(req, res, next) {
         try {
-            const id = Number(req.params.id);
+            const id = req.params.id;
             const item = await ItemService.update(id, req.body);
-            res.json(item);
+            return success(res, item);
         }
         catch (err) {
             next(err);
@@ -45,9 +44,9 @@ export class ItemController {
     }
     static async remove(req, res, next) {
         try {
-            const id = Number(req.params.id);
+            const id = req.params.id;
             await ItemService.remove(id);
-            res.json({ success: true });
+            return success(res, { success: true });
         }
         catch (err) {
             next(err);

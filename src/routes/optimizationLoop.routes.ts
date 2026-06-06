@@ -1,7 +1,8 @@
-import { Router } from "express";
-import { OptimizationLoopController } from "../controllers/optimizationLoop.controller.js";
-import { adminAuth } from "../middleware/adminAuth.js";
-import { adminRole } from "../middleware/adminRole.js";
+﻿import express from "express";
+const { Router } = express;
+import { OptimizationLoopController } from "../controllers/optimizationLoop.controller.ts";
+import { adminAuth } from "../middleware/adminAuth.ts";
+import { adminRole } from "../middleware/adminRole.ts";
 
 const router = Router();
 
@@ -20,4 +21,10 @@ router.get(
 );
 
 export default router;
+
+
+
+
+
+
 

@@ -1,4 +1,4 @@
-import { prisma } from "../../prisma/client.js";
+﻿import { prisma } from "../../prisma/client.ts";
 
 export class TerminalAdminService {
   static async getAllTerminals() {
@@ -41,3 +41,7 @@ export class TerminalAdminService {
     }));
   }
 }
+
+
+
+

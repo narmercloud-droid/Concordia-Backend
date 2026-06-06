@@ -1,0 +1,11 @@
+const fs=require('fs');
+const path='docs/openapi/openapi.yaml';
+const s=fs.readFileSync(path,'utf8');
+const refs=[...s.matchAll(/#\/components\/schemas\/([A-Za-z0-9_\-]+)/g)].map(m=>m[1]);
+const uniqRefs=[...new Set(refs)];
+const compMatch = s.match(/\n\s*components:\s*\n([\s\S]*)$/m);
+const schemasSection = compMatch ? compMatch[1] : '';
+const schemas=[...schemasSection.matchAll(/^\s+([A-Za-z0-9_\-]+):\s*$/gm)].map(m=>m[1]);
+const uniqSchemas=[...new Set(schemas)];
+const missing=uniqRefs.filter(r=>!uniqSchemas.includes(r));
+console.log(JSON.stringify({refs:uniqRefs,schemas:uniqSchemas,missing},null,2));

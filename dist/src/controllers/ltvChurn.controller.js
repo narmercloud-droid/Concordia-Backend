@@ -1,10 +1,11 @@
 import { ltvChurnService } from "../services/ltvChurn.service.js";
+import { success } from "./controllerHelper.js";
 export const LtvChurnController = {
     segment: async (req, res, next) => {
         try {
             const customerId = req.params.customerId;
             const result = await ltvChurnService.segment(customerId);
-            res.json(result);
+            return success(res, result);
         }
         catch (err) {
             next(err);
@@ -14,7 +15,7 @@ export const LtvChurnController = {
         try {
             const branchId = req.user.branchId;
             const result = await ltvChurnService.branchSegments(branchId);
-            res.json(result);
+            return success(res, result);
         }
         catch (err) {
             next(err);

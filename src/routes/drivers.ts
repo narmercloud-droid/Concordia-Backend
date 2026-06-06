@@ -1,8 +1,9 @@
-import { Router } from "express";
+﻿import express from "express";
+const { Router } = express;
 import {
   getAvailableDriversController,
   getDriverController
-} from "../controllers/driverController.js";
+} from "../controllers/driverController.ts";
 
 const router = Router();
 
@@ -13,3 +14,9 @@ router.get("/available", getAvailableDriversController);
 router.get("/:driverId", getDriverController);
 
 export default router;
+
+
+
+
+
+

@@ -1,9 +1,11 @@
 import { analyticsService } from "../services/analytics.service.js";
+import { success } from "./controllerHelper.js";
 export const AnalyticsController = {
     totalRevenue: async (req, res, next) => {
         try {
-            const data = await analyticsService.totalRevenue(req.query.branchId);
-            res.json(data);
+            const branchId = req.query.branchId;
+            const data = await analyticsService.totalRevenue(branchId);
+            return success(res, data);
         }
         catch (err) {
             next(err);
@@ -11,8 +13,9 @@ export const AnalyticsController = {
     },
     ordersPerDay: async (req, res, next) => {
         try {
-            const data = await analyticsService.ordersPerDay(req.query.branchId);
-            res.json(data);
+            const branchId = req.query.branchId;
+            const data = await analyticsService.ordersPerDay(branchId);
+            return success(res, data);
         }
         catch (err) {
             next(err);
@@ -20,8 +23,9 @@ export const AnalyticsController = {
     },
     bestSellingItems: async (req, res, next) => {
         try {
-            const data = await analyticsService.bestSellingItems(req.query.branchId);
-            res.json(data);
+            const branchId = req.query.branchId;
+            const data = await analyticsService.bestSellingItems(branchId);
+            return success(res, data);
         }
         catch (err) {
             next(err);
@@ -30,7 +34,7 @@ export const AnalyticsController = {
     customerStats: async (req, res, next) => {
         try {
             const data = await analyticsService.customerStats();
-            res.json(data);
+            return success(res, data);
         }
         catch (err) {
             next(err);
@@ -39,7 +43,7 @@ export const AnalyticsController = {
     courierPerformance: async (req, res, next) => {
         try {
             const data = await analyticsService.courierPerformance();
-            res.json(data);
+            return success(res, data);
         }
         catch (err) {
             next(err);
@@ -47,8 +51,9 @@ export const AnalyticsController = {
     },
     hourlyOrders: async (req, res, next) => {
         try {
-            const data = await analyticsService.hourlyOrders(req.query.branchId);
-            res.json(data);
+            const branchId = req.query.branchId;
+            const data = await analyticsService.hourlyOrders(branchId);
+            return success(res, data);
         }
         catch (err) {
             next(err);

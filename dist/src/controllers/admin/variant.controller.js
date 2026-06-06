@@ -1,10 +1,10 @@
 import { VariantService } from "../../services/admin/variant.service.js";
+import { success, fail } from "../controllerHelper.js";
 export class VariantController {
     static async getAll(_req, res, next) {
         try {
             const variants = await VariantService.getAll();
-            res.json(variants);
-            return;
+            return success(res, variants);
         }
         catch (err) {
             next(err);
@@ -12,13 +12,12 @@ export class VariantController {
     }
     static async getById(req, res, next) {
         try {
-            const id = Number(req.params.id);
+            const id = req.params.id;
             const variant = await VariantService.getById(id);
             if (!variant) {
-                return res.status(404).json({ error: "Variant not found" });
+                return fail(res, "Variant not found", 404);
             }
-            res.json(variant);
-            return;
+            return success(res, variant);
         }
         catch (err) {
             next(err);
@@ -27,7 +26,7 @@ export class VariantController {
     static async create(req, res, next) {
         try {
             const variant = await VariantService.create(req.body);
-            res.status(201).json(variant);
+            return success(res, variant);
         }
         catch (err) {
             next(err);
@@ -35,9 +34,9 @@ export class VariantController {
     }
     static async update(req, res, next) {
         try {
-            const id = Number(req.params.id);
+            const id = req.params.id;
             const variant = await VariantService.update(id, req.body);
-            res.json(variant);
+            return success(res, variant);
         }
         catch (err) {
             next(err);
@@ -45,9 +44,9 @@ export class VariantController {
     }
     static async remove(req, res, next) {
         try {
-            const id = Number(req.params.id);
+            const id = req.params.id;
             await VariantService.remove(id);
-            res.json({ success: true });
+            return success(res, { success: true });
         }
         catch (err) {
             next(err);

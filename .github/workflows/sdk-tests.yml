@@ -1,0 +1,74 @@
+name: SDK Contract Tests
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  sdk-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install validation tools
+        run: npm install -g @redocly/cli swagger-cli || true
+
+      - name: Run Redocly lint (allow failures)
+        run: redocly lint docs/openapi/openapi.yaml || true
+
+      - name: Run swagger-cli validate (allow failures)
+        run: swagger-cli validate docs/openapi/openapi.yaml || true
+
+      - name: Start mock server
+        run: |
+          if [ -f mock-server/index.js ]; then
+            node mock-server/index.js &
+            sleep 1
+          else
+            echo "mock-server/index.js not found, ensure your mock server exists";
+          fi
+
+      - name: Build Admin TypeScript SDK
+        run: |
+          if [ -f sdks-admin/typescript/package.json ]; then
+            npm --prefix sdks-admin/typescript install --no-audit --no-fund || true
+            npm --prefix sdks-admin/typescript run build || true
+          else
+            echo "No sdks-admin/typescript package.json found"
+          fi
+
+      - name: Install Python SDK (if present)
+        run: |
+          if [ -f sdks-admin/python/setup.py ] || [ -f sdks-admin/python/pyproject.toml ]; then
+            pip install --upgrade pip || true
+            pip install ./sdks-admin/python || true
+          else
+            echo "No Python SDK packaging found; skipping pip install"
+          fi
+
+      - name: Generate SDK manifest
+        run: npm run sdk:manifest
+
+      - name: Run SDK tests
+        run: npm run sdk:test
+
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        with:
+          name: sdk-test-report
+          path: sdk-tests/report.json

@@ -1,6 +1,7 @@
 import { prisma } from "../prisma/client.js";
 import * as bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
+import { env } from "../config/env.js";
 const ACCESS_TOKEN_EXPIRES = "15m";
 const REFRESH_TOKEN_EXPIRES = "30d";
 export class AdminService {
@@ -14,8 +15,8 @@ export class AdminService {
         return bcrypt.compare(password, hashed);
     }
     async generateTokens(admin) {
-        const accessToken = jwt.sign({ id: admin.id, role: admin.role }, process.env.JWT_SECRET || "secret", { expiresIn: ACCESS_TOKEN_EXPIRES });
-        const refreshToken = jwt.sign({ id: admin.id }, process.env.JWT_REFRESH_SECRET || "refresh_secret", { expiresIn: REFRESH_TOKEN_EXPIRES });
+        const accessToken = jwt.sign({ id: admin.id, role: admin.role }, env.JWT_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRES });
+        const refreshToken = jwt.sign({ id: admin.id }, env.JWT_REFRESH_SECRET || env.JWT_SECRET, { expiresIn: REFRESH_TOKEN_EXPIRES });
         return { accessToken, refreshToken };
     }
     async getAdminByEmail(email) {

@@ -1,4 +1,5 @@
-import { Router } from "express";
+import express from "express";
+const { Router } = express;
 import { CartController } from "../controllers/cart.controller.js";
 import { customerAuth } from "../middleware/customerAuth.js";
 const router = Router();

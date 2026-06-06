@@ -1,32 +1,41 @@
-import { prisma } from "../../prisma/client.js";
+﻿import { prisma } from "../../prisma/client.ts";
 
 export class DealService {
   static async getAll() {
-    return prisma.deal.findMany({
+    const db: any = prisma as any;
+    return db.deal.findMany({
       orderBy: { name: "asc" },
     });
   }
 
   static async getById(id: string) {
-    return prisma.deal.findUnique({
+    const db: any = prisma as any;
+    return db.deal.findUnique({
       where: { id },
     });
   }
 
   static async create(data: any) {
-    return prisma.deal.create({ data });
+    const db: any = prisma as any;
+    return db.deal.create({ data });
   }
 
   static async update(id: string, data: any) {
-    return prisma.deal.update({
+    const db: any = prisma as any;
+    return db.deal.update({
       where: { id },
       data,
     });
   }
 
   static async remove(id: string) {
-    return prisma.deal.delete({
+    const db: any = prisma as any;
+    return db.deal.delete({
       where: { id },
     });
   }
 }
+
+
+
+

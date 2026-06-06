@@ -1,3 +1,71 @@
+name: Concordia Backend CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run build
+        run: npm run build
+
+      - name: Build Docker image
+        run: docker build -t concordia-backend .
+
+      - name: Save Docker image
+        run: docker save concordia-backend > concordia-backend.tar
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: backend-image
+          path: concordia-backend.tar
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: backend-image
+
+      - name: Copy image to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          source: "concordia-backend.tar"
+          target: "~/"
+
+      - name: Deploy on server
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            docker load < concordia-backend.tar
+            cd ~/concordia
+            docker compose down
+            docker compose up -d --build
+            pm2 restart ecosystem.config.js
 name: Deploy Concordia Backend
 
 on:
@@ -32,7 +100,7 @@ jobs:
     - name: Run tests
       run: npm test
       env:
-        DATABASE_URL: postgresql://test:test@localhost:5432/test
+        DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
         REDIS_URL: redis://localhost:6379
         JWT_ACCESS_SECRET: test-secret-key
         JWT_REFRESH_SECRET: test-refresh-secret-key

@@ -1,9 +1,10 @@
-import { prisma } from "../prisma/client.js";
-// import { forecastingService } from "./forecasting.service";
-// import { ltvChurnService } from "./ltvChurn.service";
-// import { behaviorPredictionService } from "./behaviorPrediction.service";
-// import { dynamicPricingService } from "./dynamicPricing.service";
-// import { knowledgeGraphService } from "./knowledgeGraph.service";
+﻿import { randomUUID } from "crypto";
+import { prisma } from "../prisma/client.ts";
+// import { forecastingService } from "./forecasting.service.ts";
+// import { ltvChurnService } from "./ltvChurn.service.ts";
+// import { behaviorPredictionService } from "./behaviorPrediction.service.ts";
+// import { dynamicPricingService } from "./dynamicPricing.service.ts";
+// import { knowledgeGraphService } from "./knowledgeGraph.service.ts";
 
 interface TrendData {
   category: string;
@@ -19,7 +20,13 @@ export class LTMLService {
   // 1. Save memory record
   async save(branchId: string, module: string, key: string, value: any): Promise<any> {
     return prisma.memoryRecord.create({
-      data: { branchId, module, key, value }
+      data: {
+        id: randomUUID(),
+        branchId,
+        module,
+        key,
+        value
+      }
     });
   }
 
@@ -61,7 +68,12 @@ export class LTMLService {
 
     for (const t of trends) {
       await prisma.trendRecord.create({
-        data: { branchId, category: t.category, summary: t.summary }
+        data: {
+          id: randomUUID(),
+          branchId,
+          category: t.category,
+          summary: t.summary
+        }
       });
     }
 
@@ -84,3 +96,7 @@ export class LTMLService {
 }
 
 export const ltmlService = new LTMLService();
+
+
+
+

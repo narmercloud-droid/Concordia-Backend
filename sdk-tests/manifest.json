@@ -1,0 +1,1134 @@
+{
+  "generatedAt": "2026-06-04T19:50:53.664Z",
+  "count": 68,
+  "tests": [
+    {
+      "operationId": "adminLogin",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "pathTemplate": "/api/auth/login",
+      "parameters": [],
+      "requestBody": {
+        "$ref": "#/components/schemas/AdminLoginRequest"
+      },
+      "responseSchema": {
+        "$ref": "#/components/schemas/AuthResponse"
+      }
+    },
+    {
+      "operationId": "requestMagicLink",
+      "method": "POST",
+      "path": "/api/auth/request-link",
+      "pathTemplate": "/api/auth/request-link",
+      "parameters": [],
+      "requestBody": {
+        "$ref": "#/components/schemas/RequestMagicLinkRequest"
+      },
+      "responseSchema": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    {
+      "operationId": "verifyMagicToken",
+      "method": "GET",
+      "path": "/api/auth/verify",
+      "pathTemplate": "/api/auth/verify",
+      "parameters": [
+        {
+          "name": "token",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "requestBody": null,
+      "responseSchema": {
+        "$ref": "#/components/schemas/TokenResponse"
+      }
+    },
+    {
+      "operationId": "verifyAdminMagicToken",
+      "method": "GET",
+      "path": "/api/auth/admin/verify",
+      "pathTemplate": "/api/auth/admin/verify",
+      "parameters": [
+        {
+          "name": "token",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "requestBody": null,
+      "responseSchema": {
+        "$ref": "#/components/schemas/AuthResponse"
+      }
+    },
+    {
+      "operationId": "authLogout",
+      "method": "POST",
+      "path": "/api/auth/logout",
+      "pathTemplate": "/api/auth/logout",
+      "parameters": [],
+      "requestBody": null,
+      "responseSchema": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    {
+      "operationId": "adminAuthLogin",
+      "method": "POST",
+      "path": "/api/admin/auth/login",
+      "pathTemplate": "/api/admin/auth/login",
+      "parameters": [],
+      "requestBody": {
+        "$ref": "#/components/schemas/AdminLoginRequest"
+      },
+      "responseSchema": {
+        "$ref": "#/components/schemas/AuthResponse"
+      }
+    },
+    {
+      "operationId": "adminAuthLogout",
+      "method": "POST",
+      "path": "/api/admin/auth/logout",
+      "pathTemplate": "/api/admin/auth/logout",
+      "parameters": [],
+      "requestBody": null,
+      "responseSchema": {
+        "$ref": "#/components/schemas/GenericResponse"
+      }
+    },
+    {
+      "operationId": "adminListOrders",
+      "method": "GET",
+      "path": "/api/admin/orders",
+      "pathTemplate": "/api/admin/orders",
+      "parameters": [],
+      "requestBody": null,
+      "responseSchema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Order"
+        }
+      }
+    },
+    {
+      "operationId": "adminGetOrder",
+      "method": "GET",
+      "path": "/api/admin/orders/{orderId}",
+      "pathTemplate": "/api/admin/orders/{orderId}",
+      "parameters": [
+        {
+          "name": "orderId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "requestBody": null,
+      "responseSchema": {
+        "$ref": "#/components/schemas/Order"
+      }
+    },
+    {
+      "operationId": "adminPatchOrderStatus",
+      "method": "PATCH",
+      "path": "/api/admin/orders/{orderId}/status",
+      "pathTemplate": "/api/admin/orders/{orderId}/status",
+      "parameters": [
+        {
+          "name": "orderId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "requestBody": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "responseSchema": {
+        "$ref": "#/components/schemas/Order"
+      }
+    },
+    {
+      "operationId": "adminGetMenu",
+      "method": "GET",
+      "path": "/api/admin/menu",
+      "pathTemplate": "/api/admin/menu",
+      "parameters": [],
+      "requestBody": null,
+      "responseSchema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/MenuItem"
+        }
+      }
+    },
+    {
+      "operationId": "adminCreateMenu",
+      "method": "POST",
+      "path": "/api/admin/menu",
+      "pathTemplate": "/api/admin/menu",
+      "parameters": [],
+      "requestBody": {
+        "$ref": "#/components/schemas/MenuItem"
+      },
+      "responseSchema": {
+        "$ref": "#/components/schemas/MenuItem"
+      }
+    },
+    {
+      "operationId": "adminPatchMenuItem",
+      "method": "PATCH",
+      "path": "/api/admin/menu/{itemId}",
+      "pathTemplate": "/api/admin/menu/{itemId}",
+      "parameters": [
+        {
+          "name": "itemId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "requestBody": {
+        "$ref": "#/components/schemas/MenuItem"
+      },
+      "responseSchema": {
+        "$ref": "#/components/schemas/MenuItem"
+      }
+    },
+    {
+      "operationId": "adminDeleteMenuItem",
+      "method": "DELETE",
+      "path": "/api/admin/menu/{itemId}",
+      "pathTemplate": "/api/admin/menu/{itemId}",
+      "parameters": [
+        {
+          "name": "itemId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "requestBody": null,
+      "responseSchema": {
+        "$ref": "#/components/schemas/GenericResponse"
+      }
+    },
+    {
+      "operationId": "adminListBranches",
+      "method": "GET",
+      "path": "/api/admin/branches",
+      "pathTemplate": "/api/admin/branches",
+      "parameters": [],
+      "requestBody": null,
+      "responseSchema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Address"
+        }
+      }
+    },
+    {
+      "operationId": "adminCreateBranch",
+      "method": "POST",
+      "path": "/api/admin/branches",
+      "pathTemplate": "/api/admin/branches",
+      "parameters": [],
+      "requestBody": {
+        "$ref": "#/components/schemas/Address"
+      },
+      "responseSchema": {
+        "$ref": "#/components/schemas/Address"
+      }
+    },
+    {
+      "operationId": "adminPatchBranch",
+      "method": "PATCH",
+      "path": "/api/admin/branches/{branchId}",
+      "pathTemplate": "/api/admin/branches/{branchId}",
+      "parameters": [
+        {
+          "name": "branchId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "requestBody": {
+        "$ref": "#/components/schemas/Address"
+      },
+      "responseSchema": {
+        "$ref": "#/components/schemas/Address"
+      }
+    },
+    {
+      "operationId": "adminMetricsOverview",
+      "method": "GET",
+      "path": "/api/admin/metrics/overview",
+      "pathTemplate": "/api/admin/metrics/overview",
+      "parameters": [],
+      "requestBody": null,
+      "responseSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "operationId": "adminMetricsOrders",
+      "method": "GET",
+      "path": "/api/admin/metrics/orders",
+      "pathTemplate": "/api/admin/metrics/orders",
+      "parameters": [],
+      "requestBody": null,
+      "responseSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "operationId": "adminMetricsCustomers",
+      "method": "GET",
+      "path": "/api/admin/metrics/customers",
+      "pathTemplate": "/api/admin/metrics/customers",
+      "parameters": [],
+      "requestBody": null,
+      "responseSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "operationId": "webhookOrderCreated",
+      "method": "POST",
+      "path": "/webhooks/order.created",
+      "pathTemplate": "/webhooks/order.created",
+      "parameters": [
+        {
+          "required": false,
+          "schema": null
+        },
+        {
+          "required": false,
+          "schema": null
+        }
+      ],
+      "requestBody": {
+        "$ref": "#/components/schemas/OrderCreatedEvent"
+      },
+      "responseSchema": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    {
+      "operationId": "webhookOrderUpdated",
+      "method": "POST",
+      "path": "/webhooks/order.updated",
+      "pathTemplate": "/webhooks/order.updated",
+      "parameters": [
+        {
+          "required": false,
+          "schema": null
+        },
+        {
+          "required": false,
+          "schema": null
+        }
+      ],
+      "requestBody": {
+        "$ref": "#/components/schemas/OrderUpdatedEvent"
+      },
+      "responseSchema": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    {
+      "operationId": "webhookOrderStatusChanged",
+      "method": "POST",
+      "path": "/webhooks/order.status_changed",
+      "pathTemplate": "/webhooks/order.status_changed",
+      "parameters": [
+        {
+          "required": false,
+          "schema": null
+        },
+        {
+          "required": false,
+          "schema": null
+        }
+      ],
+      "requestBody": {
+        "$ref": "#/components/schemas/OrderStatusChangedEvent"
+      },
+      "responseSchema": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    {
+      "operationId": "webhookPaymentSucceeded",
+      "method": "POST",
+      "path": "/webhooks/payment.succeeded",
+      "pathTemplate": "/webhooks/payment.succeeded",
+      "parameters": [
+        {
+          "required": false,
+          "schema": null
+        },
+        {
+          "required": false,
+          "schema": null
+        }
+      ],
+      "requestBody": {
+        "$ref": "#/components/schemas/PaymentSucceededEvent"
+      },
+      "responseSchema": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    {
+      "operationId": "webhookPaymentFailed",
+      "method": "POST",
+      "path": "/webhooks/payment.failed",
+      "pathTemplate": "/webhooks/payment.failed",
+      "parameters": [
+        {
+          "required": false,
+          "schema": null
+        },
+        {
+          "required": false,
+          "schema": null
+        }
+      ],
+      "requestBody": {
+        "$ref": "#/components/schemas/PaymentFailedEvent"
+      },
+      "responseSchema": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    {
+      "operationId": "webhookCourierAssigned",
+      "method": "POST",
+      "path": "/webhooks/courier.assigned",
+      "pathTemplate": "/webhooks/courier.assigned",
+      "parameters": [
+        {
+          "required": false,
+          "schema": null
+        },
+        {
+          "required": false,
+          "schema": null
+        }
+      ],
+      "requestBody": {
+        "$ref": "#/components/schemas/CourierAssignedEvent"
+      },
+      "responseSchema": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    {
+      "operationId": "webhookCourierLocationUpdated",
+      "method": "POST",
+      "path": "/webhooks/courier.location_updated",
+      "pathTemplate": "/webhooks/courier.location_updated",
+      "parameters": [
+        {
+          "required": false,
+          "schema": null
+        },
+        {
+          "required": false,
+          "schema": null
+        }
+      ],
+      "requestBody": {
+        "$ref": "#/components/schemas/CourierLocationUpdatedEvent"
+      },
+      "responseSchema": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    {
+      "operationId": "webhookBranchOpeningHoursChanged",
+      "method": "POST",
+      "path": "/webhooks/branch.opening_hours_changed",
+      "pathTemplate": "/webhooks/branch.opening_hours_changed",
+      "parameters": [
+        {
+          "required": false,
+          "schema": null
+        },
+        {
+          "required": false,
+          "schema": null
+        }
+      ],
+      "requestBody": {
+        "$ref": "#/components/schemas/BranchOpeningHoursChangedEvent"
+      },
+      "responseSchema": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    {
+      "operationId": "createOrder",
+      "method": "POST",
+      "path": "/api/orders",
+      "pathTemplate": "/api/orders",
+      "parameters": [],
+      "requestBody": {
+        "$ref": "#/components/schemas/OrderCreateRequest"
+      },
+      "responseSchema": {
+        "$ref": "#/components/schemas/Order"
+      }
+    },
+    {
+      "operationId": "adminListBranchOrders",
+      "method": "GET",
+      "path": "/api/branches/{branchId}/orders",
+      "pathTemplate": "/api/branches/{branchId}/orders",
+      "parameters": [
+        {
+          "name": "branchId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "requestBody": null,
+      "responseSchema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Order"
+        }
+      }
+    },
+    {
+      "operationId": "setOrderStatus",
+      "method": "PUT",
+      "path": "/api/orders/{orderId}/status",
+      "pathTemplate": "/api/orders/{orderId}/status",
+      "parameters": [
+        {
+          "name": "orderId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "requestBody": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "responseSchema": {
+        "$ref": "#/components/schemas/Order"
+      }
+    },
+    {
+      "operationId": "courierClaimAssignment",
+      "method": "POST",
+      "path": "/api/orders/courier/claim",
+      "pathTemplate": "/api/orders/courier/claim",
+      "parameters": [],
+      "requestBody": {
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "type": "string"
+          },
+          "courierToken": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "responseSchema": {
+        "$ref": "#/components/schemas/Order"
+      }
+    },
+    {
+      "operationId": "courierPickedUp",
+      "method": "POST",
+      "path": "/api/orders/courier/picked-up",
+      "pathTemplate": "/api/orders/courier/picked-up",
+      "parameters": [],
+      "requestBody": {
+        "$ref": "#/components/schemas/CourierActionRequest"
+      },
+      "responseSchema": {
+        "$ref": "#/components/schemas/Order"
+      }
+    },
+    {
+      "operationId": "courierDelivered",
+      "method": "POST",
+      "path": "/api/orders/courier/delivered",
+      "pathTemplate": "/api/orders/courier/delivered",
+      "parameters": [],
+      "requestBody": {
+        "$ref": "#/components/schemas/CourierActionRequest"
+      },
+      "responseSchema": {
+        "$ref": "#/components/schemas/Order"
+      }
+    },
+    {
+      "operationId": "getOpeningHours",
+      "method": "GET",
+      "path": "/api/admin/opening-hours",
+      "pathTemplate": "/api/admin/opening-hours",
+      "parameters": [],
+      "requestBody": null,
+      "responseSchema": {
+        "$ref": "#/components/schemas/OpeningHoursResponse"
+      }
+    },
+    {
+      "operationId": "updateOpeningHours",
+      "method": "POST",
+      "path": "/api/admin/opening-hours",
+      "pathTemplate": "/api/admin/opening-hours",
+      "parameters": [],
+      "requestBody": {
+        "$ref": "#/components/schemas/OpeningHoursUpdateRequest"
+      },
+      "responseSchema": {
+        "$ref": "#/components/schemas/OpeningHoursResponse"
+      }
+    },
+    {
+      "operationId": "listHolidayOverrides",
+      "method": "GET",
+      "path": "/api/admin/holiday-overrides",
+      "pathTemplate": "/api/admin/holiday-overrides",
+      "parameters": [
+        {
+          "name": "branchId",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "requestBody": null,
+      "responseSchema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/HolidayOverride"
+        }
+      }
+    },
+    {
+      "operationId": "createHolidayOverride",
+      "method": "POST",
+      "path": "/api/admin/holiday-overrides",
+      "pathTemplate": "/api/admin/holiday-overrides",
+      "parameters": [],
+      "requestBody": {
+        "$ref": "#/components/schemas/HolidayOverride"
+      },
+      "responseSchema": {
+        "$ref": "#/components/schemas/HolidayOverride"
+      }
+    },
+    {
+      "operationId": "createVoucher",
+      "method": "POST",
+      "path": "/api/admin/voucher/create",
+      "pathTemplate": "/api/admin/voucher/create",
+      "parameters": [],
+      "requestBody": {
+        "$ref": "#/components/schemas/VoucherCreateRequest"
+      },
+      "responseSchema": {
+        "$ref": "#/components/schemas/Voucher"
+      }
+    },
+    {
+      "operationId": "invalidateVoucher",
+      "method": "POST",
+      "path": "/api/admin/voucher/invalidate",
+      "pathTemplate": "/api/admin/voucher/invalidate",
+      "parameters": [],
+      "requestBody": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "responseSchema": {
+        "$ref": "#/components/schemas/Voucher"
+      }
+    },
+    {
+      "operationId": "listVouchers",
+      "method": "GET",
+      "path": "/api/admin/voucher/list",
+      "pathTemplate": "/api/admin/voucher/list",
+      "parameters": [],
+      "requestBody": null,
+      "responseSchema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Voucher"
+        }
+      }
+    },
+    {
+      "operationId": "refundOrder",
+      "method": "POST",
+      "path": "/api/admin/refund",
+      "pathTemplate": "/api/admin/refund",
+      "parameters": [],
+      "requestBody": {
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "responseSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "operationId": "assignCourier",
+      "method": "POST",
+      "path": "/api/admin/assign",
+      "pathTemplate": "/api/admin/assign",
+      "parameters": [],
+      "requestBody": {
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "type": "string"
+          },
+          "courierId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "responseSchema": {
+        "type": "object",
+        "properties": {
+          "courierToken": {
+            "type": "string"
+          },
+          "qrUrl": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    {
+      "operationId": "getMenu",
+      "method": "GET",
+      "path": "/api/menu",
+      "pathTemplate": "/api/menu",
+      "parameters": [],
+      "requestBody": null,
+      "responseSchema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Category"
+        }
+      }
+    },
+    {
+      "operationId": "createCategory",
+      "method": "POST",
+      "path": "/api/menu/category",
+      "pathTemplate": "/api/menu/category",
+      "parameters": [],
+      "requestBody": {
+        "$ref": "#/components/schemas/Category"
+      },
+      "responseSchema": {
+        "$ref": "#/components/schemas/Category"
+      }
+    },
+    {
+      "operationId": "updateCategory",
+      "method": "PUT",
+      "path": "/api/menu/category/{id}",
+      "pathTemplate": "/api/menu/category/{id}",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "requestBody": {
+        "$ref": "#/components/schemas/Category"
+      },
+      "responseSchema": {
+        "$ref": "#/components/schemas/Category"
+      }
+    },
+    {
+      "operationId": "createMenuItem",
+      "method": "POST",
+      "path": "/api/menu/item",
+      "pathTemplate": "/api/menu/item",
+      "parameters": [],
+      "requestBody": {
+        "$ref": "#/components/schemas/MenuItem"
+      },
+      "responseSchema": {
+        "$ref": "#/components/schemas/MenuItem"
+      }
+    },
+    {
+      "operationId": "updateMenuItem",
+      "method": "PUT",
+      "path": "/api/menu/item/{id}",
+      "pathTemplate": "/api/menu/item/{id}",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "requestBody": {
+        "$ref": "#/components/schemas/MenuItem"
+      },
+      "responseSchema": {
+        "$ref": "#/components/schemas/MenuItem"
+      }
+    },
+    {
+      "operationId": "createVariant",
+      "method": "POST",
+      "path": "/api/menu/variant",
+      "pathTemplate": "/api/menu/variant",
+      "parameters": [],
+      "requestBody": {
+        "$ref": "#/components/schemas/Variant"
+      },
+      "responseSchema": {
+        "$ref": "#/components/schemas/Variant"
+      }
+    },
+    {
+      "operationId": "setVariantAvailability",
+      "method": "PUT",
+      "path": "/api/menu/variant/{id}/availability",
+      "pathTemplate": "/api/menu/variant/{id}/availability",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "requestBody": {
+        "type": "object",
+        "properties": {
+          "available": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": true
+      },
+      "responseSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "operationId": "validateOffer",
+      "method": "POST",
+      "path": "/api/offers/validate",
+      "pathTemplate": "/api/offers/validate",
+      "parameters": [],
+      "requestBody": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "order": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      },
+      "responseSchema": {
+        "$ref": "#/components/schemas/OfferValidationResponse"
+      }
+    },
+    {
+      "operationId": "getMetrics",
+      "method": "GET",
+      "path": "/api/metrics",
+      "pathTemplate": "/api/metrics",
+      "parameters": [],
+      "requestBody": null,
+      "responseSchema": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    {
+      "operationId": "authLogin",
+      "method": "POST",
+      "path": "/login",
+      "pathTemplate": "/login",
+      "parameters": [],
+      "requestBody": {
+        "$ref": "#/components/schemas/CustomerLoginRequest"
+      },
+      "responseSchema": {
+        "$ref": "#/components/schemas/TokenResponse"
+      }
+    },
+    {
+      "operationId": "getRoot",
+      "method": "GET",
+      "path": "/",
+      "pathTemplate": "/",
+      "parameters": [],
+      "requestBody": null,
+      "responseSchema": {
+        "$ref": "#/components/schemas/GenericResponse"
+      }
+    },
+    {
+      "operationId": "postRoot",
+      "method": "POST",
+      "path": "/",
+      "pathTemplate": "/",
+      "parameters": [],
+      "requestBody": {
+        "$ref": "#/components/schemas/GenericRequest"
+      },
+      "responseSchema": {
+        "$ref": "#/components/schemas/GenericResponse"
+      }
+    },
+    {
+      "operationId": "patchRoot",
+      "method": "PATCH",
+      "path": "/",
+      "pathTemplate": "/",
+      "parameters": [],
+      "requestBody": {
+        "$ref": "#/components/schemas/GenericRequest"
+      },
+      "responseSchema": {
+        "$ref": "#/components/schemas/GenericResponse"
+      }
+    },
+    {
+      "operationId": "updateAddress",
+      "method": "PATCH",
+      "path": "/addresses/{addressId}",
+      "pathTemplate": "/addresses/{addressId}",
+      "parameters": [],
+      "requestBody": {
+        "$ref": "#/components/schemas/Address"
+      },
+      "responseSchema": {
+        "$ref": "#/components/schemas/Address"
+      }
+    },
+    {
+      "operationId": "deleteAddress",
+      "method": "DELETE",
+      "path": "/addresses/{addressId}",
+      "pathTemplate": "/addresses/{addressId}",
+      "parameters": [],
+      "requestBody": null,
+      "responseSchema": {
+        "$ref": "#/components/schemas/GenericResponse"
+      }
+    },
+    {
+      "operationId": "requestOtp",
+      "method": "POST",
+      "path": "/request-otp",
+      "pathTemplate": "/request-otp",
+      "parameters": [],
+      "requestBody": {
+        "$ref": "#/components/schemas/RequestMagicLinkRequest"
+      },
+      "responseSchema": {
+        "$ref": "#/components/schemas/GenericResponse"
+      }
+    },
+    {
+      "operationId": "verifyOtp",
+      "method": "POST",
+      "path": "/verify-otp",
+      "pathTemplate": "/verify-otp",
+      "parameters": [],
+      "requestBody": {
+        "$ref": "#/components/schemas/VerifyOtpRequest"
+      },
+      "responseSchema": {
+        "$ref": "#/components/schemas/TokenResponse"
+      }
+    },
+    {
+      "operationId": "postRefresh",
+      "method": "POST",
+      "path": "/refresh",
+      "pathTemplate": "/refresh",
+      "parameters": [],
+      "requestBody": {
+        "$ref": "#/components/schemas/CustomerRefreshRequest"
+      },
+      "responseSchema": {
+        "$ref": "#/components/schemas/TokenResponse"
+      }
+    },
+    {
+      "operationId": "getOrder",
+      "method": "GET",
+      "path": "/orders/{orderId}",
+      "pathTemplate": "/orders/{orderId}",
+      "parameters": [],
+      "requestBody": null,
+      "responseSchema": {
+        "$ref": "#/components/schemas/GenericResponse"
+      }
+    },
+    {
+      "operationId": "postReport",
+      "method": "POST",
+      "path": "/report",
+      "pathTemplate": "/report",
+      "parameters": [],
+      "requestBody": {
+        "$ref": "#/components/schemas/GenericRequest"
+      },
+      "responseSchema": {
+        "$ref": "#/components/schemas/GenericResponse"
+      }
+    },
+    {
+      "operationId": "getBranch",
+      "method": "GET",
+      "path": "/branches/{branchId}",
+      "pathTemplate": "/branches/{branchId}",
+      "parameters": [],
+      "requestBody": null,
+      "responseSchema": {
+        "$ref": "#/components/schemas/GenericResponse"
+      }
+    },
+    {
+      "operationId": "registerCustomer",
+      "method": "POST",
+      "path": "/register",
+      "pathTemplate": "/register",
+      "parameters": [],
+      "requestBody": {
+        "$ref": "#/components/schemas/CustomerRegisterRequest"
+      },
+      "responseSchema": {
+        "$ref": "#/components/schemas/TokenResponse"
+      }
+    },
+    {
+      "operationId": "getOrderStatus",
+      "method": "GET",
+      "path": "/orders/{orderId}/status",
+      "pathTemplate": "/orders/{orderId}/status",
+      "parameters": [],
+      "requestBody": null,
+      "responseSchema": {
+        "$ref": "#/components/schemas/GenericResponse"
+      }
+    },
+    {
+      "operationId": "applyOffer",
+      "method": "POST",
+      "path": "/apply",
+      "pathTemplate": "/apply",
+      "parameters": [],
+      "requestBody": {
+        "$ref": "#/components/schemas/GenericRequest"
+      },
+      "responseSchema": {
+        "$ref": "#/components/schemas/GenericResponse"
+      }
+    },
+    {
+      "operationId": "getBranchSlots",
+      "method": "GET",
+      "path": "/branches/{branchId}/slots",
+      "pathTemplate": "/branches/{branchId}/slots",
+      "parameters": [],
+      "requestBody": null,
+      "responseSchema": {
+        "$ref": "#/components/schemas/GenericResponse"
+      }
+    }
+  ]
+}

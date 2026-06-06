@@ -1,55 +1,32 @@
 import { prisma } from "../../prisma/client.js";
 export class DealService {
     static async getAll() {
-        return prisma.deal.findMany({
-            orderBy: { sort_order: "asc" },
-            include: {
-                items_included: {
-                    include: { item: true }
-                }
-            }
+        const db = prisma;
+        return db.deal.findMany({
+            orderBy: { name: "asc" },
         });
     }
     static async getById(id) {
-        return prisma.deal.findUnique({
-            where: { deal_id: id },
-            include: {
-                items_included: {
-                    include: { item: true }
-                }
-            }
+        const db = prisma;
+        return db.deal.findUnique({
+            where: { id },
         });
     }
     static async create(data) {
-        return prisma.deal.create({ data });
+        const db = prisma;
+        return db.deal.create({ data });
     }
     static async update(id, data) {
-        return prisma.deal.update({
-            where: { deal_id: id },
-            data
+        const db = prisma;
+        return db.deal.update({
+            where: { id },
+            data,
         });
     }
     static async remove(id) {
-        return prisma.deal.delete({
-            where: { deal_id: id }
-        });
-    }
-    // Add item to deal
-    static async addItem(dealId, itemId) {
-        return prisma.dealItem.create({
-            data: {
-                deal_id: dealId,
-                item_id: itemId
-            }
-        });
-    }
-    // Remove item from deal
-    static async removeItem(dealId, itemId) {
-        return prisma.dealItem.deleteMany({
-            where: {
-                deal_id: dealId,
-                item_id: itemId
-            }
+        const db = prisma;
+        return db.deal.delete({
+            where: { id },
         });
     }
 }

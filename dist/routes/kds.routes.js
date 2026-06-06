@@ -1,4 +1,5 @@
-import { Router } from "express";
+import express from "express";
+const { Router } = express;
 import { kdsAuth } from "../middleware/kdsAuth.js";
 import { KdsController } from "../controllers/kds/kds.controller.js";
 const router = Router();

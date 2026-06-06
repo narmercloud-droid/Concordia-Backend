@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Concordia API Documentation</title>
+    <style>body{font-family:system-ui,Arial;margin:32px}a{color:#0366d6}</style>
+  </head>
+  <body>
+    <h1>Concordia API Portal</h1>
+    <p>API spec: <a href="openapi/openapi.yaml">openapi/openapi.yaml</a></p>
+
+    <h2>Interactive Docs</h2>
+    <ul>
+      <li><a href="swagger/index.html">Swagger UI</a></li>
+      <li><a href="redoc/index.html">Redoc</a></li>
+    </ul>
+
+    <h2>SDKs</h2>
+    <ul>
+      <li><a href="../sdks/typescript/README.md">TypeScript SDK</a></li>
+      <li><a href="../sdks/python/README.md">Python SDK</a></li>
+      <li><a href="../sdks/csharp/README.md">C# SDK</a></li>
+      <li><a href="../sdks/swift/README.md">Swift SDK</a></li>
+      <li><a href="../sdks/kotlin/README.md">Kotlin SDK</a></li>
+    </ul>
+
+    <h2>Admin SDKs</h2>
+    <p>Admin SDKs provide access to protected administrative endpoints. Each SDK README includes installation and usage notes.</p>
+    <ul>
+      <li><a href="../sdks-admin/typescript/README.md">Admin TypeScript SDK</a></li>
+      <li><a href="../sdks-admin/python/README.md">Admin Python SDK</a></li>
+      <li><a href="../sdks-admin/csharp/README.md">Admin C# SDK</a></li>
+      <li><a href="../sdks-admin/swift/README.md">Admin Swift SDK</a></li>
+      <li><a href="../sdks-admin/kotlin/README.md">Admin Kotlin SDK</a></li>
+    </ul>
+
+    <h2>Authentication (BearerAuth)</h2>
+    <p>All protected endpoints use <code>BearerAuth</code>. Provide an HTTP header:</p>
+    <pre>Authorization: Bearer &lt;token&gt;</pre>
+
+    <h3>Admin Authentication Notes</h3>
+    <p>Admin endpoints require an administrator token obtained via the admin login endpoint. Typical flow:</p>
+    <ol>
+      <li>Call the admin login endpoint with credentials to receive a token.</li>
+      <li>Include the token in the <code>Authorization: Bearer &lt;token&gt;</code> header for subsequent admin calls.</li>
+    </ol>
+
+    <h3>Admin Examples</h3>
+    <h4>TypeScript (fetch)</h4>
+    <pre><code>import ConcordiaAdminClient from '../sdks-admin/typescript/dist/client';
+  const client = new ConcordiaAdminClient('https://api.concordia.app');
+  const auth = await client.adminAuthLogin({ username: 'admin', password: 'secret' });
+  const token = auth.token;
+  const admin = new ConcordiaAdminClient('https://api.concordia.app', token);
+  const orders = await admin.adminListOrders();
+  console.log(orders);
+    </code></pre>
+
+    <h4>Python (requests)</h4>
+    <pre><code>from concordia_admin_client import ConcordiaAdminClient
+  client = ConcordiaAdminClient()
+  auth = client.adminAuthLogin({'username':'admin','password':'secret'})
+  token = auth.get('token')
+  admin = ConcordiaAdminClient(token=token)
+  orders = admin.adminListOrders()
+  print(orders)
+    </code></pre>
+
+    <h3>Examples</h3>
+    <ul>
+      <li><strong>TypeScript (fetch)</strong>: <code>headers: { Authorization: `Bearer ${token}` }</code></li>
+      <li><strong>Python (requests)</strong>: <code>headers={'Authorization': f'Bearer {token}'}</code></li>
+      <li><strong>C# (.NET)</strong>: <code>client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);</code></li>
+      <li><strong>Swift (URLSession)</strong>: <code>request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")</code></li>
+      <li><strong>Kotlin (Ktor)</strong>: set the header <code>Authorization: Bearer &lt;token&gt;</code> on requests.</li>
+    </ul>
+
+    <h2>Environments</h2>
+    <ul>
+      <li>Production: <a href="https://api.concordia.app">https://api.concordia.app</a></li>
+      <li>Staging: <a href="https://staging-api.concordia.app">https://staging-api.concordia.app</a></li>
+    </ul>
+
+    <h2>API Versioning</h2>
+    <p>Current API version: <strong>1.0.0</strong>. The OpenAPI spec includes the version in the `info.version` field.</p>
+
+    <h2>Changelog</h2>
+    <p>See the project changelog for release notes and migration guidance: <a href="CHANGELOG.md">CHANGELOG.md</a></p>
+
+    <h2>Deprecation Policy</h2>
+    <p>Breaking changes will be announced with a <strong>90-day</strong> notice. Deprecated endpoints will be marked in the OpenAPI spec with <code>deprecated: true</code>. SDKs will be updated prior to removal and communicated in the changelog.</p>
+
+    <h2>Error Handling</h2>
+    <p>All error responses follow a standard shape with `error`, `message`, and `code` fields. Example:</p>
+    <pre>{ "error": "BadRequest", "message": "Invalid payload", "code": "INVALID_PAYLOAD", "details": null }</pre>
+
+    <h2>Rate Limits</h2>
+    <p>Responses include rate-limit headers: <code>X-RateLimit-Limit</code>, <code>X-RateLimit-Remaining</code>, and <code>X-RateLimit-Reset</code>. Clients should back off when <code>X-RateLimit-Remaining</code> is low.</p>
+
+    <h2>Retry Guidance</h2>
+    <p>For idempotent operations, consider retrying on transient failures (5xx) with exponential backoff. Respect <code>Retry-After</code> when provided (429 responses).</p>
+
+    <h2>Mock Server & Testing</h2>
+    <p>Run the local mock server for integration and SDK testing on port <strong>4000</strong>. See <a href="../mock-server/README.md">/mock-server/README.md</a> for usage and webhook simulation.</p>
+    <h3>Response Overrides</h3>
+    <p>Use the runtime override API at <code>/__overrides</code> to force specific responses for routes. POST a JSON map of overrides to merge, or DELETE to clear all overrides.</p>
+
+    <hr />
+    <p>Generated docs and SDKs. For full API spec, see <a href="openapi/openapi.yaml">openapi/openapi.yaml</a>.</p>
+  </body>
+</html>

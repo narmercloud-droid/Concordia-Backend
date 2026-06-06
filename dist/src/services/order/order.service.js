@@ -1,18 +1,30 @@
 import { prisma } from "../../prisma/client.js";
-import { OrderSocket } from "../../socket/order.socket";
+import { randomUUID } from "crypto";
+import { OrderSocket } from "../../socket/order.socket.js";
+import { OrderLifecycleService } from "./orderLifecycle.service.js";
+function buildOrderItems(items) {
+    return items.map(item => ({
+        id: randomUUID(),
+        quantity: item.quantity ?? 1,
+        notes: item.notes ?? null,
+        price: item.price,
+        variantId: item.variantId,
+        addOnIds: item.addOnIds ?? [],
+        item: {
+            connect: { id: item.itemId }
+        }
+    }));
+}
 export class OrderService {
-    // -----------------------------------------------------
-    // CREATE ORDER
-    // -----------------------------------------------------
     static async createOrder(orderData) {
         const { branchId, customerId, isGuest = false, paymentMethod, items } = orderData;
         if (!items || items.length === 0) {
             throw new Error("Order must have at least one item");
         }
-        // Calculate total
-        const total = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
         const order = await prisma.order.create({
             data: {
+                id: randomUUID(),
                 branchId,
                 customerId,
                 isGuest,
@@ -20,14 +32,7 @@ export class OrderService {
                 paymentStatus: "pending",
                 status: "pending",
                 items: {
-                    create: items.map(item => ({
-                        itemId: item.itemId,
-                        variantId: item.variantId,
-                        addOnIds: item.addOnIds,
-                        quantity: item.quantity,
-                        notes: item.notes,
-                        price: item.price
-                    }))
+                    create: buildOrderItems(items)
                 }
             },
             include: {
@@ -37,8 +42,8 @@ export class OrderService {
         this.emitOrderStatus(order);
         return order;
     }
-    static emitOrderStatus(order) {
-        const { getIO } = require("../../lib/socket");
+    static async emitOrderStatus(order) {
+        const { getIO } = await import("../../lib/socket.js");
         const payload = {
             orderId: order.id,
             terminal_id: order.terminal_id,
@@ -47,47 +52,25 @@ export class OrderService {
         };
         getIO().to(`branch_${order.branchId}`).emit("order_status", payload);
     }
-    // -----------------------------------------------------
-    // UPDATE ORDER STATUS (with printing + ETA)
-    // -----------------------------------------------------
     static async updateStatus(orderId, status, estimated_time) {
-        const order = await prisma.order.update({
-            where: { id: orderId },
-            data: {
-                status,
-                scheduledFor: estimated_time ? new Date(Date.now() + estimated_time * 60000) : undefined
-            },
-            include: {
-                items: true
-            }
-        });
-        // Trigger printing when order is accepted/preparing
+        const updatedOrder = await OrderLifecycleService.updateStatus(orderId, status, estimated_time ? new Date(Date.now() + estimated_time * 60000) : undefined);
         if (status === "preparing") {
             try {
-                const { PrintService } = await import("../../printers/print.service");
-                await PrintService.printOrder(order.id);
+                const { PrintService } = await import("../../services/print/print.service.js");
+                await PrintService.printOrder(updatedOrder.id);
             }
             catch (error) {
                 console.error("Failed to print order:", error);
             }
         }
-        OrderSocket.orderUpdated(order);
-        return order;
+        OrderSocket.orderUpdated(updatedOrder);
+        return updatedOrder;
     }
-    // -----------------------------------------------------
-    // COURIER PICKUP (QR CODE SCAN)
-    // -----------------------------------------------------
     static async courierPickup(orderId) {
-        const order = await prisma.order.update({
-            where: { id: orderId },
-            data: { status: "picked_up" }
-        });
-        OrderSocket.orderUpdated(order);
-        return order;
+        const updatedOrder = await OrderLifecycleService.updateStatus(orderId, "picked_up");
+        OrderSocket.orderUpdated(updatedOrder);
+        return updatedOrder;
     }
-    // -----------------------------------------------------
-    // GET ACTIVE ORDERS (Kitchen Dashboard)
-    // -----------------------------------------------------
     static async getActiveOrders() {
         return prisma.order.findMany({
             where: {
@@ -101,9 +84,6 @@ export class OrderService {
             }
         });
     }
-    // -----------------------------------------------------
-    // GET ORDER BY ID
-    // -----------------------------------------------------
     static async getOrderById(orderId) {
         return prisma.order.findUnique({
             where: { id: orderId },

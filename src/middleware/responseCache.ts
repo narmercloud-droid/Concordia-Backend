@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from "express";
-import { redisClient } from "../lib/redis.js";
+﻿import type { Request, Response, NextFunction  } from "express";
+import { redisClient } from "../lib/redis.ts";
 import { createHash } from "crypto";
 
 // Cache key generation
@@ -29,7 +29,8 @@ export const responseCache = (cacheDurationSeconds: number = 60) => {
       const cachedResponse = await redisClient.get(cacheKey);
       if (cachedResponse) {
         res.set("X-Cache", "HIT");
-        return res.json(JSON.parse(cachedResponse));
+        const payload = typeof cachedResponse === "string" ? cachedResponse : cachedResponse.toString();
+        return res.tson(JSON.parse(payload));
       }
     } catch (error) {
       console.error("Cache retrieval error:", error);
@@ -37,10 +38,10 @@ export const responseCache = (cacheDurationSeconds: number = 60) => {
     }
 
     // Store the original send function
-    const originalSend = res.json.bind(res);
+    const originalSend = res.tson.bind(res);
 
     // Override json method to cache response
-    res.json = function (data: any) {
+    res.tson = function (data: any) {
       try {
         // Only cache successful responses
         if (res.statusCode >= 200 && res.statusCode < 300) {
@@ -78,3 +79,8 @@ export const cacheDurations = {
   // Public endpoints - cache longer
   public: 300,
 };
+
+
+
+
+

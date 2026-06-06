@@ -1,23 +1,14 @@
 import { ltvChurnService } from "../services/ltvChurn.service.js";
+import { wrap } from "../contracts/api.js";
 export const LtvChurnController = {
-    segment: async (req, res, next) => {
-        try {
-            const customerId = req.params.customerId;
-            const result = await ltvChurnService.segment(customerId);
-            res.json(result);
-        }
-        catch (err) {
-            next(err);
-        }
-    },
-    branchSegments: async (req, res, next) => {
-        try {
-            const branchId = req.user.branchId;
-            const result = await ltvChurnService.branchSegments(branchId);
-            res.json(result);
-        }
-        catch (err) {
-            next(err);
-        }
-    },
+    segment: wrap(async (req) => {
+        const customerId = req.params.customerId;
+        const result = await ltvChurnService.segment(customerId);
+        return result;
+    }),
+    branchSegments: wrap(async (req) => {
+        const branchId = req.user.branchId;
+        const result = await ltvChurnService.branchSegments(branchId);
+        return result;
+    }),
 };

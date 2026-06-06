@@ -1,9 +1,13 @@
-import { Router } from "express";
-import { TerminalController } from "../controllers/terminal/terminal.controller.js";
-import { validateTerminalToken } from "../middleware/terminalAuth.js";
-import { validate } from "../middleware/validate.js";
-import { activateTerminalSchema, registerTerminalSchema, loginTerminalSchema } from "../schemas/terminalSchemas.js";
-import { assignOrderSchema, acceptOrderSchema, rejectOrderSchema } from "../schemas/orderWorkflowSchemas.js";
+﻿import express from "express";
+const { Router } = express;
+import { TerminalController } from "../controllers/terminal/terminal.controller.ts";
+import { validateTerminalToken, terminalAuth } from "../middleware/terminalAuth.ts";
+import { validate } from "../middleware/validate.ts";
+import { activateTerminalSchema, registerTerminalSchema, loginTerminalSchema } from "../schemas/terminalSchemas.ts";
+import { assignOrderSchema, acceptOrderSchema, rejectOrderSchema } from "../schemas/orderWorkflowSchemas.ts";
+import { updateTerminalHeartbeat } from "../services/terminal/terminalStatus.service.ts";
+import { reportTerminalError } from "../services/terminal/terminalError.service.ts";
+import { acceptOrder, rejectOrder } from "../controllers/terminal/terminalOrders.controller.ts";
 
 const router = Router();
 
@@ -17,6 +21,27 @@ router.post("/orders/:order_id/reject", validateTerminalToken, validate(rejectOr
 router.post("/orders/:order_id/acknowledge", validateTerminalToken, TerminalController.acknowledgeOrder);
 router.get("/orders/stream", validateTerminalToken, TerminalController.ordersStream);
 
+// New terminal observability routes
+router.post("/heartbeat", terminalAuth, async (req, res) => {
+  await updateTerminalHeartbeat(req.terminal);
+  return res.tson({ ok: true });
+});
+
+router.post("/error", terminalAuth, async (req, res) => {
+  const { message, severity } = req.body;
+  await reportTerminalError(req.terminal, message, severity);
+  return res.tson({ ok: true });
+});
+
+router.post("/orders/:orderId/accept", terminalAuth, acceptOrder);
+router.post("/orders/:orderId/reject", terminalAuth, rejectOrder);
+
 export default router;
+
+
+
+
+
+
 
 

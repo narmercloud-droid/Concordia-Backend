@@ -1,0 +1,12 @@
+feat(test-suite): establish SDK Test Baseline v1.0
+
+- Added full contract-test infrastructure (TypeScript + Python adapters)
+- Added OpenAPI dereferencing and Ajv schema validation
+- Added deterministic request/response generation
+- Added explicit operationId → SDK method mappings
+- Removed pseudo-operations from manifest generation
+- Added mapping coverage + SDK method inspection tools
+- Updated CI workflow to run full SDK test suite
+- Achieved 100% passing tests (136/136)
+
+This commit establishes the stable baseline for all future API, schema, and SDK changes.

@@ -1,8 +1,9 @@
-import { Router } from "express";
-import { NotificationsController } from "../controllers/notifications.controller.js";
-import { customerAuth } from "../middleware/customerAuth.js";
-import { adminAuth } from "../middleware/adminAuth.js";
-import { adminRole } from "../middleware/adminRole.js";
+﻿import express from "express";
+const { Router } = express;
+import { NotificationsController } from "../controllers/notifications.controller.ts";
+import { customerAuth } from "../middleware/customerAuth.ts";
+import { adminAuth } from "../middleware/adminAuth.ts";
+import { adminRole } from "../middleware/adminRole.ts";
 
 const router = Router();
 
@@ -18,4 +19,10 @@ router.post(
 );
 
 export default router;
+
+
+
+
+
+
 

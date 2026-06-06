@@ -1,4 +1,5 @@
-import { prisma } from "../prisma/client.js";
+﻿import { randomUUID } from "crypto";
+import { prisma } from "../prisma/client.ts";
 
 export class SearchService {
   async searchMenu(query: string, customerId?: string): Promise<any[]> {
@@ -23,10 +24,7 @@ export class SearchService {
   async searchBranches(query: string): Promise<any[]> {
     return prisma.branch.findMany({
       where: {
-        OR: [
-          { name: { contains: query, mode: "insensitive" } },
-          { cuisine: { contains: query, mode: "insensitive" } }
-        ]
+        name: { contains: query, mode: "insensitive" }
       }
     });
   }
@@ -41,7 +39,10 @@ export class SearchService {
 
   async recordSearch(query: string): Promise<any> {
     return prisma.searchLog.create({
-      data: { query }
+      data: {
+        id: randomUUID(),
+        query
+      }
     });
   }
 
@@ -56,3 +57,7 @@ export class SearchService {
 }
 
 export const searchService = new SearchService();
+
+
+
+

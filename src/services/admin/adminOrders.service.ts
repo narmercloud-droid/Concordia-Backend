@@ -1,4 +1,5 @@
-import { prisma } from "../../prisma/client.js";
+﻿import { prisma } from "../../prisma/client.ts";
+import { OrderLifecycleService } from "../order/orderLifecycle.service.ts";
 
 export class AdminOrdersService {
   static async getAll(branchId: string, filters: {
@@ -55,15 +56,14 @@ export class AdminOrdersService {
   }
 
   static async updateStatus(orderId: string, branchId: string, status: string, estimatedTime?: number) {
-    const updated = await prisma.order.updateMany({
-      where: { id: orderId, branchId },
-      data: {
-        status,
-        scheduledFor: estimatedTime ? new Date(Date.now() + estimatedTime * 60000) : undefined
-      }
-    });
+    const order = await prisma.order.findFirst({ where: { id: orderId, branchId } });
+    if (!order) throw new Error("Order not found for branch");
 
-    if (updated.count === 0) throw new Error("Order not found for branch");
+    await OrderLifecycleService.updateStatus(
+      orderId,
+      status,
+      estimatedTime ? new Date(Date.now() + estimatedTime * 60000) : undefined
+    );
 
     return prisma.order.findUnique({
       where: { id: orderId },
@@ -74,18 +74,15 @@ export class AdminOrdersService {
   }
 
   static async assignCourier(orderId: string, branchId: string, courierToken: string) {
-    const updated = await prisma.order.updateMany({
-      where: { id: orderId, branchId },
-      data: { courierToken }
-    });
+    const order = await prisma.order.findFirst({ where: { id: orderId, branchId } });
+    if (!order) throw new Error("Order not found for branch");
 
-    if (updated.count === 0) throw new Error("Order not found for branch");
+    await OrderLifecycleService.setCourierToken(orderId, courierToken, new Date(Date.now() + 1000 * 60 * 60 * 3));
 
-    return prisma.order.findUnique({
-      where: { id: orderId },
-      include: {
-        customer: true
-      }
-    });
+    return prisma.order.findUnique({ where: { id: orderId }, include: { customer: true } });
   }
 }
+
+
+
+

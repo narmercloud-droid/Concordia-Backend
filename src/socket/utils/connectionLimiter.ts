@@ -188,14 +188,13 @@ export const disconnectIP = (socket: any, clientIP: string): void => {
 /**
  * Kick all connections from a namespace
  */
-export const disconnectNamespace = (namespace: string, reason: string = "Server reset"): void => {
+export const disconnectNamespace = (namespace: string, _reason: string = "Server reset"): void => {
   if (!namespaceConnections.has(namespace)) return;
 
   const nsState = namespaceConnections.get(namespace)!;
   
   for (const socketId of nsState.sockets) {
-    // Note: This requires access to the actual socket instance
-    // Best called from within the namespace connection handler
+    void socketId;
   }
 
   namespaceConnections.delete(namespace);

@@ -1,13 +1,9 @@
 import { cartService } from "../services/cart.service.js";
+import { wrap } from "../contracts/api.js";
 export const CartController = {
-    checkout: async (req, res, next) => {
-        try {
-            const customerId = req.user.id;
-            const summary = await cartService.checkout(customerId, req.body);
-            res.json(summary);
-        }
-        catch (err) {
-            next(err);
-        }
-    }
+    checkout: wrap(async (req) => {
+        const customerId = req.user.id;
+        const summary = await cartService.checkout(customerId, req.body);
+        return summary;
+    })
 };

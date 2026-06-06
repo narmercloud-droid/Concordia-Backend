@@ -1,23 +1,41 @@
+# Node dependencies
 node_modules
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Build output
 dist
-.env*
-logs
-.git
-.gitignore
-README.md
-Dockerfile*
-docker-compose*
-.dockerignore
-.github
-k8s
+build
 coverage
 .nyc_output
+
+# Environment files
+.env
+.env.*
+
+# Logs
+logs
 *.log
-.vscode
-.idea
-*.swp
-*.swo
-*~
+
+# Git
+.git
+.gitignore
+.gitmodules
+.gitworktrees
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose*
+
+# Temporary files
+tmp
+temp
+*.tmp
+
+# Allow prisma_clean
+!prisma_clean
+!prisma_clean/**

@@ -1,50 +1,39 @@
-import type { AuthenticatedRequest } from "../globalTypes.js";
-import { Response, NextFunction } from "express";
-import { paymentsService } from "../services/payments.service.js";
-import { prisma } from "../prisma/client.js";
+﻿import type { AuthenticatedRequest } from "../globalTypes.ts";
+import type { Request } from "express";
+import { paymentsService } from "../services/payments.service.ts";
+import { wrap } from "../contracts/api.js";
 
 export const PaymentsController = {
   // STRIPE
-  createStripeIntent: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    try {
-      const { orderId, amount } = req.body;
-      const intent = await paymentsService.createStripePaymentIntent(orderId, amount);
-      res.json({ clientSecret: intent.client_secret });
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  createStripeIntent: wrap(async (req: AuthenticatedRequest) => {
+    const { orderId, amount } = req.body;
+    const intent = await paymentsService.createStripePaymentIntent(orderId, amount);
+    return { clientSecret: intent.client_secret };
+  }),
 
   // PAYPAL
-  createPayPalOrder: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    try {
-      const { orderId, amount } = req.body;
-      const order = await paymentsService.createPayPalOrder(orderId, amount);
-      res.json(order);
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  createPayPalOrder: wrap(async (req: AuthenticatedRequest) => {
+    const { orderId, amount } = req.body;
+    const order = await paymentsService.createPayPalOrder(orderId, amount);
+    return order;
+  }),
 
-  capturePayPalOrder: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    try {
-      const { orderId } = req.body;
-      const result = await paymentsService.capturePayPalOrder(orderId);
-      res.json(result);
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  capturePayPalOrder: wrap(async (req: AuthenticatedRequest) => {
+    const { orderId } = req.body;
+    const result = await paymentsService.capturePayPalOrder(orderId);
+    return result;
+  }),
 
   // REFUND
-  refund: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    try {
-      const order = await paymentsService.refund(req.params.id);
-      res.json(order);
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+  refund: wrap(async (req: AuthenticatedRequest & Request) => {
+    const order = await paymentsService.refund(req.params.id);
+    return order;
+  })
 };
+
+
+
+
+
 
 

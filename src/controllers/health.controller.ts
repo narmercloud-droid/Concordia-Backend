@@ -1,25 +1,17 @@
-import { Request, Response } from "express";
+﻿import type { Request } from "express";
 import { PrismaClient } from "@prisma/client";
-import { redisClient } from "../lib/redis.js";
-import logger from "../lib/logger.js";
-import { success, fail } from "./controllerHelper.js";
+import { redisClient } from "../lib/redis.ts";
+import logger from "../lib/logger.ts";
+import { wrap, fail } from "../contracts/api.js";
 
 const prisma = new PrismaClient();
 
 export const HealthController = {
-  /**
-   * GET /health/live
-   * Basic liveness check - returns OK if service is running
-   */
-  async liveness(req: Request, res: Response) {
-    return success(res, { status: "ok" }, "Service is alive");
+  async liveness(_req: Request) {
+    return { status: "ok" };
   },
 
-  /**
-   * GET /health/ready
-   * Readiness check - verifies all dependencies are available
-   */
-  async readiness(req: Request, res: Response) {
+  readiness: wrap(async (_req: Request) => {
     const healthCheck = {
       uptime: process.uptime(),
       timestamp: Date.now(),
@@ -50,7 +42,7 @@ export const HealthController = {
 
     try {
       // Check Socket.IO server status (basic check)
-      const { getIO } = await import("../lib/socket.js");
+      const { getIO } = await import("../lib/socket.ts");
       const io = getIO();
       healthCheck.services.socketio = io ? "up" : "down";
     } catch (error) {
@@ -61,17 +53,13 @@ export const HealthController = {
     const isReady = Object.values(healthCheck.services).every(status => status === "up");
 
     if (isReady) {
-      return success(res, healthCheck, "All services are ready");
+      return healthCheck;
     } else {
-      return fail(res, "SERVICE_UNAVAILABLE", "One or more services are not ready", 503);
+      throw fail('SERVICE_UNAVAILABLE', 'One or more services are not ready');
     }
-  },
+  }),
 
-  /**
-   * GET /health
-   * Comprehensive health check (legacy endpoint)
-   */
-  async comprehensive(req: Request, res: Response) {
+  comprehensive: wrap(async (_req: Request) => {
     const healthCheck = {
       uptime: process.uptime(),
       message: "OK",
@@ -103,7 +91,7 @@ export const HealthController = {
 
     try {
       // Check Socket.IO server status
-      const { getIO } = await import("../lib/socket.js");
+      const { getIO } = await import("../lib/socket.ts");
       const io = getIO();
       healthCheck.services.socketio = io ? "up" : "down";
     } catch (error) {
@@ -114,9 +102,13 @@ export const HealthController = {
     const isHealthy = Object.values(healthCheck.services).every(status => status === "up");
 
     if (isHealthy) {
-      return success(res, healthCheck, "Health check passed");
+      return healthCheck;
     } else {
-      return fail(res, "SERVICE_UNAVAILABLE", "One or more services are down", 503);
+      throw fail('SERVICE_UNAVAILABLE', 'One or more services are down');
     }
-  }
+  })
 };
+
+
+
+

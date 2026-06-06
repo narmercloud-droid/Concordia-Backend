@@ -1,16 +1,13 @@
+var _a;
 import { OrderMonitorService } from "../../services/admin/orderMonitor.service.js";
+import { wrap } from "../../contracts/api.js";
 export class OrderMonitorController {
-    // -----------------------------------------------------
-    // GET LIVE ORDERS
-    // -----------------------------------------------------
-    static async getLiveOrders(_req, res, next) {
-        try {
-            const orders = await OrderMonitorService.getLiveOrders();
-            res.json(orders);
-            return;
-        }
-        catch (err) {
-            next(err);
-        }
-    }
 }
+_a = OrderMonitorController;
+// -----------------------------------------------------
+// GET LIVE ORDERS
+// -----------------------------------------------------
+OrderMonitorController.getLiveOrders = wrap(async (_req) => {
+    const orders = await OrderMonitorService.getLiveOrders();
+    return orders;
+});

@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import { prisma } from "../prisma/client.js";
 export class SearchService {
     async searchMenu(query, customerId) {
@@ -20,10 +21,7 @@ export class SearchService {
     async searchBranches(query) {
         return prisma.branch.findMany({
             where: {
-                OR: [
-                    { name: { contains: query, mode: "insensitive" } },
-                    { cuisine: { contains: query, mode: "insensitive" } }
-                ]
+                name: { contains: query, mode: "insensitive" }
             }
         });
     }
@@ -36,7 +34,10 @@ export class SearchService {
     }
     async recordSearch(query) {
         return prisma.searchLog.create({
-            data: { query }
+            data: {
+                id: randomUUID(),
+                query
+            }
         });
     }
     async topSearches() {

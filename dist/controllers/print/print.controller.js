@@ -1,13 +1,11 @@
+var _a;
 import { PrintService } from "../../services/print/print.service.js";
+import { wrap } from "../../contracts/api.js";
 export class PrintController {
-    static async printOrder(req, res, next) {
-        try {
-            const { id } = req.params;
-            await PrintService.printOrder(id);
-            res.json({ success: true, message: "Printed successfully" });
-        }
-        catch (err) {
-            next(err);
-        }
-    }
 }
+_a = PrintController;
+PrintController.printOrder = wrap(async (req) => {
+    const { id } = req.params;
+    await PrintService.printOrder(id);
+    return { success: true, message: "Printed successfully" };
+});

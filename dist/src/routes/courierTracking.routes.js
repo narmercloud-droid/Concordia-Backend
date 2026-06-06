@@ -1,4 +1,5 @@
-import { Router } from "express";
+import express from "express";
+const { Router } = express;
 import { CourierTrackingController } from "../controllers/courierTracking.controller.js";
 import { courierAuth } from "../middleware/courierAuth.js";
 import { customerAuth } from "../middleware/customerAuth.js";

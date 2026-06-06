@@ -11,9 +11,10 @@ export async function validateTerminalToken(req, res, next) {
         if (!terminal) {
             return res.status(401).json({ error: "Invalid or missing terminal token" });
         }
-        req.terminal = {
-            terminal_id: terminal.id,
-            branch_id: terminal.branch_id,
+        req.user = {
+            id: terminal.id,
+            role: "terminal",
+            branchId: terminal.branchId,
         };
         next();
     }
@@ -22,3 +23,23 @@ export async function validateTerminalToken(req, res, next) {
         return res.status(500).json({ error: "Internal server error" });
     }
 }
+export const terminalAuth = async (req, res, next) => {
+    try {
+        const token = req.headers["x-terminal-token"];
+        const terminalId = req.headers["x-terminal-id"];
+        if (!token || !terminalId) {
+            return res.status(401).json({ error: "Missing terminal credentials" });
+        }
+        const terminal = await prisma.terminal.findFirst({
+            where: { id: terminalId, activation_token: token }
+        });
+        if (!terminal) {
+            return res.status(401).json({ error: "Invalid terminal credentials" });
+        }
+        req.terminal = terminal;
+        next();
+    }
+    catch (err) {
+        next(err);
+    }
+};

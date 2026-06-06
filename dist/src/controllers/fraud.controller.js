@@ -1,10 +1,11 @@
 import { fraudService } from "../services/fraud.service.js";
+import { success } from "./controllerHelper.js";
 export const FraudController = {
     scoreOrder: async (req, res, next) => {
         try {
             const { orderId } = req.body;
             const result = await fraudService.scoreOrder(orderId);
-            res.json(result);
+            return success(res, result);
         }
         catch (err) {
             next(err);
@@ -14,7 +15,7 @@ export const FraudController = {
         try {
             const { orderId } = req.params;
             const result = await fraudService.getRisk(orderId);
-            res.json(result);
+            return success(res, result);
         }
         catch (err) {
             next(err);
@@ -23,7 +24,7 @@ export const FraudController = {
     flags: async (req, res, next) => {
         try {
             const flags = await fraudService.getFlags();
-            res.json(flags);
+            return success(res, flags);
         }
         catch (err) {
             next(err);
@@ -33,7 +34,7 @@ export const FraudController = {
         try {
             const { orderId } = req.params;
             const events = await fraudService.getOrderEvents(orderId);
-            res.json(events);
+            return success(res, events);
         }
         catch (err) {
             next(err);

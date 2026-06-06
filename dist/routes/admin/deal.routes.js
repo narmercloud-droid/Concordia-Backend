@@ -1,4 +1,5 @@
-import { Router } from "express";
+import express from "express";
+const { Router } = express;
 import { DealController } from "../../controllers/admin/deal.controller.js";
 import { verifyAdmin } from "../../middleware/auth.js";
 const router = Router();

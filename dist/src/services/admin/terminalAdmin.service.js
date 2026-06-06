@@ -1,15 +1,13 @@
 import { prisma } from "../../prisma/client.js";
 export class TerminalAdminService {
     static async getAllTerminals() {
-        return await prisma.branchTerminal.findMany({
+        return await prisma.terminal.findMany({
             select: {
                 id: true,
                 name: true,
-                branch_id: true,
-                status: true,
-                is_online: true,
-                last_seen: true,
-                terminal_token: true,
+                branchId: true,
+                isOnline: true,
+                lastSeen: true,
                 createdAt: true,
                 branch: {
                     select: {
@@ -21,32 +19,22 @@ export class TerminalAdminService {
         });
     }
     static async getTerminalActivity() {
-        const terminals = await prisma.branchTerminal.findMany({
+        const terminals = await prisma.terminal.findMany({
             select: {
                 id: true,
                 name: true,
-                branch_id: true,
-                last_seen: true,
-                is_online: true,
-                orders: {
-                    select: {
-                        order_id: true,
-                        status: true,
-                        createdAt: true,
-                    },
-                    orderBy: { createdAt: "desc" },
-                    take: 10,
-                },
+                branchId: true,
+                lastSeen: true,
+                isOnline: true,
             },
-            orderBy: { last_seen: "desc" },
+            orderBy: { lastSeen: "desc" },
         });
-        return terminals.map(terminal => ({
+        return terminals.map((terminal) => ({
             terminal_id: terminal.id,
             name: terminal.name,
-            branch_id: terminal.branch_id,
-            last_seen: terminal.last_seen,
-            is_online: terminal.is_online,
-            recent_orders: terminal.orders,
+            branch_id: terminal.branchId,
+            lastSeen: terminal.lastSeen,
+            isOnline: terminal.isOnline,
         }));
     }
 }

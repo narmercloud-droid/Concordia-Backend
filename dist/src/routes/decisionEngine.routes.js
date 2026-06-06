@@ -1,4 +1,5 @@
-import { Router } from "express";
+import express from "express";
+const { Router } = express;
 import { DecisionEngineController } from "../controllers/decisionEngine.controller.js";
 import { adminAuth } from "../middleware/adminAuth.js";
 import { adminRole } from "../middleware/adminRole.js";

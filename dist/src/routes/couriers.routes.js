@@ -1,8 +1,9 @@
-import { Router } from "express";
+import express from "express";
+const { Router } = express;
 import { CouriersController } from "../controllers/couriers.controller.js";
 import { courierAuth } from "../middleware/courierAuth.js";
 const router = Router();
-// Courier scans QR → claims order
+// Courier scans QR â†’ claims order
 router.post("/claim", CouriersController.claim);
 // Courier updates status (picked_up, delivered)
 router.post("/status", courierAuth, CouriersController.updateStatus);

@@ -1,36 +1,35 @@
 import { prisma } from "../prisma/client.js";
 import { TerminalService } from "../services/terminal/terminal.service.js";
+import logger from "../logger.js";
 export function registerTerminalEvents(io, socket) {
     socket.on("terminal_connected", async () => {
         const terminalToken = socket.handshake.auth?.terminal_token;
         if (!terminalToken) {
-            console.log("Terminal socket connection failed: no terminal_token");
+            logger.warn("Terminal socket connection failed: no terminal_token");
             socket.disconnect();
             return;
         }
         try {
             const terminal = await TerminalService.loginTerminal(terminalToken);
             socket.data.terminal_id = terminal.id;
-            socket.data.branch_id = terminal.branch_id;
+            socket.data.branch_id = terminal.branchId;
             socket.join(`terminal_${terminal.id}`);
-            socket.join(`branch_${terminal.branch_id}`);
-            console.log(`Terminal socket connection: ${terminal.name} (ID: ${terminal.id})`);
-            // Emit to admin dashboard
-            const { getIO } = await import("../lib/socket");
+            socket.join(`branch_${terminal.branchId}`);
+            const { getIO } = await import("../lib/socket.js");
             getIO().to("admin_dashboard").emit("terminal_online", {
                 terminal_id: terminal.id,
-                is_online: true,
-                last_seen: new Date(),
+                isOnline: true,
+                lastSeen: new Date(),
             });
         }
         catch (err) {
-            console.log(`Terminal socket connection failed: ${err.message}`);
+            logger.warn({ err }, "Terminal socket connection failed");
             socket.disconnect();
         }
     });
     socket.on("printer_status", async (data) => {
         try {
-            const status = data?.status ?? 'offline';
+            const status = data?.status ?? "offline";
             const payload = {
                 terminal_id: socket.data.terminal_id,
                 branch_id: socket.data.branch_id,
@@ -41,30 +40,28 @@ export function registerTerminalEvents(io, socket) {
             io.to("admin_dashboard").emit("printer_status_update", payload);
         }
         catch (err) {
-            console.error(`Error forwarding printer status: ${err.message}`);
+            logger.error({ err }, "Error forwarding printer status");
         }
     });
     socket.on("disconnect", async () => {
         try {
             if (socket.data.terminal_id) {
-                await prisma.branchTerminal.update({
+                await prisma.terminal.update({
                     where: { id: socket.data.terminal_id },
                     data: {
-                        is_online: false,
-                        last_seen: new Date(),
+                        isOnline: false,
+                        lastSeen: new Date(),
                     },
                 });
-                console.log(`Terminal ${socket.data.terminal_id} marked offline on disconnect`);
-                // Emit to admin dashboard
                 io.to("admin_dashboard").emit("terminal_offline", {
                     terminal_id: socket.data.terminal_id,
-                    is_online: false,
-                    last_seen: new Date(),
+                    isOnline: false,
+                    lastSeen: new Date(),
                 });
             }
         }
         catch (err) {
-            console.error(`Error updating terminal offline status: ${err.message}`);
+            logger.error({ err }, "Error updating terminal offline status");
         }
     });
 }
@@ -108,10 +105,10 @@ export function emitOrderRejected(io, order, terminal_id) {
     if (order.tracking_token)
         io.to(`customer_${order.tracking_token}`).emit("order_rejected", order);
 }
-export async function emitTerminalStatusUpdate(io, terminal_id, is_online, last_seen) {
+export async function emitTerminalStatusUpdate(io, terminal_id, isOnline, lastSeen) {
     io.to("admin_dashboard").emit("terminal_status_update", {
         terminal_id,
-        is_online,
-        last_seen,
+        isOnline,
+        lastSeen,
     });
 }

@@ -1,11 +1,12 @@
 import { getAvailableDrivers, getDriver } from "../services/driverService.js";
-export function getAvailableDriversController(req, res, next) {
-    const drivers = getAvailableDrivers();
-    res.json(drivers);
-}
-export function getDriverController(req, res, next) {
-    const driver = getDriver(req.params.driverId);
+import { wrap, fail } from "../contracts/api.js";
+export const getAvailableDriversController = wrap(async (req) => {
+    const drivers = await getAvailableDrivers();
+    return drivers;
+});
+export const getDriverController = wrap(async (req) => {
+    const driver = await getDriver(req.params.driverId);
     if (!driver)
-        return res.status(404).json({ message: "Driver not found" });
-    res.json(driver);
-}
+        throw fail('NOT_FOUND', 'Driver not found');
+    return driver;
+});

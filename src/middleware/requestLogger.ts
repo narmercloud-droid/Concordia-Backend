@@ -1,7 +1,12 @@
-import { Request, Response, NextFunction } from "express";
-import logger from "../utils/logger.js";
+﻿import type { Request, Response, NextFunction  } from "express";
+import logger from "../utils/logger.ts";
 
-export const requestLogger = (req: Request, res: Response, next: NextFunction) => {
+export const requestLogger = (req: Request, _res: Response, next: NextFunction) => {
   logger.info(`${req.method} ${req.originalUrl}`);
   next();
 };
+
+
+
+
+

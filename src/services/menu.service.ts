@@ -1,4 +1,4 @@
-import { prisma } from "../prisma/client.js";
+﻿import { prisma } from "../prisma/client.ts";
 
 export class MenuService {
   async createCategory(data: any): Promise<any> {
@@ -17,7 +17,20 @@ export class MenuService {
     return prisma.category.findMany({
       orderBy: { position: "asc" },
       include: {
-        items: true
+        menuItems: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            price: true,
+            tags: true,
+            stock: true,
+            lowStockThreshold: true,
+            autoDisable: true,
+            kitchen: true,
+            categoryId: true
+          }
+        }
       }
     });
   }
@@ -34,16 +47,19 @@ export class MenuService {
     return prisma.menuItem.delete({ where: { id } });
   }
 
-  async createVariant(data: any): Promise<any> {
-    return prisma.variant.create({ data });
+  async createVariant(_data: any): Promise<any> {
+    void _data;
+    throw new Error("Variants are not supported by the current schema");
   }
 
-  async updateVariant(id: string, data: any): Promise<any> {
-    return prisma.variant.update({ where: { id }, data });
+  async updateVariant(_id: string, _data: any): Promise<any> {
+    void _id; void _data;
+    throw new Error("Variants are not supported by the current schema");
   }
 
-  async deleteVariant(id: string): Promise<any> {
-    return prisma.variant.delete({ where: { id } });
+  async deleteVariant(_id: string): Promise<any> {
+    void _id;
+    throw new Error("Variants are not supported by the current schema");
   }
 
   async setItemAvailability(id: string, available: boolean): Promise<any> {
@@ -58,12 +74,14 @@ export class MenuService {
     };
   }
 
-  async setVariantAvailability(id: string, available: boolean): Promise<any> {
-    return prisma.variant.update({
-      where: { id },
-      data: { visible: available }
-    });
+  async setVariantAvailability(_id: string, _available: boolean): Promise<any> {
+    void _id; void _available;
+    throw new Error("Variants are not supported by the current schema");
   }
 }
 
 export const menuService = new MenuService();
+
+
+
+

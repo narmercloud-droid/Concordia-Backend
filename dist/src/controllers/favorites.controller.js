@@ -1,11 +1,12 @@
 import { favoritesService } from "../services/favorites.service.js";
+import { success } from "./controllerHelper.js";
 export const FavoritesController = {
     add: async (req, res, next) => {
         try {
             const customerId = req.user.id;
             const { itemId } = req.body;
             const fav = await favoritesService.addFavorite(customerId, itemId);
-            res.json(fav);
+            return success(res, fav);
         }
         catch (err) {
             next(err);
@@ -16,7 +17,7 @@ export const FavoritesController = {
             const customerId = req.user.id;
             const { itemId } = req.body;
             await favoritesService.removeFavorite(customerId, itemId);
-            res.json({ success: true });
+            return success(res, { success: true });
         }
         catch (err) {
             next(err);
@@ -26,7 +27,7 @@ export const FavoritesController = {
         try {
             const customerId = req.user.id;
             const list = await favoritesService.listFavorites(customerId);
-            res.json(list);
+            return success(res, list);
         }
         catch (err) {
             next(err);
@@ -35,7 +36,7 @@ export const FavoritesController = {
     mostFavorited: async (req, res, next) => {
         try {
             const data = await favoritesService.mostFavoritedItems();
-            res.json(data);
+            return success(res, data);
         }
         catch (err) {
             next(err);

@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import { prisma } from "../prisma/client.js";
 export class FavoritesService {
     async addFavorite(customerId, itemId) {
@@ -6,7 +7,11 @@ export class FavoritesService {
                 customerId_itemId: { customerId, itemId }
             },
             update: {},
-            create: { customerId, itemId }
+            create: {
+                id: randomUUID(),
+                customer: { connect: { id: customerId } },
+                item: { connect: { id: itemId } }
+            }
         });
     }
     async removeFavorite(customerId, itemId) {

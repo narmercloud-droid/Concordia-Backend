@@ -1,8 +1,8 @@
-import { Server, Socket } from "socket.io";
-import { getKDSNamespace } from "./index.js";
-import { OrderService } from "../services/order/order.service.js";
-import { batchSet, batchGet } from "../lib/redis.js";
-import { trackSocketBroadcast, trackSocketEmit } from "../metrics/metrics.js";
+﻿import { Server, Socket } from "socket.io";
+import { OrderService } from "../services/order/order.service.ts";
+import { batchSet, batchGet } from "../lib/redis.ts";
+import { trackSocketEmit } from "../metrics/metrics.ts";
+import logger from "../logger.ts";
 
 // ===== PHASE 8: SOCKET-LEVEL CACHING =====
 const CACHE_TTL = 1; // 1 second for KDS updates
@@ -33,20 +33,21 @@ async function cacheKDSEventData(event: string, branchId: string, data: any): Pr
   await batchSet([{ key: cacheKey, value: JSON.stringify(data), ttl: CACHE_TTL }]);
 }
 
-export function registerKDSEvents(io: Server, socket: Socket) {
+export function registerKDSEvents(_io: Server, socket: Socket) {
+  void _io;
   const branchId = socket.data?.branchId;
   
-  socket.on("kds:join", (data: { branchId: string }) => {
+    socket.on("kds:join", (data: { branchId: string }) => {
     socket.data.branchId = data.branchId;
     socket.join(`kds_branch_${data.branchId}`);
-    console.log(`🍳 KDS joined branch: ${data.branchId}`);
+    logger.info({ branchId: data.branchId }, "KDS joined branch");
   });
 
   socket.on("kds:accept_order", async (data: { orderId: string }) => {
     const start = Date.now();
     
     try {
-      const order = await OrderService.updateStatus(data.orderId, "accepted");
+      await OrderService.updateStatus(data.orderId, "accepted");
       
       socket.emit("kds:order_accepted", {
         success: true,
@@ -69,7 +70,7 @@ export function registerKDSEvents(io: Server, socket: Socket) {
     const start = Date.now();
     
     try {
-      const order = await OrderService.updateStatus(data.orderId, "preparing");
+      await OrderService.updateStatus(data.orderId, "preparing");
       
       socket.emit("kds:preparing_started", {
         success: true,
@@ -92,7 +93,7 @@ export function registerKDSEvents(io: Server, socket: Socket) {
     const start = Date.now();
     
     try {
-      const order = await OrderService.updateStatus(data.orderId, "ready_for_pickup");
+      await OrderService.updateStatus(data.orderId, "ready_for_pickup");
       
       socket.emit("kds:order_ready", {
         success: true,
@@ -145,10 +146,13 @@ export function registerKDSEvents(io: Server, socket: Socket) {
   });
 
   socket.on("error", (error) => {
-    console.error(`❌ KDS Socket error (${socket.id}):`, error);
+    logger.error({ error, socketId: socket.id }, "KDS Socket error");
   });
 
   socket.on("disconnect", (reason) => {
-    console.log(`🍳 KDS disconnected from branch ${branchId}: reason=${reason}`);
+    logger.info({ branchId, reason }, "KDS disconnected from branch");
   });
 }
+
+
+

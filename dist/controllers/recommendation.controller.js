@@ -1,14 +1,10 @@
 import { recommendationService } from "../services/recommendation.service.js";
+import { wrap } from "../contracts/api.js";
 export const RecommendationController = {
-    recommend: async (req, res, next) => {
-        try {
-            const customerId = req.user.id;
-            const { branchId } = req.query;
-            const rec = await recommendationService.recommend(customerId, branchId);
-            res.json(rec);
-        }
-        catch (err) {
-            next(err);
-        }
-    }
+    recommend: wrap(async (req) => {
+        const customerId = req.user.id;
+        const { branchId } = req.query;
+        const rec = await recommendationService.recommend(customerId, branchId);
+        return rec;
+    })
 };

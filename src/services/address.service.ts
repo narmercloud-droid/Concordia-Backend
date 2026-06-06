@@ -1,4 +1,4 @@
-import { prisma } from "../prisma/client.js";
+﻿import { prisma } from "../prisma/client.ts";
 
 export class AddressService {
   async addAddress(customerId: string, data: any): Promise<any> {
@@ -43,3 +43,7 @@ export class AddressService {
 }
 
 export const addressService = new AddressService();
+
+
+
+

@@ -1,3 +1,43 @@
+# Concordia Backend
+
+Project: Concordia Backend (Express + Prisma)
+
+Overview
+- Express.js API server with Prisma ORM (Postgres), Redis caching, background jobs, and WebSockets.
+
+Folder structure (important parts)
+- `src/` — application source code
+  - `routes/` — Express routes
+  - `services/` — business services
+  - `jobs/` — background jobs and schedulers
+  - `prisma/` — Prisma schema and client
+  - `redis/` — Redis client/wrappers
+  - `middleware/` — Express middleware (auth, validation, rate-limiting, cache)
+- `prisma/` — Prisma schema and migrations
+
+Environment variables
+See `env.example` for required variables. Secrets must be provided in production — there are no insecure fallbacks.
+
+Run locally
+- Install dependencies: `npm ci`
+- Copy `.env` from `env.example` and populate secrets
+- Start dev server: `npm run dev` (project-specific script)
+
+Deploy to Railway
+- Provide required env vars in Railway project settings (see `env.example`).
+- Use the provided `railway.json`/`railway.config.json` for default settings.
+
+Health check
+- `GET /health` — returns service status and DB connectivity. Use this endpoint for readiness/liveness checks.
+
+Logging
+- Structured JSON logging with `pino`. Request IDs are generated and propagated. Logs include `requestId`.
+
+Redis caching & rate-limiting
+- Redis is used for caching JSON responses and for rate limiting / brute-force protection. Configure `REDIS_URL` in env.
+
+Notes
+- This repository contains both backend and frontend projects. This README focuses on the backend service.
 # Concordia Backend - Deployment & Observability
 
 ## Overview

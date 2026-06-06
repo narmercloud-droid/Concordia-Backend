@@ -1,10 +1,26 @@
 module.exports = {
   apps: [
     {
+      name: "concordia-backend",
+      script: "src/index.ts",
+      interpreter: "node",
+      exec_mode: "cluster",
+      instances: "max",
+      cron_restart: "0 */6 * * *",
+      env: {
+        NODE_ENV: "production"
+      }
+    }
+  ]
+};
+module.exports = {
+  apps: [
+    {
       name: 'concordia-backend',
       script: './dist/index.js',
       instances: 'max',           // Use all available CPU cores
       exec_mode: 'cluster',        // Enable cluster mode
+      cron_restart: '0 */6 * * *',
       
       // Environment variables
       env: {

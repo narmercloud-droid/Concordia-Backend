@@ -1,38 +1,31 @@
-import type { AuthenticatedRequest } from "../globalTypes.js";
-import { orchestrationService } from "../services/orchestration.service.js";
-import { NextFunction, Response } from "express";
+﻿import type { AuthenticatedRequest } from "../globalTypes.ts";
+import { orchestrationService } from "../services/orchestration.service.ts";
+import { wrap } from "../contracts/api.js";
 
 export const OrchestrationController = {
-  runAll: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    try {
-      const branchId = req.user!.branchId;
-      const result = await orchestrationService.runAll(branchId);
-      res.json(result);
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  runAll: wrap(async (req: AuthenticatedRequest) => {
+    const branchId = req.user!.branchId;
+    const result = await orchestrationService.runAll(branchId);
+    return result;
+  }),
 
-  trigger: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    try {
-      const branchId = req.user!.branchId;
-      const { event } = req.body;
-      const result = await orchestrationService.eventTrigger(branchId, event);
-      res.json(result);
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  trigger: wrap(async (req: AuthenticatedRequest) => {
+    const branchId = req.user!.branchId;
+    const { event } = req.body;
+    const result = await orchestrationService.eventTrigger(branchId, event);
+    return result;
+  }),
 
-  logs: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    try {
-      const branchId = req.user!.branchId;
-      const logs = await orchestrationService.logs(branchId);
-      res.json(logs);
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  logs: wrap(async (req: AuthenticatedRequest) => {
+    const branchId = req.user!.branchId;
+    const logs = await orchestrationService.logs(branchId);
+    return logs;
+  }),
 };
+
+
+
+
+
 
 

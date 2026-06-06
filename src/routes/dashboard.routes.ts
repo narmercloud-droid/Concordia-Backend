@@ -1,7 +1,8 @@
-import { Router } from "express";
-import { DashboardController } from "../controllers/dashboard.controller.js";
-import { adminAuth } from "../middleware/adminAuth.js";
-import { adminRole } from "../middleware/adminRole.js";
+﻿import express from "express";
+const { Router } = express;
+import { DashboardController } from "../controllers/dashboard.controller.ts";
+import { adminAuth } from "../middleware/adminAuth.ts";
+import { adminRole } from "../middleware/adminRole.ts";
 
 const router = Router();
 
@@ -19,5 +20,11 @@ router.get("/branch/:branchId/menu", adminAuth, adminRole("manager"), DashboardC
 router.get("/branch/:branchId/couriers", adminAuth, adminRole("manager"), DashboardController.courierPerformance);
 
 export default router;
+
+
+
+
+
+
 
 

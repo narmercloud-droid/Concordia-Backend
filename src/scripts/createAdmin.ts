@@ -1,5 +1,6 @@
 import { prisma } from '../prisma/client.js';
 import bcrypt from 'bcryptjs';
+import { randomUUID } from 'crypto';
 
 async function main() {
   const email = "admin@example.com";
@@ -9,9 +10,11 @@ async function main() {
 
   const admin = await prisma.adminUser.create({
     data: {
+      id: randomUUID(),
       email,
       password: hashed,
       role: "admin",
+      updatedAt: new Date()
     },
   });
 
@@ -24,3 +27,5 @@ main()
     console.error(e);
     process.exit(1);
   });
+
+

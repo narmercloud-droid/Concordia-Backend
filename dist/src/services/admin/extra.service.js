@@ -1,27 +1,32 @@
 import { prisma } from "../../prisma/client.js";
 export class ExtraService {
     static async getAll() {
-        return prisma.extra.findMany({
-            orderBy: { sort_order: "asc" }
+        const db = prisma;
+        return db.extra.findMany({
+            orderBy: { name: "asc" },
         });
     }
     static async getById(id) {
-        return prisma.extra.findUnique({
-            where: { extra_id: id }
+        const db = prisma;
+        return db.extra.findUnique({
+            where: { id },
         });
     }
     static async create(data) {
-        return prisma.extra.create({ data });
+        const db = prisma;
+        return db.extra.create({ data });
     }
     static async update(id, data) {
-        return prisma.extra.update({
-            where: { extra_id: id },
-            data
+        const db = prisma;
+        return db.extra.update({
+            where: { id },
+            data,
         });
     }
     static async remove(id) {
-        return prisma.extra.delete({
-            where: { extra_id: id }
+        const db = prisma;
+        return db.extra.delete({
+            where: { id },
         });
     }
 }

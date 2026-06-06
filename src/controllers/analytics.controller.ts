@@ -1,63 +1,45 @@
-import { Request, Response, NextFunction } from "express";
-import { analyticsService } from "../services/analytics.service.js";
+﻿import type { Request  } from "express";
+import { analyticsService } from "../services/analytics.service.ts";
+import { wrap } from "../contracts/api.js";
 
 export const AnalyticsController = {
-  totalRevenue: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const branchId = req.query.branchId as string;
-      const data = await analyticsService.totalRevenue(branchId);
-      res.json(data);
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  totalRevenue: wrap(async (req: Request) => {
+    const branchId = req.query.branchId as string;
+    const data = await analyticsService.totalRevenue(branchId);
+    return data;
+  }),
 
-  ordersPerDay: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const branchId = req.query.branchId as string;
-      const data = await analyticsService.ordersPerDay(branchId);
-      res.json(data);
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  ordersPerDay: wrap(async (req: Request) => {
+    const branchId = req.query.branchId as string;
+    const data = await analyticsService.ordersPerDay(branchId);
+    return data;
+  }),
 
-  bestSellingItems: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const branchId = req.query.branchId as string;
-      const data = await analyticsService.bestSellingItems(branchId);
-      res.json(data);
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  bestSellingItems: wrap(async (req: Request) => {
+    const branchId = req.query.branchId as string;
+    const data = await analyticsService.bestSellingItems(branchId);
+    return data;
+  }),
 
-  customerStats: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const data = await analyticsService.customerStats();
-      res.json(data);
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  customerStats: wrap(async () => {
+    const data = await analyticsService.customerStats();
+    return data;
+  }),
 
-  courierPerformance: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const data = await analyticsService.courierPerformance();
-      res.json(data);
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  courierPerformance: wrap(async () => {
+    const data = await analyticsService.courierPerformance();
+    return data;
+  }),
 
-  hourlyOrders: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const branchId = req.query.branchId as string;
-      const data = await analyticsService.hourlyOrders(branchId);
-      res.json(data);
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+  hourlyOrders: wrap(async (req: Request) => {
+    const branchId = req.query.branchId as string;
+    const data = await analyticsService.hourlyOrders(branchId);
+    return data;
+  })
 };
+
+
+
+
+
 

@@ -1,10 +1,11 @@
 import { KdsService } from "../../services/kds/kds.service.js";
+import { success, fail } from "../controllerHelper.js";
 export const KdsController = {
     getOrders: async (req, res, next) => {
         try {
-            const kds = req.kds;
+            const kds = req.user;
             const orders = await KdsService.getActiveOrders(kds.branchId);
-            res.json({ orders });
+            return success(res, { orders });
         }
         catch (err) {
             next(err);
@@ -13,10 +14,10 @@ export const KdsController = {
     updateStatus: async (req, res, next) => {
         try {
             const { orderId, status } = req.body;
-            const kds = req.kds;
+            const kds = req.user;
             const valid = ["preparing", "ready", "completed"];
             if (!valid.includes(status)) {
-                return res.status(400).json({ error: "Invalid status" });
+                return fail(res, "Invalid status", 400);
             }
             const order = await KdsService.updateStatus(orderId, status);
             req.app
@@ -27,7 +28,7 @@ export const KdsController = {
                 .get("io")
                 .to(`customer_${order.id}`)
                 .emit("order_update", order);
-            res.json({ success: true, order });
+            return success(res, { success: true, order });
         }
         catch (err) {
             next(err);

@@ -1,10 +1,12 @@
-import { Router } from "express";
+import express from "express";
+const { Router } = express;
 import { MenuController } from "../controllers/menu.controller.js";
 import { adminAuth } from "../middleware/adminAuth.js";
 import { adminRole } from "../middleware/adminRole.js";
+import cacheMiddleware from "../middleware/cacheMiddleware.js";
 const router = Router();
 // Customer menu browsing
-router.get("/", MenuController.listMenu);
+router.get("/", cacheMiddleware({ ttl: 30, keyPrefix: "menu" }), MenuController.listMenu);
 // Manager + superadmin
 router.post("/category", adminAuth, adminRole("manager"), MenuController.createCategory);
 router.put("/category/:id", adminAuth, adminRole("manager"), MenuController.updateCategory);

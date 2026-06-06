@@ -1,6 +1,7 @@
-import { Router } from "express";
-import { VariantController } from "../../controllers/admin/variant.controller.js";
-import { verifyAdmin } from "../../middleware/auth.js";
+﻿import express from "express";
+const { Router } = express;
+import { VariantController } from "../../controllers/admin/variant.controller.ts";
+import { verifyAdmin } from "../../middleware/auth.ts";
 
 const router = Router();
 
@@ -11,5 +12,10 @@ router.put("/:id", verifyAdmin, VariantController.update);
 router.delete("/:id", verifyAdmin, VariantController.remove);
 
 export default router;
+
+
+
+
+
 
 

@@ -1,4 +1,5 @@
-import { Router } from "express";
+import express from "express";
+const { Router } = express;
 import { SearchController } from "../controllers/search.controller.js";
 import { adminAuth } from "../middleware/adminAuth.js";
 import { adminRole } from "../middleware/adminRole.js";

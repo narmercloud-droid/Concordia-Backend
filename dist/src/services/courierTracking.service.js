@@ -1,53 +1,48 @@
+import { randomUUID } from "crypto";
 import { prisma } from "../prisma/client.js";
+import { OrderLifecycleService } from "./order/orderLifecycle.service.js";
 export class CourierTrackingService {
-    // Update courier GPS
     async updateLocation(courierId, data) {
-        return prisma.courierLocation.upsert({
-            where: { courierId },
-            update: { ...data },
-            create: { courierId, ...data }
+        return prisma.courierLocation.create({
+            data: {
+                id: randomUUID(),
+                latitude: data.lat,
+                longitude: data.lng,
+                accuracy: data.accuracy ?? null,
+                courier: { connect: { id: courierId } },
+                order: data.orderId ? { connect: { id: data.orderId } } : undefined
+            }
         });
     }
-    // Get courier location
     async getCourierLocation(courierId) {
-        return prisma.courierLocation.findUnique({
-            where: { courierId }
+        return prisma.courierLocation.findFirst({
+            where: { courierId },
+            orderBy: { createdAt: "desc" }
         });
     }
-    // Add tracking event
     async addTrackingEvent(orderId, status) {
-        return prisma.orderTrackingEvent.create({
-            data: { orderId, status }
-        });
+        // Delegate to lifecycle service so transitions and tracking are centralized
+        return OrderLifecycleService.updateStatus(orderId, status);
     }
-    // Get order timeline
     async getOrderTimeline(orderId) {
         return prisma.orderTrackingEvent.findMany({
             where: { orderId },
             orderBy: { timestamp: "asc" }
         });
     }
-    // Get live tracking info for customer
     async getCustomerTracking(orderId) {
         const order = await prisma.order.findUnique({
-            where: { id: orderId },
-            include: { courier: true }
+            where: { id: orderId }
         });
         if (!order)
             throw new Error("Order not found");
-        const courierLocation = order.courierId
-            ? await prisma.courierLocation.findUnique({
-                where: { courierId: order.courierId }
-            })
-            : null;
         const timeline = await this.getOrderTimeline(orderId);
         return {
             orderStatus: order.status,
-            courierLocation,
+            courierLocation: null,
             timeline
         };
     }
-    // Manager live map
     async getActiveCouriers(branchId) {
         return prisma.courierLocation.findMany({
             where: {

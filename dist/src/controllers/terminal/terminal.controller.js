@@ -1,33 +1,28 @@
 import { TerminalService } from "../../services/terminal/terminal.service.js";
+import { success, fail } from "../controllerHelper.js";
 export class TerminalController {
-    // -----------------------------------------------------
-    // ACTIVATE TERMINAL
-    // -----------------------------------------------------
     static async activate(req, res, next) {
-        const { branch_code } = req.body;
-        if (!branch_code) {
-            return res.status(400).json({ error: "branch_code is required" });
+        const { branchId } = req.body;
+        if (!branchId) {
+            return fail(res, "branchId is required", 400);
         }
         try {
-            const activationToken = await TerminalService.activateTerminal(branch_code);
-            res.json({ token: activationToken });
+            const activationToken = await TerminalService.activateTerminal(branchId);
+            return success(res, { token: activationToken });
         }
         catch (err) {
             const status = err.message === "Branch not found" ? 404 : 500;
-            res.status(status).json({ error: err.message || "Failed to generate terminal activation token" });
+            return fail(res, err.message || "Failed to generate terminal activation token", status);
         }
     }
-    // -----------------------------------------------------
-    // REGISTER TERMINAL
-    // -----------------------------------------------------
     static async register(req, res, next) {
         const { activation_token, terminal_name } = req.body;
         if (!activation_token || !terminal_name) {
-            return res.status(400).json({ error: "activation_token and terminal_name are required" });
+            return fail(res, "activation_token and terminal_name are required", 400);
         }
         try {
             const terminal = await TerminalService.registerTerminal(activation_token, terminal_name);
-            res.status(201).json({ terminal_id: terminal.id, branch_id: terminal.branch_id, terminal_token: terminal.terminal_token });
+            return success(res, { terminal_id: terminal.id, branchId: terminal.branchId }, "Created", 201);
         }
         catch (err) {
             let status = 400;
@@ -35,106 +30,77 @@ export class TerminalController {
                 status = 404;
             if (err.message === "Terminal has already been registered")
                 status = 409;
-            res.status(status).json({ error: err.message || "Failed to register terminal" });
+            return fail(res, err.message || "Failed to register terminal", status);
         }
     }
-    // -----------------------------------------------------
-    // TERMINAL LOGIN
-    // -----------------------------------------------------
     static async login(req, res, next) {
         const { terminal_token } = req.body;
         if (!terminal_token) {
-            return res.status(400).json({ error: "terminal_token is required" });
+            return fail(res, "terminal_token is required", 400);
         }
         try {
             const terminal = await TerminalService.loginTerminal(terminal_token);
-            console.log(`Terminal login success: ${terminal.name} (ID: ${terminal.id})`);
-            res.json({
-                terminal_id: terminal.id,
-                branch_id: terminal.branch_id,
-                terminal_token: terminal.terminal_token,
-            });
+            return success(res, { terminal_id: terminal.id, branchId: terminal.branchId });
         }
         catch (err) {
-            console.log(`Terminal login failure: ${err.message}`);
-            res.status(401).json({ error: err.message || "Failed to login terminal" });
+            return fail(res, err.message || "Failed to login terminal", 401);
         }
     }
-    // -----------------------------------------------------
-    // ACKNOWLEDGE ORDER
-    // -----------------------------------------------------
     static async acknowledgeOrder(req, res, next) {
         const { order_id } = req.params;
-        const { terminal_id } = req.terminal;
+        const terminal_id = req.user?.id;
         try {
             const order = await TerminalService.acknowledgeOrder(order_id, terminal_id);
-            res.json(order);
+            return success(res, order);
         }
         catch (err) {
-            res.status(400).json({ error: err.message });
+            return fail(res, err.message, 400);
         }
     }
-    // -----------------------------------------------------
-    // ASSIGN ORDER
-    // -----------------------------------------------------
     static async assignOrder(req, res, next) {
         const { order_id } = req.params;
-        const { terminal_id } = req.terminal;
+        const terminal_id = req.user?.id;
         try {
             await TerminalService.assignOrder(order_id, terminal_id);
-            res.json({ status: "assigned" });
+            return success(res, { status: "assigned" });
         }
         catch (err) {
-            res.status(400).json({ error: err.message });
+            return fail(res, err.message, 400);
         }
     }
-    // -----------------------------------------------------
-    // ACCEPT ORDER
-    // -----------------------------------------------------
     static async acceptOrder(req, res, next) {
         const { order_id } = req.params;
-        const { terminal_id } = req.terminal;
+        const terminal_id = req.user?.id;
         try {
             const order = await TerminalService.acceptOrder(order_id, terminal_id);
-            res.json(order);
+            return success(res, order);
         }
         catch (err) {
-            res.status(400).json({ error: err.message });
+            return fail(res, err.message, 400);
         }
     }
-    // -----------------------------------------------------
-    // REJECT ORDER
-    // -----------------------------------------------------
     static async rejectOrder(req, res, next) {
         const { order_id } = req.params;
-        const { terminal_id } = req.terminal;
+        const terminal_id = req.user?.id;
         try {
             const order = await TerminalService.rejectOrder(order_id, terminal_id);
-            res.json(order);
+            return success(res, order);
         }
         catch (err) {
-            res.status(400).json({ error: err.message });
+            return fail(res, err.message, 400);
         }
     }
-    // -----------------------------------------------------
-    // HEARTBEAT
-    // -----------------------------------------------------
     static async heartbeat(req, res, next) {
-        const { terminal_id } = req.terminal;
+        const terminal_id = req.user?.id;
         try {
             await TerminalService.updateHeartbeat(terminal_id);
-            console.log(`Heartbeat received from terminal ${terminal_id}`);
-            res.json({ status: "ok" });
+            return success(res, { status: "ok" });
         }
         catch (err) {
-            res.status(500).json({ error: err.message });
+            return fail(res, err.message, 500);
         }
     }
-    // -----------------------------------------------------
-    // ORDERS STREAM
-    // -----------------------------------------------------
     static async ordersStream(req, res, next) {
-        // Placeholder for streaming orders
-        res.status(501).json({ error: "Not implemented" });
+        return fail(res, "Not implemented", 501);
     }
 }

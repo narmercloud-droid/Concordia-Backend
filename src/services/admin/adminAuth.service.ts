@@ -1,6 +1,9 @@
-import { prisma } from "../../prisma/client.js";
+﻿import { prisma } from "../../prisma/client.ts";
+import { randomUUID } from "crypto";
 import * as bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
+import logger from "../../logger.ts";
+import { env } from "../../config/env.ts";
 
 const ACCESS_TOKEN_EXPIRES = "15m";
 const REFRESH_TOKEN_EXPIRES = "30d";
@@ -11,10 +14,12 @@ export class AdminAuthService {
     const hashedPassword = await bcrypt.hash(password, 10);
     return prisma.admin.create({
       data: {
+        id: randomUUID(),
         ...adminData,
         branchId: data.branchId ?? "",
         password: hashedPassword,
-        role: data.role || "staff"
+        role: data.role || "staff",
+        updatedAt: new Date()
       }
     });
   }
@@ -35,23 +40,15 @@ export class AdminAuthService {
       accessTokenPayload.branchId = admin.branchId;
     }
 
-    const accessToken = jwt.sign(
-      accessTokenPayload,
-      process.env.JWT_SECRET || "secret",
-      { expiresIn: ACCESS_TOKEN_EXPIRES }
-    );
-
-    const refreshToken = jwt.sign(
-      { id: admin.id, role: admin.role, type: "admin" },
-      process.env.JWT_REFRESH_SECRET || "refresh_secret",
-      { expiresIn: REFRESH_TOKEN_EXPIRES }
-    );
+    const accessToken = jwt.sign(accessTokenPayload, env.JWT_SECRET as string, { expiresIn: ACCESS_TOKEN_EXPIRES } as jwt.SignOptions);
+    const refreshToken = jwt.sign({ id: admin.id, role: admin.role, type: "admin" }, (env.JWT_REFRESH_SECRET as string) || (env.JWT_SECRET as string), { expiresIn: REFRESH_TOKEN_EXPIRES } as jwt.SignOptions);
 
     return { accessToken, refreshToken };
   }
 
   async login(email: string, password: string): Promise<any> {
     const admin = await prisma.admin.findUnique({ where: { email } });
+    logger.debug({ adminId: admin?.id }, "ADMIN USER FROM DB fetched");
     if (!admin || !admin.password) return false;
 
     const isValid = await this.validatePassword(password, admin.password);
@@ -62,14 +59,15 @@ export class AdminAuthService {
 
   async refresh(refreshToken: string): Promise<any> {
     try {
-      const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET || "refresh_secret") as any;
+      const decoded = jwt.verify(refreshToken, (env.JWT_REFRESH_SECRET as string) || (env.JWT_SECRET as string)) as any;
       if (decoded.type !== "admin") return false;
 
       const admin = await prisma.admin.findUnique({ where: { id: decoded.id } });
       if (!admin) return false;
 
       return this.generateTokens(admin);
-    } catch (error) {
+    } catch (_error) {
+      void _error;
       return false;
     }
   }
@@ -80,3 +78,7 @@ export class AdminAuthService {
     });
   }
 }
+
+
+
+

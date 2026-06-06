@@ -1,10 +1,10 @@
 import { CategoryService } from "../../services/admin/category.service.js";
+import { success, fail } from "../controllerHelper.js";
 export class CategoryController {
     static async getAll(_req, res, next) {
         try {
             const categories = await CategoryService.getAll();
-            res.json(categories);
-            return;
+            return success(res, categories);
         }
         catch (err) {
             next(err);
@@ -15,10 +15,9 @@ export class CategoryController {
             const id = req.params.id;
             const category = await CategoryService.getById(id);
             if (!category) {
-                return res.status(404).json({ error: "Category not found" });
+                return fail(res, "Category not found", 404);
             }
-            res.json(category);
-            return;
+            return success(res, category);
         }
         catch (err) {
             next(err);
@@ -27,7 +26,7 @@ export class CategoryController {
     static async create(req, res, next) {
         try {
             const category = await CategoryService.create(req.body);
-            res.status(201).json(category);
+            return success(res, category);
         }
         catch (err) {
             next(err);
@@ -37,7 +36,7 @@ export class CategoryController {
         try {
             const id = req.params.id;
             const category = await CategoryService.update(id, req.body);
-            res.json(category);
+            return success(res, category);
         }
         catch (err) {
             next(err);
@@ -47,7 +46,7 @@ export class CategoryController {
         try {
             const id = req.params.id;
             await CategoryService.remove(id);
-            res.json({ success: true });
+            return success(res, { success: true });
         }
         catch (err) {
             next(err);

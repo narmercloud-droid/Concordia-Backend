@@ -1,0 +1,684 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+
+model ActivationCode {
+  id String @id
+  code String
+  branchId String
+  expiresAt DateTime
+  used Boolean @default(false)
+  createdAt DateTime @default(now())
+  usedAt DateTime?
+  deviceId String?
+}
+
+model Address {
+  id String @id
+  customerId String
+  label String
+  street String
+  city String
+  postalCode String
+  lat Float?
+  lng Float?
+  instructions String?
+  isDefault Boolean @default(false)
+}
+
+model Admin {
+  id String @id
+  email String
+  password String
+  role String
+  branchId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+}
+
+model AdminUser {
+  id String @id
+  email String
+  password String
+  role String
+  refreshToken String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+}
+
+model AnalyticsQueryLog {
+  id String @id
+  branchId String
+  question String
+  answer String
+  createdAt DateTime @default(now())
+}
+
+model AutomationSettings {
+  id String @id
+  branchId String
+  pricing Boolean @default(false)
+  marketing Boolean @default(false)
+  inventory Boolean @default(false)
+  staffing Boolean @default(false)
+  retention Boolean @default(false)
+  fraud Boolean @default(false)
+}
+
+model Branch {
+  id String @id
+  name String
+  createdAt DateTime @default(now())
+  printerType String
+}
+
+model BranchConfig {
+  id String @id
+  branchId String
+  configJson String
+  version Int @default(1)
+  updatedAt DateTime @default(now())
+}
+
+model BranchSchedule {
+  id String @id
+  branchId String
+  day Int
+  openTime String
+  closeTime String
+}
+
+model BranchSettings {
+  id Int @id @default(autoincrement())
+  branchId String?
+  printingMode String @default("direct")
+  autoPrint Boolean @default(true)
+  printCopies Int @default(1)
+  routingMode String @default("kitchen")
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+}
+
+model BranchTerminal {
+  id Int @id @default(autoincrement())
+  branchId String
+  token String
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+}
+
+model Campaign {
+  id Int @id @default(autoincrement())
+  name String
+  description String?
+  createdAt DateTime @default(now())
+  scheduledFor DateTime?
+  status String @default("draft")
+  channelEmail Boolean @default(true)
+  segmentId Int?
+  content String
+}
+
+model Cart {
+  id String @id
+  customerId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+}
+
+model CartItem {
+  id String @id
+  cartId String
+  itemId String
+  quantity Int @default(1)
+}
+
+model Category {
+  id String @id
+  description String?
+  name String
+  position Int @default(0)
+}
+
+model CloudPrinter {
+  id Int @id @default(autoincrement())
+  branchId String
+  printerId String
+  kitchen String
+  ipAddress String
+  type String
+  trustScore Int @default(100)
+  online Boolean @default(false)
+  lastSync DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+}
+
+model ConversationLog {
+  id String @id
+  branchId String
+  message String
+  response String
+  createdAt DateTime @default(now())
+}
+
+model Courier {
+  id String @id
+  name String
+  email String
+  phone String
+  vehicle String?
+  active Boolean @default(true)
+  branchId String
+}
+
+model CourierLocation {
+  id String @id
+  courierId String
+  accuracy Float?
+  createdAt DateTime @default(now())
+  latitude Float
+  longitude Float
+  orderId String?
+}
+
+model Customer {
+  id String @id
+  name String
+  email String
+  phone String?
+  loginToken String?
+  loginTokenExpires DateTime?
+  loyaltyPoints Int @default(0)
+  marketingConsent Boolean @default(false)
+  marketingConsentAt DateTime?
+  marketingEmail Boolean @default(false)
+  marketingSMS Boolean @default(false)
+  marketingWhatsApp Boolean @default(false)
+  phoneNumber String?
+}
+
+model DashboardViewLog {
+  id String @id
+  branchId String
+  section String
+  createdAt DateTime @default(now())
+}
+
+model Deal {
+  id String @id
+  name String
+  description String?
+  price Float
+  visible Boolean @default(true)
+}
+
+model DecisionLog {
+  id String @id
+  branchId String
+  actionType String
+  description String
+  confidence Float
+  impact String
+  autoApplied Boolean
+  createdAt DateTime @default(now())
+}
+
+model DeliveryZone {
+  id String @id
+  branchId String
+  maxDistanceKm Float
+  baseFee Float
+  perKmFee Float
+  freeDeliveryThreshold Float?
+  minimumOrderAmount Float?
+}
+
+model Device {
+  id String @id
+  serialNumber String
+  branchId String
+  activatedAt DateTime @default(now())
+  lastSeenAt DateTime @default(now())
+  status String @default("ACTIVE")
+}
+
+model DynamicPriceRule {
+  id String @id
+  branchId String
+  itemId String?
+  ruleType String
+  multiplier Float?
+  amount Float?
+  active Boolean @default(true)
+  createdAt DateTime @default(now())
+}
+
+model Extra {
+  id String @id
+  name String
+  price Float
+  visible Boolean @default(true)
+}
+
+model Favorite {
+  id String @id
+  customerId String
+  itemId String
+  createdAt DateTime @default(now())
+}
+
+model FraudFlag {
+  id String @id
+  customerId String?
+  orderId String?
+  reason String
+  createdAt DateTime @default(now())
+}
+
+model InsightLog {
+  id String @id
+  branchId String
+  type String
+  description String
+  confidence Float
+  impact String
+  createdAt DateTime @default(now())
+}
+
+model IntelligenceReport {
+  id String @id
+  branchId String
+  summary String
+  details String
+  createdAt DateTime @default(now())
+}
+
+model ItemRating {
+  id String @id
+  orderItemId String
+  rating Int
+}
+
+model KitchenDisplay {
+  id String @id
+  name String
+  apiKey String
+  branchId String
+  createdAt DateTime @default(now())
+}
+
+model LoyaltyPoints {
+  id String @id
+  customerId String
+  points Int @default(0)
+}
+
+model MemoryRecord {
+  id String @id
+  branchId String
+  module String
+  key String
+  value String
+  createdAt DateTime @default(now())
+}
+
+model MenuItem {
+  id String @id
+  name String
+  description String?
+  price Float
+  tags String[] @default([])
+  stock Int @default(999999)
+  lowStockThreshold Int @default(5)
+  autoDisable Boolean @default(true)
+  categoryId String?
+  kitchen String @default("A")
+}
+
+model NotificationPreference {
+  id String @id
+  customerId String
+  allowPush Boolean @default(true)
+  allowSMS Boolean @default(false)
+}
+
+model Offer {
+  id Int @id @default(autoincrement())
+  code String
+  description String?
+  discountPct Int?
+  discountAmt Int?
+  freeDelivery Boolean @default(false)
+  minOrder Int?
+  expiresAt DateTime?
+  createdAt DateTime @default(now())
+}
+
+model OptimizationLog {
+  id String @id
+  branchId String
+  module String
+  parameter String
+  oldValue Float?
+  newValue Float?
+  reason String
+  createdAt DateTime @default(now())
+}
+
+model OptimizationParameters {
+  id String @id
+  branchId String
+  pricingMultiplier Float @default(1.0)
+  forecastWeight Float @default(1.0)
+  churnThreshold Float @default(0.5)
+  behaviorConfidence Float @default(0.7)
+  staffingRatio Float @default(3.0)
+  inventoryThreshold Float @default(2.0)
+}
+
+model OrchestrationLog {
+  id String @id
+  branchId String
+  cycleType String
+  summary String
+  createdAt DateTime @default(now())
+}
+
+model Order {
+  id String @id
+  createdAt DateTime @default(now())
+  updatedAt String
+  branchId String
+  courierStatus String?
+  courierToken String?
+  courierTokenExpiresAt DateTime?
+  customerId String?
+  isGuest Boolean @default(false)
+  paymentIntentId String?
+  paymentMethod String
+  paymentStatus String @default("pending")
+  paypalCaptureId String?
+  paypalOrderId String?
+  scheduledFor DateTime?
+  status String @default("pending")
+  courierId String?
+  externalAmount String @default(0.00)
+  paidAt DateTime?
+  terminal_id String?
+  tracking_token String?
+  transactionId String?
+  walletUsed String @default(0.00)
+}
+
+model OrderItem {
+  id String @id
+  quantity String @default(1)
+  addOnIds String[] @default([])
+  itemId String
+  notes String?
+  orderId String
+  price Float
+  variantId String
+}
+
+model OrderRiskEvent {
+  id String @id
+  orderId String
+  event String
+  createdAt DateTime @default(now())
+}
+
+model OrderTrackingEvent {
+  id String @id
+  orderId String
+  status String
+  timestamp DateTime @default(now())
+}
+
+model PriceHistory {
+  id String @id
+  itemId String
+  oldPrice Float
+  newPrice Float
+  reason String
+  createdAt DateTime @default(now())
+}
+
+model PrinterAnomaly {
+  id Int @id @default(autoincrement())
+  printerId String
+  branchId String
+  type String
+  severity Int
+  createdAt DateTime @default(now())
+}
+
+model PrinterFleet {
+  id Int @id @default(autoincrement())
+  branchId String
+  printerId String
+  group String
+  policy String?
+  firmware String?
+  configHash String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+}
+
+model PrinterHealth {
+  id Int @id @default(autoincrement())
+  printerId String
+  branchId String
+  score Int @default(100)
+  lastUpdated DateTime @default(now())
+}
+
+model PrinterQueue {
+  id Int @id @default(autoincrement())
+  kitchen String
+  payload String
+  attempts Int @default(0)
+  maxAttempts Int @default(5)
+  status String @default("pending")
+  lastError String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  durationMs Int?
+  printedAt DateTime?
+}
+
+model PrinterSecurity {
+  id Int @id @default(autoincrement())
+  printerId String
+  kitchen String
+  ipAddress String
+  approved Boolean @default(false)
+  token String
+  trustScore Int @default(100)
+  tampered Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+}
+
+model PrinterTrace {
+  id Int @id @default(autoincrement())
+  printerId String
+  kitchen String
+  branchId String
+  event String
+  durationMs Int?
+  createdAt DateTime @default(now())
+}
+
+model PromoCode {
+  id String @id
+  code String
+  discount Float?
+  amountOff Float?
+  expiresAt DateTime?
+  maxUses Int?
+  usedCount Int @default(0)
+  createdAt DateTime @default(now())
+}
+
+model Referral {
+  id String @id
+  customerId String
+  code String
+  referredCount Int @default(0)
+}
+
+model Relation {
+  id String @id
+  itemId String
+  variantId String?
+  toppingId String?
+  extraId String?
+}
+
+model Review {
+  id String @id
+  orderId String
+  customerId String
+  branchId String
+  rating Int
+  comment String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+}
+
+model Reward {
+  id String @id
+  title String
+  description String?
+  costPoints Int
+  discount Float?
+  amountOff Float?
+  freeItemId String?
+  createdAt DateTime @default(now())
+}
+
+model RiskScore {
+  id String @id
+  orderId String
+  score Int
+  level String
+  createdAt DateTime @default(now())
+}
+
+model SearchLog {
+  id String @id
+  query String
+  createdAt DateTime @default(now())
+}
+
+model Segment {
+  id Int @id @default(autoincrement())
+  name String
+  createdAt DateTime @default(now())
+  filterJson String
+}
+
+model Terminal {
+  id String @id
+  name String
+  activation_token String
+  branchId String
+  isOnline Boolean @default(false)
+  lastSeen DateTime?
+  createdAt DateTime @default(now())
+}
+
+model TerminalError {
+  id Int @id @default(autoincrement())
+  terminalId Int
+  branchId Int
+  message String
+  severity Int
+  createdAt DateTime @default(now())
+}
+
+model TerminalEvent {
+  id String @id
+  orderId String
+  event String
+  payload String
+  createdAt DateTime @default(now())
+}
+
+model TerminalStatus {
+  id Int @id @default(autoincrement())
+  terminalId Int
+  branchId Int
+  online Boolean @default(false)
+  lastSeen DateTime @default(now())
+  assignedKitchen String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  branchTerminalId Int?
+}
+
+model Topping {
+  id String @id
+  name String
+  price Float
+  visible Boolean @default(true)
+}
+
+model TrendRecord {
+  id String @id
+  branchId String
+  category String
+  summary String
+  createdAt DateTime @default(now())
+}
+
+model Variant {
+  id String @id
+  name String
+  price Float
+  visible Boolean @default(true)
+}
+
+model VirtualPrinter {
+  id Int @id @default(autoincrement())
+  kitchen String
+  instanceId String
+  active Boolean @default(true)
+  createdAt DateTime @default(now())
+  releasedAt DateTime?
+}
+
+model Voucher {
+  id String @id
+  code String
+  amount String
+  expiresAt DateTime?
+  isUsed Boolean @default(false)
+  usedBy String?
+  usedAt DateTime?
+  createdAt DateTime @default(now())
+}
+
+model Wallet {
+  id String @id
+  customerId String
+  balance String @default(0.00)
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+}
+
+model WalletTransaction {
+  id String @id
+  walletId String
+  type String
+  amount String
+  reference String?
+  createdAt DateTime @default(now())
+}

@@ -1,0 +1,12 @@
+# GitHub Secrets
+
+Required GitHub Secrets:
+
+- SERVER_HOST
+- SERVER_USER
+- SERVER_SSH_KEY
+- DATABASE_URL
+- JWT_SECRET
+- VAPID_PUBLIC_KEY
+- VAPID_PRIVATE_KEY
+- REDIS_URL (optional)

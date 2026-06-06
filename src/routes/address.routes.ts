@@ -1,6 +1,7 @@
-import { Router } from "express";
-import { AddressController } from "../controllers/address.controller.js";
-import { customerAuth } from "../middleware/customerAuth.js";
+﻿import express from "express";
+const { Router } = express;
+import { AddressController } from "../controllers/address.controller.ts";
+import { customerAuth } from "../middleware/customerAuth.ts";
 
 const router = Router();
 
@@ -10,4 +11,9 @@ router.delete("/:id", customerAuth, AddressController.delete);
 router.get("/", customerAuth, AddressController.list);
 
 export default router;
+
+
+
+
+
 

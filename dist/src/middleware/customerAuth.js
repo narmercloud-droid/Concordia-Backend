@@ -1,4 +1,4 @@
-import { validateJwtPayload, verifyToken } from "../utils/jwt";
+import { validateJwtPayload, verifyToken } from "../utils/jwt.js";
 export function customerAuth(req, res, next) {
     const header = req.headers.authorization;
     if (!header)
@@ -9,7 +9,7 @@ export function customerAuth(req, res, next) {
         validateJwtPayload(decoded);
         if (decoded.role !== "customer")
             return res.status(403).json({ error: "Forbidden" });
-        req.user = decoded;
+        req.customer = decoded;
         next();
     }
     catch {

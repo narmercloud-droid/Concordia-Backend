@@ -1,10 +1,10 @@
 import { ExtraService } from "../../services/admin/extra.service.js";
+import { success, fail } from "../controllerHelper.js";
 export class ExtraController {
     static async getAll(_req, res, next) {
         try {
             const extras = await ExtraService.getAll();
-            res.json(extras);
-            return;
+            return success(res, extras);
         }
         catch (err) {
             next(err);
@@ -12,13 +12,12 @@ export class ExtraController {
     }
     static async getById(req, res, next) {
         try {
-            const id = Number(req.params.id);
+            const id = req.params.id;
             const extra = await ExtraService.getById(id);
             if (!extra) {
-                return res.status(404).json({ error: "Extra not found" });
+                return fail(res, "Extra not found", 404);
             }
-            res.json(extra);
-            return;
+            return success(res, extra);
         }
         catch (err) {
             next(err);
@@ -27,7 +26,7 @@ export class ExtraController {
     static async create(req, res, next) {
         try {
             const extra = await ExtraService.create(req.body);
-            res.status(201).json(extra);
+            return success(res, extra);
         }
         catch (err) {
             next(err);
@@ -35,9 +34,9 @@ export class ExtraController {
     }
     static async update(req, res, next) {
         try {
-            const id = Number(req.params.id);
+            const id = req.params.id;
             const extra = await ExtraService.update(id, req.body);
-            res.json(extra);
+            return success(res, extra);
         }
         catch (err) {
             next(err);
@@ -45,9 +44,9 @@ export class ExtraController {
     }
     static async remove(req, res, next) {
         try {
-            const id = Number(req.params.id);
+            const id = req.params.id;
             await ExtraService.remove(id);
-            res.json({ success: true });
+            return success(res, { success: true });
         }
         catch (err) {
             next(err);

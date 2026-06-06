@@ -1,4 +1,5 @@
-import { Router } from "express";
+import express from "express";
+const { Router } = express;
 import { getAvailableDriversController, getDriverController } from "../controllers/driverController.js";
 const router = Router();
 // Get all available drivers

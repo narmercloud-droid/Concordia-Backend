@@ -1,0 +1,218 @@
+import { randomUUID } from "crypto";
+import { prisma } from "../../prisma/client.ts";
+
+export async function getManagerBranch(branchId: string) {
+  const branch = await prisma.branch.findUnique({
+    where: { id: branchId },
+    include: {
+      BranchConfig: true,
+      branchHours: { orderBy: { dayOfWeek: "asc" } }
+    }
+  });
+
+  if (!branch) throw new Error("Branch not found");
+
+  const config = (branch.BranchConfig?.configJson ?? {}) as Record<string, unknown>;
+
+  return {
+    id: branch.id,
+    name: branch.name,
+    status: config.status ?? "live",
+    city: config.city ?? null,
+    address: config.address ?? null,
+    postalCode: config.postalCode ?? null,
+    terminalCode: config.terminalCode ?? null,
+    deliveryAreas: (config.deliveryAreas as unknown[]) ?? [],
+    hours: branch.branchHours
+  };
+}
+
+export async function getBranchHours(branchId: string) {
+  return prisma.branchHours.findMany({
+    where: { branchId },
+    orderBy: { dayOfWeek: "asc" }
+  });
+}
+
+export async function updateBranchHours(
+  branchId: string,
+  hours: Array<{ dayOfWeek: number; openTime: string; closeTime: string }>
+) {
+  for (const entry of hours) {
+    await prisma.branchHours.upsert({
+      where: {
+        branchId_dayOfWeek: { branchId, dayOfWeek: entry.dayOfWeek }
+      },
+      update: {
+        openTime: entry.openTime,
+        closeTime: entry.closeTime
+      },
+      create: {
+        id: randomUUID(),
+        branchId,
+        dayOfWeek: entry.dayOfWeek,
+        openTime: entry.openTime,
+        closeTime: entry.closeTime
+      }
+    });
+  }
+
+  return getBranchHours(branchId);
+}
+
+export async function getBranchConfig(branchId: string) {
+  const config = await prisma.branchConfig.findUnique({ where: { branchId } });
+  return (config?.configJson ?? {}) as Record<string, unknown>;
+}
+
+export async function updateDeliveryAreas(
+  branchId: string,
+  deliveryAreas: Array<{
+    postalCode: string;
+    minimumOrder: number;
+    deliveryFee: number;
+    name?: string;
+  }>
+) {
+  return updateDeliverySettings(branchId, { deliveryAreas });
+}
+
+export async function updateDeliverySettings(
+  branchId: string,
+  settings: {
+    deliveryMode?: "postcodes" | "radius" | "both";
+    freeDeliveryAtMinimum?: boolean;
+    deliveryAreas?: Array<{
+      postalCode: string;
+      minimumOrder: number;
+      deliveryFee: number;
+      name?: string;
+    }>;
+    deliveryRadiusZones?: Array<{
+      maxDistanceKm: number;
+      minimumOrder: number;
+      deliveryFee: number;
+      label?: string;
+    }>;
+  }
+) {
+  const existing = await prisma.branchConfig.findUnique({ where: { branchId } });
+  const current = (existing?.configJson ?? {}) as Record<string, unknown>;
+
+  const sortedZones = settings.deliveryRadiusZones
+    ? [...settings.deliveryRadiusZones].sort((a, b) => a.maxDistanceKm - b.maxDistanceKm)
+    : null;
+
+  const configJson = {
+    ...current,
+    ...(settings.deliveryMode != null ? { deliveryMode: settings.deliveryMode } : {}),
+    ...(settings.freeDeliveryAtMinimum != null
+      ? { freeDeliveryAtMinimum: settings.freeDeliveryAtMinimum }
+      : {}),
+    ...(settings.deliveryAreas != null ? { deliveryAreas: settings.deliveryAreas } : {}),
+    ...(sortedZones != null ? { deliveryRadiusZones: sortedZones } : {})
+  };
+
+  await prisma.branchConfig.upsert({
+    where: { branchId },
+    update: { configJson, version: { increment: 1 } },
+    create: {
+      id: randomUUID(),
+      branchId,
+      configJson
+    }
+  });
+
+  return configJson;
+}
+
+export async function getBranchMenuForManager(branchId: string) {
+  const categories = await prisma.branchCategory.findMany({
+    where: { branchId },
+    orderBy: { id: "asc" },
+    include: {
+      items: {
+        orderBy: { id: "asc" },
+        include: {
+          menuItem: {
+            select: {
+              id: true,
+              name: true,
+              basePrice: true,
+              kitchen: true
+            }
+          }
+        }
+      }
+    }
+  });
+
+  return categories.map((cat) => ({
+    id: cat.id,
+    name: cat.name,
+    items: cat.items.map((entry) => ({
+      branchMenuItemId: entry.id,
+      menuItemId: entry.menuItem.id,
+      name: entry.menuItem.name,
+      price: entry.price ?? entry.menuItem.basePrice ?? 0,
+      kitchen: entry.menuItem.kitchen ?? "B",
+      isAvailable: entry.isAvailable
+    }))
+  }));
+}
+
+export async function updateBranchMenuItem(
+  branchId: string,
+  branchMenuItemId: number,
+  data: { price?: number; isAvailable?: boolean }
+) {
+  const item = await prisma.branchMenuItem.findFirst({
+    where: { id: branchMenuItemId, branchId }
+  });
+
+  if (!item) throw new Error("Menu item not found");
+
+  return prisma.branchMenuItem.update({
+    where: { id: branchMenuItemId },
+    data: {
+      price: data.price ?? item.price,
+      isAvailable: data.isAvailable ?? item.isAvailable
+    },
+    include: { menuItem: true }
+  });
+}
+
+export async function getBranchOrders(branchId: string, limit = 50) {
+  return prisma.order.findMany({
+    where: { branchId },
+    orderBy: { createdAt: "desc" },
+    take: limit,
+    include: {
+      items: { include: { item: true } }
+    }
+  });
+}
+
+export async function getBranchDashboard(branchId: string) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const [pending, todayOrders, totalRevenue] = await Promise.all([
+    prisma.order.count({
+      where: { branchId, status: { in: ["pending", "accepted", "preparing"] } }
+    }),
+    prisma.order.count({
+      where: { branchId, createdAt: { gte: today } }
+    }),
+    prisma.order.aggregate({
+      where: { branchId, createdAt: { gte: today }, status: { not: "cancelled" } },
+      _sum: { orderTotal: true }
+    })
+  ]);
+
+  return {
+    pendingOrders: pending,
+    todayOrders,
+    todayRevenue: totalRevenue._sum.orderTotal ?? 0
+  };
+}

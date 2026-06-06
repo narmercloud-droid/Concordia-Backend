@@ -1,6 +1,5 @@
 import { prisma } from "../prisma/client.js";
 export class MenuService {
-    // Categories
     async createCategory(data) {
         return prisma.category.create({ data });
     }
@@ -14,11 +13,23 @@ export class MenuService {
         return prisma.category.findMany({
             orderBy: { position: "asc" },
             include: {
-                items: true
+                menuItems: {
+                    select: {
+                        id: true,
+                        name: true,
+                        description: true,
+                        price: true,
+                        tags: true,
+                        stock: true,
+                        lowStockThreshold: true,
+                        autoDisable: true,
+                        kitchen: true,
+                        categoryId: true
+                    }
+                }
             }
         });
     }
-    // Items
     async createItem(data) {
         return prisma.menuItem.create({ data });
     }
@@ -28,54 +39,27 @@ export class MenuService {
     async deleteItem(id) {
         return prisma.menuItem.delete({ where: { id } });
     }
-    // Variants
     async createVariant(data) {
-        return prisma.variant.create({ data });
+        throw new Error("Variants are not supported by the current schema");
     }
     async updateVariant(id, data) {
-        return prisma.variant.update({ where: { id }, data });
+        throw new Error("Variants are not supported by the current schema");
     }
     async deleteVariant(id) {
-        return prisma.variant.delete({ where: { id } });
+        throw new Error("Variants are not supported by the current schema");
     }
-    // Add-on groups
-    async createAddOnGroup(data) {
-        return prisma.addOnGroup.create({ data });
-    }
-    async updateAddOnGroup(id, data) {
-        return prisma.addOnGroup.update({ where: { id }, data });
-    }
-    async deleteAddOnGroup(id) {
-        return prisma.addOnGroup.delete({ where: { id } });
-    }
-    // Add-ons
-    async createAddOn(data) {
-        return prisma.addOn.create({ data });
-    }
-    async updateAddOn(id, data) {
-        return prisma.addOn.update({ where: { id }, data });
-    }
-    async deleteAddOn(id) {
-        return prisma.addOn.delete({ where: { id } });
-    }
-    // Terminal sold-out controls
-    async setItemAvailability(id, isAvailable) {
-        return prisma.menuItem.update({
+    async setItemAvailability(id, available) {
+        const updated = await prisma.menuItem.update({
             where: { id },
-            data: { isAvailable }
+            data: { autoDisable: !available }
         });
+        return {
+            ...updated,
+            available: !updated.autoDisable
+        };
     }
-    async setVariantAvailability(id, isAvailable) {
-        return prisma.menuVariant.update({
-            where: { id },
-            data: { isAvailable }
-        });
-    }
-    async setAddOnAvailability(id, isAvailable) {
-        return prisma.addOn.update({
-            where: { id },
-            data: { isAvailable }
-        });
+    async setVariantAvailability(id, available) {
+        throw new Error("Variants are not supported by the current schema");
     }
 }
 export const menuService = new MenuService();

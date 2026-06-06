@@ -1,4 +1,5 @@
-import { Router } from "express";
+import express from "express";
+const { Router } = express;
 import { ReviewController } from "../controllers/review.controller.js";
 import { customerAuth } from "../middleware/customerAuth.js";
 import { adminAuth } from "../middleware/adminAuth.js";

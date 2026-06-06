@@ -1,10 +1,11 @@
 import { addressService } from "../services/address.service.js";
+import { success } from "./controllerHelper.js";
 export const AddressController = {
     add: async (req, res, next) => {
         try {
             const customerId = req.user.id;
             const address = await addressService.addAddress(customerId, req.body);
-            res.json(address);
+            return success(res, address);
         }
         catch (err) {
             next(err);
@@ -15,7 +16,7 @@ export const AddressController = {
             const customerId = req.user.id;
             const { id } = req.params;
             await addressService.updateAddress(customerId, id, req.body);
-            res.json({ success: true });
+            return success(res, { success: true });
         }
         catch (err) {
             next(err);
@@ -26,7 +27,7 @@ export const AddressController = {
             const customerId = req.user.id;
             const { id } = req.params;
             await addressService.deleteAddress(customerId, id);
-            res.json({ success: true });
+            return success(res, { success: true });
         }
         catch (err) {
             next(err);
@@ -36,7 +37,7 @@ export const AddressController = {
         try {
             const customerId = req.user.id;
             const list = await addressService.listAddresses(customerId);
-            res.json(list);
+            return success(res, list);
         }
         catch (err) {
             next(err);

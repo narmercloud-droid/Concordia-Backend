@@ -1,9 +1,9 @@
 import { prisma } from "../prisma/client.js";
+import { randomUUID } from "crypto";
 export class ManagerDashboardService {
     // MENU ITEMS FOR BRANCH
     async menu(branchId) {
         return prisma.menuItem.findMany({
-            where: { branchId },
             include: { category: true }
         });
     }
@@ -11,7 +11,7 @@ export class ManagerDashboardService {
     async setItemAvailability(branchId, itemId, available) {
         return prisma.menuItem.updateMany({
             where: { id: itemId },
-            data: { available }
+            data: { available: available }
         });
     }
     // ORDERS FOR BRANCH
@@ -50,7 +50,7 @@ export class ManagerDashboardService {
     async updateSchedule(branchId, schedule) {
         await prisma.branchSchedule.deleteMany({ where: { branchId } });
         return prisma.branchSchedule.createMany({
-            data: schedule.map(s => ({ ...s, branchId }))
+            data: schedule.map(s => ({ id: randomUUID(), ...s, branchId }))
         });
     }
 }

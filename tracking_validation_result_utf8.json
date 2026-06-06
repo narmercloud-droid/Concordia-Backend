@@ -1,0 +1,18 @@
+﻿{
+  "order": {
+    "id": "a31e9f96-275a-4099-b402-c2074415e735",
+    "tracking_token": "6f4334cc-fd71-46e1-a8ea-55607f609add",
+    "status": "pending"
+  },
+  "timeline": [],
+  "checks": {
+    "timelineExists": true,
+    "sortedAsc": true,
+    "firstIsCreated": false,
+    "noNullTimestamps": true,
+    "duplicates": false,
+    "statusMatchesLast": null
+  },
+  "errors": []
+}
+

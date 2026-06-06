@@ -1,8 +1,9 @@
-import { Router } from "express";
-import { ReviewController } from "../controllers/review.controller.js";
-import { customerAuth } from "../middleware/customerAuth.js";
-import { adminAuth } from "../middleware/adminAuth.js";
-import { adminRole } from "../middleware/adminRole.js";
+﻿import express from "express";
+const { Router } = express;
+import { ReviewController } from "../controllers/review.controller.ts";
+import { customerAuth } from "../middleware/customerAuth.ts";
+import { adminAuth } from "../middleware/adminAuth.ts";
+import { adminRole } from "../middleware/adminRole.ts";
 
 const router = Router();
 
@@ -28,5 +29,11 @@ router.get(
 );
 
 export default router;
+
+
+
+
+
+
 
 

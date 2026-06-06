@@ -1,12 +1,14 @@
-import { Router } from "express";
-import { MenuController } from "../controllers/menu.controller.js";
-import { adminAuth } from "../middleware/adminAuth.js";
-import { adminRole } from "../middleware/adminRole.js";
+﻿import express from "express";
+const { Router } = express;
+import { MenuController } from "../controllers/menu.controller.ts";
+import { adminAuth } from "../middleware/adminAuth.ts";
+import { adminRole } from "../middleware/adminRole.ts";
+import cacheMiddleware from "../middleware/cacheMiddleware.ts";
 
 const router = Router();
 
 // Customer menu browsing
-router.get("/", MenuController.listMenu);
+router.get("/", cacheMiddleware({ ttl: 30, keyPrefix: "menu" }), MenuController.listMenu);
 
 // Manager + superadmin
 router.post("/category", adminAuth, adminRole("manager"), MenuController.createCategory);
@@ -26,5 +28,11 @@ router.put("/item/:id/availability", MenuController.setItemAvailability);
 router.put("/variant/:id/availability", MenuController.setVariantAvailability);
 
 export default router;
+
+
+
+
+
+
 
 

@@ -1,0 +1,11 @@
+export function successResponse(data) {
+    return { success: true, data };
+}
+export function errorResponse(code, message, details) {
+    return { success: false, error: { code, message, details } };
+}
+export function isApiError(e) {
+    return e && typeof e === 'object' && typeof e.code === 'string' && typeof e.message === 'string';
+}
+// explicit exports for clarity
+// explicit re-exports removed — types are exported above via `export type`

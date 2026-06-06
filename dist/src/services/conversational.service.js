@@ -1,15 +1,16 @@
 import { prisma } from "../prisma/client.js";
-import { intelligenceService } from "./intelligence.service";
-import { nlaeService } from "./nlae.service";
-import { orchestrationService } from "./orchestration.service";
-import { ltmlService } from "./ltml.service";
+import { randomUUID } from "crypto";
+import { intelligenceService } from "./intelligence.service.js";
+import { nlaeService } from "./nlae.service.js";
+import { orchestrationService } from "./orchestration.service.js";
+import { ltmlService } from "./ltml.service.js";
 export class ConversationalService {
     constructor() {
         // Personality style
         this.personality = {
             tone: "friendly, insightful, concise, helpful",
-            prefix: "Here’s what I see:",
-            fallback: "I’m still learning, but here’s my best insight."
+            prefix: "Hereâ€™s what I see:",
+            fallback: "Iâ€™m still learning, but hereâ€™s my best insight."
         };
     }
     // 1. Generate conversational response
@@ -40,7 +41,7 @@ export class ConversationalService {
         }
         // Save conversation
         await prisma.conversationLog.create({
-            data: { branchId, message, response }
+            data: { id: randomUUID(), branchId, message, response }
         });
         return response;
     }

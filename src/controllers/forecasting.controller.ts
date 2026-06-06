@@ -1,16 +1,18 @@
-import { forecastingService } from "../services/forecasting.service.js";
-import { NextFunction, Request, Response } from "express";
+﻿import type { Request } from "express";
+import { forecastingService } from "../services/forecasting.service.ts";
+import { wrap } from "../contracts/api.js";
 
 export const ForecastingController = {
-  fullForecast: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const branchId = req.user!.branchId;
-      const result = await forecastingService.fullForecast(branchId);
-      res.json(result);
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  fullForecast: wrap(async (req: Request) => {
+    const branchId = req.user!.branchId;
+    const result = await forecastingService.fullForecast(branchId);
+    return result;
+  }),
 };
+
+
+
+
+
 
 

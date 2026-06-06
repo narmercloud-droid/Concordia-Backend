@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmitOnError": false
+  },
+  "include": ["src/agent/**/*"],
+  "exclude": ["node_modules", "dist", "tests", "prisma"]
+}

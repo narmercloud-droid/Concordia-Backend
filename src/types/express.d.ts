@@ -1,12 +1,16 @@
-declare namespace Express {
-  export interface Request {
-    user?: {
-      id: string;
-      role: string;
-      branchId: string;
-    };
-    app?: any;
+declare global {
+  namespace Express {
+    interface Request {
+      user?: any;
+      customer?: any;
+      terminal?: any;
+      io?: any;
+    }
+    interface Response {
+      tson?: (body: any) => void;
+    }
   }
 }
 
 export {};
+

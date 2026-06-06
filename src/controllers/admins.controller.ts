@@ -1,83 +1,57 @@
-import { Request, Response, NextFunction } from "express";
-import { adminService } from "../services/admins.service.js";
-import { prisma } from "../prisma/client.js";
+﻿import type { Request } from "express";
+import { adminService } from "../services/admins.service.ts";
+import { wrap, fail } from "../contracts/api.js";
 
 export const AdminController = {
-  create: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const admin = await adminService.createAdmin(req.body);
-      res.json(admin);
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  create: wrap(async (req: Request) => {
+    const admin = await adminService.createAdmin(req.body);
+    return admin;
+  }),
 
-  login: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const admin = await adminService.getAdminByEmail(req.body.email);
-      if (!admin) return res.status(401).json({ error: "Invalid credentials" });
+  login: wrap(async (req: Request) => {
+    const admin = await adminService.getAdminByEmail(req.body.email);
+    if (!admin) throw fail('UNAUTHORIZED', 'Invalid credentials');
 
-      const valid = await adminService.validatePassword(
-        req.body.password,
-        admin.password
-      );
-      if (!valid) return res.status(401).json({ error: "Invalid credentials" });
+    const valid = await adminService.validatePassword(req.body.password, admin.password);
+    if (!valid) throw fail('UNAUTHORIZED', 'Invalid credentials');
 
-      const tokens = await adminService.generateTokens(admin);
-      res.json({ admin, ...tokens });
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+    const tokens = await adminService.generateTokens(admin);
+    return { admin, ...tokens };
+  }),
 
-  refresh: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { refreshToken } = req.body;
-      if (!refreshToken) return res.status(401).json({ error: "Missing token" });
+  refresh: wrap(async (req: Request) => {
+    const { refreshToken } = req.body;
+    if (!refreshToken) throw fail('UNAUTHORIZED', 'Missing token');
 
-      // Admin model in prisma/schema.prisma has no refreshToken field.
-      // Reject to avoid Prisma type mismatch.
-      return res.status(403).json({ error: "Invalid token" });
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+    // Admin model in prisma/schema.prisma has no refreshToken field.
+    // Reject to avoid Prisma type mismatch.
+    throw fail('FORBIDDEN', 'Invalid token');
+  }),
 
-  getById: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const admin = await adminService.getAdminById(req.params.id);
-      res.json(admin);
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  getById: wrap(async (req: Request) => {
+    const admin = await adminService.getAdminById(req.params.id);
+    return admin;
+  }),
 
-  list: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const admins = await adminService.listAdmins();
-      res.json(admins);
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  list: wrap(async () => {
+    const admins = await adminService.listAdmins();
+    return admins;
+  }),
 
-  update: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const admin = await adminService.updateAdmin(req.params.id, req.body);
-      res.json(admin);
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
+  update: wrap(async (req: Request) => {
+    const admin = await adminService.updateAdmin(req.params.id, req.body);
+    return admin;
+  }),
 
-  delete: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const admin = await adminService.deleteAdmin(req.params.id);
-      res.json(admin);
-    } catch (err: unknown) {
-      next(err);
-    }
-  }
+  delete: wrap(async (req: Request) => {
+    const admin = await adminService.deleteAdmin(req.params.id);
+    return admin;
+  })
 };
+
+
+
+
+
 
 

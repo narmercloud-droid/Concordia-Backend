@@ -1,8 +1,8 @@
-import dotenv from "dotenv";
-dotenv.config();
 import { Pool } from "pg";
+import { env } from "../config/env.js";
+import logger from "../logger.js";
 export const db = new Pool({
-    connectionString: process.env.DATABASE_URL,
+    connectionString: env.DATABASE_URL,
     ssl: true
 });
-console.log("Connected to:", process.env.DATABASE_URL);
+logger.info({ database: env.DATABASE_URL }, "Database pool configured");

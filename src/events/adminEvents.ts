@@ -1,4 +1,5 @@
 import { Server, Socket } from "socket.io";
+import logger from "../logger.ts";
 
 export function registerAdminEvents(io: Server) {
   io.on("connection", (socket: Socket) => {
@@ -7,10 +8,10 @@ export function registerAdminEvents(io: Server) {
 
     if (isAdmin) {
       socket.join("admin_dashboard");
-      console.log("Admin connected to dashboard");
+      logger.info("Admin connected to dashboard");
 
       socket.on("disconnect", () => {
-        console.log("Admin disconnected from dashboard");
+        logger.info("Admin disconnected from dashboard");
       });
     }
   });

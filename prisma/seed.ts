@@ -1,126 +1,197 @@
 import { PrismaClient } from "@prisma/client";
-import fs from "fs";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("🌱 Starting database seed...");
+  console.log("🌱 Seeding database (full restaurant)...");
 
-  const raw = fs.readFileSync("prisma/data.json", "utf-8");
-  const data = JSON.parse(raw);
-
-  // Clear tables in correct order
-  await prisma.dealItem.deleteMany();
-  await prisma.deal.deleteMany();
-  await prisma.relationVariant.deleteMany();
-  await prisma.relationTopping.deleteMany();
-  await prisma.relationExtra.deleteMany();
-  await prisma.relation.deleteMany();
-  await prisma.extra.deleteMany();
-  await prisma.topping.deleteMany();
-  await prisma.variant.deleteMany();
-  await prisma.item.deleteMany();
-  await prisma.category.deleteMany();
-
-  console.log("🧹 Old data cleared.");
-
-  // Insert categories
-  await prisma.category.createMany({
-    data: data.categories,
+  // Branch (ensure seed branch exists)
+  const branch = await prisma.branch.upsert({
+    where: { id: "branch-001" },
+    update: {},
+    create: {
+      id: "branch-001",
+      name: "Test Branch",
+      printerType: "network",
+      printerUrl: "http://localhost",
+      avgPrepTimeBaseline: 10,
+      currentLoadLevel: 0
+    }
   });
-  console.log("📁 Categories inserted.");
 
-  // Insert items
-  await prisma.item.createMany({
-    data: data.items,
+  // Customer
+  await prisma.customer.upsert({
+    where: { id: "test-customer" },
+    update: {},
+    create: {
+      id: "test-customer",
+      name: "Test Customer",
+      email: "test@example.com",
+      phone: "+10000000000",
+      phoneNumber: "+10000000000",
+      loginToken: null,
+      loginTokenExpires: null,
+      marketingEmail: false,
+      marketingSMS: false,
+      marketingWhatsApp: false,
+      marketingConsent: false,
+      marketingConsentAt: null,
+      loyaltyPoints: 0,
+      lifetimePoints: 0,
+      loyaltyTier: "bronze"
+    }
   });
-  console.log("🍕 Items inserted.");
 
-  // Insert variants
-  await prisma.variant.createMany({
-    data: data.variants,
-  });
-  console.log("🔢 Variants inserted.");
+  // Categories
+  const categories = [
+    { name: "Burgers", description: "Juicy grilled burgers" },
+    { name: "Drinks", description: "Refreshing beverages" },
+    { name: "Desserts", description: "Sweet treats" }
+  ];
 
-  // Insert toppings
-  await prisma.topping.createMany({
-    data: data.toppings,
-  });
-  console.log("🥗 Toppings inserted.");
+  for (const cat of categories) {
+    await prisma.category.upsert({
+      where: { name: cat.name },
+      update: { description: cat.description },
+      create: {
+        name: cat.name,
+        description: cat.description
+      }
+    });
+  }
 
-  // Insert extras
-  await prisma.extra.createMany({
-    data: data.extras,
-  });
-  console.log("➕ Extras inserted.");
+  // Menu items (use explicit IDs for deterministic upserts)
+  const items = [
+    { id: 1001, name: "Classic Burger", description: "Beef patty, lettuce, tomato", basePrice: 8.5, category: "Burgers" },
+    { id: 1002, name: "Cheeseburger", description: "Beef patty with cheese", basePrice: 9.5, category: "Burgers" },
+    { id: 2001, name: "Coke", description: "330ml can", basePrice: 2.0, category: "Drinks" },
+    { id: 3001, name: "Chocolate Cake", description: "Rich chocolate slice", basePrice: 4.5, category: "Desserts" }
+  ];
 
-  // Insert relations
-  for (const rel of data.relations) {
-    const created = await prisma.relation.create({
-      data: {
-        item_id: rel.item_id,
-        category_id: rel.category_id,
-      },
+  for (const it of items) {
+    await prisma.menuItem.upsert({
+      where: { id: it.id },
+      update: { name: it.name, description: it.description, basePrice: it.basePrice },
+      create: {
+        id: it.id,
+        name: it.name,
+        description: it.description,
+        basePrice: it.basePrice
+      }
+    });
+  }
+
+  // Variant groups and variants (Size: Small/Medium/Large) for burger items
+  const burgerItemIds = [1001, 1002];
+  for (const menuItemId of burgerItemIds) {
+    const groupId = `size-group-${menuItemId}`;
+    const variantGroup = await prisma.variantGroup.upsert({
+      where: { id: groupId },
+      update: {},
+      create: {
+        id: groupId,
+        name: "Size",
+        itemId: menuItemId
+      }
     });
 
-    // Variants
-    for (const v of rel.variant_ids) {
-      await prisma.relationVariant.create({
-        data: {
-          relation_id: created.id,
-          variant_id: v,
-        },
-      });
-    }
+    const sizes = [
+      { id: `v-small-${menuItemId}`, name: "Small", price: 0 },
+      { id: `v-medium-${menuItemId}`, name: "Medium", price: 1.5 },
+      { id: `v-large-${menuItemId}`, name: "Large", price: 3.0 }
+    ];
 
-    // Toppings
-    for (const t of rel.topping_ids) {
-      await prisma.relationTopping.create({
-        data: {
-          relation_id: created.id,
-          topping_id: t,
-        },
-      });
-    }
-
-    // Extras
-    for (const e of rel.extra_ids) {
-      await prisma.relationExtra.create({
-        data: {
-          relation_id: created.id,
-          extra_id: e,
-        },
+    for (const s of sizes) {
+      await prisma.variant.upsert({
+        where: { id: s.id },
+        update: { name: s.name, price: s.price, groupId: variantGroup.id },
+        create: { id: s.id, name: s.name, price: s.price, groupId: variantGroup.id }
       });
     }
   }
-  console.log("🔗 Relations inserted.");
 
-  // Insert deals
-  for (const deal of data.deals) {
-    const createdDeal = await prisma.deal.create({
-      data: {
-        deal_id: deal.deal_id,
-        admin_name_en: deal.admin_name_en,
-        customer_name_de: deal.customer_name_de,
-        description_de: deal.description_de,
-        visible: deal.visible,
-        available: deal.available,
-        sort_order: deal.sort_order,
-      },
+  // Add-on groups and add-ons (global style attached to burger items)
+  for (const menuItemId of burgerItemIds) {
+    const addOnGroupId = `addons-${menuItemId}`;
+    const addOnGroup = await prisma.addOnGroup.upsert({
+      where: { id: addOnGroupId },
+      update: {},
+      create: {
+        id: addOnGroupId,
+        name: "Extras",
+        itemId: menuItemId
+      }
     });
 
-    for (const itemId of deal.items_included) {
-      await prisma.dealItem.create({
-        data: {
-          deal_id: createdDeal.deal_id,
-          item_id: itemId,
-        },
+    const addons = [
+      { id: `a-cheese-${menuItemId}`, name: "Cheese", price: 1.0 },
+      { id: `a-bacon-${menuItemId}`, name: "Bacon", price: 1.5 },
+      { id: `a-sauce-${menuItemId}`, name: "Extra Sauce", price: 0.5 }
+    ];
+
+    for (const a of addons) {
+      await prisma.addOn.upsert({
+        where: { id: a.id },
+        update: { name: a.name, price: a.price, groupId: addOnGroup.id },
+        create: { id: a.id, name: a.name, price: a.price, groupId: addOnGroup.id }
       });
     }
   }
-  console.log("💼 Deals inserted.");
 
-  console.log("🌱 Database seed completed successfully!");
+  const branchCategories: Record<string, number> = {};
+  for (const cat of categories) {
+    const existing = await prisma.branchCategory.findFirst({
+      where: { branchId: branch.id, name: cat.name }
+    });
+    const created = existing ?? await prisma.branchCategory.create({
+      data: { branchId: branch.id, name: cat.name }
+    });
+    branchCategories[cat.name] = created.id;
+  }
+
+  for (const it of items) {
+    const categoryId = branchCategories[it.category];
+    const existingBranchItem = await prisma.branchMenuItem.findFirst({
+      where: { branchId: branch.id, menuItemId: it.id }
+    });
+
+    if (existingBranchItem) {
+      await prisma.branchMenuItem.update({
+        where: { id: existingBranchItem.id },
+        data: { price: it.basePrice, isAvailable: true, categoryId }
+      });
+    } else {
+      await prisma.branchMenuItem.create({
+        data: {
+          branchId: branch.id,
+          menuItemId: it.id,
+          price: it.basePrice,
+          isAvailable: true,
+          categoryId
+        }
+      });
+    }
+  }
+
+  // Branch pricing and availability for each menu item
+  const branchId = branch.id;
+  for (const it of items) {
+    const pricingId = `${branchId}-${it.id}-pricing`;
+    await prisma.branchItemPricing.upsert({
+      where: { id: pricingId },
+      update: { price: it.basePrice },
+      create: { id: pricingId, branchId, menuItemId: it.id, price: it.basePrice }
+    });
+
+    const availabilityId = `${branchId}-${it.id}-avail`;
+    await prisma.branchItemAvailability.upsert({
+      where: { id: availabilityId },
+      update: { isAvailable: true },
+      create: { id: availabilityId, branchId, menuItemId: it.id, isAvailable: true }
+    });
+  }
+
+  console.log("🌱 Full restaurant seed completed.");
 }
 
 main()

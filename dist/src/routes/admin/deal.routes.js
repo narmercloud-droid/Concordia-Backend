@@ -1,4 +1,5 @@
-import { Router } from "express";
+import express from "express";
+const { Router } = express;
 import { DealController } from "../../controllers/admin/deal.controller.js";
 import { verifyAdmin } from "../../middleware/auth.js";
 const router = Router();
@@ -7,7 +8,4 @@ router.get("/:id", verifyAdmin, DealController.getById);
 router.post("/", verifyAdmin, DealController.create);
 router.put("/:id", verifyAdmin, DealController.update);
 router.delete("/:id", verifyAdmin, DealController.remove);
-// Deal items
-router.post("/:dealId/item", verifyAdmin, DealController.addItem);
-router.delete("/:dealId/item/:itemId", verifyAdmin, DealController.removeItem);
 export default router;

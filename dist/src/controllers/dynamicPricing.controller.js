@@ -1,10 +1,12 @@
 import { dynamicPricingService } from "../services/dynamicPricing.service.js";
+import { success } from "./controllerHelper.js";
+// (import above)
 export const DynamicPricingController = {
     optimizeItem: async (req, res, next) => {
         try {
             const { itemId } = req.body;
             const result = await dynamicPricingService.applyPrice(itemId, "Manual optimize");
-            res.json(result);
+            return success(res, result);
         }
         catch (err) {
             next(err);
@@ -14,7 +16,7 @@ export const DynamicPricingController = {
         try {
             const branchId = req.user.branchId;
             const result = await dynamicPricingService.optimizeBranch(branchId);
-            res.json(result);
+            return success(res, result);
         }
         catch (err) {
             next(err);

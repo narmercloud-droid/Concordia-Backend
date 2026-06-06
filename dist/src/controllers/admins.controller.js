@@ -1,9 +1,10 @@
 import { adminService } from "../services/admins.service.js";
+import { success, fail } from "./controllerHelper.js";
 export const AdminController = {
     create: async (req, res, next) => {
         try {
             const admin = await adminService.createAdmin(req.body);
-            res.json(admin);
+            return success(res, admin);
         }
         catch (err) {
             next(err);
@@ -13,12 +14,12 @@ export const AdminController = {
         try {
             const admin = await adminService.getAdminByEmail(req.body.email);
             if (!admin)
-                return res.status(401).json({ error: "Invalid credentials" });
+                return fail(res, "Invalid credentials", 401);
             const valid = await adminService.validatePassword(req.body.password, admin.password);
             if (!valid)
-                return res.status(401).json({ error: "Invalid credentials" });
+                return fail(res, "Invalid credentials", 401);
             const tokens = await adminService.generateTokens(admin);
-            res.json({ admin, ...tokens });
+            return success(res, { admin, ...tokens });
         }
         catch (err) {
             next(err);
@@ -28,10 +29,10 @@ export const AdminController = {
         try {
             const { refreshToken } = req.body;
             if (!refreshToken)
-                return res.status(401).json({ error: "Missing token" });
+                return fail(res, "Missing token", 401);
             // Admin model in prisma/schema.prisma has no refreshToken field.
             // Reject to avoid Prisma type mismatch.
-            return res.status(403).json({ error: "Invalid token" });
+            return fail(res, "Invalid token", 403);
         }
         catch (err) {
             next(err);
@@ -40,7 +41,7 @@ export const AdminController = {
     getById: async (req, res, next) => {
         try {
             const admin = await adminService.getAdminById(req.params.id);
-            res.json(admin);
+            return success(res, admin);
         }
         catch (err) {
             next(err);
@@ -49,7 +50,7 @@ export const AdminController = {
     list: async (req, res, next) => {
         try {
             const admins = await adminService.listAdmins();
-            res.json(admins);
+            return success(res, admins);
         }
         catch (err) {
             next(err);
@@ -58,7 +59,7 @@ export const AdminController = {
     update: async (req, res, next) => {
         try {
             const admin = await adminService.updateAdmin(req.params.id, req.body);
-            res.json(admin);
+            return success(res, admin);
         }
         catch (err) {
             next(err);
@@ -67,7 +68,7 @@ export const AdminController = {
     delete: async (req, res, next) => {
         try {
             const admin = await adminService.deleteAdmin(req.params.id);
-            res.json(admin);
+            return success(res, admin);
         }
         catch (err) {
             next(err);

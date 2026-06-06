@@ -1,10 +1,11 @@
 import { prisma } from "../prisma/client.js";
 import { TerminalService } from "../services/terminal/terminal.service.js";
+import logger from "../logger.js";
 export function registerTerminalEvents(io, socket) {
     socket.on("terminal_connected", async () => {
         const terminalToken = socket.handshake.auth?.terminal_token;
         if (!terminalToken) {
-            console.log("Terminal socket connection failed: no terminal_token");
+            logger.warn("Terminal socket connection failed: no terminal_token");
             socket.disconnect();
             return;
         }
@@ -22,7 +23,7 @@ export function registerTerminalEvents(io, socket) {
             });
         }
         catch (err) {
-            console.log(`Terminal socket connection failed: ${err.message}`);
+            logger.warn({ err }, "Terminal socket connection failed");
             socket.disconnect();
         }
     });
@@ -39,7 +40,7 @@ export function registerTerminalEvents(io, socket) {
             io.to("admin_dashboard").emit("printer_status_update", payload);
         }
         catch (err) {
-            console.error(`Error forwarding printer status: ${err.message}`);
+            logger.error({ err }, "Error forwarding printer status");
         }
     });
     socket.on("disconnect", async () => {
@@ -60,7 +61,7 @@ export function registerTerminalEvents(io, socket) {
             }
         }
         catch (err) {
-            console.error(`Error updating terminal offline status: ${err.message}`);
+            logger.error({ err }, "Error updating terminal offline status");
         }
     });
 }

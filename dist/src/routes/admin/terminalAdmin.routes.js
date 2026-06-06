@@ -1,7 +1,8 @@
-import { Router } from "express";
+import express from "express";
+const { Router } = express;
 import { TerminalAdminController } from "../../controllers/admin/terminalAdmin.controller.js";
 import { validate } from "../../middleware/validate.js";
-import { getTerminalActivitySchema } from "../../schemas/adminTerminalSchemas";
+import { getTerminalActivitySchema } from "../../schemas/adminTerminalSchemas.js";
 const router = Router();
 router.get("/terminals", TerminalAdminController.getAllTerminals);
 router.get("/terminals/activity", validate(getTerminalActivitySchema), TerminalAdminController.getTerminalActivity);

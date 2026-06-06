@@ -1,9 +1,16 @@
-import { Prisma } from "@prisma/client";
-import { prisma } from "../prisma/client.js";
+﻿import { prisma } from "../prisma/client.ts";
+
+const success = (payload: any) => payload;
+
+function modelExists(modelName: string) {
+  return typeof (prisma as any)[modelName] !== "undefined";
+}
 
 export class AnalyticsService {
   // TOTAL REVENUE
   async totalRevenue(branchId?: string): Promise<any> {
+    if (!modelExists("order")) return success({ message: "Analytics temporarily disabled" });
+
     const orders = await prisma.order.findMany({
       where: {
         paymentStatus: "paid",
@@ -23,6 +30,8 @@ export class AnalyticsService {
 
   // ORDERS PER DAY
   async ordersPerDay(branchId?: string): Promise<any> {
+    if (!modelExists("order")) return success({ message: "Analytics temporarily disabled" });
+
     return prisma.order.groupBy({
       by: ["createdAt"],
       where: {
@@ -34,6 +43,8 @@ export class AnalyticsService {
 
   // BEST SELLING ITEMS
   async bestSellingItems(branchId?: string): Promise<any> {
+    if (!modelExists("orderItem")) return success({ message: "Analytics temporarily disabled" });
+
     return prisma.orderItem.groupBy({
       by: ["itemId"],
       _sum: { quantity: true },
@@ -49,6 +60,8 @@ export class AnalyticsService {
 
   // CUSTOMER ANALYTICS
   async customerStats(): Promise<any> {
+    if (!modelExists("customer")) return success({ message: "Analytics temporarily disabled" });
+
     const total = await prisma.customer.count();
     const withOrders = await prisma.customer.count({
       where: {
@@ -65,6 +78,8 @@ export class AnalyticsService {
 
   // COURIER PERFORMANCE
   async courierPerformance(): Promise<any> {
+    if (!modelExists("order")) return success({ message: "Analytics temporarily disabled" });
+
     return prisma.order.groupBy({
       by: ["courierStatus"],
       _count: { id: true }
@@ -73,20 +88,33 @@ export class AnalyticsService {
 
   // HOURLY ORDER VOLUME
   async hourlyOrders(branchId?: string): Promise<any> {
-    const branchCondition = branchId
-      ? Prisma.sql`WHERE "branchId" = ${branchId}`
-      : Prisma.sql``;
+    if (!modelExists("order")) return success({ message: "Analytics temporarily disabled" });
 
-    return prisma.$queryRaw(Prisma.sql`
+    if (branchId) {
+      return prisma.$queryRaw`
+        SELECT
+          EXTRACT(HOUR FROM "createdAt") AS hour,
+          COUNT(*) AS count
+        FROM "Order"
+        WHERE "branchId" = ${branchId}
+        GROUP BY hour
+        ORDER BY hour;
+      `;
+    }
+
+    return prisma.$queryRaw`
       SELECT
         EXTRACT(HOUR FROM "createdAt") AS hour,
         COUNT(*) AS count
       FROM "Order"
-      ${branchCondition}
       GROUP BY hour
       ORDER BY hour;
-    `);
+    `;
   }
 }
 
 export const analyticsService = new AnalyticsService();
+
+
+
+

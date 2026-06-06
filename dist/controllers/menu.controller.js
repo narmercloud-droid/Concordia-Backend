@@ -1,56 +1,57 @@
 import { menuService } from "../services/menu.service.js";
+import { wrap } from "../contracts/api.js";
 export const MenuController = {
     // Categories
-    createCategory: async (req, res, next) => {
+    createCategory: wrap(async (req) => {
         const category = await menuService.createCategory(req.body);
-        res.json(category);
-    },
-    updateCategory: async (req, res, next) => {
+        return category;
+    }),
+    updateCategory: wrap(async (req) => {
         const category = await menuService.updateCategory(req.params.id, req.body);
-        res.json(category);
-    },
-    deleteCategory: async (req, res, next) => {
-        const category = await menuService.deleteCategory(req.params.id);
-        res.json(category);
-    },
+        return category;
+    }),
+    deleteCategory: wrap(async (req) => {
+        await menuService.deleteCategory(req.params.id);
+        return { success: true };
+    }),
     // Items
-    createItem: async (req, res, next) => {
+    createItem: wrap(async (req) => {
         const item = await menuService.createItem(req.body);
-        res.json(item);
-    },
-    updateItem: async (req, res, next) => {
+        return item;
+    }),
+    updateItem: wrap(async (req) => {
         const item = await menuService.updateItem(req.params.id, req.body);
-        res.json(item);
-    },
-    deleteItem: async (req, res, next) => {
-        const item = await menuService.deleteItem(req.params.id);
-        res.json(item);
-    },
+        return item;
+    }),
+    deleteItem: wrap(async (req) => {
+        await menuService.deleteItem(req.params.id);
+        return { success: true };
+    }),
     // Variants
-    createVariant: async (req, res, next) => {
+    createVariant: wrap(async (req) => {
         const variant = await menuService.createVariant(req.body);
-        res.json(variant);
-    },
-    updateVariant: async (req, res, next) => {
+        return variant;
+    }),
+    updateVariant: wrap(async (req) => {
         const variant = await menuService.updateVariant(req.params.id, req.body);
-        res.json(variant);
-    },
-    deleteVariant: async (req, res, next) => {
-        const variant = await menuService.deleteVariant(req.params.id);
-        res.json(variant);
-    },
+        return variant;
+    }),
+    deleteVariant: wrap(async (req) => {
+        await menuService.deleteVariant(req.params.id);
+        return { success: true };
+    }),
     // Availability
-    setItemAvailability: async (req, res, next) => {
-        const item = await menuService.setItemAvailability(req.params.id, req.body.available);
-        res.json(item);
-    },
-    setVariantAvailability: async (req, res, next) => {
-        const variant = await menuService.setVariantAvailability(req.params.id, req.body.available);
-        res.json(variant);
-    },
+    setItemAvailability: wrap(async (req) => {
+        const updated = await menuService.setItemAvailability(req.params.id, req.body.available);
+        return updated;
+    }),
+    setVariantAvailability: wrap(async (req) => {
+        const updated = await menuService.setVariantAvailability(req.params.id, req.body.available);
+        return updated;
+    }),
     // Customer menu browsing
-    listMenu: async (req, res, next) => {
+    listMenu: wrap(async (req) => {
         const menu = await menuService.listCategories();
-        res.json(menu);
-    }
+        return menu;
+    })
 };

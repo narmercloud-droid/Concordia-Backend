@@ -1,4 +1,5 @@
-import { prisma } from "../prisma/client.js";
+﻿import { prisma } from "../prisma/client.ts";
+import { randomUUID } from "crypto";
 
 interface ScheduleData {
   day: number;
@@ -9,14 +10,16 @@ interface ScheduleData {
 
 export class ManagerDashboardService {
   // MENU ITEMS FOR BRANCH
-  async menu(branchId: string): Promise<any[]> {
+  async menu(_branchId: string): Promise<any[]> {
+    void _branchId;
     return prisma.menuItem.findMany({
       include: { category: true }
     });
   }
 
   // UPDATE ITEM AVAILABILITY
-  async setItemAvailability(branchId: string, itemId: string, available: boolean): Promise<any> {
+  async setItemAvailability(_branchId: string, itemId: string, available: boolean): Promise<any> {
+    void _branchId;
     return prisma.menuItem.updateMany({
       where: { id: itemId },
       data: { available: available as any }
@@ -64,10 +67,14 @@ export class ManagerDashboardService {
     await prisma.branchSchedule.deleteMany({ where: { branchId } });
 
     return prisma.branchSchedule.createMany({
-      data: schedule.map(s => ({ ...s, branchId }))
+      data: schedule.map(s => ({ id: randomUUID(), ...s, branchId }))
     });
   }
 }
 
 export const managerDashboardService = new ManagerDashboardService();
+
+
+
+
 

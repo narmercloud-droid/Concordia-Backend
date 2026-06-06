@@ -1,9 +1,16 @@
+import { randomUUID } from "crypto";
 import { prisma } from "../prisma/client.js";
 export class LTMLService {
     // 1. Save memory record
     async save(branchId, module, key, value) {
         return prisma.memoryRecord.create({
-            data: { branchId, module, key, value }
+            data: {
+                id: randomUUID(),
+                branchId,
+                module,
+                key,
+                value
+            }
         });
     }
     // 2. Generate long-term trends
@@ -38,7 +45,12 @@ export class LTMLService {
         }
         for (const t of trends) {
             await prisma.trendRecord.create({
-                data: { branchId, category: t.category, summary: t.summary }
+                data: {
+                    id: randomUUID(),
+                    branchId,
+                    category: t.category,
+                    summary: t.summary
+                }
             });
         }
         return trends;

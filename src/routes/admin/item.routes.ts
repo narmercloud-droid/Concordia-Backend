@@ -1,6 +1,7 @@
-import { Router } from "express";
-import { ItemController } from "../../controllers/admin/item.controller.js";
-import { verifyAdmin } from "../../middleware/auth.js";
+﻿import express from "express";
+const { Router } = express;
+import { ItemController } from "../../controllers/admin/item.controller.ts";
+import { verifyAdmin } from "../../middleware/auth.ts";
 
 const router = Router();
 
@@ -11,5 +12,10 @@ router.put("/:id", verifyAdmin, ItemController.update);
 router.delete("/:id", verifyAdmin, ItemController.remove);
 
 export default router;
+
+
+
+
+
 
 

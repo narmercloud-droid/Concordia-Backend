@@ -1,10 +1,10 @@
 export const reviewService = {
-  submit: (...args: any[]) => null,
-  submitReview: (...args: any[]) => null,
-  updateReview: (...args: any[]) => null,
-  deleteReview: (...args: any[]) => null,
-  rateItem: (...args: any[]) => null,
-  listBranchReviews: (...args: any[]) => null,
-  branchRating: (...args: any[]) => null
+  submit: (..._args: any[]) => null,
+  submitReview: (..._args: any[]) => null,
+  updateReview: (..._args: any[]) => null,
+  deleteReview: (..._args: any[]) => null,
+  rateItem: (..._args: any[]) => null,
+  listBranchReviews: (..._args: any[]) => null,
+  branchRating: (..._args: any[]) => null
 };
 

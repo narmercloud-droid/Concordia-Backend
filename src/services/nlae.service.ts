@@ -1,9 +1,9 @@
-import { prisma } from "../prisma/client.js";
-import { forecastingService } from "./forecasting.service.js";
-import { ltvChurnService } from "./ltvChurn.service.js";
-import { menuOptimizationService } from "./menuOptimization.service.js";
-import { knowledgeGraphService } from "./knowledgeGraph.service.js";
-import { decisionEngineService } from "./decisionEngine.service.js";
+﻿import { randomUUID } from "crypto";
+import { prisma } from "../prisma/client.ts";
+import { forecastingService } from "./forecasting.service.ts";
+import { ltvChurnService } from "./ltvChurn.service.ts";
+import { menuOptimizationService } from "./menuOptimization.service.ts";
+import { knowledgeGraphService } from "./knowledgeGraph.service.ts";
 
 export class NLAEService {
   // 1. Classify question
@@ -88,7 +88,7 @@ export class NLAEService {
   async ask(branchId: string, question: string) {
     const type = this.classify(question);
 
-    let answer = "I’m not sure, but I will learn to answer this soon.";
+    let answer = "Iâ€™m not sure, but I will learn to answer this soon.";
 
     if (type === "forecasting") answer = await this.handleForecasting(branchId);
     if (type === "inventory") answer = await this.handleInventory(branchId);
@@ -98,7 +98,12 @@ export class NLAEService {
     if (type === "decisions") answer = await this.handleDecisions(branchId);
 
     await prisma.analyticsQueryLog.create({
-      data: { branchId, question, answer }
+      data: {
+        id: randomUUID(),
+        branchId,
+        question,
+        answer
+      }
     });
 
     return answer;
@@ -106,3 +111,7 @@ export class NLAEService {
 }
 
 export const nlaeService = new NLAEService();
+
+
+
+

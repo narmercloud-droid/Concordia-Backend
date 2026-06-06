@@ -9,12 +9,7 @@ const orderItemSchema = z.object({
   price: z.number()
 });
 
-export const legacyCreateOrderSchema = z
-  .object({
-    items: z.array(orderItemSchema).min(1),
-    paymentMethod: z.string().min(1)
-  })
-  .passthrough();
+// legacyCreateOrderSchema removed — use current order creation schemas
 
 export const courierOrderActionSchema = z.object({
   orderId: z.string().min(1),

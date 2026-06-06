@@ -22,7 +22,7 @@ export class RecommendationService {
         return prisma.menuItem.findMany({
             where: {
                 categoryId: { in: categories },
-                available: true
+                stock: { gt: 0 }
             },
             take: 10
         });
@@ -55,7 +55,7 @@ export class RecommendationService {
             where: {
                 categoryId: item.categoryId,
                 id: { not: itemId },
-                available: true
+                stock: { gt: 0 }
             },
             take: 10
         });
@@ -74,7 +74,7 @@ export class RecommendationService {
                     { name: { contains: lastSearch.query, mode: "insensitive" } },
                     { description: { contains: lastSearch.query, mode: "insensitive" } }
                 ],
-                available: true
+                stock: { gt: 0 }
             },
             take: 10
         });

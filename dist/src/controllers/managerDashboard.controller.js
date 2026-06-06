@@ -1,36 +1,37 @@
 import { managerDashboardService } from "../services/managerDashboard.service.js";
+import { success } from "./controllerHelper.js";
 export const ManagerDashboardController = {
     menu: async (req, res, next) => {
         const branchId = req.user.branchId;
-        res.json(await managerDashboardService.menu(branchId));
+        return success(res, await managerDashboardService.menu(branchId));
     },
     setItemAvailability: async (req, res, next) => {
         const branchId = req.user.branchId;
         const { itemId, available } = req.body;
         await managerDashboardService.setItemAvailability(branchId, itemId, available);
-        res.json({ success: true });
+        return success(res, { success: true });
     },
     orders: async (req, res, next) => {
         const branchId = req.user.branchId;
-        const { status } = req.query;
-        res.json(await managerDashboardService.orders(branchId, status));
+        const status = req.query.status;
+        return success(res, await managerDashboardService.orders(branchId, status));
     },
     couriers: async (req, res, next) => {
         const branchId = req.user.branchId;
-        res.json(await managerDashboardService.couriers(branchId));
+        return success(res, await managerDashboardService.couriers(branchId));
     },
     terminals: async (req, res, next) => {
         const branchId = req.user.branchId;
-        res.json(await managerDashboardService.terminals(branchId));
+        return success(res, await managerDashboardService.terminals(branchId));
     },
     getSchedule: async (req, res, next) => {
         const branchId = req.user.branchId;
-        res.json(await managerDashboardService.getSchedule(branchId));
+        return success(res, await managerDashboardService.getSchedule(branchId));
     },
     updateSchedule: async (req, res, next) => {
         const branchId = req.user.branchId;
         const schedule = req.body;
         await managerDashboardService.updateSchedule(branchId, schedule);
-        res.json({ success: true });
+        return success(res, { success: true });
     }
 };

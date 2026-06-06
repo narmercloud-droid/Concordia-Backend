@@ -5,7 +5,7 @@ export class OrderMonitorService {
             select: {
                 id: true,
                 branchId: true,
-                terminalId: true,
+                terminal_id: true,
                 status: true,
                 createdAt: true,
             },
@@ -14,7 +14,7 @@ export class OrderMonitorService {
         return orders.map((order) => ({
             order_id: order.id,
             branch_id: order.branchId,
-            terminal_id: order.terminalId,
+            terminal_id: order.terminal_id,
             status: order.status,
             created_at: order.createdAt,
         }));

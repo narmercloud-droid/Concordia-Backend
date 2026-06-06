@@ -1,4 +1,7 @@
 import { OrderService } from "../../services/order/order.service.js";
+import { routeOrderToKitchens } from "../../services/printer/kitchenRouting.service.js";
+import { success, fail } from "../controllerHelper.js";
+import { ordersCreatedTotal } from "../../metrics/metrics.js";
 export class OrderController {
     // -----------------------------------------------------
     // CREATE ORDER
@@ -15,21 +18,27 @@ export class OrderController {
                 items
             };
             const order = await OrderService.createOrder(orderData);
-            res.status(201).json(order);
+            await routeOrderToKitchens(order.id);
+            // increment orders counter
+            try {
+                ordersCreatedTotal.inc(1);
+            }
+            catch (e) { /* ignore metric errors */ }
+            return success(res, order, "Created", 201);
         }
         catch (err) {
             next(err);
         }
     }
     // -----------------------------------------------------
-    // UPDATE ORDER STATUS (pending → accepted → preparing → ready → delivered)
+    // UPDATE ORDER STATUS (pending â†’ accepted â†’ preparing â†’ ready â†’ delivered)
     // -----------------------------------------------------
     static async updateStatus(req, res, next) {
         try {
             const { orderId } = req.params;
             const { status, estimated_time } = req.body;
             const order = await OrderService.updateStatus(orderId, status, estimated_time);
-            res.json(order);
+            return success(res, order);
         }
         catch (err) {
             next(err);
@@ -42,7 +51,7 @@ export class OrderController {
         try {
             const { orderId } = req.params;
             const order = await OrderService.courierPickup(orderId);
-            res.json(order);
+            return success(res, order);
         }
         catch (err) {
             next(err);
@@ -54,7 +63,7 @@ export class OrderController {
     static async getActiveOrders(req, res, next) {
         try {
             const orders = await OrderService.getActiveOrders();
-            res.json(orders);
+            return success(res, orders);
         }
         catch (err) {
             next(err);
@@ -68,9 +77,9 @@ export class OrderController {
             const { orderId } = req.params;
             const order = await OrderService.getOrderById(orderId);
             if (!order) {
-                return res.status(404).json({ error: "Order not found" });
+                return fail(res, "Order not found", 404);
             }
-            res.json(order);
+            return success(res, order);
         }
         catch (err) {
             next(err);

@@ -1,11 +1,12 @@
 import { paymentsService } from "../services/payments.service.js";
+import { success } from "./controllerHelper.js";
 export const PaymentsController = {
     // STRIPE
     createStripeIntent: async (req, res, next) => {
         try {
             const { orderId, amount } = req.body;
             const intent = await paymentsService.createStripePaymentIntent(orderId, amount);
-            res.json({ clientSecret: intent.client_secret });
+            return success(res, { clientSecret: intent.client_secret });
         }
         catch (err) {
             next(err);
@@ -16,7 +17,7 @@ export const PaymentsController = {
         try {
             const { orderId, amount } = req.body;
             const order = await paymentsService.createPayPalOrder(orderId, amount);
-            res.json(order);
+            return success(res, order);
         }
         catch (err) {
             next(err);
@@ -26,7 +27,7 @@ export const PaymentsController = {
         try {
             const { orderId } = req.body;
             const result = await paymentsService.capturePayPalOrder(orderId);
-            res.json(result);
+            return success(res, result);
         }
         catch (err) {
             next(err);
@@ -36,7 +37,7 @@ export const PaymentsController = {
     refund: async (req, res, next) => {
         try {
             const order = await paymentsService.refund(req.params.id);
-            res.json(order);
+            return success(res, order);
         }
         catch (err) {
             next(err);
