@@ -9,15 +9,15 @@ const __dirname = path.dirname(__filename);
 
 const router = Router();
 
-// Path to store JSON data
-const dataPath = path.join(__dirname, "../../data.js");
+// Path to store JSON data (writable dir — not "data.js")
+const dataPath = path.join(process.cwd(), "data");
 const hoursFile = path.join(dataPath, "opening-hours.tson");
 const holidayOverridesFile = path.join(dataPath, "holiday-overrides.tson");
 const zonesFile = path.join(dataPath, "delivery-zones.tson");
 
 // Ensure data folder exists
 if (!fs.existsSync(dataPath)) {
-  fs.mkdirSync(dataPath);
+  fs.mkdirSync(dataPath, { recursive: true });
 }
 
 function loadHolidayOverrides(): any[] {
