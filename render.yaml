@@ -3,8 +3,6 @@ services:
     name: concordia-backend-web
     env: docker
     dockerfilePath: Dockerfile
-    buildCommand: npm run build
-    startCommand: npm run start
     healthCheckPath: /health
     plan: free
     envVars:
