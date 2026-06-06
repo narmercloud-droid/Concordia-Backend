@@ -46,22 +46,28 @@ export async function geocodeAddress(address: string): Promise<GeoPoint> {
 function parseSuggestion(row: Record<string, unknown>): AddressSuggestion | null {
   const address = row.address as Record<string, unknown> | undefined;
   const postalCode = String(address?.postcode ?? "").trim();
-  const city = String(address?.city ?? address?.town ?? address?.village ?? "").trim();
+  const city = String(
+    address?.city ?? address?.town ?? address?.village ?? address?.municipality ?? ""
+  ).trim();
   const houseNumber = String(address?.house_number ?? "").trim();
-  const road = String(address?.road ?? row.name ?? "").trim();
+  const road = String(address?.road ?? address?.pedestrian ?? row.name ?? "").trim();
   const street = [road, houseNumber].filter(Boolean).join(" ").trim();
   const lat = Number(row.lat);
   const lng = Number(row.lon);
+  const displayName = String(row.display_name ?? "").trim();
 
-  if (!postalCode || !street || !Number.isFinite(lat) || !Number.isFinite(lng)) {
+  if (!postalCode || !Number.isFinite(lat) || !Number.isFinite(lng)) {
     return null;
   }
 
-  const label = [street, `${postalCode} ${city}`.trim()].filter(Boolean).join(", ");
+  const label =
+    street.length > 0
+      ? [street, `${postalCode} ${city}`.trim()].filter(Boolean).join(", ")
+      : displayName || `${postalCode} ${city}`.trim();
 
   return {
     label,
-    street,
+    street: street || road || label.split(",")[0]?.trim() || label,
     postalCode,
     city: city || "Kempen",
     lat,
@@ -77,9 +83,12 @@ export async function suggestAddresses(
   if (!trimmed || trimmed.length < 3) return [];
 
   const limit = options?.limit ?? 6;
+  const hasPostcode = /\b\d{5}\b/.test(trimmed);
   const searchQuery = options?.postalCode
     ? `${trimmed}, ${options.postalCode}, Germany`
-    : `${trimmed}, Germany`;
+    : hasPostcode
+      ? `${trimmed}, Germany`
+      : `${trimmed}, Kempen, Germany`;
 
   try {
     const url = new URL("https://nominatim.openstreetmap.org/search");
