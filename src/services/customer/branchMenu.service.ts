@@ -6,6 +6,18 @@ import {
   resolveExtraPrice
 } from "./extraPricing.service.ts";
 
+function menuItemIdRange(branchId: string): { gte: number; lt: number } | null {
+  if (branchId === "concordia-kempen") return { gte: 10000, lt: 20000 };
+  if (branchId === "concordia-straelen") return { gte: 20000, lt: 30000 };
+  return null;
+}
+
+function itemBelongsToBranch(branchId: string, itemId: number) {
+  const range = menuItemIdRange(branchId);
+  if (!range) return true;
+  return itemId >= range.gte && itemId < range.lt;
+}
+
 export async function getBranchMenuForCustomer(branchId: string) {
   const categories = await prisma.branchCategory.findMany({
     where: { branchId },
@@ -49,8 +61,12 @@ export async function getBranchMenuForCustomer(branchId: string) {
   });
 
   if (branchItems.length === 0) {
+    const range = menuItemIdRange(branchId);
     const allItems = await prisma.menuItem.findMany({
-      where: { isAvailable: true },
+      where: {
+        isAvailable: true,
+        ...(range ? { id: { gte: range.gte, lt: range.lt } } : {})
+      },
       orderBy: { id: "asc" }
     });
 
@@ -208,6 +224,10 @@ export async function getBranchItemForCustomer(branchId: string, itemId: number)
       price: branchItem.price ?? mapped.price,
       imageUrl: branchItem.imageUrl ?? mapped.imageUrl
     };
+  }
+
+  if (!itemBelongsToBranch(branchId, itemId)) {
+    return null;
   }
 
   const item = await prisma.menuItem.findFirst({

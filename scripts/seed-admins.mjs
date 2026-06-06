@@ -38,9 +38,28 @@ async function main() {
     }
   });
 
+  await prisma.admin.upsert({
+    where: { email: "straelen@concordia.de" },
+    update: {
+      password: hash,
+      name: "Straelen Manager",
+      role: "manager",
+      branchId: "concordia-straelen"
+    },
+    create: {
+      id: "admin-straelen",
+      email: "straelen@concordia.de",
+      password: hash,
+      name: "Straelen Manager",
+      role: "manager",
+      branchId: "concordia-straelen"
+    }
+  });
+
   console.log("Admin users ready:");
-  console.log("  owner@concordia.de  (super admin)");
-  console.log("  kempen@concordia.de (Kempen manager)");
+  console.log("  owner@concordia.de   (super admin)");
+  console.log("  kempen@concordia.de  (Kempen manager)");
+  console.log("  straelen@concordia.de (Straelen manager)");
   console.log(`  Password: ${defaultPassword}`);
 }
 

@@ -16,8 +16,32 @@ import {
 import { buildCategorizedExtras, detectItemType } from "./kempen-extras-catalog.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const BRANCH_ID = "concordia-kempen";
+const BRANCH_ID = process.env.SYNC_BRANCH_ID || "concordia-kempen";
 const prisma = new PrismaClient();
+
+function branchItemIdRange() {
+  if (BRANCH_ID === "concordia-straelen") {
+    return { gte: 20000, lt: 30000 };
+  }
+  return { gte: 10000, lt: 20000 };
+}
+
+async function getBranchMenuItems() {
+  const entries = await prisma.branchMenuItem.findMany({
+    where: { branchId: BRANCH_ID },
+    include: { menuItem: true },
+    orderBy: { menuItemId: "asc" }
+  });
+
+  if (entries.length > 0) {
+    return entries.map((entry) => entry.menuItem);
+  }
+
+  return prisma.menuItem.findMany({
+    where: { id: branchItemIdRange() },
+    orderBy: { id: "asc" }
+  });
+}
 
 const lieferando = JSON.parse(
   readFileSync(path.join(__dirname, "kempen-lieferando-complete.json"), "utf8")
@@ -194,7 +218,7 @@ async function upsertAddOnGroup(itemId, suffix, groupName, options, opts = {}) {
 }
 
 async function applyFlyerPrices() {
-  const items = await prisma.menuItem.findMany();
+  const items = await getBranchMenuItems();
   let updated = 0;
 
   for (const item of items) {
@@ -232,12 +256,10 @@ async function syncOptionsFromLieferando() {
     productByName.set(normalizeName(p.name), p);
   }
 
-  const items = await prisma.menuItem.findMany();
+  const items = await getBranchMenuItems();
   let synced = 0;
 
   for (const item of items) {
-    if (item.id < 10000) continue; // skip test/legacy items
-
     const itemType = detectItemType(item.name);
     if (itemType === "drinks") continue;
 
@@ -402,7 +424,7 @@ async function main() {
   await syncOptionsFromLieferando();
   await applyPromotions();
   await applyDeliverySettings();
-  console.log("Kempen menu sync complete.");
+  console.log(`Menu sync complete for ${BRANCH_ID}.`);
 }
 
 main()

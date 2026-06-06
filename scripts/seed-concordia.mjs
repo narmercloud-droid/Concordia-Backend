@@ -26,8 +26,14 @@ const BRANCHES = [
   {
     id: "concordia-straelen",
     name: "Concordia Straelen",
-    status: "coming_soon",
-    city: "Straelen"
+    status: "live",
+    city: "Straelen",
+    address: "Venloer Straße 22",
+    postalCode: "47638",
+    lat: 51.4412,
+    lng: 6.2684,
+    lieferandoUrl: "https://www.lieferando.de/speisekarte/pizzeria-concordia-ll",
+    websiteUrl: "https://www.pizzaconcordiall-straelen.de/"
   },
   {
     id: "concordia-geldern",
