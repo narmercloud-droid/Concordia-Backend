@@ -175,7 +175,8 @@ async function matchRadiusForBranch(
 export async function quoteDelivery(
   branchId: string,
   address: string,
-  orderTotal: number
+  orderTotal: number,
+  options?: { postalCode?: string }
 ): Promise<{
   allowed: boolean;
   deliveryFee: number;
@@ -188,7 +189,13 @@ export async function quoteDelivery(
   radiusLabel?: string;
 }> {
   const settings = await getDeliverySettings(branchId);
-  const postalCode = extractPostalCode(address);
+  const postalCode =
+    options?.postalCode?.trim() ||
+    extractPostalCode(address) ||
+    null;
+  const fullAddress =
+    address?.trim() ||
+    (postalCode ? `${postalCode}, Germany` : "");
 
   let match: MatchResult | null = null;
 
@@ -196,8 +203,8 @@ export async function quoteDelivery(
     match = await matchPostcode(settings, postalCode);
   }
 
-  if (!match && settings.deliveryMode !== "postcodes") {
-    match = await matchRadiusForBranch(settings, branchId, address);
+  if (!match && settings.deliveryMode !== "postcodes" && fullAddress) {
+    match = await matchRadiusForBranch(settings, branchId, fullAddress);
   }
 
   if (!match) {

@@ -68,14 +68,21 @@ async function upsertSizeGroup(itemId, sizes, flyer) {
     flyer?.hähnchen != null || flyer?.schwein != null ? "Fleischwahl" : "Größe";
   await prisma.variantGroup.upsert({
     where: { id: groupId },
-    update: { name: groupName, required: true, minSelect: 1, maxSelect: 1 },
+    update: {
+      name: groupName,
+      required: true,
+      minSelect: 1,
+      maxSelect: 1,
+      includedChoice: false
+    },
     create: {
       id: groupId,
       name: groupName,
       itemId,
       required: true,
       minSelect: 1,
-      maxSelect: 1
+      maxSelect: 1,
+      includedChoice: false
     }
   });
 
@@ -115,18 +122,32 @@ async function upsertSizeGroup(itemId, sizes, flyer) {
   }
 }
 
-async function upsertVariantChoiceGroup(itemId, suffix, groupName, options, required = true) {
+async function upsertVariantChoiceGroup(
+  itemId,
+  suffix,
+  groupName,
+  options,
+  required = true,
+  includedChoice = false
+) {
   const groupId = `choice-${BRANCH_ID}-${itemId}-${suffix}`;
   await prisma.variantGroup.upsert({
     where: { id: groupId },
-    update: { name: groupName, required, minSelect: required ? 1 : 0, maxSelect: 1 },
+    update: {
+      name: groupName,
+      required,
+      minSelect: required ? 1 : 0,
+      maxSelect: 1,
+      includedChoice
+    },
     create: {
       id: groupId,
       name: groupName,
       itemId,
       required,
       minSelect: required ? 1 : 0,
-      maxSelect: 1
+      maxSelect: 1,
+      includedChoice
     }
   });
 
@@ -278,6 +299,7 @@ async function syncOptionsFromLieferando() {
         "noodle",
         "Nudelsorte",
         PASTA_NOODLE_OPTIONS,
+        true,
         true
       );
     }
@@ -288,6 +310,7 @@ async function syncOptionsFromLieferando() {
         "dressing",
         "Dressing",
         SALAD_DRESSING_OPTIONS,
+        true,
         true
       );
     }
@@ -298,7 +321,8 @@ async function syncOptionsFromLieferando() {
         "meat",
         "Fleischwahl",
         SCHNITZEL_MEAT_OPTIONS,
-        true
+        true,
+        false
       );
     }
 
@@ -334,10 +358,50 @@ async function applyPromotions() {
   console.log("Promotions applied:", FLYER_PROMOTIONS);
 }
 
+async function applyDeliverySettings() {
+  const deliveryAreas = (lieferando.deliveryAreas ?? []).map((area) => ({
+    postalCode: String(area.postalCode ?? area.deliveryAreaId ?? ""),
+    city: area.city ?? "Kempen",
+    minimumOrder: Number(area.minimumOrder ?? 15),
+    deliveryFee: Number(area.deliveryFee ?? 2)
+  }));
+
+  const config = await prisma.branchConfig.findUnique({
+    where: { branchId: BRANCH_ID }
+  });
+  const existing = (config?.configJson ?? {});
+
+  const configJson = {
+    ...existing,
+    deliveryMode: "both",
+    freeDeliveryAtMinimum: true,
+    deliveryAreas,
+    deliveryRadiusZones: [
+      { maxDistanceKm: 5, minimumOrder: 15, deliveryFee: 2, label: "0–5 km" },
+      { maxDistanceKm: 10, minimumOrder: 20, deliveryFee: 3, label: "5–10 km" },
+      { maxDistanceKm: 15, minimumOrder: 30, deliveryFee: 4, label: "10–15 km" }
+    ],
+    address: existing.address ?? "Concordienplatz 1",
+    city: existing.city ?? "Kempen",
+    postalCode: existing.postalCode ?? "47906",
+    lat: existing.lat ?? 51.364,
+    lng: existing.lng ?? 6.418
+  };
+
+  await prisma.branchConfig.upsert({
+    where: { branchId: BRANCH_ID },
+    update: { configJson },
+    create: { id: `config-${BRANCH_ID}`, branchId: BRANCH_ID, configJson }
+  });
+
+  console.log(`Delivery settings applied (${deliveryAreas.length} postcodes, mode: both)`);
+}
+
 async function main() {
   await applyFlyerPrices();
   await syncOptionsFromLieferando();
   await applyPromotions();
+  await applyDeliverySettings();
   console.log("Kempen menu sync complete.");
 }
 

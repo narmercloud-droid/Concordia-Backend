@@ -11,6 +11,7 @@ import {
   updateDeliverySettings,
   getMenu,
   updateMenuItem,
+  updateVariantGroup,
   getOrders,
   getDashboard
 } from "../../controllers/manager/manager.controller.ts";
@@ -28,6 +29,7 @@ router.patch("/config/delivery-areas", updateDeliveryAreas);
 router.patch("/config/delivery-settings", updateDeliverySettings);
 router.get("/menu", getMenu);
 router.patch("/menu/items/:id", updateMenuItem);
+router.patch("/menu/variant-groups/:groupId", updateVariantGroup);
 router.get("/orders", getOrders);
 
 export default router;

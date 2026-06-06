@@ -642,14 +642,15 @@ model MenuItem {
 }
 
 model VariantGroup {
-  id        String    @id @default(uuid())
-  name      String
-  itemId    Int
-  required  Boolean   @default(false)
-  minSelect Int       @default(0)
-  maxSelect Int       @default(1)
-  variants  Variant[]
-  item      MenuItem  @relation(fields: [itemId], references: [id])
+  id              String    @id @default(uuid())
+  name            String
+  itemId          Int
+  required        Boolean   @default(false)
+  minSelect       Int       @default(0)
+  maxSelect       Int       @default(1)
+  includedChoice  Boolean   @default(false)
+  variants        Variant[]
+  item            MenuItem  @relation(fields: [itemId], references: [id])
 }
 
 model Variant {

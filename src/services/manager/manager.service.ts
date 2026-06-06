@@ -161,6 +161,32 @@ export async function getBranchMenuForManager(branchId: string) {
   }));
 }
 
+export async function updateVariantGroupIncludedChoice(
+  branchId: string,
+  groupId: string,
+  includedChoice: boolean
+) {
+  const group = await prisma.variantGroup.findUnique({
+    where: { id: groupId },
+    include: {
+      item: {
+        include: {
+          branchItems: { where: { branchId }, take: 1 }
+        }
+      }
+    }
+  });
+
+  if (!group || !group.item.branchItems.length) {
+    throw new Error("Variant group not found for this branch");
+  }
+
+  return prisma.variantGroup.update({
+    where: { id: groupId },
+    data: { includedChoice }
+  });
+}
+
 export async function updateBranchMenuItem(
   branchId: string,
   branchMenuItemId: number,

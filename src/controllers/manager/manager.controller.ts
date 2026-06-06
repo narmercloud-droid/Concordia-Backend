@@ -69,6 +69,31 @@ export const getMenu = wrap(async (req: Request) => {
   return managerService.getBranchMenuForManager(branchId(req));
 });
 
+export const updateVariantGroup = wrap(async (req: Request) => {
+  const groupId = req.params.groupId;
+  if (!groupId) throw fail("INVALID_INPUT", "group id is required");
+
+  if (typeof req.body?.includedChoice !== "boolean") {
+    throw fail("INVALID_INPUT", "includedChoice boolean is required");
+  }
+
+  try {
+    const updated = await managerService.updateVariantGroupIncludedChoice(
+      branchId(req),
+      groupId,
+      req.body.includedChoice
+    );
+
+    return {
+      id: updated.id,
+      name: updated.name,
+      includedChoice: updated.includedChoice
+    };
+  } catch (err: any) {
+    throw fail("NOT_FOUND", err?.message ?? "Variant group not found");
+  }
+});
+
 export const updateMenuItem = wrap(async (req: Request) => {
   const id = Number(req.params.id);
   if (!Number.isFinite(id)) throw fail("INVALID_INPUT", "Invalid item id");

@@ -5,7 +5,11 @@ import {
   listBranchesForCustomer
 } from "../../services/customer/branchMenu.service.ts";
 import { generateTimeSlots } from "../../services/scheduling/scheduling.service.ts";
-import { quoteDelivery } from "../../services/customer/deliveryValidation.service.ts";
+import {
+  getBranchDeliveryAreas,
+  quoteDelivery
+} from "../../services/customer/deliveryValidation.service.ts";
+import { suggestAddresses } from "../../services/geo/geocode.service.ts";
 import { prisma } from "../../prisma/client.ts";
 import { wrap } from "../../contracts/api.ts";
 
@@ -39,14 +43,36 @@ router.get("/branches/:branchId/time-slots", wrap(async (req) => {
   return { slots };
 }));
 
+router.get("/branches/:branchId/delivery-areas", wrap(async (req) => {
+  const areas = await getBranchDeliveryAreas(req.params.branchId);
+  return { areas };
+}));
+
+router.get("/branches/:branchId/address-suggest", wrap(async (req) => {
+  const q = String(req.query.q ?? "").trim();
+  const postalCode = String(req.query.postalCode ?? "").trim() || undefined;
+
+  if (q.length < 3) {
+    return { suggestions: [] };
+  }
+
+  const suggestions = await suggestAddresses(q, { postalCode });
+  return { suggestions };
+}));
+
 router.post("/branches/:branchId/delivery-quote", wrap(async (req) => {
-  const { address, orderTotal } = req.body ?? {};
-  if (!address?.trim()) {
-    throw { code: "INVALID_INPUT", message: "address is required" };
+  const { address, orderTotal, postalCode } = req.body ?? {};
+  const addressText = String(address ?? "").trim();
+  const postcodeText = String(postalCode ?? "").trim();
+
+  if (!addressText && !postcodeText) {
+    throw { code: "INVALID_INPUT", message: "address or postalCode is required" };
   }
 
   const total = Number(orderTotal ?? 0);
-  return quoteDelivery(req.params.branchId, String(address), total);
+  return quoteDelivery(req.params.branchId, addressText, total, {
+    postalCode: postcodeText || undefined
+  });
 }));
 
 router.get("/branches/:branchId/items/:itemId", wrap(async (req) => {

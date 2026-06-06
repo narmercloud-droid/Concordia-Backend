@@ -2,6 +2,15 @@ import logger from "../../logger.ts";
 
 type GeoPoint = { lat: number; lng: number } | null;
 
+export type AddressSuggestion = {
+  label: string;
+  street: string;
+  postalCode: string;
+  city: string;
+  lat: number;
+  lng: number;
+};
+
 export async function geocodeAddress(address: string): Promise<GeoPoint> {
   if (!address?.trim()) return null;
 
@@ -31,5 +40,81 @@ export async function geocodeAddress(address: string): Promise<GeoPoint> {
   } catch (err) {
     logger.warn({ err, address }, "Geocoding failed");
     return null;
+  }
+}
+
+function parseSuggestion(row: Record<string, unknown>): AddressSuggestion | null {
+  const address = row.address as Record<string, unknown> | undefined;
+  const postalCode = String(address?.postcode ?? "").trim();
+  const city = String(address?.city ?? address?.town ?? address?.village ?? "").trim();
+  const houseNumber = String(address?.house_number ?? "").trim();
+  const road = String(address?.road ?? row.name ?? "").trim();
+  const street = [road, houseNumber].filter(Boolean).join(" ").trim();
+  const lat = Number(row.lat);
+  const lng = Number(row.lon);
+
+  if (!postalCode || !street || !Number.isFinite(lat) || !Number.isFinite(lng)) {
+    return null;
+  }
+
+  const label = [street, `${postalCode} ${city}`.trim()].filter(Boolean).join(", ");
+
+  return {
+    label,
+    street,
+    postalCode,
+    city: city || "Kempen",
+    lat,
+    lng
+  };
+}
+
+export async function suggestAddresses(
+  query: string,
+  options?: { postalCode?: string; limit?: number }
+): Promise<AddressSuggestion[]> {
+  const trimmed = query?.trim();
+  if (!trimmed || trimmed.length < 3) return [];
+
+  const limit = options?.limit ?? 6;
+  const searchQuery = options?.postalCode
+    ? `${trimmed}, ${options.postalCode}, Germany`
+    : `${trimmed}, Germany`;
+
+  try {
+    const url = new URL("https://nominatim.openstreetmap.org/search");
+    url.searchParams.set("q", searchQuery);
+    url.searchParams.set("format", "json");
+    url.searchParams.set("addressdetails", "1");
+    url.searchParams.set("limit", String(limit));
+    url.searchParams.set("countrycodes", "de");
+
+    const res = await fetch(url.toString(), {
+      headers: {
+        "User-Agent": "Concordia-Restaurant-Platform/1.0"
+      }
+    });
+
+    if (!res.ok) return [];
+
+    const results = await res.json();
+    if (!Array.isArray(results)) return [];
+
+    const seen = new Set<string>();
+    const suggestions: AddressSuggestion[] = [];
+
+    for (const row of results) {
+      const parsed = parseSuggestion(row as Record<string, unknown>);
+      if (!parsed) continue;
+      if (options?.postalCode && parsed.postalCode !== options.postalCode) continue;
+      if (seen.has(parsed.label)) continue;
+      seen.add(parsed.label);
+      suggestions.push(parsed);
+    }
+
+    return suggestions;
+  } catch (err) {
+    logger.warn({ err, query }, "Address suggest failed");
+    return [];
   }
 }

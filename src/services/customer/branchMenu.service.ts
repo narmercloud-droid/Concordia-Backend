@@ -96,6 +96,7 @@ function mapOptionGroups(item: {
     required: boolean;
     minSelect: number;
     maxSelect: number;
+    includedChoice?: boolean;
     variants: Array<{ id: string; name: string; price: number }>;
   }>;
   addOnGroups: Array<{
@@ -108,13 +109,14 @@ function mapOptionGroups(item: {
   }>;
 }) {
   const variantGroups = item.variantGroups.map((g) => {
+    const groupIncluded = g.includedChoice === true;
     const options = g.variants.map((v) => ({
       id: v.id,
       name: v.name,
       price: v.price,
-      included: v.price === 0
+      included: groupIncluded && v.price === 0
     }));
-    const included = options.length > 0 && options.every((o) => o.included);
+    const included = groupIncluded;
     return {
       id: g.id,
       name: g.name,
