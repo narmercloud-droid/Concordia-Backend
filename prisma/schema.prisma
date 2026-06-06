@@ -36,6 +36,16 @@ model Order {
   driverSessionId       String?
   customerEmail         String?
   customerPhone         String?
+  customerName          String?
+  deliveryAddress       String?
+  fulfillmentType       String?              @default("delivery")
+  postalCode            String?
+  notes                 String?
+  orderTotal            Float?
+  deliveryFee           Float?               @default(0)
+  deliveryLat           Float?
+  deliveryLng           Float?
+  driverAcceptedAt      DateTime?
   pushToken             String?
   confirmedAt           DateTime?
   deliveredAt           DateTime?
@@ -133,6 +143,8 @@ model Admin {
   password  String
   createdAt DateTime       @default(now())
   name      String
+  role      String         @default("admin")
+  branchId  String?
   sessions  AdminSession[]
 }
 
@@ -614,6 +626,7 @@ model MenuItem {
   id                       Int                      @id @default(autoincrement())
   imageUrl                 String?
   isAvailable              Boolean                  @default(true)
+  kitchen                  String                   @default("B")
   addOnGroups              AddOnGroup[]
   branchItemAvailabilities BranchItemAvailability[]
   branchItemPricings       BranchItemPricing[]

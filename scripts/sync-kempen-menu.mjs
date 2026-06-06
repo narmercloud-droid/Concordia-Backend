@@ -1,0 +1,349 @@
+/**
+ * Sync Kempen menu: flyer prices, item options (sizes/extras), promotions.
+ * Safe to re-run — does not delete menu items or orders.
+ */
+import { PrismaClient } from "@prisma/client";
+import { readFileSync } from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import {
+  FLYER_PRICES,
+  FLYER_PROMOTIONS,
+  PASTA_NOODLE_OPTIONS,
+  SALAD_DRESSING_OPTIONS,
+  SCHNITZEL_MEAT_OPTIONS
+} from "./kempen-flyer-data.mjs";
+import { buildCategorizedExtras, detectItemType } from "./kempen-extras-catalog.mjs";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const BRANCH_ID = "concordia-kempen";
+const prisma = new PrismaClient();
+
+const lieferando = JSON.parse(
+  readFileSync(path.join(__dirname, "kempen-lieferando-complete.json"), "utf8")
+);
+
+function normalizeName(name) {
+  return name.trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+function findFlyerPrice(name) {
+  const n = normalizeName(name);
+  for (const entry of FLYER_PRICES) {
+    if (n.includes(normalizeName(entry.match))) return entry;
+  }
+  return null;
+}
+
+function allProducts() {
+  const products = [];
+  for (const cat of lieferando.categories ?? []) {
+    for (const p of cat.products ?? []) products.push(p);
+  }
+  for (const p of lieferando.products ?? []) products.push(p);
+  return products;
+}
+
+async function clearItemOptions(itemId) {
+  await prisma.addOn.deleteMany({ where: { group: { itemId } } });
+  await prisma.addOnGroup.deleteMany({ where: { itemId } });
+  await prisma.variant.deleteMany({ where: { group: { itemId } } });
+  await prisma.variantGroup.deleteMany({ where: { itemId } });
+}
+
+async function upsertSizeGroup(itemId, sizes, flyer) {
+  if (
+    !sizes?.length &&
+    flyer?.klein == null &&
+    flyer?.groß == null &&
+    flyer?.single == null &&
+    flyer?.hähnchen == null &&
+    flyer?.schwein == null
+  ) {
+    return;
+  }
+
+  const groupId = `size-${BRANCH_ID}-${itemId}`;
+  const groupName =
+    flyer?.hähnchen != null || flyer?.schwein != null ? "Fleischwahl" : "Größe";
+  await prisma.variantGroup.upsert({
+    where: { id: groupId },
+    update: { name: groupName, required: true, minSelect: 1, maxSelect: 1 },
+    create: {
+      id: groupId,
+      name: groupName,
+      itemId,
+      required: true,
+      minSelect: 1,
+      maxSelect: 1
+    }
+  });
+
+  const variantEntries = [];
+  if (flyer?.klein != null || flyer?.groß != null) {
+    if (flyer.klein != null) {
+      variantEntries.push({ id: `${groupId}-klein`, name: "klein 24 cm", price: flyer.klein });
+    }
+    if (flyer.groß != null) {
+      variantEntries.push({ id: `${groupId}-gross`, name: "groß 30 cm", price: flyer.groß });
+    }
+  } else if (flyer?.hähnchen != null || flyer?.schwein != null) {
+    if (flyer.hähnchen != null) {
+      variantEntries.push({ id: `${groupId}-haehnchen`, name: "Hähnchen", price: flyer.hähnchen });
+    }
+    if (flyer.schwein != null) {
+      variantEntries.push({ id: `${groupId}-schwein`, name: "Schwein", price: flyer.schwein });
+    }
+  } else if (sizes?.length) {
+    for (const size of sizes) {
+      variantEntries.push({
+        id: `${groupId}-${size.externalId}`,
+        name: size.name,
+        price: size.priceDelivery ?? size.pricePickup ?? 0
+      });
+    }
+  } else if (flyer?.single != null) {
+    variantEntries.push({ id: `${groupId}-std`, name: "Standard", price: flyer.single });
+  }
+
+  for (const v of variantEntries) {
+    await prisma.variant.upsert({
+      where: { id: v.id },
+      update: { name: v.name, price: v.price },
+      create: { id: v.id, name: v.name, price: v.price, groupId }
+    });
+  }
+}
+
+async function upsertVariantChoiceGroup(itemId, suffix, groupName, options, required = true) {
+  const groupId = `choice-${BRANCH_ID}-${itemId}-${suffix}`;
+  await prisma.variantGroup.upsert({
+    where: { id: groupId },
+    update: { name: groupName, required, minSelect: required ? 1 : 0, maxSelect: 1 },
+    create: {
+      id: groupId,
+      name: groupName,
+      itemId,
+      required,
+      minSelect: required ? 1 : 0,
+      maxSelect: 1
+    }
+  });
+
+  for (const [i, opt] of options.entries()) {
+    const id = `${groupId}-${i}`;
+    await prisma.variant.upsert({
+      where: { id },
+      update: { name: opt.name, price: opt.price },
+      create: { id, name: opt.name, price: opt.price, groupId }
+    });
+  }
+}
+
+async function upsertAddOnGroup(itemId, suffix, groupName, options, opts = {}) {
+  const { required = false, minSelect = 0, maxSelect = 99 } = opts;
+  const groupId = `extra-${BRANCH_ID}-${itemId}-${suffix}`;
+  await prisma.addOnGroup.upsert({
+    where: { id: groupId },
+    update: { name: groupName, required, minSelect, maxSelect },
+    create: {
+      id: groupId,
+      name: groupName,
+      itemId,
+      required,
+      minSelect,
+      maxSelect
+    }
+  });
+
+  for (const [i, opt] of options.entries()) {
+    const extId = opt.externalId ?? String(i);
+    const id = `${groupId}-${extId}`;
+    await prisma.addOn.upsert({
+      where: { id },
+      update: { name: opt.name, price: opt.price ?? opt.priceDelivery ?? 0 },
+      create: {
+        id,
+        name: opt.name,
+        price: opt.price ?? opt.priceDelivery ?? 0,
+        groupId
+      }
+    });
+  }
+}
+
+async function applyFlyerPrices() {
+  const items = await prisma.menuItem.findMany();
+  let updated = 0;
+
+  for (const item of items) {
+    const flyer = findFlyerPrice(item.name);
+    if (!flyer) continue;
+
+    const base =
+      flyer.klein ?? flyer.single ?? flyer.hähnchen ?? flyer.groß ?? item.basePrice;
+    if (base != null && base !== item.basePrice) {
+      await prisma.menuItem.update({
+        where: { id: item.id },
+        data: { basePrice: base }
+      });
+      updated++;
+    }
+
+    const branchItem = await prisma.branchMenuItem.findFirst({
+      where: { branchId: BRANCH_ID, menuItemId: item.id }
+    });
+    if (branchItem && base != null) {
+      await prisma.branchMenuItem.update({
+        where: { id: branchItem.id },
+        data: { price: base }
+      });
+    }
+  }
+
+  console.log(`Flyer prices applied to ${updated} items`);
+}
+
+async function syncOptionsFromLieferando() {
+  const products = allProducts();
+  const productByName = new Map();
+  for (const p of products) {
+    productByName.set(normalizeName(p.name), p);
+  }
+
+  const items = await prisma.menuItem.findMany();
+  let synced = 0;
+
+  for (const item of items) {
+    if (item.id < 10000) continue; // skip test/legacy items
+
+    const itemType = detectItemType(item.name);
+    if (itemType === "drinks") continue;
+
+    const product = productByName.get(normalizeName(item.name));
+    const flyer = findFlyerPrice(item.name);
+    const name = normalizeName(item.name);
+
+    const isPasta = name.startsWith("pasta ") || name.includes("auflauf");
+    const isSalad = name.startsWith("salat ");
+    const isSchnitzel = name.includes("schnitzel");
+
+    await clearItemOptions(item.id);
+
+    const useFlyerSingleOnly =
+      flyer?.single != null &&
+      flyer.klein == null &&
+      flyer.groß == null &&
+      flyer.hähnchen == null;
+    const lieferandoSizes =
+      product?.sizes?.length === 1 &&
+      normalizeName(product.sizes[0].name) === name
+        ? []
+        : product?.sizes ?? [];
+
+    // Sizes / meat variants from flyer or lieferando (skip redundant single-size rows)
+    await upsertSizeGroup(
+      item.id,
+      useFlyerSingleOnly ? [] : lieferandoSizes,
+      useFlyerSingleOnly ? { ...flyer, single: undefined } : flyer
+    );
+
+    // Required choice groups from lieferando (skip meat deltas when flyer has absolute meat prices)
+    for (const [idx, group] of (product?.requiredGroups ?? []).entries()) {
+      if (!group.options?.length) continue;
+      if (isSalad) continue; // dressing handled as free included choice below
+      if (isSchnitzel && (flyer?.hähnchen != null || flyer?.schwein != null)) continue;
+      const groupName =
+        group.name ??
+        (isPasta || group.options[0]?.name?.includes("Spaghetti")
+          ? "Nudelsorte"
+          : "Wählen Sie");
+      await upsertVariantChoiceGroup(
+        item.id,
+        `req-${idx}`,
+        groupName,
+        group.options.map((o) => ({
+          name: o.name.replace(/^mit\s+/i, ""),
+          price: o.priceDelivery ?? 0,
+          externalId: o.externalId
+        })),
+        group.required !== false
+      );
+    }
+
+    // Category-specific options when lieferando data is thin
+    if (isPasta && !(product?.requiredGroups?.length)) {
+      await upsertVariantChoiceGroup(
+        item.id,
+        "noodle",
+        "Nudelsorte",
+        PASTA_NOODLE_OPTIONS,
+        true
+      );
+    }
+
+    if (isSalad) {
+      await upsertVariantChoiceGroup(
+        item.id,
+        "dressing",
+        "Dressing",
+        SALAD_DRESSING_OPTIONS,
+        true
+      );
+    }
+
+    if (isSchnitzel && flyer?.hähnchen == null && flyer?.schwein == null) {
+      await upsertVariantChoiceGroup(
+        item.id,
+        "meat",
+        "Fleischwahl",
+        SCHNITZEL_MEAT_OPTIONS,
+        true
+      );
+    }
+
+    // Categorized extras — every food item gets relevant groups (not identical lists)
+    const extraCategories = buildCategorizedExtras(item.name);
+    for (const cat of extraCategories) {
+      await upsertAddOnGroup(item.id, cat.categoryId, cat.name, cat.options);
+    }
+
+    synced++;
+  }
+
+  console.log(`Options synced for ${synced} items`);
+}
+
+async function applyPromotions() {
+  const config = await prisma.branchConfig.findUnique({
+    where: { branchId: BRANCH_ID }
+  });
+
+  const existing = (config?.configJson ?? {}) ;
+  const configJson = {
+    ...existing,
+    promotions: FLYER_PROMOTIONS
+  };
+
+  await prisma.branchConfig.upsert({
+    where: { branchId: BRANCH_ID },
+    update: { configJson },
+    create: { id: `config-${BRANCH_ID}`, branchId: BRANCH_ID, configJson }
+  });
+
+  console.log("Promotions applied:", FLYER_PROMOTIONS);
+}
+
+async function main() {
+  await applyFlyerPrices();
+  await syncOptionsFromLieferando();
+  await applyPromotions();
+  console.log("Kempen menu sync complete.");
+}
+
+main()
+  .catch((err) => {
+    console.error(err);
+    process.exit(1);
+  })
+  .finally(() => prisma.$disconnect());

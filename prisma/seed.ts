@@ -138,6 +138,41 @@ async function main() {
     }
   }
 
+  const branchCategories: Record<string, number> = {};
+  for (const cat of categories) {
+    const existing = await prisma.branchCategory.findFirst({
+      where: { branchId: branch.id, name: cat.name }
+    });
+    const created = existing ?? await prisma.branchCategory.create({
+      data: { branchId: branch.id, name: cat.name }
+    });
+    branchCategories[cat.name] = created.id;
+  }
+
+  for (const it of items) {
+    const categoryId = branchCategories[it.category];
+    const existingBranchItem = await prisma.branchMenuItem.findFirst({
+      where: { branchId: branch.id, menuItemId: it.id }
+    });
+
+    if (existingBranchItem) {
+      await prisma.branchMenuItem.update({
+        where: { id: existingBranchItem.id },
+        data: { price: it.basePrice, isAvailable: true, categoryId }
+      });
+    } else {
+      await prisma.branchMenuItem.create({
+        data: {
+          branchId: branch.id,
+          menuItemId: it.id,
+          price: it.basePrice,
+          isAvailable: true,
+          categoryId
+        }
+      });
+    }
+  }
+
   // Branch pricing and availability for each menu item
   const branchId = branch.id;
   for (const it of items) {

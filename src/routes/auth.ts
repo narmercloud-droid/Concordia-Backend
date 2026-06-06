@@ -46,13 +46,11 @@ router.post("/login", async (req, res) => {
 
   const payload = {
     id: admin.id,
-    role: admin.role,
-    branchId: admin.branchId
+    email: admin.email,
+    name: admin.name,
+    role: admin.role ?? "admin",
+    branchId: admin.branchId ?? null
   };
-
-  if (!payload.role || !payload.branchId) {
-    return res.status(500).tson({ error: "Invalid admin token payload" });
-  }
 
   // Reset failure counters on successful login
   try {
@@ -66,7 +64,55 @@ router.post("/login", async (req, res) => {
     expiresIn: env.JWT_EXPIRES_IN || "7d"
   } as jwt.SignOptions);
 
-  res.tson({ token, user: payload });
+  res.tson({ token, accessToken: token, user: payload, admin: payload });
+});
+
+router.post("/admin/login", async (req, res) => {
+  const { email, password } = req.body;
+  const ip = req.ip || String(req.headers["x-forwarded-for"] || req.socket.remoteAddress || "unknown");
+
+  if (await isBlockedByIp(ip)) {
+    return res.status(429).json({ error: "Too many login attempts from this IP" });
+  }
+
+  if (await isBlockedByUser(email)) {
+    return res.status(429).json({ error: "Too many login attempts for this account" });
+  }
+
+  const admin = await prisma.admin.findUnique({ where: { email } });
+  if (!admin) {
+    await incrFailureForIp(ip);
+    await incrFailureForUser(email);
+    return res.status(401).json({ error: "Invalid credentials" });
+  }
+
+  const match = await bcrypt.compare(password, admin.password);
+  if (!match) {
+    await incrFailureForIp(ip);
+    await incrFailureForUser(email);
+    return res.status(401).json({ error: "Invalid credentials" });
+  }
+
+  const adminPayload = {
+    id: admin.id,
+    email: admin.email,
+    name: admin.name,
+    role: admin.role ?? "admin",
+    branchId: admin.branchId ?? null
+  };
+
+  try {
+    await resetFailuresForIp(ip);
+    await resetFailuresForUser(email);
+  } catch (e) {
+    logger.warn({ e }, "Failed to reset brute-force counters");
+  }
+
+  const accessToken = jwt.sign(adminPayload, env.JWT_SECRET as string, {
+    expiresIn: env.JWT_EXPIRES_IN || "7d"
+  } as jwt.SignOptions);
+
+  res.json({ accessToken, admin: adminPayload });
 });
 
 router.post("/request-link", async (req, res) => {

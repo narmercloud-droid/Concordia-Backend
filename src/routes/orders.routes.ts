@@ -10,6 +10,9 @@ const router = Router();
 // Customer checkout
 router.post("/", OrdersController.create);
 
+// Customer order tracking
+router.get("/:id/status", OrdersController.getStatus);
+
 // Branch orders
 router.get("/branch/:branchId", adminAuth, adminRole("manager"), OrdersController.listBranchOrders);
 

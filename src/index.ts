@@ -67,6 +67,8 @@ import courierRoutes from "./routes/courier.ts";
 import courierViewRoutes from "./routes/courier/courier.routes.ts";
 import terminalRoutes from "./routes/terminal/terminal.routes.ts";
 import customerTrackingRoutes from "./routes/customer/customerTracking.routes.ts";
+import branchPublicRoutes from "./routes/customer/branchPublic.routes.ts";
+import managerRoutes from "./routes/manager/manager.routes.ts";
 import adminCourierRoutes from "./routes/admin/adminCourier.routes.ts";
 import trackRoutes from "./routes/track.ts";
 import campaignRoutes from "./routes/campaigns.ts";
@@ -142,10 +144,31 @@ registerEvents(io);
 // ---------------------------------------------
 // Production middleware
 // ---------------------------------------------
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  env.FRONTEND_URL,
+  env.CORS_ORIGIN
+].filter(Boolean) as string[];
+
 const corsOptions = {
-  origin: "http://localhost:5173",
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+      return;
+    }
+    callback(null, false);
+  },
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "X-API-KEY", "X-Request-Id"],
+  allowedHeaders: [
+    "Content-Type",
+    "Authorization",
+    "X-Requested-With",
+    "X-API-KEY",
+    "X-Request-Id",
+    "x-terminal-token",
+    "x-terminal-id"
+  ],
   exposedHeaders: ["X-Request-Id", "X-RateLimit-Limit", "X-RateLimit-Remaining"],
   credentials: true,
   optionsSuccessStatus: 200
@@ -378,6 +401,7 @@ app.use("/offers", offersRoutes);
 // ---------------------------------------------
 // Routes - Menu management
 // ---------------------------------------------
+app.use("/api/v1/manager", managerRoutes);
 app.use("/api/v1", menuRoutes);
 app.use("/api/v1/admin/categories", adminCategoryRoutes);
 app.use("/api/v1/admin/items", adminItemRoutes);
@@ -408,13 +432,8 @@ app.use("/api/v1/dashboard", dashboardRoutes);
 // Routes - Public
 // ---------------------------------------------
 app.use("/api/public", publicRoutes);
+app.use("/api", branchPublicRoutes);
 app.use("/api/paypal/webhook", paypalWebhookRoutes);
-app.get("/api/branches", cacheMiddleware({ ttl: 60, keyPrefix: "branches" }), (_req, res) => {
-  const branchesFile = path.join(process.cwd(), "src", "config", "branches.json");
-  void _req;
-  res.type("application/json");
-  res.sendFile(branchesFile);
-});
 app.get("/chat", (_req, res) => {
   void _req;
   res.sendFile(path.join(process.cwd(), "public", "chat.html"));
