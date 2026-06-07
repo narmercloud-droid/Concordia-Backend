@@ -14,6 +14,7 @@ import {
   getAlsoPopularItems,
   getBranchBestsellers
 } from "../../services/customer/bestsellers.service.ts";
+import { validatePromoCode } from "../../services/customer/promoCode.service.ts";
 import { prisma } from "../../prisma/client.ts";
 import { wrap } from "../../contracts/api.ts";
 
@@ -63,12 +64,27 @@ router.get("/branches/:branchId/address-suggest", wrap(async (req) => {
   const q = String(req.query.q ?? "").trim();
   const postalCode = String(req.query.postalCode ?? "").trim() || undefined;
 
-  if (q.length < 3) {
+  if (!q) {
     return { suggestions: [] };
   }
 
   const suggestions = await suggestAddresses(q, { postalCode });
   return { suggestions };
+}));
+
+router.post("/promo/validate", wrap(async (req) => {
+  const code = String(req.body?.code ?? "").trim();
+  const orderTotal = Number(req.body?.orderTotal ?? 0);
+
+  if (!code) {
+    throw { code: "INVALID_INPUT", message: "Gutscheincode fehlt" };
+  }
+
+  try {
+    return await validatePromoCode(code, orderTotal);
+  } catch (err: any) {
+    throw { code: "INVALID_INPUT", message: err?.message ?? "Gutscheincode ungültig" };
+  }
 }));
 
 router.post("/branches/:branchId/delivery-quote", wrap(async (req) => {

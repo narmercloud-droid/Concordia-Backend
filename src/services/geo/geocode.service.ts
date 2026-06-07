@@ -77,18 +77,19 @@ function parseSuggestion(row: Record<string, unknown>): AddressSuggestion | null
 
 export async function suggestAddresses(
   query: string,
-  options?: { postalCode?: string; limit?: number }
+  options?: { postalCode?: string; limit?: number; nearCity?: string }
 ): Promise<AddressSuggestion[]> {
   const trimmed = query?.trim();
-  if (!trimmed || trimmed.length < 3) return [];
+  if (!trimmed) return [];
 
-  const limit = options?.limit ?? 6;
+  const limit = options?.limit ?? 8;
+  const nearCity = options?.nearCity ?? "Kempen";
   const hasPostcode = /\b\d{5}\b/.test(trimmed);
   const searchQuery = options?.postalCode
     ? `${trimmed}, ${options.postalCode}, Germany`
     : hasPostcode
       ? `${trimmed}, Germany`
-      : `${trimmed}, Kempen, Germany`;
+      : `${trimmed}, ${nearCity}, Germany`;
 
   try {
     const url = new URL("https://nominatim.openstreetmap.org/search");
@@ -97,6 +98,9 @@ export async function suggestAddresses(
     url.searchParams.set("addressdetails", "1");
     url.searchParams.set("limit", String(limit));
     url.searchParams.set("countrycodes", "de");
+    if (trimmed.length < 4 && !hasPostcode) {
+      url.searchParams.set("featuretype", "street");
+    }
 
     const res = await fetch(url.toString(), {
       headers: {

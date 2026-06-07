@@ -12,6 +12,10 @@ import logger from "../logger.ts";
 import { geocodeAddress } from "./geo/geocode.service.ts";
 import { getGuestCourierId } from "./branch/branchCoords.service.ts";
 import { calcWebsiteDiscount } from "../config/websitePromo.ts";
+import {
+  redeemPromoCode,
+  validatePromoCode
+} from "./customer/promoCode.service.ts";
 
 function buildOrderItems(items: any[]) {
   return items.map((i) => {
@@ -66,7 +70,12 @@ const COURIER_TOKEN_VALIDITY_MS = 24 * 60 * 60 * 1000;
 function normalizePaymentMethod(method?: string) {
   const value = (method ?? "cash").toLowerCase();
   if (value === "cash" || value === "cod") return "COD";
+  if (value === "card") return "CARD";
   return method ?? "COD";
+}
+
+function requiresOnlinePayment(method: string) {
+  return method === "CARD" || method === "PAYPAL";
 }
 
 function buildCourierUrl(token: string) {
@@ -122,7 +131,18 @@ export class OrdersService {
       0
     );
     const websiteDiscount = calcWebsiteDiscount(subtotal);
-    const discountedSubtotal = Math.max(0, subtotal - websiteDiscount);
+
+    let promoDiscount = 0;
+    let promoCodeId: string | null = null;
+    const promoCodeInput = String(rest.promoCode ?? "").trim();
+    if (promoCodeInput) {
+      const promo = await validatePromoCode(promoCodeInput, subtotal);
+      promoDiscount = promo.discountAmount;
+      promoCodeId = promo.promoCodeId;
+    }
+
+    const totalDiscount = websiteDiscount + promoDiscount;
+    const discountedSubtotal = Math.max(0, subtotal - totalDiscount);
 
     const branchConfig = await prisma.branchConfig.findUnique({
       where: { branchId: rest.branchId }
@@ -138,6 +158,11 @@ export class OrdersService {
     if (websiteDiscount > 0) {
       const discountLine = `[PROMO] 10% Online-Rabatt (-${websiteDiscount.toFixed(2)} €)`;
       notes = notes ? `${notes}\n${discountLine}` : discountLine;
+    }
+
+    if (promoDiscount > 0 && promoCodeInput) {
+      const voucherLine = `[GUTSCHEIN] ${promoCodeInput.toUpperCase()} (-${promoDiscount.toFixed(2)} €)`;
+      notes = notes ? `${notes}\n${voucherLine}` : voucherLine;
     }
 
     let deliveryFee = 0;
@@ -171,6 +196,8 @@ export class OrdersService {
       }
     }
 
+    const paymentMethod = normalizePaymentMethod(rest.paymentMethod);
+
     const createPayload = {
       id: randomUUID(),
       branchId: rest.branchId,
@@ -182,10 +209,11 @@ export class OrdersService {
       postalCode,
       notes: notes || null,
       orderTotal: discountedSubtotal + deliveryFee,
-      discount: websiteDiscount,
+      discount: totalDiscount,
+      promoCodeId,
       deliveryFee,
       scheduledFor,
-      paymentMethod: normalizePaymentMethod(rest.paymentMethod),
+      paymentMethod,
       isGuest: rest.isGuest ?? true,
       courierStatus: isDelivery ? "pending" : null,
       courierId,
@@ -193,7 +221,9 @@ export class OrdersService {
       courierTokenExpiresAt,
       deliveryLat,
       deliveryLng,
-      paymentStatus: rest.paymentStatus ?? "pending",
+      paymentStatus: requiresOnlinePayment(paymentMethod)
+        ? "awaiting_payment"
+        : (rest.paymentStatus ?? "pending"),
       status: "pending",
       tracking_token: trackingToken,
       items: {
@@ -212,6 +242,10 @@ export class OrdersService {
       }
     });
 
+    if (promoCodeId) {
+      await redeemPromoCode(promoCodeId);
+    }
+
     await prisma.orderTrackingEvent.create({
       data: {
         id: randomUUID(),
@@ -222,8 +256,26 @@ export class OrdersService {
     });
 
     const payload = enrichOrder(order);
-    broadcastToTerminal(order.branchId, "order:new", payload);
+    if (!requiresOnlinePayment(paymentMethod)) {
+      broadcastToTerminal(order.branchId, "order:new", payload);
+    }
 
+    return payload;
+  }
+
+  async notifyKitchenOrder(orderId: string) {
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: {
+        items: {
+          include: { item: true }
+        }
+      }
+    });
+    if (!order) throw new Error("Order not found");
+
+    const payload = enrichOrder(order);
+    broadcastToTerminal(order.branchId, "order:new", payload);
     return payload;
   }
 
