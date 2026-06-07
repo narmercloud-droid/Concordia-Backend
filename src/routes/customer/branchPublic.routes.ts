@@ -15,6 +15,7 @@ import {
   getBranchBestsellers
 } from "../../services/customer/bestsellers.service.ts";
 import { validatePromoCode } from "../../services/customer/promoCode.service.ts";
+import { getFreeDrinkOptions } from "../../services/customer/freeDrink.service.ts";
 import { prisma } from "../../prisma/client.ts";
 import { wrap } from "../../contracts/api.ts";
 
@@ -70,6 +71,11 @@ router.get("/branches/:branchId/address-suggest", wrap(async (req) => {
 
   const suggestions = await suggestAddresses(q, { postalCode });
   return { suggestions };
+}));
+
+router.get("/branches/:branchId/free-drink-options", publicCache(300), wrap(async (req) => {
+  const options = await getFreeDrinkOptions(req.params.branchId);
+  return { options };
 }));
 
 router.post("/promo/validate", wrap(async (req) => {

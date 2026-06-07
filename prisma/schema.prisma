@@ -54,6 +54,11 @@ model Order {
   readyAt               DateTime?
   discount              Float                @default(0)
   promoCodeId           String?
+  freeDrinkChoice       String?
+  marketingEmail        Boolean              @default(false)
+  marketingSMS          Boolean              @default(false)
+  marketingWhatsApp     Boolean              @default(false)
+  marketingConsentAt    DateTime?
   estimatedDriverTime   Int?
   estimatedPrepTime     Int?
   estimatedTotalTime    Int?
@@ -887,6 +892,21 @@ model BranchItemAvailability {
   menuItem    MenuItem @relation(fields: [menuItemId], references: [id])
 
   @@unique([branchId, menuItemId])
+}
+
+model MarketingLead {
+  id                String    @id @default(uuid())
+  phone             String    @unique
+  email             String?
+  name              String?
+  branchId          String?
+  marketingEmail    Boolean   @default(false)
+  marketingSMS      Boolean   @default(false)
+  marketingWhatsApp Boolean   @default(false)
+  consentAt         DateTime?
+  lastOrderAt       DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 }
 
 model PromoCode {

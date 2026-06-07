@@ -16,6 +16,11 @@ import {
   redeemPromoCode,
   validatePromoCode
 } from "./customer/promoCode.service.ts";
+import {
+  findFreeDrinkOption,
+  getFreeDrinkOptions
+} from "./customer/freeDrink.service.ts";
+import { upsertMarketingLead } from "./customer/marketingLead.service.ts";
 
 function buildOrderItems(items: any[]) {
   return items.map((i) => {
@@ -150,8 +155,17 @@ export class OrdersService {
     const config = (branchConfig?.configJson ?? {}) as Record<string, unknown>;
     const promotions = (config.promotions ?? {}) as Record<string, unknown>;
     const freeDrinkMin = Number(promotions.freeDrinkMinOrder ?? 0);
-    if (freeDrinkMin > 0 && subtotal >= freeDrinkMin) {
-      const promoLine = "[PROMO] Kunde hat Anspruch auf 1 gratis Getränk (Flyer-Aktion).";
+    const qualifiesForFreeDrink = freeDrinkMin > 0 && subtotal >= freeDrinkMin;
+    let freeDrinkChoice: string | null = null;
+
+    if (qualifiesForFreeDrink) {
+      const drinkOptions = await getFreeDrinkOptions(rest.branchId);
+      const selected = findFreeDrinkOption(drinkOptions, rest.freeDrinkChoice);
+      if (!selected) {
+        throw new Error("Bitte wählen Sie Ihr Gratisgetränk aus");
+      }
+      freeDrinkChoice = selected.label;
+      const promoLine = `[GRATISGETRÄNK] ${selected.label}`;
       notes = notes ? `${notes}\n${promoLine}` : promoLine;
     }
 
@@ -198,12 +212,28 @@ export class OrdersService {
 
     const paymentMethod = normalizePaymentMethod(rest.paymentMethod);
 
+    const marketingEmail = Boolean(rest.marketingEmail);
+    const marketingSMS = Boolean(rest.marketingSMS);
+    const marketingWhatsApp = Boolean(rest.marketingWhatsApp);
+    const hasMarketingConsent = marketingEmail || marketingSMS || marketingWhatsApp;
+    const customerEmail = rest.customerEmail?.trim() || null;
+
+    if (marketingEmail && !customerEmail) {
+      throw new Error("E-Mail-Adresse erforderlich für Angebote per E-Mail");
+    }
+
     const createPayload = {
       id: randomUUID(),
       branchId: rest.branchId,
       customerId: rest.customerId,
       customerName,
       customerPhone,
+      customerEmail,
+      freeDrinkChoice,
+      marketingEmail,
+      marketingSMS,
+      marketingWhatsApp,
+      marketingConsentAt: hasMarketingConsent ? new Date() : null,
       deliveryAddress: isDelivery ? deliveryAddress : null,
       fulfillmentType,
       postalCode,
@@ -244,6 +274,18 @@ export class OrdersService {
 
     if (promoCodeId) {
       await redeemPromoCode(promoCodeId);
+    }
+
+    if (hasMarketingConsent) {
+      await upsertMarketingLead({
+        phone: customerPhone,
+        name: customerName,
+        email: customerEmail,
+        branchId: rest.branchId,
+        marketingEmail,
+        marketingSMS,
+        marketingWhatsApp
+      });
     }
 
     await prisma.orderTrackingEvent.create({
