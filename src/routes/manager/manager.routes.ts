@@ -41,6 +41,16 @@ import {
   deleteAddOnHandler
 } from "../../controllers/manager/managerMenu.controller.ts";
 import {
+  listExtraPresets,
+  createExtraPreset,
+  updateExtraPreset,
+  deleteExtraPreset,
+  addPresetOption,
+  updatePresetOption,
+  deletePresetOption,
+  importDefaultPresets
+} from "../../controllers/manager/managerExtraPreset.controller.ts";
+import {
   exportCustomers,
   getCustomerOrders,
   getCustomers,
@@ -93,6 +103,14 @@ router.delete("/menu/addon-groups/:groupId", deleteAddOnGroupHandler);
 router.post("/menu/addon-groups/:groupId/addons", createAddOnHandler);
 router.patch("/menu/addons/:addOnId", updateAddOnHandler);
 router.delete("/menu/addons/:addOnId", deleteAddOnHandler);
+router.get("/menu/extra-presets", requireManagerPermission("menu_view"), listExtraPresets);
+router.post("/menu/extra-presets", createExtraPreset);
+router.post("/menu/extra-presets/import-defaults", importDefaultPresets);
+router.patch("/menu/extra-presets/:presetId", updateExtraPreset);
+router.delete("/menu/extra-presets/:presetId", deleteExtraPreset);
+router.post("/menu/extra-presets/:presetId/options", addPresetOption);
+router.patch("/menu/extra-presets/options/:optionId", updatePresetOption);
+router.delete("/menu/extra-presets/options/:optionId", deletePresetOption);
 router.get("/orders", requireManagerPermission("orders"), getOrders);
 router.get("/promotions", requireManagerPermission("offers_view"), getPromotions);
 router.patch("/promotions", requireManagerPermission("offers_edit"), updatePromotions);

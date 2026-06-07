@@ -70,6 +70,9 @@ export async function getManagerMenuItemDetail(branchId: string, menuItemId: num
   const row = await assertMenuItemOnBranch(branchId, menuItemId);
   const item = row.menuItem;
 
+  const { getPresetAddOnGroupsForItem } = await import("./extraPreset.service.ts");
+  const presetGroups = await getPresetAddOnGroupsForItem(branchId, row.categoryId);
+
   return {
     branchMenuItemId: row.id,
     menuItemId: item.id,
@@ -97,7 +100,17 @@ export async function getManagerMenuItemDetail(branchId: string, menuItemId: num
       required: g.required,
       minSelect: g.minSelect,
       maxSelect: g.maxSelect,
+      isPreset: false,
       addOns: g.addOns.map((a) => ({ id: a.id, name: a.name, price: a.price }))
+    })),
+    presetAddOnGroups: presetGroups.map((g) => ({
+      id: g.id,
+      name: g.name,
+      required: g.required,
+      minSelect: g.minSelect,
+      maxSelect: g.maxSelect,
+      isPreset: true,
+      addOns: g.options.map((a) => ({ id: a.id, name: a.name, price: a.price }))
     }))
   };
 }

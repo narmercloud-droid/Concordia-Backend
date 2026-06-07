@@ -131,6 +131,7 @@ model Branch {
   branchItemAvailabilities BranchItemAvailability[]
   branchItemPricings       BranchItemPricing[]
   BranchMenuItem           BranchMenuItem[]
+  BranchExtraPreset        BranchExtraPreset[]
   BranchSchedule           BranchSchedule[]
   BranchTerminal           BranchTerminal[]
   couriers                 Courier[]
@@ -855,13 +856,47 @@ model BranchMenuItem {
 }
 
 model BranchCategory {
-  id          Int              @id @default(autoincrement())
+  id          Int                         @id @default(autoincrement())
   branchId    String
   name        String
   description String?
-  sortOrder   Int              @default(0)
-  branch      Branch           @relation(fields: [branchId], references: [id])
+  sortOrder   Int                         @default(0)
+  branch      Branch                      @relation(fields: [branchId], references: [id])
   items       BranchMenuItem[]
+  extraPresets BranchExtraPresetCategory[]
+}
+
+model BranchExtraPreset {
+  id         String                      @id @default(uuid())
+  branchId   String
+  name       String
+  required   Boolean                     @default(false)
+  minSelect  Int                         @default(0)
+  maxSelect  Int                         @default(5)
+  sortOrder  Int                         @default(0)
+  createdAt  DateTime                    @default(now())
+  updatedAt  DateTime                    @updatedAt
+  branch     Branch                      @relation(fields: [branchId], references: [id])
+  options    BranchExtraPresetOption[]
+  categories BranchExtraPresetCategory[]
+}
+
+model BranchExtraPresetOption {
+  id        String            @id @default(uuid())
+  presetId  String
+  name      String
+  price     Float             @default(0)
+  sortOrder Int               @default(0)
+  preset    BranchExtraPreset @relation(fields: [presetId], references: [id], onDelete: Cascade)
+}
+
+model BranchExtraPresetCategory {
+  presetId   String
+  categoryId Int
+  preset     BranchExtraPreset @relation(fields: [presetId], references: [id], onDelete: Cascade)
+  category   BranchCategory    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([presetId, categoryId])
 }
 
 model MenuItemExtra {

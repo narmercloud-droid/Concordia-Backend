@@ -275,11 +275,30 @@ export async function getBranchItemForCustomer(branchId: string, itemId: number)
 
   if (branchItem) {
     const mapped = mapOptionGroups(branchItem.menuItem);
+    const { getPresetAddOnGroupsForItem } = await import(
+      "../manager/extraPreset.service.ts"
+    );
+    const presetGroups = await getPresetAddOnGroupsForItem(branchId, branchItem.categoryId);
+    const presetAddOnGroups = presetGroups.map((g) => ({
+      id: g.id,
+      name: g.name,
+      required: g.required,
+      minSelect: g.minSelect,
+      maxSelect: g.maxSelect,
+      options: g.options.map((o) => ({
+        id: o.id,
+        name: o.name,
+        price: o.price,
+        pricesBySize: buildPricesBySize(o.name, o.price, branchItem.menuItem.name)
+      }))
+    }));
+
     return {
       ...mapped,
       description: branchItem.description ?? mapped.description,
       price: branchItem.price ?? mapped.price,
-      imageUrl: branchItem.imageUrl ?? mapped.imageUrl
+      imageUrl: branchItem.imageUrl ?? mapped.imageUrl,
+      addOnGroups: [...mapped.addOnGroups, ...presetAddOnGroups]
     };
   }
 
