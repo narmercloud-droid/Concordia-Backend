@@ -26,7 +26,7 @@ const BRANCHES = [
   {
     id: "concordia-straelen",
     name: "Concordia Straelen",
-    status: "live",
+    status: "coming_soon",
     city: "Straelen",
     address: "Venloer Straße 22",
     postalCode: "47638",

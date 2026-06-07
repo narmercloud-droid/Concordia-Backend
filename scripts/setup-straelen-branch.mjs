@@ -13,7 +13,7 @@ const ID_OFFSET = 10000;
 
 const STRAELEN_CONFIG = {
   name: "Concordia Straelen",
-  status: "live",
+  status: "coming_soon",
   city: "Straelen",
   address: "Venloer Straße 22",
   postalCode: "47638",
@@ -273,7 +273,7 @@ async function openStraelenBranch() {
     });
   }
 
-  console.log("Straelen branch opened (status: live)");
+  console.log("Straelen branch configured (status: coming_soon)");
 }
 
 async function seedStraelenManager() {
