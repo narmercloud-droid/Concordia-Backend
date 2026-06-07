@@ -20,6 +20,27 @@ import {
 } from "../../controllers/manager/manager.controller.ts";
 import { getSession } from "../../controllers/manager/managerSession.controller.ts";
 import {
+  getMenuItemDetail,
+  createCategory,
+  updateCategory,
+  deleteCategory,
+  createMenuItem,
+  updateMenuItemFull,
+  deleteMenuItem,
+  createVariantGroupHandler,
+  updateVariantGroupFull,
+  deleteVariantGroupHandler,
+  createVariantHandler,
+  updateVariantHandler,
+  deleteVariantHandler,
+  createAddOnGroupHandler,
+  updateAddOnGroupHandler,
+  deleteAddOnGroupHandler,
+  createAddOnHandler,
+  updateAddOnHandler,
+  deleteAddOnHandler
+} from "../../controllers/manager/managerMenu.controller.ts";
+import {
   exportCustomers,
   getCustomerOrders,
   getCustomers,
@@ -47,12 +68,31 @@ router.patch(
   updateDeliverySettings
 );
 router.get("/menu", requireManagerPermission("menu_view"), getMenu);
+router.get("/menu/items/:menuItemId/detail", requireManagerPermission("menu_view"), getMenuItemDetail);
+router.post("/menu/categories", createCategory);
+router.patch("/menu/categories/:id", updateCategory);
+router.delete("/menu/categories/:id", deleteCategory);
+router.post("/menu/items", createMenuItem);
 router.patch("/menu/items/:id", updateMenuItem);
+router.patch("/menu/items/:id/full", updateMenuItemFull);
+router.delete("/menu/branch-items/:branchMenuItemId", deleteMenuItem);
 router.patch(
   "/menu/variant-groups/:groupId",
   requireManagerPermission("menu_edit_prices"),
   updateVariantGroup
 );
+router.patch("/menu/variant-groups/:groupId/full", updateVariantGroupFull);
+router.delete("/menu/variant-groups/:groupId", deleteVariantGroupHandler);
+router.post("/menu/items/:menuItemId/variant-groups", createVariantGroupHandler);
+router.post("/menu/variant-groups/:groupId/variants", createVariantHandler);
+router.patch("/menu/variants/:variantId", updateVariantHandler);
+router.delete("/menu/variants/:variantId", deleteVariantHandler);
+router.post("/menu/items/:menuItemId/addon-groups", createAddOnGroupHandler);
+router.patch("/menu/addon-groups/:groupId", updateAddOnGroupHandler);
+router.delete("/menu/addon-groups/:groupId", deleteAddOnGroupHandler);
+router.post("/menu/addon-groups/:groupId/addons", createAddOnHandler);
+router.patch("/menu/addons/:addOnId", updateAddOnHandler);
+router.delete("/menu/addons/:addOnId", deleteAddOnHandler);
 router.get("/orders", requireManagerPermission("orders"), getOrders);
 router.get("/promotions", requireManagerPermission("offers_view"), getPromotions);
 router.patch("/promotions", requireManagerPermission("offers_edit"), updatePromotions);

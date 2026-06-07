@@ -51,3 +51,10 @@ export async function awardLoyaltyForCompletedOrder(orderId: string): Promise<nu
 
   return points;
 }
+
+export const loyaltyService = {
+  applyPoints: async (..._args: unknown[]) => null,
+  redeemReward: async (..._args: unknown[]) => null,
+  applyPromoCode: async (..._args: unknown[]) => null,
+  applyReferral: async (..._args: unknown[]) => null
+};

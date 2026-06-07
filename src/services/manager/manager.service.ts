@@ -150,12 +150,16 @@ export async function getBranchMenuForManager(branchId: string) {
   return categories.map((cat) => ({
     id: cat.id,
     name: cat.name,
+    description: cat.description,
+    sortOrder: cat.sortOrder ?? 0,
     items: cat.items.map((entry) => ({
       branchMenuItemId: entry.id,
       menuItemId: entry.menuItem.id,
       name: entry.menuItem.name,
+      description: entry.description ?? entry.menuItem.description,
       price: entry.price ?? entry.menuItem.basePrice ?? 0,
       kitchen: entry.menuItem.kitchen ?? "B",
+      sortOrder: entry.menuItem.sortOrder ?? 0,
       isAvailable: entry.isAvailable
     }))
   }));
