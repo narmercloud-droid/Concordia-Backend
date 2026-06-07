@@ -17,8 +17,13 @@ import {
 import { validateDiscountCode } from "../../services/customer/discountCode.service.ts";
 import { createGiftCardPurchase } from "../../services/customer/giftCard.service.ts";
 import { getFreeDrinkOptions } from "../../services/customer/freeDrink.service.ts";
+import { resolveMenuLanguage } from "../../services/customer/menuTranslation.service.ts";
 import { prisma } from "../../prisma/client.ts";
 import { wrap } from "../../contracts/api.ts";
+
+function menuLang(req: express.Request) {
+  return resolveMenuLanguage(String(req.query.lang ?? ""));
+}
 
 const router = express.Router();
 
@@ -48,7 +53,7 @@ router.get("/branches/:branchId/menu", publicCache(120), wrap(async (req) => {
     throw { code: "FORBIDDEN", message: "This branch is not available yet" };
   }
 
-  const categories = await getBranchMenuForCustomer(req.params.branchId);
+  const categories = await getBranchMenuForCustomer(req.params.branchId, menuLang(req));
   return { categories };
 }));
 
@@ -158,7 +163,7 @@ router.post("/branches/:branchId/delivery-quote", wrap(async (req) => {
 
 router.get("/branches/:branchId/bestsellers", publicCache(300), wrap(async (req) => {
   const limit = Math.min(Math.max(Number(req.query.limit ?? 6) || 6, 1), 12);
-  return getBranchBestsellers(req.params.branchId, limit);
+  return getBranchBestsellers(req.params.branchId, limit, menuLang(req));
 }));
 
 router.get("/branches/:branchId/items/:itemId/also-popular", wrap(async (req) => {
@@ -166,7 +171,7 @@ router.get("/branches/:branchId/items/:itemId/also-popular", wrap(async (req) =>
   if (Number.isNaN(itemId)) {
     throw { code: "INVALID_INPUT", message: "Invalid item id" };
   }
-  return getAlsoPopularItems(req.params.branchId, itemId);
+  return getAlsoPopularItems(req.params.branchId, itemId, 4, menuLang(req));
 }));
 
 router.get("/branches/:branchId/items/:itemId", wrap(async (req) => {
@@ -175,7 +180,7 @@ router.get("/branches/:branchId/items/:itemId", wrap(async (req) => {
     throw { code: "INVALID_INPUT", message: "Invalid item id" };
   }
 
-  const item = await getBranchItemForCustomer(req.params.branchId, itemId);
+  const item = await getBranchItemForCustomer(req.params.branchId, itemId, menuLang(req));
   if (!item) {
     throw { code: "NOT_FOUND", message: "Item not found" };
   }

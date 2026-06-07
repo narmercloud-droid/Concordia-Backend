@@ -1,0 +1,639 @@
+{
+  "categories": {
+    "38": {
+      "name": "Baguettes",
+      "description": "With iceberg lettuce, tomatoes, cucumbers, remoulade"
+    },
+    "39": {
+      "name": "Pasta",
+      "description": "Choice of spaghetti, penne or tortellini"
+    },
+    "40": {
+      "name": "Salads",
+      "description": "With dressing of your choice"
+    },
+    "41": {
+      "name": "Al Forno Dishes",
+      "description": ""
+    },
+    "42": {
+      "name": "Pizzas",
+      "description": "Small 24 cm · Large 30 cm"
+    },
+    "43": {
+      "name": "Pizza Rolls",
+      "description": "10 pcs with herb butter · Stuffed varieties"
+    },
+    "44": {
+      "name": "Schnitzel",
+      "description": "All dishes served with fries and salad"
+    },
+    "45": {
+      "name": "Burgers",
+      "description": ""
+    },
+    "46": {
+      "name": "Snacks",
+      "description": ""
+    },
+    "47": {
+      "name": "Soft Drinks",
+      "description": ""
+    },
+    "48": {
+      "name": "Alcoholic Drinks",
+      "description": ""
+    }
+  },
+  "items": {
+    "10002": {
+      "name": "Baguette with Sucuk",
+      "description": null
+    },
+    "10003": {
+      "name": "Baguette with tuna and egg",
+      "description": null
+    },
+    "10004": {
+      "name": "Baguette with Mozzarella",
+      "description": null
+    },
+    "10005": {
+      "name": "Baguette with sucuk and egg",
+      "description": null
+    },
+    "10006": {
+      "name": "Baguette with Hinterschinken",
+      "description": null
+    },
+    "10007": {
+      "name": "Baguette with Thunfisch",
+      "description": null
+    },
+    "10008": {
+      "name": "Baguette with Salami",
+      "description": null
+    },
+    "10009": {
+      "name": "Pasta Salmone",
+      "description": "with spinach, salmon, garlic and Sahnesauce"
+    },
+    "10010": {
+      "name": "Pasta Vegetarisch",
+      "description": "with broccoli, bell pepper, frischen mushrooms, onions and tomatoes-Sahnesauce"
+    },
+    "10011": {
+      "name": "Pasta Gorgonzola",
+      "description": "with broccoli, frischen mushrooms, Gorgonzolakäse and Sahnesauce"
+    },
+    "10012": {
+      "name": "Pasta Pasta Concordia",
+      "description": "with Hähnchenbruststreifen, mushrooms, broccoli, scharfen pepperonis, garlic and tomatoes-Sahnesauce"
+    },
+    "10013": {
+      "name": "Pasta Formaggi",
+      "description": "with vier verschiedenen cheesesorten and Sahnesauce"
+    },
+    "10014": {
+      "name": "Pasta Alla Chef",
+      "description": "with Hähnchenbruststreifen, frischen mushrooms, corn, Goudakäse, tomatoes and Sahnesauce"
+    },
+    "10015": {
+      "name": "Pasta Carbonara",
+      "description": "with Hinterschinken, Ei and Sahnesauce"
+    },
+    "10016": {
+      "name": "Pasta Alla Panna",
+      "description": "with Hinterschinken, frischen mushrooms and Sahnesauce"
+    },
+    "10017": {
+      "name": "Pasta Toscana",
+      "description": "with Hinterschinken, Krabben, frischen mushrooms, garlic, tomatoes and Sahnesauce"
+    },
+    "10018": {
+      "name": "Pasta Napoli",
+      "description": "with tomato sauce"
+    },
+    "10019": {
+      "name": "Pasta Bolognese",
+      "description": "with bolognese sauce"
+    },
+    "10020": {
+      "name": "Caprese Salad",
+      "description": "with tomatoes, Mozzarella and Rucola"
+    },
+    "10021": {
+      "name": "Capricciosa Salad",
+      "description": "gemischter Salat with tuna, Ei, Hinterschinken and cheese"
+    },
+    "10022": {
+      "name": "Casa Salad",
+      "description": "gemischter Salat with corn, bell pepper, olives and feta cheese"
+    },
+    "10023": {
+      "name": "Hähnchen Salad",
+      "description": "gemischter Salat with gebratene Hähnchenbruststreifen, bell pepper and Rucola"
+    },
+    "10024": {
+      "name": "Hawaii Salad",
+      "description": "gemischter Salat with Hinterschinken, pineapple and cheese"
+    },
+    "10025": {
+      "name": "Tonno Salad",
+      "description": "gemischter Salat and tuna"
+    },
+    "10026": {
+      "name": "Concordia Salad",
+      "description": "gemischter Salat with Krabben, frische mushrooms and Rucola"
+    },
+    "10027": {
+      "name": "Primavera Salad",
+      "description": "gemischter Salat with olives, feta cheese, artichokes and Ei"
+    },
+    "10028": {
+      "name": "Mista Salad",
+      "description": "gemischter Salat with corn and bell pepper"
+    },
+    "10029": {
+      "name": "Fantasia Salad",
+      "description": "gemischter Salat with tuna, Hinterschinken, artichokes, feta cheese and Ei"
+    },
+    "10030": {
+      "name": "Penne Bake",
+      "description": "with Penne, frischen mushrooms, broccoli, corn and Sahnesauce"
+    },
+    "10031": {
+      "name": "Tortellini Bake",
+      "description": "with Tortellini, Hinterschinken, broccoli and Sahnesauce"
+    },
+    "10032": {
+      "name": "Spaghetti Bake",
+      "description": "with Spaghetti, onions, tomatoes, bell pepper and tomatoes-Sahnesauce"
+    },
+    "10033": {
+      "name": "Döner Bake",
+      "description": "with döner meat, tomatoes, onions, feta cheese, bell pepper and Sahnesauce"
+    },
+    "10034": {
+      "name": "Gemüse Bake",
+      "description": "with Spaghetti, frischen mushrooms, spinach, broccoli, bell pepper, onions and tomatoes-Sahnesauce"
+    },
+    "10035": {
+      "name": "Pizza Spargel",
+      "description": "with Hinterschinken, salami, asparagus and Sauce Hollandaise"
+    },
+    "10036": {
+      "name": "Pizza Rustica",
+      "description": "with Hinterschinken, tuna, onions, bell pepper and scharfe pepperoni"
+    },
+    "10037": {
+      "name": "Pizza Bruno",
+      "description": "with spinach, Hähnchenbruststreifen and Sauce Hollandaise"
+    },
+    "10038": {
+      "name": "Pizza Enzo",
+      "description": "with salami and frische mushrooms"
+    },
+    "10039": {
+      "name": "Pizza Hähnchen",
+      "description": "with Hähnchenbruststreifen, broccoli and Sauce Hollandaise"
+    },
+    "10040": {
+      "name": "Pizza Chef",
+      "description": "with Krabben, spinach, broccoli, tuna and garlic"
+    },
+    "10041": {
+      "name": "Pizza Italia",
+      "description": "with spinach, bell pepper and onions"
+    },
+    "10042": {
+      "name": "Pizza Vegetaria A",
+      "description": "with spinach, bell pepper, broccoli and frische mushrooms"
+    },
+    "10043": {
+      "name": "Pizza Vegetaria B",
+      "description": "with spinach, onions, bell pepper and corn"
+    },
+    "10044": {
+      "name": "Pizza Vegetaria C",
+      "description": "with frische mushrooms, onions and olives"
+    },
+    "10045": {
+      "name": "Pizza Vegetaria D",
+      "description": "with Cherry tomatoes, frische mushrooms, Mozzarella, spinach and garlic"
+    },
+    "10046": {
+      "name": "Pizza Mexico",
+      "description": "with döner meat, onions and Sauce Hollandaise"
+    },
+    "10047": {
+      "name": "Pizza Concordia",
+      "description": "with döner meat, onions, bell pepper, broccoli and Sauce Hollandaise"
+    },
+    "10048": {
+      "name": "Pizza Bella",
+      "description": "with onions, bell pepper, corn and Hähnchenbruststreifen"
+    },
+    "10049": {
+      "name": "Pizza Vegas",
+      "description": "with frische mushrooms, Cherry tomatoes, Sauce Hollandaise, olives and Hähnchenbruststreifen"
+    },
+    "10050": {
+      "name": "Calzone Spezial",
+      "description": "zugeklappte Pizza gefüllt with tuna, onions, feta cheese and scharfe pepperoni"
+    },
+    "10051": {
+      "name": "Calzone Concordia",
+      "description": "zugeklappte Pizza gefüllt with Hinterschinken, salami, tuna, onions and pepperoni"
+    },
+    "10052": {
+      "name": "Calzone Döner",
+      "description": "zugeklappte Pizza gefüllt with döner meat, feta cheese and pepperoni"
+    },
+    "10053": {
+      "name": "Pizza Parma",
+      "description": "with Rucola, Parmaschinken, Parmesankäse and frische tomatoes"
+    },
+    "10054": {
+      "name": "Pizza Diavolo",
+      "description": "with salami, tuna, bell pepper and pepperoni"
+    },
+    "10055": {
+      "name": "Tuna & onion pizza",
+      "description": "with tuna and onions"
+    },
+    "10056": {
+      "name": "Ham & mushroom pizza",
+      "description": "with Hinterschinken and mushrooms"
+    },
+    "10057": {
+      "name": "Pizza Hawaii",
+      "description": "with Hinterschinken and pineapple"
+    },
+    "10058": {
+      "name": "Pizza Mozzarella",
+      "description": "with Mozzarella and Cherry tomatoes"
+    },
+    "10059": {
+      "name": "Pizza Bolognese",
+      "description": "with bolognese sauce and onions"
+    },
+    "10060": {
+      "name": "Pizza Spaghetti Bolognese",
+      "description": "with Spaghetti and bolognese sauce"
+    },
+    "10061": {
+      "name": "Pizza Milano",
+      "description": "with spinach, Krabben, mushrooms and garlic"
+    },
+    "10062": {
+      "name": "Pizza Lachs",
+      "description": "with spinach, salmon and garlic"
+    },
+    "10063": {
+      "name": "Four seasons pizza",
+      "description": "with salami, Hinterschinken, tuna and onions"
+    },
+    "10064": {
+      "name": "Four cheeses pizza",
+      "description": "with Gorgonzola, Gouda cheese, feta cheese and Mozzarella"
+    },
+    "10065": {
+      "name": "Pizza Margherita",
+      "description": "with tomato sauce and cheese"
+    },
+    "10066": {
+      "name": "Pizza Broccoli",
+      "description": "with broccoli"
+    },
+    "10067": {
+      "name": "Pizza Salami",
+      "description": "with salami"
+    },
+    "10068": {
+      "name": "Pizza Prosciutto",
+      "description": "with Hinterschinken"
+    },
+    "10069": {
+      "name": "Pizza Funghi",
+      "description": "with frische mushrooms"
+    },
+    "10070": {
+      "name": "Pizza Tonno",
+      "description": "with tuna"
+    },
+    "10071": {
+      "name": "Pizza Spinaci",
+      "description": "with spinach and garlic"
+    },
+    "10072": {
+      "name": "Pizza Scampi",
+      "description": "with Krabben and garlic"
+    },
+    "10073": {
+      "name": "Seafood pizza",
+      "description": "with seafood and garlic"
+    },
+    "10074": {
+      "name": "Pizza Sucuk",
+      "description": "with türkisch garlicwurst"
+    },
+    "10075": {
+      "name": "Stuffed pizza rolls with Bolognese",
+      "description": null
+    },
+    "10076": {
+      "name": "Stuffed pizza rolls with Sucuk",
+      "description": null
+    },
+    "10077": {
+      "name": "Stuffed pizza rolls with Hinterschinken",
+      "description": null
+    },
+    "10078": {
+      "name": "Stuffed pizza rolls with tuna, onions, feta",
+      "description": null
+    },
+    "10079": {
+      "name": "Stuffed pizza rolls with Dönerfleisch",
+      "description": null
+    },
+    "10080": {
+      "name": "Stuffed pizza rolls with spinach and feta",
+      "description": null
+    },
+    "10081": {
+      "name": "Stuffed pizza rolls with Käse",
+      "description": null
+    },
+    "10082": {
+      "name": "Stuffed pizza rolls with Thunfisch",
+      "description": null
+    },
+    "10083": {
+      "name": "Stuffed pizza rolls with Salami",
+      "description": null
+    },
+    "10084": {
+      "name": "Pizza rolls (10 pcs)",
+      "description": "with Kräuterbutter"
+    },
+    "10085": {
+      "name": "Portion of herb butter",
+      "description": null
+    },
+    "10086": {
+      "name": "Schnitzel Hawaii",
+      "description": "with Hinterschinken, pineapple and Sahnesauce"
+    },
+    "10087": {
+      "name": "Broccoli Schnitzel",
+      "description": "with broccoli and Sahnesauce"
+    },
+    "10088": {
+      "name": "Zwiebel Schnitzel",
+      "description": "with gebratene onions and Sahnesauce"
+    },
+    "10089": {
+      "name": "Hollandaise Schnitzel",
+      "description": "with broccoli, frische mushrooms, onions and Sauce Hollandaise"
+    },
+    "10090": {
+      "name": "Spinat Schnitzel",
+      "description": "with spinach, garlic and Sahnesauce"
+    },
+    "10091": {
+      "name": "Paprikaschnitzel",
+      "description": "with Balkansauce"
+    },
+    "10092": {
+      "name": "Champignonschnitzel",
+      "description": "with mushrooms and Sahnesauce"
+    },
+    "10093": {
+      "name": "Wiener schnitzel",
+      "description": "with Zitronenscheibe"
+    },
+    "10094": {
+      "name": "Jäger schnitzel",
+      "description": "with Jägersauce"
+    },
+    "10095": {
+      "name": "Double cheese burger",
+      "description": "with 2 x 180g Rinderhackfleisch, Eisbergsalat, Gurken, tomatoes, onions, cheese undSauce"
+    },
+    "10096": {
+      "name": "Chicken nugget burger",
+      "description": "with Chicken Nuggets, Eisbergsalat, Gurken, tomatoes, onions and Sauce"
+    },
+    "10097": {
+      "name": "Chicken burger",
+      "description": "with 135g Hähnchenfleisch, Eisbergsalat, Gurken, tomatoes, onions and Sauce"
+    },
+    "10098": {
+      "name": "Double burger",
+      "description": "with 2 x 180g Rinderhackfleisch, Eisbergsalat, Gurken, tomatoes, onions and Sauce"
+    },
+    "10099": {
+      "name": "Cheese burger",
+      "description": "with 180g Rinderhackfleisch, Eisbergsalat, Gurken, tomatoes, onions, cheese and Sauce"
+    },
+    "10100": {
+      "name": "Classic burger",
+      "description": "with 180g Rinderhackfleisch, Eisbergsalat, Gurken, tomatoes, onions and Sauce"
+    },
+    "10101": {
+      "name": "Chicken nuggets (6 pcs)",
+      "description": "with Pommes"
+    },
+    "10102": {
+      "name": "Chicken wings (8 pcs)",
+      "description": "with Pommes"
+    },
+    "10103": {
+      "name": "Potato croquettes (6 pcs)",
+      "description": null
+    },
+    "10104": {
+      "name": "Mayonnaise",
+      "description": null
+    },
+    "10105": {
+      "name": "Ketchup",
+      "description": null
+    },
+    "10106": {
+      "name": "Mozzarella sticks",
+      "description": "with Pommes"
+    },
+    "10107": {
+      "name": "Beef croquette",
+      "description": "with Pommes"
+    },
+    "10108": {
+      "name": "Special fried roll",
+      "description": "with Pommes"
+    },
+    "10109": {
+      "name": "Bratwurst",
+      "description": "with Pommes"
+    },
+    "10110": {
+      "name": "Currywurst",
+      "description": "with Pommes"
+    },
+    "10111": {
+      "name": "French fries",
+      "description": null
+    },
+    "10112": {
+      "name": "Special fries",
+      "description": null
+    },
+    "10113": {
+      "name": "Fried roll",
+      "description": "with Pommes"
+    },
+    "10114": {
+      "name": "Lift apple spritzer 1.0l (returnable)",
+      "description": "Die Lift Apfelschorle begeistert with ihrem einmaligen Geschmack and maximaler Erfrischung."
+    },
+    "10115": {
+      "name": "Uludag 0,33l",
+      "description": null
+    },
+    "10116": {
+      "name": "Sprite 1,0l (MEHRWEG)",
+      "description": "Bist du bereit für Sprite? Die einzigartige Formel aus grünen Limetten and sonnengelben Zitronen erfrischt dich maximal."
+    },
+    "10117": {
+      "name": "Mezzo Mix 1,0l (MEHRWEG)",
+      "description": "Mixt euch eine gute Zeit with Mezzo Mix, dem erfrischend-leckeren Kuss aus Cola and Orange."
+    },
+    "10118": {
+      "name": "Sparkling mineral water 0,25l",
+      "description": null
+    },
+    "10119": {
+      "name": "Durstlöscher 0.5l",
+      "description": null
+    },
+    "10120": {
+      "name": "Sprite 0,33l (MEHRWEG)",
+      "description": "Bist du bereit für Sprite? Die einzigartige Formel aus grünen Limetten and sonnengelben Zitronen erfrischt dich maximal."
+    },
+    "10121": {
+      "name": "Still mineral water 0,25l",
+      "description": null
+    },
+    "10122": {
+      "name": "Coca-Cola Zero Sugar 1,0l (MEHRWEG)",
+      "description": "Keine Kalorien. Null Zucker. Für alle Coke Liebhaber, die beim Geschmack keinen Kompromiss eingehen wollen."
+    },
+    "10123": {
+      "name": "Fanta Orange 0,33l (MEHRWEG)",
+      "description": "Trinke Fanta. Lebe bunter. Spritzig erfrischend begleitet die originale Fanta Orange jede Lebenssituation and macht jetzt noch mehr Spaß."
+    },
+    "10124": {
+      "name": "Fanta Orange 1,0l (MEHRWEG)",
+      "description": "Trinke Fanta. Lebe bunter. Spritzig erfrischend begleitet die originale Fanta Orange jede Lebenssituation and macht jetzt noch mehr Spaß."
+    },
+    "10125": {
+      "name": "Coca-Cola 0,33l (MEHRWEG)",
+      "description": "Coca-Cola steht für einzigartigen Geschmack, Erfrischung and Momente voller Lebensfreude. Die 0,33l Glas-Mehrwegflasche ist unsere Ikone für perfekten Trinkgenuss seit 1886."
+    },
+    "10126": {
+      "name": "Coca-Cola 1,0l (MEHRWEG)",
+      "description": null
+    },
+    "10127": {
+      "name": "Coca-Cola Zero Sugar 0,33l (MEHRWEG)",
+      "description": "Keine Kalorien. Null Zucker. Für alle Coke Liebhaber, die beim Geschmack keinen Kompromiss eingehen wollen."
+    },
+    "10128": {
+      "name": "Radler wheat beer 0,5l",
+      "description": null
+    },
+    "10129": {
+      "name": "Krombacher Pils 0,5l",
+      "description": null
+    }
+  },
+  "lexicon": {
+    "variantGroups": {
+      "Dressing": "Dressing",
+      "Fleischwahl": "Meat choice",
+      "Größe": "Size",
+      "Nudelsorte": "Pasta type",
+      "Wählen Sie": "Choose"
+    },
+    "variants": {
+      "Essig & Öl": "Vinegar & oil",
+      "French Dressing": "French dressing",
+      "French-Dressing": "French dressing",
+      "Hähnchen": "Chicken",
+      "Joghurtsauce": "Yoghurt sauce",
+      "Jogurtsauce": "Yoghurt sauce",
+      "Penne": "Penne",
+      "Schwein": "Pork",
+      "Spaghetti": "Spaghetti",
+      "Tortellini": "Tortellini",
+      "groß 30 cm": "large 30 cm",
+      "klein 24 cm": "small 24 cm",
+      "ohne Dressing": "no dressing"
+    },
+    "addOnGroups": {
+      "Beilagen & Saucen": "Sides & sauces",
+      "Extras": "Extras",
+      "Fleisch & Wurst": "Meat & sausage",
+      "Gemüse": "Vegetables",
+      "Meeresfrüchte": "Seafood",
+      "Saucen & Käse": "Sauces & cheese"
+    },
+    "addOns": {
+      "Ananas": "Pineapple",
+      "Artischocken": "Artichokes",
+      "Broccoli": "Broccoli",
+      "Champignons": "Mushrooms",
+      "Cherry Tomaten": "Cherry tomatoes",
+      "Currysauce": "Curry sauce",
+      "Dönerfleisch": "Döner meat",
+      "Fetakäse": "Feta cheese",
+      "Gorgonzola": "Gorgonzola",
+      "Gouda Käse": "Gouda cheese",
+      "Hackfleischsauce": "Bolognese sauce",
+      "Hinterschinken": "Ham",
+      "Hähnchenbruststreifen": "Chicken strips",
+      "Ketchup": "Ketchup",
+      "Knoblauch": "Garlic",
+      "Krabben": "Prawns",
+      "Kräuterbutter": "Herb butter",
+      "Käse": "Cheese",
+      "Lachs": "Salmon",
+      "Mais": "Corn",
+      "Mayonnaise": "Mayonnaise",
+      "Meeresfrüchte": "Seafood",
+      "Mit Käse überbacken": "Topped with cheese",
+      "Mozzarella": "Mozzarella",
+      "Oliven": "Olives",
+      "Paprika": "Bell pepper",
+      "Parmaschinken": "Parma ham",
+      "Parmesankäse": "Parmesan",
+      "Peperoni": "Peperoni",
+      "Rucola": "Rocket",
+      "Salami": "Salami",
+      "Sauce Hollandaise": "Hollandaise sauce",
+      "Spaghetti": "Spaghetti",
+      "Spargel": "Asparagus",
+      "Spinat": "Spinach",
+      "Sucuk": "Sucuk",
+      "Thunfisch": "Tuna",
+      "Tomaten": "Tomatoes",
+      "Tomatensauce": "Tomato sauce",
+      "Türkisch Knoblauchwurst": "Turkish garlic sausage",
+      "Zwiebeln": "Onions",
+      "ohne Beilage": "no side",
+      "scharfe Peperoni": "Hot peppers"
+    }
+  }
+}

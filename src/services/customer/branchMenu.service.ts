@@ -2,6 +2,11 @@ import { prisma } from "../../prisma/client.ts";
 import { getCache, setCache } from "../../lib/redis.ts";
 import { deleteSimpleCache, getSimpleCache, setSimpleCache } from "../../lib/simpleCache.ts";
 import {
+  applyItemTranslations,
+  applyMenuTranslations,
+  resolveMenuLanguage
+} from "./menuTranslation.service.ts";
+import {
   buildPricesBySize,
   itemUsesSizeBasedExtras,
   normalizeSizeKey,
@@ -17,6 +22,9 @@ export function invalidateBranchListCache() {
 }
 
 export function invalidateBranchMenuCache(branchId: string) {
+  for (const lang of ["de", "en", "nl", "pl", "ru", "ro", "hi", "ar", "ku"]) {
+    deleteSimpleCache(`customer:menu:${branchId}:${lang}:v2`);
+  }
   deleteSimpleCache(`customer:menu:${branchId}:v1`);
 }
 
@@ -32,8 +40,9 @@ function itemBelongsToBranch(branchId: string, itemId: number) {
   return itemId >= range.gte && itemId < range.lt;
 }
 
-export async function getBranchMenuForCustomer(branchId: string) {
-  const memoryKey = `customer:menu:${branchId}:v1`;
+export async function getBranchMenuForCustomer(branchId: string, lang?: string | null) {
+  const resolvedLang = resolveMenuLanguage(lang);
+  const memoryKey = `customer:menu:${branchId}:${resolvedLang}:v2`;
   const cachedMemory = getSimpleCache<Awaited<ReturnType<typeof buildBranchMenu>>>(memoryKey);
   if (cachedMemory) return cachedMemory;
 
@@ -49,7 +58,7 @@ export async function getBranchMenuForCustomer(branchId: string) {
     }
   }
 
-  const menu = await buildBranchMenu(branchId);
+  const menu = applyMenuTranslations(await buildBranchMenu(branchId), resolvedLang);
   setSimpleCache(memoryKey, menu, MENU_TTL_SEC * 1000);
   await setCache(redisKey, JSON.stringify(menu), MENU_TTL_SEC);
   return menu;
@@ -254,7 +263,12 @@ export function priceForAddOn(
   return resolveExtraPrice(option.name, option.price, sizeVariantName, itemName);
 }
 
-export async function getBranchItemForCustomer(branchId: string, itemId: number) {
+export async function getBranchItemForCustomer(
+  branchId: string,
+  itemId: number,
+  lang?: string | null
+) {
+  const resolvedLang = resolveMenuLanguage(lang);
   const optionInclude = {
     variantGroups: {
       orderBy: { id: "asc" as const },
@@ -302,13 +316,16 @@ export async function getBranchItemForCustomer(branchId: string, itemId: number)
       }))
     }));
 
-    return {
-      ...mapped,
-      description: branchItem.description ?? mapped.description,
-      price: branchItem.price ?? mapped.price,
-      imageUrl: branchItem.imageUrl ?? mapped.imageUrl,
-      addOnGroups: [...mapped.addOnGroups, ...presetAddOnGroups]
-    };
+    return applyItemTranslations(
+      {
+        ...mapped,
+        description: branchItem.description ?? mapped.description,
+        price: branchItem.price ?? mapped.price,
+        imageUrl: branchItem.imageUrl ?? mapped.imageUrl,
+        addOnGroups: [...mapped.addOnGroups, ...presetAddOnGroups]
+      },
+      resolvedLang
+    );
   }
 
   if (!itemBelongsToBranch(branchId, itemId)) {
@@ -354,10 +371,13 @@ export async function getBranchItemForCustomer(branchId: string, itemId: number)
     }))
   }));
 
-  return {
-    ...mapped,
-    addOnGroups: [...mapped.addOnGroups, ...presetAddOnGroups]
-  };
+  return applyItemTranslations(
+    {
+      ...mapped,
+      addOnGroups: [...mapped.addOnGroups, ...presetAddOnGroups]
+    },
+    resolvedLang
+  );
 }
 
 export async function listBranchesForCustomer() {

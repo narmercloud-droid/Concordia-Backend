@@ -28,6 +28,7 @@ RUN npm ci --omit=dev --ignore-scripts
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma/client ./node_modules/@prisma/client
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/src/i18n/menu/locales ./dist/i18n/menu/locales
 COPY prisma ./prisma
 
 RUN mkdir -p /app/data && chown -R node:node /app/data

@@ -1,6 +1,7 @@
 import { prisma } from "../../prisma/client.ts";
 import { getCache, setCache } from "../../lib/redis.ts";
 import { getBranchMenuForCustomer } from "./branchMenu.service.ts";
+import { resolveMenuLanguage } from "./menuTranslation.service.ts";
 
 const PERIOD_DAYS = 30;
 const CACHE_TTL_SEC = 3600;
@@ -68,9 +69,9 @@ async function topSellingItemIds(branchId: string, limit: number): Promise<numbe
   return ids;
 }
 
-export async function getBranchBestsellers(branchId: string, limit = 6) {
+export async function getBranchBestsellers(branchId: string, limit = 6, lang?: string | null) {
   const [categories, salesIds] = await Promise.all([
-    getBranchMenuForCustomer(branchId),
+    getBranchMenuForCustomer(branchId, lang),
     topSellingItemIds(branchId, limit)
   ]);
 
@@ -86,8 +87,13 @@ export async function getBranchBestsellers(branchId: string, limit = 6) {
   };
 }
 
-export async function getAlsoPopularItems(branchId: string, itemId: number, limit = 4) {
-  const cacheKey = `also-popular:${branchId}:${itemId}:${limit}`;
+export async function getAlsoPopularItems(
+  branchId: string,
+  itemId: number,
+  limit = 4,
+  lang?: string | null
+) {
+  const cacheKey = `also-popular:${branchId}:${itemId}:${limit}:${resolveMenuLanguage(lang)}`;
   const cached = await getCache(cacheKey);
   if (cached) {
     try {
@@ -127,7 +133,7 @@ export async function getAlsoPopularItems(branchId: string, itemId: number, limi
     take: limit * 2
   });
 
-  const categories = await getBranchMenuForCustomer(branchId);
+  const categories = await getBranchMenuForCustomer(branchId, lang);
   const availableIds = new Set(flattenMenuItems(categories).map((item) => item.id));
   const rankedIds = coOrdered
     .map((row) => row.itemId)

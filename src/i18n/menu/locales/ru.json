@@ -1,0 +1,639 @@
+{
+  "categories": {
+    "38": {
+      "name": "Багеты",
+      "description": "С салатом айсберг, помидорами, огурцом, ремулядом"
+    },
+    "39": {
+      "name": "Паста",
+      "description": "На выбор: спагетти, пенне или тортеллини"
+    },
+    "40": {
+      "name": "Салаты",
+      "description": "С соусом на выбор"
+    },
+    "41": {
+      "name": "Блюда Al Forno",
+      "description": ""
+    },
+    "42": {
+      "name": "Пицца",
+      "description": "Маленькая 24 см · Большая 30 см"
+    },
+    "43": {
+      "name": "Пицца-булочки",
+      "description": "10 шт. с травяным маслом · С начинкой"
+    },
+    "44": {
+      "name": "Шницель",
+      "description": "Все блюда с картофелем фри и салатом"
+    },
+    "45": {
+      "name": "Бургеры",
+      "description": ""
+    },
+    "46": {
+      "name": "Закуски",
+      "description": ""
+    },
+    "47": {
+      "name": "Безалкогольные напитки",
+      "description": ""
+    },
+    "48": {
+      "name": "Алкогольные напитки",
+      "description": ""
+    }
+  },
+  "items": {
+    "10002": {
+      "name": "Baguette с Sucuk",
+      "description": null
+    },
+    "10003": {
+      "name": "Baguette с tuna и egg",
+      "description": null
+    },
+    "10004": {
+      "name": "Baguette с Mozzarella",
+      "description": null
+    },
+    "10005": {
+      "name": "Baguette с sucuk и egg",
+      "description": null
+    },
+    "10006": {
+      "name": "Baguette с Hinterschinken",
+      "description": null
+    },
+    "10007": {
+      "name": "Baguette с Thunfisch",
+      "description": null
+    },
+    "10008": {
+      "name": "Baguette с Salami",
+      "description": null
+    },
+    "10009": {
+      "name": "Pasta Salmone",
+      "description": "с spinach, salmon, garlic и Sahnesauce"
+    },
+    "10010": {
+      "name": "Pasta Vegetarisch",
+      "description": "с broccoli, bell pepper, frischen mushrooms, onions и tomatoes-Sahnesauce"
+    },
+    "10011": {
+      "name": "Pasta Gorgonzola",
+      "description": "с broccoli, frischen mushrooms, Gorgonzolakäse и Sahnesauce"
+    },
+    "10012": {
+      "name": "Pasta Pasta Concordia",
+      "description": "с Hähnchenbruststreifen, mushrooms, broccoli, scharfen pepperonis, garlic и tomatoes-Sahnesauce"
+    },
+    "10013": {
+      "name": "Pasta Formaggi",
+      "description": "с vier verschiedenen cheesesorten и Sahnesauce"
+    },
+    "10014": {
+      "name": "Pasta Alla Chef",
+      "description": "с Hähnchenbruststreifen, frischen mushrooms, corn, Goudakäse, tomatoes и Sahnesauce"
+    },
+    "10015": {
+      "name": "Pasta Carbonara",
+      "description": "с Hinterschinken, Ei и Sahnesauce"
+    },
+    "10016": {
+      "name": "Pasta Alla Panna",
+      "description": "с Hinterschinken, frischen mushrooms и Sahnesauce"
+    },
+    "10017": {
+      "name": "Pasta Toscana",
+      "description": "с Hinterschinken, Krabben, frischen mushrooms, garlic, tomatoes и Sahnesauce"
+    },
+    "10018": {
+      "name": "Pasta Napoli",
+      "description": "с tomato соусом"
+    },
+    "10019": {
+      "name": "Pasta Bolognese",
+      "description": "с bolognese соусом"
+    },
+    "10020": {
+      "name": "Caprese Салат",
+      "description": "с tomatoes, Mozzarella и Rucola"
+    },
+    "10021": {
+      "name": "Capricciosa Салат",
+      "description": "gemischter Salat с tuna, Ei, Hinterschinken и сыром"
+    },
+    "10022": {
+      "name": "Casa Салат",
+      "description": "gemischter Salat с corn, bell pepper, olives и feta сыром"
+    },
+    "10023": {
+      "name": "Hähnchen Салат",
+      "description": "gemischter Salat с gebratene Hähnchenbruststreifen, bell pepper и Rucola"
+    },
+    "10024": {
+      "name": "Hawaii Салат",
+      "description": "gemischter Salat с Hinterschinken, pineapple и сыром"
+    },
+    "10025": {
+      "name": "Tonno Салат",
+      "description": "gemischter Salat и tuna"
+    },
+    "10026": {
+      "name": "Concordia Салат",
+      "description": "gemischter Salat с Krabben, frische mushrooms и Rucola"
+    },
+    "10027": {
+      "name": "Primavera Салат",
+      "description": "gemischter Salat с olives, feta сыром, artichokes и Ei"
+    },
+    "10028": {
+      "name": "Mista Салат",
+      "description": "gemischter Salat с corn и bell pepper"
+    },
+    "10029": {
+      "name": "Fantasia Салат",
+      "description": "gemischter Salat с tuna, Hinterschinken, artichokes, feta сыром и Ei"
+    },
+    "10030": {
+      "name": "Penne Bake",
+      "description": "с Penne, frischen mushrooms, broccoli, corn и Sahnesauce"
+    },
+    "10031": {
+      "name": "Tortellini Bake",
+      "description": "с Tortellini, Hinterschinken, broccoli и Sahnesauce"
+    },
+    "10032": {
+      "name": "Spaghetti Bake",
+      "description": "с Spaghetti, onions, tomatoes, bell pepper и tomatoes-Sahnesauce"
+    },
+    "10033": {
+      "name": "Döner Bake",
+      "description": "с döner meat, tomatoes, onions, feta сыром, bell pepper и Sahnesauce"
+    },
+    "10034": {
+      "name": "Gemüse Bake",
+      "description": "с Spaghetti, frischen mushrooms, spinach, broccoli, bell pepper, onions и tomatoes-Sahnesauce"
+    },
+    "10035": {
+      "name": "Пицца Spargel",
+      "description": "с Hinterschinken, salami, asparagus и соусом Hollandaise"
+    },
+    "10036": {
+      "name": "Пицца Rustica",
+      "description": "с Hinterschinken, tuna, onions, bell pepper и scharfe pepperoni"
+    },
+    "10037": {
+      "name": "Пицца Bruno",
+      "description": "с spinach, Hähnchenbruststreifen и соусом Hollandaise"
+    },
+    "10038": {
+      "name": "Пицца Enzo",
+      "description": "с salami и frische mushrooms"
+    },
+    "10039": {
+      "name": "Пицца Hähnchen",
+      "description": "с Hähnchenbruststreifen, broccoli и соусом Hollandaise"
+    },
+    "10040": {
+      "name": "Пицца Chef",
+      "description": "с Krabben, spinach, broccoli, tuna и garlic"
+    },
+    "10041": {
+      "name": "Пицца Italia",
+      "description": "с spinach, bell pepper и onions"
+    },
+    "10042": {
+      "name": "Пицца Vegetaria A",
+      "description": "с spinach, bell pepper, broccoli и frische mushrooms"
+    },
+    "10043": {
+      "name": "Пицца Vegetaria B",
+      "description": "с spinach, onions, bell pepper и corn"
+    },
+    "10044": {
+      "name": "Пицца Vegetaria C",
+      "description": "с frische mushrooms, onions и olives"
+    },
+    "10045": {
+      "name": "Пицца Vegetaria D",
+      "description": "с Cherry tomatoes, frische mushrooms, Mozzarella, spinach и garlic"
+    },
+    "10046": {
+      "name": "Пицца Mexico",
+      "description": "с döner meat, onions и соусом Hollandaise"
+    },
+    "10047": {
+      "name": "Пицца Concordia",
+      "description": "с döner meat, onions, bell pepper, broccoli и соусом Hollandaise"
+    },
+    "10048": {
+      "name": "Пицца Bella",
+      "description": "с onions, bell pepper, corn и Hähnchenbruststreifen"
+    },
+    "10049": {
+      "name": "Пицца Vegas",
+      "description": "с frische mushrooms, Cherry tomatoes, соусом Hollandaise, olives и Hähnchenbruststreifen"
+    },
+    "10050": {
+      "name": "Calzone Spezial",
+      "description": "zugeklappte Pizza gefüllt с tuna, onions, feta сыром и scharfe pepperoni"
+    },
+    "10051": {
+      "name": "Calzone Concordia",
+      "description": "zugeklappte Pizza gefüllt с Hinterschinken, salami, tuna, onions и pepperoni"
+    },
+    "10052": {
+      "name": "Calzone Döner",
+      "description": "zugeklappte Pizza gefüllt с döner meat, feta сыром и pepperoni"
+    },
+    "10053": {
+      "name": "Пицца Parma",
+      "description": "с Rucola, Parmaschinken, Parmesankäse и frische tomatoes"
+    },
+    "10054": {
+      "name": "Пицца Diavolo",
+      "description": "с salami, tuna, bell pepper и pepperoni"
+    },
+    "10055": {
+      "name": "Tuna & onion pizza",
+      "description": "с tuna и onions"
+    },
+    "10056": {
+      "name": "Ham & mushroom pizza",
+      "description": "с Hinterschinken и mushrooms"
+    },
+    "10057": {
+      "name": "Пицца Hawaii",
+      "description": "с Hinterschinken и pineapple"
+    },
+    "10058": {
+      "name": "Пицца Mozzarella",
+      "description": "с Mozzarella и Cherry tomatoes"
+    },
+    "10059": {
+      "name": "Пицца Bolognese",
+      "description": "с bolognese соусом и onions"
+    },
+    "10060": {
+      "name": "Пицца Spaghetti Bolognese",
+      "description": "с Spaghetti и bolognese соусом"
+    },
+    "10061": {
+      "name": "Пицца Milano",
+      "description": "с spinach, Krabben, mushrooms и garlic"
+    },
+    "10062": {
+      "name": "Пицца Lachs",
+      "description": "с spinach, salmon и garlic"
+    },
+    "10063": {
+      "name": "Four seasons pizza",
+      "description": "с salami, Hinterschinken, tuna и onions"
+    },
+    "10064": {
+      "name": "Four cheeses pizza",
+      "description": "с Gorgonzola, Gouda сыром, feta сыром и Mozzarella"
+    },
+    "10065": {
+      "name": "Пицца Margherita",
+      "description": "с tomato соусом и сыром"
+    },
+    "10066": {
+      "name": "Пицца Broccoli",
+      "description": "с broccoli"
+    },
+    "10067": {
+      "name": "Пицца Salami",
+      "description": "с salami"
+    },
+    "10068": {
+      "name": "Пицца Prosciutto",
+      "description": "с Hinterschinken"
+    },
+    "10069": {
+      "name": "Пицца Funghi",
+      "description": "с frische mushrooms"
+    },
+    "10070": {
+      "name": "Пицца Tonno",
+      "description": "с tuna"
+    },
+    "10071": {
+      "name": "Пицца Spinaci",
+      "description": "с spinach и garlic"
+    },
+    "10072": {
+      "name": "Пицца Scampi",
+      "description": "с Krabben и garlic"
+    },
+    "10073": {
+      "name": "Seafood pizza",
+      "description": "с seafood и garlic"
+    },
+    "10074": {
+      "name": "Пицца Sucuk",
+      "description": "с türkisch garlicwurst"
+    },
+    "10075": {
+      "name": "Stuffed pizza rolls с Bolognese",
+      "description": null
+    },
+    "10076": {
+      "name": "Stuffed pizza rolls с Sucuk",
+      "description": null
+    },
+    "10077": {
+      "name": "Stuffed pizza rolls с Hinterschinken",
+      "description": null
+    },
+    "10078": {
+      "name": "Stuffed pizza rolls с tuna, onions, feta",
+      "description": null
+    },
+    "10079": {
+      "name": "Stuffed pizza rolls с Dönerfleisch",
+      "description": null
+    },
+    "10080": {
+      "name": "Stuffed pizza rolls с spinach и feta",
+      "description": null
+    },
+    "10081": {
+      "name": "Stuffed pizza rolls с Käse",
+      "description": null
+    },
+    "10082": {
+      "name": "Stuffed pizza rolls с Thunfisch",
+      "description": null
+    },
+    "10083": {
+      "name": "Stuffed pizza rolls с Salami",
+      "description": null
+    },
+    "10084": {
+      "name": "Пицца rolls (10 pcs)",
+      "description": "с Kräuterbutter"
+    },
+    "10085": {
+      "name": "Portion of herb butter",
+      "description": null
+    },
+    "10086": {
+      "name": "Schnitzel Hawaii",
+      "description": "с Hinterschinken, pineapple и Sahnesauce"
+    },
+    "10087": {
+      "name": "Broccoli Schnitzel",
+      "description": "с broccoli и Sahnesauce"
+    },
+    "10088": {
+      "name": "Zwiebel Schnitzel",
+      "description": "с gebratene onions и Sahnesauce"
+    },
+    "10089": {
+      "name": "Hollandaise Schnitzel",
+      "description": "с broccoli, frische mushrooms, onions и соусом Hollandaise"
+    },
+    "10090": {
+      "name": "Spinat Schnitzel",
+      "description": "с spinach, garlic и Sahnesauce"
+    },
+    "10091": {
+      "name": "Paprikaschnitzel",
+      "description": "с Balkansauce"
+    },
+    "10092": {
+      "name": "Champignonschnitzel",
+      "description": "с mushrooms и Sahnesauce"
+    },
+    "10093": {
+      "name": "Wiener schnitzel",
+      "description": "с Zitronenscheibe"
+    },
+    "10094": {
+      "name": "Jäger schnitzel",
+      "description": "с Jägersauce"
+    },
+    "10095": {
+      "name": "Double cheese burger",
+      "description": "с 2 x 180g Rinderhackfleisch, Eisbergsalat, Gurken, tomatoes, onions, сыром undSauce"
+    },
+    "10096": {
+      "name": "Chicken nugget burger",
+      "description": "с Chicken Nuggets, Eisbergsalat, Gurken, tomatoes, onions и соусом"
+    },
+    "10097": {
+      "name": "Chicken burger",
+      "description": "с 135g Hähnchenfleisch, Eisbergsalat, Gurken, tomatoes, onions и соусом"
+    },
+    "10098": {
+      "name": "Double burger",
+      "description": "с 2 x 180g Rinderhackfleisch, Eisbergsalat, Gurken, tomatoes, onions и соусом"
+    },
+    "10099": {
+      "name": "Cheese burger",
+      "description": "с 180g Rinderhackfleisch, Eisbergsalat, Gurken, tomatoes, onions, сыром и соусом"
+    },
+    "10100": {
+      "name": "Classic burger",
+      "description": "с 180g Rinderhackfleisch, Eisbergsalat, Gurken, tomatoes, onions и соусом"
+    },
+    "10101": {
+      "name": "Chicken nuggets (6 pcs)",
+      "description": "с Pommes"
+    },
+    "10102": {
+      "name": "Chicken wings (8 pcs)",
+      "description": "с Pommes"
+    },
+    "10103": {
+      "name": "Potato croquettes (6 pcs)",
+      "description": null
+    },
+    "10104": {
+      "name": "Mayonnaise",
+      "description": null
+    },
+    "10105": {
+      "name": "Ketchup",
+      "description": null
+    },
+    "10106": {
+      "name": "Mozzarella sticks",
+      "description": "с Pommes"
+    },
+    "10107": {
+      "name": "Beef croquette",
+      "description": "с Pommes"
+    },
+    "10108": {
+      "name": "Special fried roll",
+      "description": "с Pommes"
+    },
+    "10109": {
+      "name": "Bratwurst",
+      "description": "с Pommes"
+    },
+    "10110": {
+      "name": "Currywurst",
+      "description": "с Pommes"
+    },
+    "10111": {
+      "name": "French fries",
+      "description": null
+    },
+    "10112": {
+      "name": "Special fries",
+      "description": null
+    },
+    "10113": {
+      "name": "Fried roll",
+      "description": "с Pommes"
+    },
+    "10114": {
+      "name": "Lift apple spritzer 1.0l (returnable)",
+      "description": "Die Lift Apfelschorle begeistert с ihrem einmaligen Geschmack и maximaler Erfrischung."
+    },
+    "10115": {
+      "name": "Uludag 0,33l",
+      "description": null
+    },
+    "10116": {
+      "name": "Sprite 1,0l (MEHRWEG)",
+      "description": "Bist du bereit für Sprite? Die einzigartige Formel aus grünen Limetten и sonnengelben Zitronen erfrischt dich maximal."
+    },
+    "10117": {
+      "name": "Mezzo Mix 1,0l (MEHRWEG)",
+      "description": "Mixt euch eine gute Zeit с Mezzo Mix, dem erfrischend-leckeren Kuss aus Cola и Orange."
+    },
+    "10118": {
+      "name": "Sparkling mineral water 0,25l",
+      "description": null
+    },
+    "10119": {
+      "name": "Durstlöscher 0.5l",
+      "description": null
+    },
+    "10120": {
+      "name": "Sprite 0,33l (MEHRWEG)",
+      "description": "Bist du bereit für Sprite? Die einzigartige Formel aus grünen Limetten и sonnengelben Zitronen erfrischt dich maximal."
+    },
+    "10121": {
+      "name": "Still mineral water 0,25l",
+      "description": null
+    },
+    "10122": {
+      "name": "Coca-Cola Zero Sugar 1,0l (MEHRWEG)",
+      "description": "Keine Kalorien. Null Zucker. Für alle Coke Liebhaber, die beim Geschmack keinen Kompromiss eingehen wollen."
+    },
+    "10123": {
+      "name": "Fanta Orange 0,33l (MEHRWEG)",
+      "description": "Trinke Fanta. Lebe bunter. Spritzig erfrischend begleitet die originale Fanta Orange jede Lebenssituation и macht jetzt noch mehr Spaß."
+    },
+    "10124": {
+      "name": "Fanta Orange 1,0l (MEHRWEG)",
+      "description": "Trinke Fanta. Lebe bunter. Spritzig erfrischend begleitet die originale Fanta Orange jede Lebenssituation и macht jetzt noch mehr Spaß."
+    },
+    "10125": {
+      "name": "Coca-Cola 0,33l (MEHRWEG)",
+      "description": "Coca-Cola steht für einzigartigen Geschmack, Erfrischung и Momente voller Lebensfreude. Die 0,33l Glas-Mehrwegflasche ist unsere Ikone für perfekten Trinkgenuss seit 1886."
+    },
+    "10126": {
+      "name": "Coca-Cola 1,0l (MEHRWEG)",
+      "description": null
+    },
+    "10127": {
+      "name": "Coca-Cola Zero Sugar 0,33l (MEHRWEG)",
+      "description": "Keine Kalorien. Null Zucker. Für alle Coke Liebhaber, die beim Geschmack keinen Kompromiss eingehen wollen."
+    },
+    "10128": {
+      "name": "Radler wheat beer 0,5l",
+      "description": null
+    },
+    "10129": {
+      "name": "Krombacher Pils 0,5l",
+      "description": null
+    }
+  },
+  "lexicon": {
+    "variantGroups": {
+      "Dressing": "Соус",
+      "Fleischwahl": "Выбор мяса",
+      "Größe": "Размер",
+      "Nudelsorte": "Вид пасты",
+      "Wählen Sie": "Выберите"
+    },
+    "variants": {
+      "Essig & Öl": "Уксус и масло",
+      "French Dressing": "Французская заправка",
+      "French-Dressing": "Французская заправка",
+      "Hähnchen": "Курица",
+      "Joghurtsauce": "Йогуртовый соус",
+      "Jogurtsauce": "Йогуртовый соус",
+      "Penne": "Пенне",
+      "Schwein": "Свинина",
+      "Spaghetti": "Спагетти",
+      "Tortellini": "Тортеллини",
+      "groß 30 cm": "большая 30 см",
+      "klein 24 cm": "маленькая 24 см",
+      "ohne Dressing": "без соуса"
+    },
+    "addOnGroups": {
+      "Beilagen & Saucen": "Гарниры и соусы",
+      "Extras": "Дополнения",
+      "Fleisch & Wurst": "Мясо и колбаса",
+      "Gemüse": "Овощи",
+      "Meeresfrüchte": "Морепродукты",
+      "Saucen & Käse": "Соусы и сыр"
+    },
+    "addOns": {
+      "Ananas": "Ананас",
+      "Artischocken": "Артишоки",
+      "Broccoli": "Брокколи",
+      "Champignons": "Шампиньоны",
+      "Cherry Tomaten": "Черри-томаты",
+      "Currysauce": "Соус карри",
+      "Dönerfleisch": "Дёнер",
+      "Fetakäse": "Фета",
+      "Gorgonzola": "Горгонзола",
+      "Gouda Käse": "Гауда",
+      "Hackfleischsauce": "Болоньезе",
+      "Hinterschinken": "Ветчина",
+      "Hähnchenbruststreifen": "Курица",
+      "Ketchup": "Кетчуп",
+      "Knoblauch": "Чеснок",
+      "Krabben": "Креветки",
+      "Kräuterbutter": "Травяное масло",
+      "Käse": "Сыр",
+      "Lachs": "Лосось",
+      "Mais": "Кукуруза",
+      "Mayonnaise": "Майонез",
+      "Meeresfrüchte": "Морепродукты",
+      "Mit Käse überbacken": "С сыром",
+      "Mozzarella": "Моцарелла",
+      "Oliven": "Оливки",
+      "Paprika": "Перец",
+      "Parmaschinken": "Пармская ветчина",
+      "Parmesankäse": "Пармезан",
+      "Peperoni": "Пепперони",
+      "Rucola": "Руккола",
+      "Salami": "Салями",
+      "Sauce Hollandaise": "Голландский соус",
+      "Spaghetti": "Спагетти",
+      "Spargel": "Спаржа",
+      "Spinat": "Шпинат",
+      "Sucuk": "Суджук",
+      "Thunfisch": "Тунец",
+      "Tomaten": "Помидоры",
+      "Tomatensauce": "Томатный соус",
+      "Türkisch Knoblauchwurst": "Турецкая чесночная колбаса",
+      "Zwiebeln": "Лук",
+      "ohne Beilage": "без гарнира",
+      "scharfe Peperoni": "Острый перец"
+    }
+  }
+}

@@ -1,0 +1,639 @@
+{
+  "categories": {
+    "38": {
+      "name": "Baguettes",
+      "description": "Met ijsbergsla, tomaten, komkommer, remoulade"
+    },
+    "39": {
+      "name": "Pasta",
+      "description": "Keuze uit spaghetti, penne of tortellini"
+    },
+    "40": {
+      "name": "Salades",
+      "description": "Met dressing naar keuze"
+    },
+    "41": {
+      "name": "Al Forno Gerechten",
+      "description": ""
+    },
+    "42": {
+      "name": "Pizza's",
+      "description": "Klein 24 cm · Groot 30 cm"
+    },
+    "43": {
+      "name": "Pizzabroodjes",
+      "description": "10 stuks met kruidenboter · Gevulde varianten"
+    },
+    "44": {
+      "name": "Schnitzel",
+      "description": "Alle gerechten met friet en salade"
+    },
+    "45": {
+      "name": "Burgers",
+      "description": ""
+    },
+    "46": {
+      "name": "Snacks",
+      "description": ""
+    },
+    "47": {
+      "name": "Alcoholvrije Dranken",
+      "description": ""
+    },
+    "48": {
+      "name": "Alcoholische Dranken",
+      "description": ""
+    }
+  },
+  "items": {
+    "10002": {
+      "name": "Baguette met Sucuk",
+      "description": null
+    },
+    "10003": {
+      "name": "Baguette met tonijn en ei",
+      "description": null
+    },
+    "10004": {
+      "name": "Baguette met Mozzarella",
+      "description": null
+    },
+    "10005": {
+      "name": "Baguette met sucuk en ei",
+      "description": null
+    },
+    "10006": {
+      "name": "Baguette met Hinterschinken",
+      "description": null
+    },
+    "10007": {
+      "name": "Baguette met Thunfisch",
+      "description": null
+    },
+    "10008": {
+      "name": "Baguette met Salami",
+      "description": null
+    },
+    "10009": {
+      "name": "Pasta Salmone",
+      "description": "met spinazie, Lachs, Knoblauch en Sahnesauce"
+    },
+    "10010": {
+      "name": "Pasta Vegetarisch",
+      "description": "met Broccoli, Paprika, frischen champignons, ui en Tomaten-Sahnesauce"
+    },
+    "10011": {
+      "name": "Pasta Gorgonzola",
+      "description": "met Broccoli, frischen champignons, Gorgonzolakäse en Sahnesauce"
+    },
+    "10012": {
+      "name": "Pasta Pasta Concordia",
+      "description": "met Hähnchenbruststreifen, champignons, Broccoli, scharfen Peperonis, Knoblauch en Tomaten-Sahnesauce"
+    },
+    "10013": {
+      "name": "Pasta Formaggi",
+      "description": "met vier verschiedenen kaassorten en Sahnesauce"
+    },
+    "10014": {
+      "name": "Pasta Alla Chef",
+      "description": "met Hähnchenbruststreifen, frischen champignons, Mais, Goudakäse, Tomaten en Sahnesauce"
+    },
+    "10015": {
+      "name": "Pasta Carbonara",
+      "description": "met Hinterschinken, Ei en Sahnesauce"
+    },
+    "10016": {
+      "name": "Pasta Alla Panna",
+      "description": "met Hinterschinken, frischen champignons en Sahnesauce"
+    },
+    "10017": {
+      "name": "Pasta Toscana",
+      "description": "met Hinterschinken, Krabben, frischen champignons, Knoblauch, Tomaten en Sahnesauce"
+    },
+    "10018": {
+      "name": "Pasta Napoli",
+      "description": "met tomatensaus"
+    },
+    "10019": {
+      "name": "Pasta Bolognese",
+      "description": "met Hackfleischsauce"
+    },
+    "10020": {
+      "name": "Caprese Salade",
+      "description": "met Tomaten, Mozzarella en Rucola"
+    },
+    "10021": {
+      "name": "Capricciosa Salade",
+      "description": "gemischter Salat met tonijn, Ei, Hinterschinken en kaas"
+    },
+    "10022": {
+      "name": "Casa Salade",
+      "description": "gemischter Salat met Mais, Paprika, Oliven en feta"
+    },
+    "10023": {
+      "name": "Hähnchen Salade",
+      "description": "gemischter Salat met gebratene Hähnchenbruststreifen, Paprika en Rucola"
+    },
+    "10024": {
+      "name": "Hawaii Salade",
+      "description": "gemischter Salat met Hinterschinken, Ananas en kaas"
+    },
+    "10025": {
+      "name": "Tonno Salade",
+      "description": "gemischter Salat en tonijn"
+    },
+    "10026": {
+      "name": "Concordia Salade",
+      "description": "gemischter Salat met Krabben, frische champignons en Rucola"
+    },
+    "10027": {
+      "name": "Primavera Salade",
+      "description": "gemischter Salat met Oliven, feta, Artischocken en Ei"
+    },
+    "10028": {
+      "name": "Mista Salade",
+      "description": "gemischter Salat met Mais en Paprika"
+    },
+    "10029": {
+      "name": "Fantasia Salade",
+      "description": "gemischter Salat met tonijn, Hinterschinken, Artischocken, feta en Ei"
+    },
+    "10030": {
+      "name": "Penne Ovenschotel",
+      "description": "met Penne, frischen champignons, Broccoli, Mais en Sahnesauce"
+    },
+    "10031": {
+      "name": "Tortellini Ovenschotel",
+      "description": "met Tortellini, Hinterschinken, Broccoli en Sahnesauce"
+    },
+    "10032": {
+      "name": "Spaghetti Ovenschotel",
+      "description": "met Spaghetti, ui, Tomaten, Paprika en Tomaten-Sahnesauce"
+    },
+    "10033": {
+      "name": "Döner Ovenschotel",
+      "description": "met döner, Tomaten, ui, feta, Paprika en Sahnesauce"
+    },
+    "10034": {
+      "name": "Gemüse Ovenschotel",
+      "description": "met Spaghetti, frischen champignons, spinazie, Broccoli, Paprika, ui en Tomaten-Sahnesauce"
+    },
+    "10035": {
+      "name": "Pizza Spargel",
+      "description": "met Hinterschinken, Salami, Spargel en Sauce Hollandaise"
+    },
+    "10036": {
+      "name": "Pizza Rustica",
+      "description": "met Hinterschinken, tonijn, ui, Paprika en scharfe Peperoni"
+    },
+    "10037": {
+      "name": "Pizza Bruno",
+      "description": "met spinazie, Hähnchenbruststreifen en Sauce Hollandaise"
+    },
+    "10038": {
+      "name": "Pizza Enzo",
+      "description": "met Salami en frische champignons"
+    },
+    "10039": {
+      "name": "Pizza Hähnchen",
+      "description": "met Hähnchenbruststreifen, Broccoli en Sauce Hollandaise"
+    },
+    "10040": {
+      "name": "Pizza Chef",
+      "description": "met Krabben, spinazie, Broccoli, tonijn en Knoblauch"
+    },
+    "10041": {
+      "name": "Pizza Italia",
+      "description": "met spinazie, Paprika en ui"
+    },
+    "10042": {
+      "name": "Pizza Vegetaria A",
+      "description": "met spinazie, Paprika, Broccoli en frische champignons"
+    },
+    "10043": {
+      "name": "Pizza Vegetaria B",
+      "description": "met spinazie, ui, Paprika en Mais"
+    },
+    "10044": {
+      "name": "Pizza Vegetaria C",
+      "description": "met frische champignons, ui en Oliven"
+    },
+    "10045": {
+      "name": "Pizza Vegetaria D",
+      "description": "met Cherry Tomaten, frische champignons, Mozzarella, spinazie en Knoblauch"
+    },
+    "10046": {
+      "name": "Pizza Mexico",
+      "description": "met döner, ui en Sauce Hollandaise"
+    },
+    "10047": {
+      "name": "Pizza Concordia",
+      "description": "met döner, ui, Paprika, Broccoli en Sauce Hollandaise"
+    },
+    "10048": {
+      "name": "Pizza Bella",
+      "description": "met ui, Paprika, Mais en Hähnchenbruststreifen"
+    },
+    "10049": {
+      "name": "Pizza Vegas",
+      "description": "met frische champignons, Cherry Tomaten, Sauce Hollandaise, Oliven en Hähnchenbruststreifen"
+    },
+    "10050": {
+      "name": "Calzone Spezial",
+      "description": "zugeklappte Pizza gefüllt met tonijn, ui, feta en scharfe Peperoni"
+    },
+    "10051": {
+      "name": "Calzone Concordia",
+      "description": "zugeklappte Pizza gefüllt met Hinterschinken, Salami, tonijn, ui en Peperoni"
+    },
+    "10052": {
+      "name": "Calzone Döner",
+      "description": "zugeklappte Pizza gefüllt met döner, feta en Peperoni"
+    },
+    "10053": {
+      "name": "Pizza Parma",
+      "description": "met Rucola, Parmaschinken, Parmesankäse en frische Tomaten"
+    },
+    "10054": {
+      "name": "Pizza Diavolo",
+      "description": "met Salami, tonijn, Paprika en Peperoni"
+    },
+    "10055": {
+      "name": "Tonijn & ui pizza",
+      "description": "met tonijn en ui"
+    },
+    "10056": {
+      "name": "Ham & champignon pizza",
+      "description": "met Hinterschinken en champignons"
+    },
+    "10057": {
+      "name": "Pizza Hawaii",
+      "description": "met Hinterschinken en Ananas"
+    },
+    "10058": {
+      "name": "Pizza Mozzarella",
+      "description": "met Mozzarella en Cherry Tomaten"
+    },
+    "10059": {
+      "name": "Pizza Bolognese",
+      "description": "met Hackfleischsauce en ui"
+    },
+    "10060": {
+      "name": "Pizza Spaghetti Bolognese",
+      "description": "met Spaghetti en Hackfleischsauce"
+    },
+    "10061": {
+      "name": "Pizza Milano",
+      "description": "met spinazie, Krabben, champignons en Knoblauch"
+    },
+    "10062": {
+      "name": "Pizza Lachs",
+      "description": "met spinazie, Lachs en Knoblauch"
+    },
+    "10063": {
+      "name": "Quattro stagioni pizza",
+      "description": "met Salami, Hinterschinken, tonijn en ui"
+    },
+    "10064": {
+      "name": "Quattro formaggi pizza",
+      "description": "met Gorgonzola, Gouda kaas, feta en Mozzarella"
+    },
+    "10065": {
+      "name": "Pizza Margherita",
+      "description": "met tomatensaus en kaas"
+    },
+    "10066": {
+      "name": "Pizza Broccoli",
+      "description": "met Broccoli"
+    },
+    "10067": {
+      "name": "Pizza Salami",
+      "description": "met Salami"
+    },
+    "10068": {
+      "name": "Pizza Prosciutto",
+      "description": "met Hinterschinken"
+    },
+    "10069": {
+      "name": "Pizza Funghi",
+      "description": "met frische champignons"
+    },
+    "10070": {
+      "name": "Pizza Tonno",
+      "description": "met tonijn"
+    },
+    "10071": {
+      "name": "Pizza Spinaci",
+      "description": "met spinazie en Knoblauch"
+    },
+    "10072": {
+      "name": "Pizza Scampi",
+      "description": "met Krabben en Knoblauch"
+    },
+    "10073": {
+      "name": "Zeevruchten pizza",
+      "description": "met zeevruchten en Knoblauch"
+    },
+    "10074": {
+      "name": "Pizza Sucuk",
+      "description": "met türkisch Knoblauchwurst"
+    },
+    "10075": {
+      "name": "Gevulde pizzabroodjes met Bolognese",
+      "description": null
+    },
+    "10076": {
+      "name": "Gevulde pizzabroodjes met Sucuk",
+      "description": null
+    },
+    "10077": {
+      "name": "Gevulde pizzabroodjes met Hinterschinken",
+      "description": null
+    },
+    "10078": {
+      "name": "Gevulde pizzabroodjes met tonijn, ui en feta",
+      "description": null
+    },
+    "10079": {
+      "name": "Gevulde pizzabroodjes met Dönerfleisch",
+      "description": null
+    },
+    "10080": {
+      "name": "Gevulde pizzabroodjes met spinazie en feta",
+      "description": null
+    },
+    "10081": {
+      "name": "Gevulde pizzabroodjes met Käse",
+      "description": null
+    },
+    "10082": {
+      "name": "Gevulde pizzabroodjes met Thunfisch",
+      "description": null
+    },
+    "10083": {
+      "name": "Gevulde pizzabroodjes met Salami",
+      "description": null
+    },
+    "10084": {
+      "name": "Pizzabroodjes (10 stuks)",
+      "description": "met Kräuterbutter"
+    },
+    "10085": {
+      "name": "Portie kruidenboter",
+      "description": null
+    },
+    "10086": {
+      "name": "Schnitzel Hawaii",
+      "description": "met Hinterschinken, Ananas en Sahnesauce"
+    },
+    "10087": {
+      "name": "Broccoli Schnitzel",
+      "description": "met Broccoli en Sahnesauce"
+    },
+    "10088": {
+      "name": "Zwiebel Schnitzel",
+      "description": "met gebratene ui en Sahnesauce"
+    },
+    "10089": {
+      "name": "Hollandaise Schnitzel",
+      "description": "met Broccoli, frische champignons, ui en Sauce Hollandaise"
+    },
+    "10090": {
+      "name": "Spinat Schnitzel",
+      "description": "met spinazie, Knoblauch en Sahnesauce"
+    },
+    "10091": {
+      "name": "Paprikaschnitzel",
+      "description": "met Balkansauce"
+    },
+    "10092": {
+      "name": "Champignonschnitzel",
+      "description": "met champignons en Sahnesauce"
+    },
+    "10093": {
+      "name": "Wiener schnitzel",
+      "description": "met Zitronenscheibe"
+    },
+    "10094": {
+      "name": "Jägerschnitzel",
+      "description": "met Jägersauce"
+    },
+    "10095": {
+      "name": "Dubbele cheeseburger",
+      "description": "met 2 x 180g Rinderhackfleisch, Eisbergsalat, Gurken, Tomaten, ui, kaas undSauce"
+    },
+    "10096": {
+      "name": "Chicken Nugget Burger",
+      "description": "met Chicken Nuggets, Eisbergsalat, Gurken, Tomaten, ui en Sauce"
+    },
+    "10097": {
+      "name": "Chicken Burger",
+      "description": "met 135g Hähnchenfleisch, Eisbergsalat, Gurken, Tomaten, ui en Sauce"
+    },
+    "10098": {
+      "name": "Dubbele burger",
+      "description": "met 2 x 180g Rinderhackfleisch, Eisbergsalat, Gurken, Tomaten, ui en Sauce"
+    },
+    "10099": {
+      "name": "Cheeseburger",
+      "description": "met 180g Rinderhackfleisch, Eisbergsalat, Gurken, Tomaten, ui, kaas en Sauce"
+    },
+    "10100": {
+      "name": "Klassieke burger",
+      "description": "met 180g Rinderhackfleisch, Eisbergsalat, Gurken, Tomaten, ui en Sauce"
+    },
+    "10101": {
+      "name": "Chicken nuggets (6 stuks)",
+      "description": "met Pommes"
+    },
+    "10102": {
+      "name": "Chicken wings (8 stuks)",
+      "description": "met Pommes"
+    },
+    "10103": {
+      "name": "Aardappelkroketten (6 stuks)",
+      "description": null
+    },
+    "10104": {
+      "name": "Mayonnaise",
+      "description": null
+    },
+    "10105": {
+      "name": "Ketchup",
+      "description": null
+    },
+    "10106": {
+      "name": "Mozzarella Sticks",
+      "description": "met Pommes"
+    },
+    "10107": {
+      "name": "Rindfleischkrokette",
+      "description": "met Pommes"
+    },
+    "10108": {
+      "name": "Speciale braadrol",
+      "description": "met Pommes"
+    },
+    "10109": {
+      "name": "Bratwurst",
+      "description": "met Pommes"
+    },
+    "10110": {
+      "name": "Currywurst",
+      "description": "met Pommes"
+    },
+    "10111": {
+      "name": "Friet",
+      "description": null
+    },
+    "10112": {
+      "name": "Speciale friet",
+      "description": null
+    },
+    "10113": {
+      "name": "Braadrol",
+      "description": "met Pommes"
+    },
+    "10114": {
+      "name": "Lift Apfelschorle 1,0l (MEHRWEG)",
+      "description": "Die Lift Apfelschorle begeistert met ihrem einmaligen Geschmack en maximaler Erfrischung."
+    },
+    "10115": {
+      "name": "Uludag 0,33l",
+      "description": null
+    },
+    "10116": {
+      "name": "Sprite 1,0l (MEHRWEG)",
+      "description": "Bist du bereit für Sprite? Die einzigartige Formel aus grünen Limetten en sonnengelben Zitronen erfrischt dich maximal."
+    },
+    "10117": {
+      "name": "Mezzo Mix 1,0l (MEHRWEG)",
+      "description": "Mixt euch eine gute Zeit met Mezzo Mix, dem erfrischend-leckeren Kuss aus Cola en Orange."
+    },
+    "10118": {
+      "name": "Bruisend mineraalwater 0,25l",
+      "description": null
+    },
+    "10119": {
+      "name": "Durstlöscher 0,5l",
+      "description": null
+    },
+    "10120": {
+      "name": "Sprite 0,33l (MEHRWEG)",
+      "description": "Bist du bereit für Sprite? Die einzigartige Formel aus grünen Limetten en sonnengelben Zitronen erfrischt dich maximal."
+    },
+    "10121": {
+      "name": "Plat mineraalwater 0,25l",
+      "description": null
+    },
+    "10122": {
+      "name": "Coca-Cola Zero Sugar 1,0l (MEHRWEG)",
+      "description": "Keine Kalorien. Null Zucker. Für alle Coke Liebhaber, die beim Geschmack keinen Kompromiss eingehen wollen."
+    },
+    "10123": {
+      "name": "Fanta Orange 0,33l (MEHRWEG)",
+      "description": "Trinke Fanta. Lebe bunter. Spritzig erfrischend begleitet die originale Fanta Orange jede Lebenssituation en macht jetzt noch mehr Spaß."
+    },
+    "10124": {
+      "name": "Fanta Orange 1,0l (MEHRWEG)",
+      "description": "Trinke Fanta. Lebe bunter. Spritzig erfrischend begleitet die originale Fanta Orange jede Lebenssituation en macht jetzt noch mehr Spaß."
+    },
+    "10125": {
+      "name": "Coca-Cola 0,33l (MEHRWEG)",
+      "description": "Coca-Cola steht für einzigartigen Geschmack, Erfrischung en Momente voller Lebensfreude. Die 0,33l Glas-Mehrwegflasche ist unsere Ikone für perfekten Trinkgenuss seit 1886."
+    },
+    "10126": {
+      "name": "Coca-Cola 1,0l (MEHRWEG)",
+      "description": null
+    },
+    "10127": {
+      "name": "Coca-Cola Zero Sugar 0,33l (MEHRWEG)",
+      "description": "Keine Kalorien. Null Zucker. Für alle Coke Liebhaber, die beim Geschmack keinen Kompromiss eingehen wollen."
+    },
+    "10128": {
+      "name": "Radler Weizenbier 0,5l",
+      "description": null
+    },
+    "10129": {
+      "name": "Krombacher Pills 0,5l",
+      "description": null
+    }
+  },
+  "lexicon": {
+    "variantGroups": {
+      "Dressing": "Dressing",
+      "Fleischwahl": "Vleeskeuze",
+      "Größe": "Maat",
+      "Nudelsorte": "Pastasoort",
+      "Wählen Sie": "Kies"
+    },
+    "variants": {
+      "Essig & Öl": "Azijn & olie",
+      "French Dressing": "French dressing",
+      "French-Dressing": "French dressing",
+      "Hähnchen": "Kip",
+      "Joghurtsauce": "Yoghurtsaus",
+      "Jogurtsauce": "Yoghurtsaus",
+      "Penne": "Penne",
+      "Schwein": "Varken",
+      "Spaghetti": "Spaghetti",
+      "Tortellini": "Tortellini",
+      "groß 30 cm": "groot 30 cm",
+      "klein 24 cm": "klein 24 cm",
+      "ohne Dressing": "zonder dressing"
+    },
+    "addOnGroups": {
+      "Beilagen & Saucen": "Bijgerechten & sauzen",
+      "Extras": "Extra's",
+      "Fleisch & Wurst": "Vlees & worst",
+      "Gemüse": "Groenten",
+      "Meeresfrüchte": "Zeevruchten",
+      "Saucen & Käse": "Sauzen & kaas"
+    },
+    "addOns": {
+      "Ananas": "Ananas",
+      "Artischocken": "Artisjokken",
+      "Broccoli": "Broccoli",
+      "Champignons": "Champignons",
+      "Cherry Tomaten": "Cherrytomaten",
+      "Currysauce": "Currysaus",
+      "Dönerfleisch": "Döner",
+      "Fetakäse": "Fetakaas",
+      "Gorgonzola": "Gorgonzola",
+      "Gouda Käse": "Gouda",
+      "Hackfleischsauce": "Bolognesesaus",
+      "Hinterschinken": "Achterham",
+      "Hähnchenbruststreifen": "Kipreepjes",
+      "Ketchup": "Ketchup",
+      "Knoblauch": "Knoflook",
+      "Krabben": "Garnalen",
+      "Kräuterbutter": "Kruidenboter",
+      "Käse": "Kaas",
+      "Lachs": "Zalm",
+      "Mais": "Mais",
+      "Mayonnaise": "Mayonaise",
+      "Meeresfrüchte": "Zeevruchten",
+      "Mit Käse überbacken": "Met kaas gegratineerd",
+      "Mozzarella": "Mozzarella",
+      "Oliven": "Olijven",
+      "Paprika": "Paprika",
+      "Parmaschinken": "Parmaham",
+      "Parmesankäse": "Parmezaan",
+      "Peperoni": "Peperoni",
+      "Rucola": "Rucola",
+      "Salami": "Salami",
+      "Sauce Hollandaise": "Hollandaise",
+      "Spaghetti": "Spaghetti",
+      "Spargel": "Asperges",
+      "Spinat": "Spinazie",
+      "Sucuk": "Sucuk",
+      "Thunfisch": "Tonijn",
+      "Tomaten": "Tomaten",
+      "Tomatensauce": "Tomatensaus",
+      "Türkisch Knoblauchwurst": "Turkse knoflookworst",
+      "Zwiebeln": "Uien",
+      "ohne Beilage": "zonder bijgerecht",
+      "scharfe Peperoni": "Pittige peper"
+    }
+  }
+}

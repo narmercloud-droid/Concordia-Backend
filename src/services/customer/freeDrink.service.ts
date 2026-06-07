@@ -27,11 +27,15 @@ function simplifyLabel(name: string): string {
     .trim();
 }
 
-export async function getFreeDrinkOptions(branchId: string): Promise<FreeDrinkOption[]> {
-  const menu = await getBranchMenuForCustomer(branchId);
+export async function getFreeDrinkOptions(
+  branchId: string,
+  lang?: string | null
+): Promise<FreeDrinkOption[]> {
+  const menu = await getBranchMenuForCustomer(branchId, lang);
+  const categories = Array.isArray(menu) ? menu : (menu as { categories?: typeof menu }).categories ?? [];
   const options: FreeDrinkOption[] = [];
 
-  for (const category of menu.categories ?? []) {
+  for (const category of categories) {
     const isDrinks =
       category.name.toLowerCase().includes("alkoholfrei") ||
       category.name.toLowerCase().includes("getränke");

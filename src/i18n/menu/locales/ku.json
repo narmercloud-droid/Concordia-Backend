@@ -1,0 +1,639 @@
+{
+  "categories": {
+    "38": {
+      "name": "Baguette",
+      "description": "Bi salata iceberg, tomat, xiyar, remoulade"
+    },
+    "39": {
+      "name": "Pasta",
+      "description": "Spaghetti, penne an tortellini"
+    },
+    "40": {
+      "name": "Salad",
+      "description": "Bi dressingê dilxwaz"
+    },
+    "41": {
+      "name": "Xwarinên Al Forno",
+      "description": ""
+    },
+    "42": {
+      "name": "Pîzza",
+      "description": "Biçûk 24 cm · Mezin 30 cm"
+    },
+    "43": {
+      "name": "Pîzza brötchen",
+      "description": "10 perçe bi kerry butter · Tijkirî"
+    },
+    "44": {
+      "name": "Schnitzel",
+      "description": "Hemû xwarin bi patates û salat"
+    },
+    "45": {
+      "name": "Burger",
+      "description": ""
+    },
+    "46": {
+      "name": "Snacks",
+      "description": ""
+    },
+    "47": {
+      "name": "Vexwarinên nealkolîk",
+      "description": ""
+    },
+    "48": {
+      "name": "Vexwarinên alkolîk",
+      "description": ""
+    }
+  },
+  "items": {
+    "10002": {
+      "name": "Baguette bi Sucuk",
+      "description": null
+    },
+    "10003": {
+      "name": "Baguette bi tuna û egg",
+      "description": null
+    },
+    "10004": {
+      "name": "Baguette bi Mozzarella",
+      "description": null
+    },
+    "10005": {
+      "name": "Baguette bi sucuk û egg",
+      "description": null
+    },
+    "10006": {
+      "name": "Baguette bi Hinterschinken",
+      "description": null
+    },
+    "10007": {
+      "name": "Baguette bi Thunfisch",
+      "description": null
+    },
+    "10008": {
+      "name": "Baguette bi Salami",
+      "description": null
+    },
+    "10009": {
+      "name": "Pasta Salmone",
+      "description": "bi spinach, salmon, garlic û Sahnesauce"
+    },
+    "10010": {
+      "name": "Pasta Vegetarisch",
+      "description": "bi broccoli, bell pepper, frischen mushrooms, onions û tomatoes-Sahnesauce"
+    },
+    "10011": {
+      "name": "Pasta Gorgonzola",
+      "description": "bi broccoli, frischen mushrooms, Gorgonzolakäse û Sahnesauce"
+    },
+    "10012": {
+      "name": "Pasta Pasta Concordia",
+      "description": "bi Hähnchenbruststreifen, mushrooms, broccoli, scharfen pepperonis, garlic û tomatoes-Sahnesauce"
+    },
+    "10013": {
+      "name": "Pasta Formaggi",
+      "description": "bi vier verschiedenen cheesesorten û Sahnesauce"
+    },
+    "10014": {
+      "name": "Pasta Alla Chef",
+      "description": "bi Hähnchenbruststreifen, frischen mushrooms, corn, Goudakäse, tomatoes û Sahnesauce"
+    },
+    "10015": {
+      "name": "Pasta Carbonara",
+      "description": "bi Hinterschinken, Ei û Sahnesauce"
+    },
+    "10016": {
+      "name": "Pasta Alla Panna",
+      "description": "bi Hinterschinken, frischen mushrooms û Sahnesauce"
+    },
+    "10017": {
+      "name": "Pasta Toscana",
+      "description": "bi Hinterschinken, Krabben, frischen mushrooms, garlic, tomatoes û Sahnesauce"
+    },
+    "10018": {
+      "name": "Pasta Napoli",
+      "description": "bi tomato sauce"
+    },
+    "10019": {
+      "name": "Pasta Bolognese",
+      "description": "bi bolognese sauce"
+    },
+    "10020": {
+      "name": "Caprese Salad",
+      "description": "bi tomatoes, Mozzarella û Rucola"
+    },
+    "10021": {
+      "name": "Capricciosa Salad",
+      "description": "gemischter Salat bi tuna, Ei, Hinterschinken û cheese"
+    },
+    "10022": {
+      "name": "Casa Salad",
+      "description": "gemischter Salat bi corn, bell pepper, olives û feta cheese"
+    },
+    "10023": {
+      "name": "Hähnchen Salad",
+      "description": "gemischter Salat bi gebratene Hähnchenbruststreifen, bell pepper û Rucola"
+    },
+    "10024": {
+      "name": "Hawaii Salad",
+      "description": "gemischter Salat bi Hinterschinken, pineapple û cheese"
+    },
+    "10025": {
+      "name": "Tonno Salad",
+      "description": "gemischter Salat û tuna"
+    },
+    "10026": {
+      "name": "Concordia Salad",
+      "description": "gemischter Salat bi Krabben, frische mushrooms û Rucola"
+    },
+    "10027": {
+      "name": "Primavera Salad",
+      "description": "gemischter Salat bi olives, feta cheese, artichokes û Ei"
+    },
+    "10028": {
+      "name": "Mista Salad",
+      "description": "gemischter Salat bi corn û bell pepper"
+    },
+    "10029": {
+      "name": "Fantasia Salad",
+      "description": "gemischter Salat bi tuna, Hinterschinken, artichokes, feta cheese û Ei"
+    },
+    "10030": {
+      "name": "Penne Bake",
+      "description": "bi Penne, frischen mushrooms, broccoli, corn û Sahnesauce"
+    },
+    "10031": {
+      "name": "Tortellini Bake",
+      "description": "bi Tortellini, Hinterschinken, broccoli û Sahnesauce"
+    },
+    "10032": {
+      "name": "Spaghetti Bake",
+      "description": "bi Spaghetti, onions, tomatoes, bell pepper û tomatoes-Sahnesauce"
+    },
+    "10033": {
+      "name": "Döner Bake",
+      "description": "bi döner meat, tomatoes, onions, feta cheese, bell pepper û Sahnesauce"
+    },
+    "10034": {
+      "name": "Gemüse Bake",
+      "description": "bi Spaghetti, frischen mushrooms, spinach, broccoli, bell pepper, onions û tomatoes-Sahnesauce"
+    },
+    "10035": {
+      "name": "Pîzza Spargel",
+      "description": "bi Hinterschinken, salami, asparagus û Sauce Hollandaise"
+    },
+    "10036": {
+      "name": "Pîzza Rustica",
+      "description": "bi Hinterschinken, tuna, onions, bell pepper û scharfe pepperoni"
+    },
+    "10037": {
+      "name": "Pîzza Bruno",
+      "description": "bi spinach, Hähnchenbruststreifen û Sauce Hollandaise"
+    },
+    "10038": {
+      "name": "Pîzza Enzo",
+      "description": "bi salami û frische mushrooms"
+    },
+    "10039": {
+      "name": "Pîzza Hähnchen",
+      "description": "bi Hähnchenbruststreifen, broccoli û Sauce Hollandaise"
+    },
+    "10040": {
+      "name": "Pîzza Chef",
+      "description": "bi Krabben, spinach, broccoli, tuna û garlic"
+    },
+    "10041": {
+      "name": "Pîzza Italia",
+      "description": "bi spinach, bell pepper û onions"
+    },
+    "10042": {
+      "name": "Pîzza Vegetaria A",
+      "description": "bi spinach, bell pepper, broccoli û frische mushrooms"
+    },
+    "10043": {
+      "name": "Pîzza Vegetaria B",
+      "description": "bi spinach, onions, bell pepper û corn"
+    },
+    "10044": {
+      "name": "Pîzza Vegetaria C",
+      "description": "bi frische mushrooms, onions û olives"
+    },
+    "10045": {
+      "name": "Pîzza Vegetaria D",
+      "description": "bi Cherry tomatoes, frische mushrooms, Mozzarella, spinach û garlic"
+    },
+    "10046": {
+      "name": "Pîzza Mexico",
+      "description": "bi döner meat, onions û Sauce Hollandaise"
+    },
+    "10047": {
+      "name": "Pîzza Concordia",
+      "description": "bi döner meat, onions, bell pepper, broccoli û Sauce Hollandaise"
+    },
+    "10048": {
+      "name": "Pîzza Bella",
+      "description": "bi onions, bell pepper, corn û Hähnchenbruststreifen"
+    },
+    "10049": {
+      "name": "Pîzza Vegas",
+      "description": "bi frische mushrooms, Cherry tomatoes, Sauce Hollandaise, olives û Hähnchenbruststreifen"
+    },
+    "10050": {
+      "name": "Calzone Spezial",
+      "description": "zugeklappte Pizza gefüllt bi tuna, onions, feta cheese û scharfe pepperoni"
+    },
+    "10051": {
+      "name": "Calzone Concordia",
+      "description": "zugeklappte Pizza gefüllt bi Hinterschinken, salami, tuna, onions û pepperoni"
+    },
+    "10052": {
+      "name": "Calzone Döner",
+      "description": "zugeklappte Pizza gefüllt bi döner meat, feta cheese û pepperoni"
+    },
+    "10053": {
+      "name": "Pîzza Parma",
+      "description": "bi Rucola, Parmaschinken, Parmesankäse û frische tomatoes"
+    },
+    "10054": {
+      "name": "Pîzza Diavolo",
+      "description": "bi salami, tuna, bell pepper û pepperoni"
+    },
+    "10055": {
+      "name": "Tuna & onion pizza",
+      "description": "bi tuna û onions"
+    },
+    "10056": {
+      "name": "Ham & mushroom pizza",
+      "description": "bi Hinterschinken û mushrooms"
+    },
+    "10057": {
+      "name": "Pîzza Hawaii",
+      "description": "bi Hinterschinken û pineapple"
+    },
+    "10058": {
+      "name": "Pîzza Mozzarella",
+      "description": "bi Mozzarella û Cherry tomatoes"
+    },
+    "10059": {
+      "name": "Pîzza Bolognese",
+      "description": "bi bolognese sauce û onions"
+    },
+    "10060": {
+      "name": "Pîzza Spaghetti Bolognese",
+      "description": "bi Spaghetti û bolognese sauce"
+    },
+    "10061": {
+      "name": "Pîzza Milano",
+      "description": "bi spinach, Krabben, mushrooms û garlic"
+    },
+    "10062": {
+      "name": "Pîzza Lachs",
+      "description": "bi spinach, salmon û garlic"
+    },
+    "10063": {
+      "name": "Four seasons pizza",
+      "description": "bi salami, Hinterschinken, tuna û onions"
+    },
+    "10064": {
+      "name": "Four cheeses pizza",
+      "description": "bi Gorgonzola, Gouda cheese, feta cheese û Mozzarella"
+    },
+    "10065": {
+      "name": "Pîzza Margherita",
+      "description": "bi tomato sauce û cheese"
+    },
+    "10066": {
+      "name": "Pîzza Broccoli",
+      "description": "bi broccoli"
+    },
+    "10067": {
+      "name": "Pîzza Salami",
+      "description": "bi salami"
+    },
+    "10068": {
+      "name": "Pîzza Prosciutto",
+      "description": "bi Hinterschinken"
+    },
+    "10069": {
+      "name": "Pîzza Funghi",
+      "description": "bi frische mushrooms"
+    },
+    "10070": {
+      "name": "Pîzza Tonno",
+      "description": "bi tuna"
+    },
+    "10071": {
+      "name": "Pîzza Spinaci",
+      "description": "bi spinach û garlic"
+    },
+    "10072": {
+      "name": "Pîzza Scampi",
+      "description": "bi Krabben û garlic"
+    },
+    "10073": {
+      "name": "Seafood pizza",
+      "description": "bi seafood û garlic"
+    },
+    "10074": {
+      "name": "Pîzza Sucuk",
+      "description": "bi türkisch garlicwurst"
+    },
+    "10075": {
+      "name": "Stuffed pizza rolls bi Bolognese",
+      "description": null
+    },
+    "10076": {
+      "name": "Stuffed pizza rolls bi Sucuk",
+      "description": null
+    },
+    "10077": {
+      "name": "Stuffed pizza rolls bi Hinterschinken",
+      "description": null
+    },
+    "10078": {
+      "name": "Stuffed pizza rolls bi tuna, onions, feta",
+      "description": null
+    },
+    "10079": {
+      "name": "Stuffed pizza rolls bi Dönerfleisch",
+      "description": null
+    },
+    "10080": {
+      "name": "Stuffed pizza rolls bi spinach û feta",
+      "description": null
+    },
+    "10081": {
+      "name": "Stuffed pizza rolls bi Käse",
+      "description": null
+    },
+    "10082": {
+      "name": "Stuffed pizza rolls bi Thunfisch",
+      "description": null
+    },
+    "10083": {
+      "name": "Stuffed pizza rolls bi Salami",
+      "description": null
+    },
+    "10084": {
+      "name": "Pîzza rolls (10 pcs)",
+      "description": "bi Kräuterbutter"
+    },
+    "10085": {
+      "name": "Portion of herb butter",
+      "description": null
+    },
+    "10086": {
+      "name": "Schnitzel Hawaii",
+      "description": "bi Hinterschinken, pineapple û Sahnesauce"
+    },
+    "10087": {
+      "name": "Broccoli Schnitzel",
+      "description": "bi broccoli û Sahnesauce"
+    },
+    "10088": {
+      "name": "Zwiebel Schnitzel",
+      "description": "bi gebratene onions û Sahnesauce"
+    },
+    "10089": {
+      "name": "Hollandaise Schnitzel",
+      "description": "bi broccoli, frische mushrooms, onions û Sauce Hollandaise"
+    },
+    "10090": {
+      "name": "Spinat Schnitzel",
+      "description": "bi spinach, garlic û Sahnesauce"
+    },
+    "10091": {
+      "name": "Paprikaschnitzel",
+      "description": "bi Balkansauce"
+    },
+    "10092": {
+      "name": "Champignonschnitzel",
+      "description": "bi mushrooms û Sahnesauce"
+    },
+    "10093": {
+      "name": "Wiener schnitzel",
+      "description": "bi Zitronenscheibe"
+    },
+    "10094": {
+      "name": "Jäger schnitzel",
+      "description": "bi Jägersauce"
+    },
+    "10095": {
+      "name": "Double cheese burger",
+      "description": "bi 2 x 180g Rinderhackfleisch, Eisbergsalat, Gurken, tomatoes, onions, cheese undSauce"
+    },
+    "10096": {
+      "name": "Chicken nugget burger",
+      "description": "bi Chicken Nuggets, Eisbergsalat, Gurken, tomatoes, onions û Sauce"
+    },
+    "10097": {
+      "name": "Chicken burger",
+      "description": "bi 135g Hähnchenfleisch, Eisbergsalat, Gurken, tomatoes, onions û Sauce"
+    },
+    "10098": {
+      "name": "Double burger",
+      "description": "bi 2 x 180g Rinderhackfleisch, Eisbergsalat, Gurken, tomatoes, onions û Sauce"
+    },
+    "10099": {
+      "name": "Cheese burger",
+      "description": "bi 180g Rinderhackfleisch, Eisbergsalat, Gurken, tomatoes, onions, cheese û Sauce"
+    },
+    "10100": {
+      "name": "Classic burger",
+      "description": "bi 180g Rinderhackfleisch, Eisbergsalat, Gurken, tomatoes, onions û Sauce"
+    },
+    "10101": {
+      "name": "Chicken nuggets (6 pcs)",
+      "description": "bi Pommes"
+    },
+    "10102": {
+      "name": "Chicken wings (8 pcs)",
+      "description": "bi Pommes"
+    },
+    "10103": {
+      "name": "Potato croquettes (6 pcs)",
+      "description": null
+    },
+    "10104": {
+      "name": "Mayonnaise",
+      "description": null
+    },
+    "10105": {
+      "name": "Ketchup",
+      "description": null
+    },
+    "10106": {
+      "name": "Mozzarella sticks",
+      "description": "bi Pommes"
+    },
+    "10107": {
+      "name": "Beef croquette",
+      "description": "bi Pommes"
+    },
+    "10108": {
+      "name": "Special fried roll",
+      "description": "bi Pommes"
+    },
+    "10109": {
+      "name": "Bratwurst",
+      "description": "bi Pommes"
+    },
+    "10110": {
+      "name": "Currywurst",
+      "description": "bi Pommes"
+    },
+    "10111": {
+      "name": "French fries",
+      "description": null
+    },
+    "10112": {
+      "name": "Special fries",
+      "description": null
+    },
+    "10113": {
+      "name": "Fried roll",
+      "description": "bi Pommes"
+    },
+    "10114": {
+      "name": "Lift apple spritzer 1.0l (returnable)",
+      "description": "Die Lift Apfelschorle begeistert bi ihrem einmaligen Geschmack û maximaler Erfrischung."
+    },
+    "10115": {
+      "name": "Uludag 0,33l",
+      "description": null
+    },
+    "10116": {
+      "name": "Sprite 1,0l (MEHRWEG)",
+      "description": "Bist du bereit für Sprite? Die einzigartige Formel aus grünen Limetten û sonnengelben Zitronen erfrischt dich maximal."
+    },
+    "10117": {
+      "name": "Mezzo Mix 1,0l (MEHRWEG)",
+      "description": "Mixt euch eine gute Zeit bi Mezzo Mix, dem erfrischend-leckeren Kuss aus Cola û Orange."
+    },
+    "10118": {
+      "name": "Sparkling mineral water 0,25l",
+      "description": null
+    },
+    "10119": {
+      "name": "Durstlöscher 0.5l",
+      "description": null
+    },
+    "10120": {
+      "name": "Sprite 0,33l (MEHRWEG)",
+      "description": "Bist du bereit für Sprite? Die einzigartige Formel aus grünen Limetten û sonnengelben Zitronen erfrischt dich maximal."
+    },
+    "10121": {
+      "name": "Still mineral water 0,25l",
+      "description": null
+    },
+    "10122": {
+      "name": "Coca-Cola Zero Sugar 1,0l (MEHRWEG)",
+      "description": "Keine Kalorien. Null Zucker. Für alle Coke Liebhaber, die beim Geschmack keinen Kompromiss eingehen wollen."
+    },
+    "10123": {
+      "name": "Fanta Orange 0,33l (MEHRWEG)",
+      "description": "Trinke Fanta. Lebe bunter. Spritzig erfrischend begleitet die originale Fanta Orange jede Lebenssituation û macht jetzt noch mehr Spaß."
+    },
+    "10124": {
+      "name": "Fanta Orange 1,0l (MEHRWEG)",
+      "description": "Trinke Fanta. Lebe bunter. Spritzig erfrischend begleitet die originale Fanta Orange jede Lebenssituation û macht jetzt noch mehr Spaß."
+    },
+    "10125": {
+      "name": "Coca-Cola 0,33l (MEHRWEG)",
+      "description": "Coca-Cola steht für einzigartigen Geschmack, Erfrischung û Momente voller Lebensfreude. Die 0,33l Glas-Mehrwegflasche ist unsere Ikone für perfekten Trinkgenuss seit 1886."
+    },
+    "10126": {
+      "name": "Coca-Cola 1,0l (MEHRWEG)",
+      "description": null
+    },
+    "10127": {
+      "name": "Coca-Cola Zero Sugar 0,33l (MEHRWEG)",
+      "description": "Keine Kalorien. Null Zucker. Für alle Coke Liebhaber, die beim Geschmack keinen Kompromiss eingehen wollen."
+    },
+    "10128": {
+      "name": "Radler wheat beer 0,5l",
+      "description": null
+    },
+    "10129": {
+      "name": "Krombacher Pils 0,5l",
+      "description": null
+    }
+  },
+  "lexicon": {
+    "variantGroups": {
+      "Dressing": "Sos",
+      "Fleischwahl": "Hilbijartina goşt",
+      "Größe": "Mezinahî",
+      "Nudelsorte": "Cureyê pasta",
+      "Wählen Sie": "Hilbijêre"
+    },
+    "variants": {
+      "Essig & Öl": "Sirke & zeyt",
+      "French Dressing": "French dressing",
+      "French-Dressing": "French dressing",
+      "Hähnchen": "Mirîşk",
+      "Joghurtsauce": "Sosa yogurtê",
+      "Jogurtsauce": "Sosa yogurtê",
+      "Penne": "Penne",
+      "Schwein": "Berx",
+      "Spaghetti": "Spaghetti",
+      "Tortellini": "Tortellini",
+      "groß 30 cm": "mezin 30 cm",
+      "klein 24 cm": "biçûk 24 cm",
+      "ohne Dressing": "bê dressing"
+    },
+    "addOnGroups": {
+      "Beilagen & Saucen": "Alik & sos",
+      "Extras": "Zêde",
+      "Fleisch & Wurst": "Goşt & sosis",
+      "Gemüse": "Sebze",
+      "Meeresfrüchte": "Derya",
+      "Saucen & Käse": "Sos & penîr"
+    },
+    "addOns": {
+      "Ananas": "Ananas",
+      "Artischocken": "Artichoke",
+      "Broccoli": "Brokoli",
+      "Champignons": "Kivark",
+      "Cherry Tomaten": "Tomatên cherry",
+      "Currysauce": "Sosa curry",
+      "Dönerfleisch": "Döner",
+      "Fetakäse": "Penîra feta",
+      "Gorgonzola": "Gorgonzola",
+      "Gouda Käse": "Gouda",
+      "Hackfleischsauce": "Sosa bolognese",
+      "Hinterschinken": "Berenûsk",
+      "Hähnchenbruststreifen": "Mirîşk",
+      "Ketchup": "Ketchup",
+      "Knoblauch": "Sîr",
+      "Krabben": "Qisrîk",
+      "Kräuterbutter": "Kerry butter",
+      "Käse": "Penîr",
+      "Lachs": "Somon",
+      "Mais": "Gelzer",
+      "Mayonnaise": "Mayonez",
+      "Meeresfrüchte": "Derya",
+      "Mit Käse überbacken": "Bi penîr",
+      "Mozzarella": "Mozzarella",
+      "Oliven": "Zeytûn",
+      "Paprika": "Biber",
+      "Parmaschinken": "Berenûska Parma",
+      "Parmesankäse": "Parmesan",
+      "Peperoni": "Peperoni",
+      "Rucola": "Rucola",
+      "Salami": "Salami",
+      "Sauce Hollandaise": "Sos hollandez",
+      "Spaghetti": "Spaghetti",
+      "Spargel": "Asparagus",
+      "Spinat": "Spînat",
+      "Sucuk": "Sucuk",
+      "Thunfisch": "Ton",
+      "Tomaten": "Tomat",
+      "Tomatensauce": "Sosa tomatê",
+      "Türkisch Knoblauchwurst": "Sosisa sîrê tirkî",
+      "Zwiebeln": "Pîvaz",
+      "ohne Beilage": "bê alîk",
+      "scharfe Peperoni": "Biberê tûj"
+    }
+  }
+}
