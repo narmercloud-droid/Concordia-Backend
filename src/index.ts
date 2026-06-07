@@ -69,6 +69,7 @@ import terminalRoutes from "./routes/terminal/terminal.routes.ts";
 import customerTrackingRoutes from "./routes/customer/customerTracking.routes.ts";
 import branchPublicRoutes from "./routes/customer/branchPublic.routes.ts";
 import managerRoutes from "./routes/manager/manager.routes.ts";
+import superAdminRoutes from "./routes/superAdmin/superAdmin.routes.ts";
 import adminCourierRoutes from "./routes/admin/adminCourier.routes.ts";
 import trackRoutes from "./routes/track.ts";
 import campaignRoutes from "./routes/campaigns.ts";
@@ -397,6 +398,7 @@ app.use("/offers", offersRoutes);
 // Routes - Menu management
 // ---------------------------------------------
 app.use("/api/v1/manager", managerRoutes);
+app.use("/api/v1/super-admin", superAdminRoutes);
 app.use("/api/v1", menuRoutes);
 app.use("/api/v1/admin/categories", adminCategoryRoutes);
 app.use("/api/v1/admin/items", adminItemRoutes);

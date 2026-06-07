@@ -222,6 +222,57 @@ export async function getBranchOrders(branchId: string, limit = 50) {
   });
 }
 
+export async function getBranchPromotions(branchId: string) {
+  const config = await getBranchConfig(branchId);
+  const promotions = (config.promotions ?? {}) as Record<string, unknown>;
+  return {
+    freeDrinkMinOrder: Number(promotions.freeDrinkMinOrder ?? 35),
+    freeDrinkMessage: String(promotions.freeDrinkMessage ?? ""),
+    websiteDiscountEnabled: promotions.websiteDiscountEnabled !== false
+  };
+}
+
+export async function updateBranchPromotions(
+  branchId: string,
+  input: {
+    freeDrinkMinOrder?: number;
+    freeDrinkMessage?: string;
+    websiteDiscountEnabled?: boolean;
+  }
+) {
+  const existing = await prisma.branchConfig.findUnique({ where: { branchId } });
+  const current = (existing?.configJson ?? {}) as Record<string, unknown>;
+  const promotions = (current.promotions ?? {}) as Record<string, unknown>;
+
+  const configJson = {
+    ...current,
+    promotions: {
+      ...promotions,
+      ...(input.freeDrinkMinOrder != null
+        ? { freeDrinkMinOrder: input.freeDrinkMinOrder }
+        : {}),
+      ...(input.freeDrinkMessage != null
+        ? { freeDrinkMessage: input.freeDrinkMessage }
+        : {}),
+      ...(input.websiteDiscountEnabled != null
+        ? { websiteDiscountEnabled: input.websiteDiscountEnabled }
+        : {})
+    }
+  };
+
+  await prisma.branchConfig.upsert({
+    where: { branchId },
+    update: { configJson, version: { increment: 1 } },
+    create: {
+      id: randomUUID(),
+      branchId,
+      configJson
+    }
+  });
+
+  return getBranchPromotions(branchId);
+}
+
 export async function getBranchDashboard(branchId: string) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
