@@ -14,7 +14,8 @@ import {
   getAlsoPopularItems,
   getBranchBestsellers
 } from "../../services/customer/bestsellers.service.ts";
-import { validatePromoCode } from "../../services/customer/promoCode.service.ts";
+import { validateDiscountCode } from "../../services/customer/discountCode.service.ts";
+import { createGiftCardPurchase } from "../../services/customer/giftCard.service.ts";
 import { getFreeDrinkOptions } from "../../services/customer/freeDrink.service.ts";
 import { prisma } from "../../prisma/client.ts";
 import { wrap } from "../../contracts/api.ts";
@@ -81,16 +82,63 @@ router.get("/branches/:branchId/free-drink-options", publicCache(300), wrap(asyn
 router.post("/promo/validate", wrap(async (req) => {
   const code = String(req.body?.code ?? "").trim();
   const orderTotal = Number(req.body?.orderTotal ?? 0);
+  const branchId = String(req.body?.branchId ?? "").trim();
 
   if (!code) {
     throw { code: "INVALID_INPUT", message: "Gutscheincode fehlt" };
   }
+  if (!branchId) {
+    throw { code: "INVALID_INPUT", message: "branchId fehlt" };
+  }
 
   try {
-    return await validatePromoCode(code, orderTotal);
+    return await validateDiscountCode(branchId, code, orderTotal);
   } catch (err: any) {
     throw { code: "INVALID_INPUT", message: err?.message ?? "Gutscheincode ungültig" };
   }
+}));
+
+router.post("/branches/:branchId/gift-cards", wrap(async (req) => {
+  const amount = Number(req.body?.amount ?? 0);
+  const purchaserName = String(req.body?.purchaserName ?? "").trim();
+  const paymentMethod = String(req.body?.paymentMethod ?? "paypal").trim();
+
+  if (!purchaserName) {
+    throw { code: "INVALID_INPUT", message: "Name ist erforderlich" };
+  }
+
+  try {
+    return await createGiftCardPurchase({
+      branchId: req.params.branchId,
+      amount,
+      purchaserName,
+      purchaserEmail: req.body?.purchaserEmail,
+      purchaserPhone: req.body?.purchaserPhone,
+      recipientName: req.body?.recipientName,
+      message: req.body?.message,
+      paymentMethod
+    });
+  } catch (err: any) {
+    throw { code: "INVALID_INPUT", message: err?.message ?? "Gutschein konnte nicht erstellt werden" };
+  }
+}));
+
+router.get("/gift-cards/:purchaseId", wrap(async (req) => {
+  const card = await prisma.branchGiftCard.findUnique({
+    where: { id: req.params.purchaseId }
+  });
+  if (!card) {
+    throw { code: "NOT_FOUND", message: "Gutscheinkauf nicht gefunden" };
+  }
+  return {
+    purchaseId: card.id,
+    branchId: card.branchId,
+    code: card.paymentStatus === "paid" ? card.code : null,
+    amount: Number(card.initialAmount),
+    balance: Number(card.balance),
+    paymentStatus: card.paymentStatus,
+    paymentMethod: card.paymentMethod
+  };
 }));
 
 router.post("/branches/:branchId/delivery-quote", wrap(async (req) => {

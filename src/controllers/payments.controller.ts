@@ -27,5 +27,29 @@ export const PaymentsController = {
     } catch (err: any) {
       throw fail("PAYMENT_FAILED", err?.message ?? "Could not capture payment");
     }
+  }),
+
+  createGiftCardPayPalOrder: wrap(async (req: Request) => {
+    const { purchaseId } = req.body;
+    if (!purchaseId || typeof purchaseId !== "string") {
+      throw fail("INVALID_INPUT", "purchaseId is required");
+    }
+    try {
+      return await paymentsService.createGiftCardPayPalOrder(purchaseId);
+    } catch (err: any) {
+      throw fail("PAYMENT_FAILED", err?.message ?? "Could not start gift card payment");
+    }
+  }),
+
+  captureGiftCardPayPalOrder: wrap(async (req: Request) => {
+    const { purchaseId } = req.body;
+    if (!purchaseId || typeof purchaseId !== "string") {
+      throw fail("INVALID_INPUT", "purchaseId is required");
+    }
+    try {
+      return await paymentsService.captureGiftCardPayPalOrder(purchaseId);
+    } catch (err: any) {
+      throw fail("PAYMENT_FAILED", err?.message ?? "Could not capture gift card payment");
+    }
   })
 };

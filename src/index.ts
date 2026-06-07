@@ -107,6 +107,7 @@ import { registerEvents } from "./events/index.ts";
 import { setIO } from "./lib/socket.ts";
 import { initPrisma, prisma } from "./prisma/client.ts";
 import { startLifecycleScheduler } from "./jobs/lifecycleScheduler.ts";
+import { startBranchMarketingScheduler } from "./jobs/branchMarketingScheduler.ts";
 import { connectRedis } from "./redis/client.ts";
 import { redisClient } from "./lib/redis.ts";
 import { env } from "./config/env.ts";
@@ -585,6 +586,13 @@ async function startServer() {
         timers.push(discoveryTimer as any);
       } catch (e) {
         logger.error({ e }, "Failed to start printer discovery worker");
+      }
+
+      try {
+        const marketingTimer = startBranchMarketingScheduler();
+        timers.push(marketingTimer as any);
+      } catch (e) {
+        logger.error({ e }, "Failed to start branch marketing scheduler");
       }
 
       // mark workers as initialized once we've attempted to start them

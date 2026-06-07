@@ -12,15 +12,14 @@ import logger from "../logger.ts";
 import { geocodeAddress } from "./geo/geocode.service.ts";
 import { getGuestCourierId } from "./branch/branchCoords.service.ts";
 import { calcWebsiteDiscount } from "../config/websitePromo.ts";
-import {
-  redeemPromoCode,
-  validatePromoCode
-} from "./customer/promoCode.service.ts";
+import { redeemPromoCode } from "./customer/promoCode.service.ts";
+import { validateDiscountCode } from "./customer/discountCode.service.ts";
+import { redeemGiftCard } from "./customer/giftCard.service.ts";
 import {
   findFreeDrinkOption,
   getFreeDrinkOptions
 } from "./customer/freeDrink.service.ts";
-import { upsertMarketingLead } from "./customer/marketingLead.service.ts";
+import { syncBranchCustomerFromOrder } from "./customer/branchCustomer.service.ts";
 
 function buildOrderItems(items: any[]) {
   return items.map((i) => {
@@ -76,11 +75,15 @@ function normalizePaymentMethod(method?: string) {
   const value = (method ?? "cash").toLowerCase();
   if (value === "cash" || value === "cod") return "COD";
   if (value === "card") return "CARD";
+  if (value === "paypal") return "PAYPAL";
+  if (value === "klarna") return "KLARNA";
+  if (value === "sepa") return "SEPA";
   return method ?? "COD";
 }
 
-function requiresOnlinePayment(method: string) {
-  return method === "CARD" || method === "PAYPAL";
+function requiresOnlinePayment(method?: string) {
+  const normalized = normalizePaymentMethod(method);
+  return ["CARD", "PAYPAL", "KLARNA", "SEPA"].includes(normalized);
 }
 
 function buildCourierUrl(token: string) {
@@ -139,11 +142,22 @@ export class OrdersService {
 
     let promoDiscount = 0;
     let promoCodeId: string | null = null;
+    let giftCardId: string | null = null;
+    let giftCardAmount = 0;
     const promoCodeInput = String(rest.promoCode ?? "").trim();
     if (promoCodeInput) {
-      const promo = await validatePromoCode(promoCodeInput, subtotal);
-      promoDiscount = promo.discountAmount;
-      promoCodeId = promo.promoCodeId;
+      const discount = await validateDiscountCode(
+        rest.branchId,
+        promoCodeInput,
+        subtotal
+      );
+      promoDiscount = discount.discountAmount;
+      if (discount.kind === "promo") {
+        promoCodeId = discount.promoCodeId;
+      } else {
+        giftCardId = discount.giftCardId;
+        giftCardAmount = discount.discountAmount;
+      }
     }
 
     const totalDiscount = websiteDiscount + promoDiscount;
@@ -241,6 +255,8 @@ export class OrdersService {
       orderTotal: discountedSubtotal + deliveryFee,
       discount: totalDiscount,
       promoCodeId,
+      giftCardId,
+      giftCardAmount: giftCardAmount > 0 ? giftCardAmount : null,
       deliveryFee,
       scheduledFor,
       paymentMethod,
@@ -275,18 +291,20 @@ export class OrdersService {
     if (promoCodeId) {
       await redeemPromoCode(promoCodeId);
     }
-
-    if (hasMarketingConsent) {
-      await upsertMarketingLead({
-        phone: customerPhone,
-        name: customerName,
-        email: customerEmail,
-        branchId: rest.branchId,
-        marketingEmail,
-        marketingSMS,
-        marketingWhatsApp
-      });
+    if (giftCardId && giftCardAmount > 0) {
+      await redeemGiftCard(giftCardId, giftCardAmount);
     }
+
+    await syncBranchCustomerFromOrder({
+      branchId: rest.branchId,
+      phone: customerPhone,
+      name: customerName,
+      email: customerEmail,
+      birthday: rest.birthday ?? null,
+      marketingEmail,
+      marketingSMS,
+      marketingWhatsApp
+    });
 
     await prisma.orderTrackingEvent.create({
       data: {

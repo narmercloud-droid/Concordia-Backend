@@ -15,6 +15,12 @@ import {
   getOrders,
   getDashboard
 } from "../../controllers/manager/manager.controller.ts";
+import {
+  exportCustomers,
+  getCustomerOrders,
+  getCustomers,
+  runBranchAutomation
+} from "../../controllers/manager/branchCustomers.controller.ts";
 
 const router = Router();
 
@@ -31,5 +37,9 @@ router.get("/menu", getMenu);
 router.patch("/menu/items/:id", updateMenuItem);
 router.patch("/menu/variant-groups/:groupId", updateVariantGroup);
 router.get("/orders", getOrders);
+router.get("/customers", getCustomers);
+router.get("/customers/export", exportCustomers);
+router.get("/customers/:phone/orders", getCustomerOrders);
+router.post("/customers/automation/run", runBranchAutomation);
 
 export default router;

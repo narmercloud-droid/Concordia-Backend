@@ -54,6 +54,8 @@ model Order {
   readyAt               DateTime?
   discount              Float                @default(0)
   promoCodeId           String?
+  giftCardId            String?
+  giftCardAmount        Float?
   freeDrinkChoice       String?
   marketingEmail        Boolean              @default(false)
   marketingSMS          Boolean              @default(false)
@@ -894,19 +896,27 @@ model BranchItemAvailability {
   @@unique([branchId, menuItemId])
 }
 
-model MarketingLead {
-  id                String    @id @default(uuid())
-  phone             String    @unique
-  email             String?
-  name              String?
-  branchId          String?
-  marketingEmail    Boolean   @default(false)
-  marketingSMS      Boolean   @default(false)
-  marketingWhatsApp Boolean   @default(false)
-  consentAt         DateTime?
-  lastOrderAt       DateTime?
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+model BranchCustomer {
+  id                  String    @id @default(uuid())
+  branchId            String
+  phone               String
+  email               String?
+  name                String?
+  birthday            DateTime? @db.Date
+  preferredChannel    String?
+  marketingEmail      Boolean   @default(false)
+  marketingSMS        Boolean   @default(false)
+  marketingWhatsApp   Boolean   @default(false)
+  consentAt           DateTime?
+  orderCount          Int       @default(0)
+  firstOrderAt        DateTime?
+  lastOrderAt         DateTime?
+  winBackOfferSentAt  DateTime?
+  birthdayOfferSentAt DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@unique([branchId, phone])
 }
 
 model PromoCode {
@@ -920,6 +930,30 @@ model PromoCode {
   isActive  Boolean   @default(true)
   expiresAt DateTime?
   createdAt DateTime  @default(now())
+}
+
+model BranchGiftCard {
+  id              String    @id @default(uuid())
+  branchId        String
+  code            String    @unique
+  initialAmount   Decimal   @db.Decimal(10, 2)
+  balance         Decimal   @db.Decimal(10, 2)
+  purchaserName   String?
+  purchaserEmail  String?
+  purchaserPhone  String?
+  recipientName   String?
+  message         String?
+  paymentMethod   String?
+  paymentStatus   String    @default("pending")
+  paypalOrderId   String?
+  paypalCaptureId String?
+  isActive        Boolean   @default(true)
+  expiresAt       DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([branchId])
+  @@index([branchId, paymentStatus])
 }
 
 model BranchItemPricing {

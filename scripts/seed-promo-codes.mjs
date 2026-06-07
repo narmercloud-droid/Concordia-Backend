@@ -17,6 +17,13 @@ const DEFAULT_CODES = [
     amount: 5,
     minOrder: 20,
     maxUses: 200
+  },
+  {
+    code: "BIRTHDAY",
+    type: "fixed",
+    amount: 8,
+    minOrder: 15,
+    maxUses: 5000
   }
 ];
 
