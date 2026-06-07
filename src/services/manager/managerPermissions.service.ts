@@ -21,6 +21,18 @@ export const PERMISSION_KEYS = [
 export type PermissionKey = (typeof PERMISSION_KEYS)[number];
 export type ManagerPermissions = Record<PermissionKey, boolean>;
 
+/** Edit/action permissions require the corresponding view permission */
+export const PERMISSION_DEPENDENCIES: Partial<Record<PermissionKey, PermissionKey>> = {
+  menu_edit_prices: "menu_view",
+  menu_edit_availability: "menu_view",
+  menu_edit_structure: "menu_view",
+  hours_edit: "hours_view",
+  delivery_edit: "delivery_view",
+  customers_export: "customers_view",
+  customers_automation: "customers_view",
+  offers_edit: "offers_view"
+};
+
 export const DEFAULT_MANAGER_PERMISSIONS: ManagerPermissions = {
   dashboard: true,
   orders: true,
@@ -39,6 +51,18 @@ export const DEFAULT_MANAGER_PERMISSIONS: ManagerPermissions = {
   offers_edit: true
 };
 
+function applyPermissionDependencies(permissions: ManagerPermissions): ManagerPermissions {
+  const result = { ...permissions };
+  for (const [child, parent] of Object.entries(PERMISSION_DEPENDENCIES)) {
+    const childKey = child as PermissionKey;
+    const parentKey = parent as PermissionKey;
+    if (!result[parentKey]) {
+      result[childKey] = false;
+    }
+  }
+  return result;
+}
+
 function normalizePermissions(raw: unknown): ManagerPermissions {
   const input = (raw ?? {}) as Partial<ManagerPermissions>;
   const result = { ...DEFAULT_MANAGER_PERMISSIONS };
@@ -47,7 +71,7 @@ function normalizePermissions(raw: unknown): ManagerPermissions {
       result[key] = input[key]!;
     }
   }
-  return result;
+  return applyPermissionDependencies(result);
 }
 
 export async function getManagerPermissionPolicy() {
@@ -93,5 +117,10 @@ export async function managerHasPermission(
   if (role !== "manager") return false;
 
   const policy = await getManagerPermissionPolicy();
-  return Boolean(policy[permission]);
+  if (!policy[permission]) return false;
+
+  const dependency = PERMISSION_DEPENDENCIES[permission];
+  if (dependency && !policy[dependency]) return false;
+
+  return true;
 }

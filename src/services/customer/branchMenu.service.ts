@@ -275,10 +275,19 @@ export async function getBranchItemForCustomer(branchId: string, itemId: number)
 
   if (branchItem) {
     const mapped = mapOptionGroups(branchItem.menuItem);
-    const { getPresetAddOnGroupsForItem } = await import(
-      "../manager/extraPreset.service.ts"
-    );
-    const presetGroups = await getPresetAddOnGroupsForItem(branchId, branchItem.categoryId);
+    let presetGroups: Awaited<
+      ReturnType<
+        typeof import("../manager/extraPreset.service.ts").getPresetAddOnGroupsForItem
+      >
+    > = [];
+    try {
+      const { getPresetAddOnGroupsForItem } = await import(
+        "../manager/extraPreset.service.ts"
+      );
+      presetGroups = await getPresetAddOnGroupsForItem(branchId, branchItem.categoryId);
+    } catch (err) {
+      console.warn("[menu] preset extras unavailable", branchId, itemId, err);
+    }
     const presetAddOnGroups = presetGroups.map((g) => ({
       id: g.id,
       name: g.name,
@@ -313,7 +322,42 @@ export async function getBranchItemForCustomer(branchId: string, itemId: number)
 
   if (!item) return null;
 
-  return mapOptionGroups(item);
+  const mapped = mapOptionGroups(item);
+  const branchMenuItem = await prisma.branchMenuItem.findFirst({
+    where: { branchId, menuItemId: itemId },
+    select: { categoryId: true }
+  });
+
+  let presetGroups: Awaited<
+    ReturnType<
+      typeof import("../manager/extraPreset.service.ts").getPresetAddOnGroupsForItem
+    >
+  > = [];
+  try {
+    const { getPresetAddOnGroupsForItem } = await import("../manager/extraPreset.service.ts");
+    presetGroups = await getPresetAddOnGroupsForItem(branchId, branchMenuItem?.categoryId);
+  } catch (err) {
+    console.warn("[menu] preset extras unavailable", branchId, itemId, err);
+  }
+
+  const presetAddOnGroups = presetGroups.map((g) => ({
+    id: g.id,
+    name: g.name,
+    required: g.required,
+    minSelect: g.minSelect,
+    maxSelect: g.maxSelect,
+    options: g.options.map((o) => ({
+      id: o.id,
+      name: o.name,
+      price: o.price,
+      pricesBySize: buildPricesBySize(o.name, o.price, item.name)
+    }))
+  }));
+
+  return {
+    ...mapped,
+    addOnGroups: [...mapped.addOnGroups, ...presetAddOnGroups]
+  };
 }
 
 export async function listBranchesForCustomer() {
@@ -339,6 +383,8 @@ export async function listBranchesForCustomer() {
   return result;
 }
 
+const HIDDEN_BRANCH_IDS = new Set(["branch-001", "test-branch-1"]);
+
 async function fetchBranchesList() {
   const branches = await prisma.branch.findMany({
     orderBy: { createdAt: "asc" },
@@ -346,7 +392,7 @@ async function fetchBranchesList() {
       BranchConfig: true,
       branchHours: { orderBy: { dayOfWeek: "asc" } }
     }
-  });
+  }).then((rows) => rows.filter((b) => !HIDDEN_BRANCH_IDS.has(b.id)));
 
   const now = new Date();
   const day = now.getDay();

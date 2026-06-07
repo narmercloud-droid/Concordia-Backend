@@ -79,38 +79,114 @@ router.patch(
 );
 router.get("/menu", requireManagerPermission("menu_view"), getMenu);
 router.get("/menu/items/:menuItemId/detail", requireManagerPermission("menu_view"), getMenuItemDetail);
-router.post("/menu/categories", createCategory);
-router.patch("/menu/categories/:id", updateCategory);
-router.delete("/menu/categories/:id", deleteCategory);
-router.post("/menu/items", createMenuItem);
+router.post("/menu/categories", requireManagerPermission("menu_edit_structure"), createCategory);
+router.patch("/menu/categories/:id", requireManagerPermission("menu_edit_structure"), updateCategory);
+router.delete("/menu/categories/:id", requireManagerPermission("menu_edit_structure"), deleteCategory);
+router.post("/menu/items", requireManagerPermission("menu_edit_structure"), createMenuItem);
 router.patch("/menu/items/:id", updateMenuItem);
-router.patch("/menu/items/:id/full", updateMenuItemFull);
-router.delete("/menu/branch-items/:branchMenuItemId", deleteMenuItem);
+router.patch("/menu/items/:id/full", requireManagerPermission("menu_edit_structure"), updateMenuItemFull);
+router.delete(
+  "/menu/branch-items/:branchMenuItemId",
+  requireManagerPermission("menu_edit_structure"),
+  deleteMenuItem
+);
 router.patch(
   "/menu/variant-groups/:groupId",
-  requireManagerPermission("menu_edit_prices"),
+  requireManagerPermission("menu_edit_structure"),
   updateVariantGroup
 );
-router.patch("/menu/variant-groups/:groupId/full", updateVariantGroupFull);
-router.delete("/menu/variant-groups/:groupId", deleteVariantGroupHandler);
-router.post("/menu/items/:menuItemId/variant-groups", createVariantGroupHandler);
-router.post("/menu/variant-groups/:groupId/variants", createVariantHandler);
-router.patch("/menu/variants/:variantId", updateVariantHandler);
-router.delete("/menu/variants/:variantId", deleteVariantHandler);
-router.post("/menu/items/:menuItemId/addon-groups", createAddOnGroupHandler);
-router.patch("/menu/addon-groups/:groupId", updateAddOnGroupHandler);
-router.delete("/menu/addon-groups/:groupId", deleteAddOnGroupHandler);
-router.post("/menu/addon-groups/:groupId/addons", createAddOnHandler);
-router.patch("/menu/addons/:addOnId", updateAddOnHandler);
-router.delete("/menu/addons/:addOnId", deleteAddOnHandler);
+router.patch(
+  "/menu/variant-groups/:groupId/full",
+  requireManagerPermission("menu_edit_structure"),
+  updateVariantGroupFull
+);
+router.delete(
+  "/menu/variant-groups/:groupId",
+  requireManagerPermission("menu_edit_structure"),
+  deleteVariantGroupHandler
+);
+router.post(
+  "/menu/items/:menuItemId/variant-groups",
+  requireManagerPermission("menu_edit_structure"),
+  createVariantGroupHandler
+);
+router.post(
+  "/menu/variant-groups/:groupId/variants",
+  requireManagerPermission("menu_edit_structure"),
+  createVariantHandler
+);
+router.patch(
+  "/menu/variants/:variantId",
+  requireManagerPermission("menu_edit_structure"),
+  updateVariantHandler
+);
+router.delete(
+  "/menu/variants/:variantId",
+  requireManagerPermission("menu_edit_structure"),
+  deleteVariantHandler
+);
+router.post(
+  "/menu/items/:menuItemId/addon-groups",
+  requireManagerPermission("menu_edit_structure"),
+  createAddOnGroupHandler
+);
+router.patch(
+  "/menu/addon-groups/:groupId",
+  requireManagerPermission("menu_edit_structure"),
+  updateAddOnGroupHandler
+);
+router.delete(
+  "/menu/addon-groups/:groupId",
+  requireManagerPermission("menu_edit_structure"),
+  deleteAddOnGroupHandler
+);
+router.post(
+  "/menu/addon-groups/:groupId/addons",
+  requireManagerPermission("menu_edit_structure"),
+  createAddOnHandler
+);
+router.patch(
+  "/menu/addons/:addOnId",
+  requireManagerPermission("menu_edit_structure"),
+  updateAddOnHandler
+);
+router.delete(
+  "/menu/addons/:addOnId",
+  requireManagerPermission("menu_edit_structure"),
+  deleteAddOnHandler
+);
 router.get("/menu/extra-presets", requireManagerPermission("menu_view"), listExtraPresets);
-router.post("/menu/extra-presets", createExtraPreset);
-router.post("/menu/extra-presets/import-defaults", importDefaultPresets);
-router.patch("/menu/extra-presets/:presetId", updateExtraPreset);
-router.delete("/menu/extra-presets/:presetId", deleteExtraPreset);
-router.post("/menu/extra-presets/:presetId/options", addPresetOption);
-router.patch("/menu/extra-presets/options/:optionId", updatePresetOption);
-router.delete("/menu/extra-presets/options/:optionId", deletePresetOption);
+router.post("/menu/extra-presets", requireManagerPermission("menu_edit_structure"), createExtraPreset);
+router.post(
+  "/menu/extra-presets/import-defaults",
+  requireManagerPermission("menu_edit_structure"),
+  importDefaultPresets
+);
+router.patch(
+  "/menu/extra-presets/:presetId",
+  requireManagerPermission("menu_edit_structure"),
+  updateExtraPreset
+);
+router.delete(
+  "/menu/extra-presets/:presetId",
+  requireManagerPermission("menu_edit_structure"),
+  deleteExtraPreset
+);
+router.post(
+  "/menu/extra-presets/:presetId/options",
+  requireManagerPermission("menu_edit_structure"),
+  addPresetOption
+);
+router.patch(
+  "/menu/extra-presets/options/:optionId",
+  requireManagerPermission("menu_edit_structure"),
+  updatePresetOption
+);
+router.delete(
+  "/menu/extra-presets/options/:optionId",
+  requireManagerPermission("menu_edit_structure"),
+  deletePresetOption
+);
 router.get("/orders", requireManagerPermission("orders"), getOrders);
 router.get("/promotions", requireManagerPermission("offers_view"), getPromotions);
 router.patch("/promotions", requireManagerPermission("offers_edit"), updatePromotions);
