@@ -1,4 +1,4 @@
-﻿import { prisma } from "../prisma/client.ts";
+import { prisma } from "../prisma/client.ts";
 import crypto from "crypto";
 import { v4 as uuid } from "uuid";
 import { randomUUID } from "crypto";
@@ -11,6 +11,7 @@ import { env } from "../config/env.ts";
 import logger from "../logger.ts";
 import { geocodeAddress } from "./geo/geocode.service.ts";
 import { getGuestCourierId } from "./branch/branchCoords.service.ts";
+import { calcWebsiteDiscount } from "../config/websitePromo.ts";
 
 function buildOrderItems(items: any[]) {
   return items.map((i) => {
@@ -115,11 +116,13 @@ export class OrdersService {
       }
     }
 
-    const orderTotal = items.reduce(
+    const subtotal = items.reduce(
       (sum: number, item: any) =>
         sum + Number(item.price ?? item.unit_price ?? 0) * Number(item.quantity ?? item.qty ?? 1),
       0
     );
+    const websiteDiscount = calcWebsiteDiscount(subtotal);
+    const discountedSubtotal = Math.max(0, subtotal - websiteDiscount);
 
     const branchConfig = await prisma.branchConfig.findUnique({
       where: { branchId: rest.branchId }
@@ -127,16 +130,21 @@ export class OrdersService {
     const config = (branchConfig?.configJson ?? {}) as Record<string, unknown>;
     const promotions = (config.promotions ?? {}) as Record<string, unknown>;
     const freeDrinkMin = Number(promotions.freeDrinkMinOrder ?? 0);
-    if (freeDrinkMin > 0 && orderTotal >= freeDrinkMin) {
+    if (freeDrinkMin > 0 && subtotal >= freeDrinkMin) {
       const promoLine = "[PROMO] Kunde hat Anspruch auf 1 gratis Getränk (Flyer-Aktion).";
       notes = notes ? `${notes}\n${promoLine}` : promoLine;
+    }
+
+    if (websiteDiscount > 0) {
+      const discountLine = `[PROMO] 10% Online-Rabatt (-${websiteDiscount.toFixed(2)} €)`;
+      notes = notes ? `${notes}\n${discountLine}` : discountLine;
     }
 
     let deliveryFee = 0;
     let postalCode: string | null = rest.postalCode ?? null;
 
     if (fulfillmentType === "delivery") {
-      const validation = await validateDeliveryOrder(rest.branchId, deliveryAddress, orderTotal);
+      const validation = await validateDeliveryOrder(rest.branchId, deliveryAddress, subtotal);
       deliveryFee = validation.deliveryFee;
       postalCode = validation.postalCode;
     }
@@ -173,7 +181,8 @@ export class OrdersService {
       fulfillmentType,
       postalCode,
       notes: notes || null,
-      orderTotal: orderTotal + deliveryFee,
+      orderTotal: discountedSubtotal + deliveryFee,
+      discount: websiteDiscount,
       deliveryFee,
       scheduledFor,
       paymentMethod: normalizePaymentMethod(rest.paymentMethod),
