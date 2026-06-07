@@ -1,4 +1,4 @@
-﻿import { validateCourierToken } from "../../services/courier/courierToken.service.ts";
+import { validateCourierToken } from "../../services/courier/courierToken.service.ts";
 import { buildCourierOrderView } from "../../services/courier/courierDriver.service.ts";
 import { broadcastToCourier } from "../../services/realtime/realtime.service.ts";
 import { wrap, fail } from "../../contracts/api.js";

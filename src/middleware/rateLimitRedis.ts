@@ -3,13 +3,35 @@ import client from "../redis/redisClient.ts";
 import logger from "../logger.ts";
 
 const WINDOW_SECONDS = 5 * 60; // 5 minutes
-const LIMIT = 100;
+const LIMIT = 250;
 
 // In-memory fallback when Redis unavailable
 const fallbackMap = new Map<string, { count: number; resetAt: number }>();
 
+function shouldSkipRateLimit(req: Request) {
+  if (req.method === "GET") {
+    const path = req.path || "";
+    if (
+      path === "/" ||
+      path === "/health" ||
+      path === "/ready" ||
+      path === "/version" ||
+      path === "/api/branches" ||
+      /^\/api\/branches\/[^/]+\/(menu|bestsellers)$/.test(path)
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export default async function rateLimitRedis(req: Request, res: Response, next: NextFunction) {
   try {
+    if (shouldSkipRateLimit(req)) {
+      next();
+      return;
+    }
+
     const ip = (req.ip || req.headers["x-forwarded-for"] || req.socket.remoteAddress || "unknown") as string;
     const key = `rate:${ip}`;
 

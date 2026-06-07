@@ -1,10 +1,24 @@
 import { prisma } from "../../prisma/client.ts";
+import { getCache, setCache } from "../../lib/redis.ts";
+import { deleteSimpleCache, getSimpleCache, setSimpleCache } from "../../lib/simpleCache.ts";
 import {
   buildPricesBySize,
   itemUsesSizeBasedExtras,
   normalizeSizeKey,
   resolveExtraPrice
 } from "./extraPricing.service.ts";
+
+const BRANCHES_CACHE_KEY = "customer:branches:v1";
+const BRANCHES_TTL_SEC = 90;
+const MENU_TTL_SEC = 120;
+
+export function invalidateBranchListCache() {
+  deleteSimpleCache(BRANCHES_CACHE_KEY);
+}
+
+export function invalidateBranchMenuCache(branchId: string) {
+  deleteSimpleCache(`customer:menu:${branchId}:v1`);
+}
 
 function menuItemIdRange(branchId: string): { gte: number; lt: number } | null {
   if (branchId === "concordia-kempen") return { gte: 10000, lt: 20000 };
@@ -19,6 +33,29 @@ function itemBelongsToBranch(branchId: string, itemId: number) {
 }
 
 export async function getBranchMenuForCustomer(branchId: string) {
+  const memoryKey = `customer:menu:${branchId}:v1`;
+  const cachedMemory = getSimpleCache<Awaited<ReturnType<typeof buildBranchMenu>>>(memoryKey);
+  if (cachedMemory) return cachedMemory;
+
+  const redisKey = `${memoryKey}:json`;
+  const cachedRedis = await getCache(redisKey);
+  if (cachedRedis) {
+    try {
+      const parsed = JSON.parse(cachedRedis) as Awaited<ReturnType<typeof buildBranchMenu>>;
+      setSimpleCache(memoryKey, parsed, MENU_TTL_SEC * 1000);
+      return parsed;
+    } catch {
+      // ignore corrupt cache
+    }
+  }
+
+  const menu = await buildBranchMenu(branchId);
+  setSimpleCache(memoryKey, menu, MENU_TTL_SEC * 1000);
+  await setCache(redisKey, JSON.stringify(menu), MENU_TTL_SEC);
+  return menu;
+}
+
+async function buildBranchMenu(branchId: string) {
   const categories = await prisma.branchCategory.findMany({
     where: { branchId },
     orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
@@ -261,6 +298,29 @@ export async function getBranchItemForCustomer(branchId: string, itemId: number)
 }
 
 export async function listBranchesForCustomer() {
+  const cachedMemory = getSimpleCache<Awaited<ReturnType<typeof fetchBranchesList>>>(
+    BRANCHES_CACHE_KEY
+  );
+  if (cachedMemory) return cachedMemory;
+
+  const cachedRedis = await getCache(BRANCHES_CACHE_KEY);
+  if (cachedRedis) {
+    try {
+      const parsed = JSON.parse(cachedRedis) as Awaited<ReturnType<typeof fetchBranchesList>>;
+      setSimpleCache(BRANCHES_CACHE_KEY, parsed, BRANCHES_TTL_SEC * 1000);
+      return parsed;
+    } catch {
+      // ignore corrupt cache
+    }
+  }
+
+  const result = await fetchBranchesList();
+  setSimpleCache(BRANCHES_CACHE_KEY, result, BRANCHES_TTL_SEC * 1000);
+  await setCache(BRANCHES_CACHE_KEY, JSON.stringify(result), BRANCHES_TTL_SEC);
+  return result;
+}
+
+async function fetchBranchesList() {
   const branches = await prisma.branch.findMany({
     orderBy: { createdAt: "asc" },
     include: {

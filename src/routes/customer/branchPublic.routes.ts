@@ -10,16 +10,27 @@ import {
   quoteDelivery
 } from "../../services/customer/deliveryValidation.service.ts";
 import { suggestAddresses } from "../../services/geo/geocode.service.ts";
+import {
+  getAlsoPopularItems,
+  getBranchBestsellers
+} from "../../services/customer/bestsellers.service.ts";
 import { prisma } from "../../prisma/client.ts";
 import { wrap } from "../../contracts/api.ts";
 
 const router = express.Router();
 
-router.get("/branches", wrap(async () => {
+function publicCache(maxAgeSec: number) {
+  return (_req: express.Request, res: express.Response, next: express.NextFunction) => {
+    res.setHeader("Cache-Control", `public, max-age=${maxAgeSec}, stale-while-revalidate=60`);
+    next();
+  };
+}
+
+router.get("/branches", publicCache(60), wrap(async () => {
   return await listBranchesForCustomer();
 }));
 
-router.get("/branches/:branchId/menu", wrap(async (req) => {
+router.get("/branches/:branchId/menu", publicCache(120), wrap(async (req) => {
   const branch = await prisma.branch.findUnique({
     where: { id: req.params.branchId },
     include: { BranchConfig: true }
@@ -73,6 +84,19 @@ router.post("/branches/:branchId/delivery-quote", wrap(async (req) => {
   return quoteDelivery(req.params.branchId, addressText, total, {
     postalCode: postcodeText || undefined
   });
+}));
+
+router.get("/branches/:branchId/bestsellers", publicCache(300), wrap(async (req) => {
+  const limit = Math.min(Math.max(Number(req.query.limit ?? 6) || 6, 1), 12);
+  return getBranchBestsellers(req.params.branchId, limit);
+}));
+
+router.get("/branches/:branchId/items/:itemId/also-popular", wrap(async (req) => {
+  const itemId = Number(req.params.itemId);
+  if (Number.isNaN(itemId)) {
+    throw { code: "INVALID_INPUT", message: "Invalid item id" };
+  }
+  return getAlsoPopularItems(req.params.branchId, itemId);
 }));
 
 router.get("/branches/:branchId/items/:itemId", wrap(async (req) => {

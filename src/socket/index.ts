@@ -49,49 +49,6 @@ export const joinAdminRoom = (socket: any) => {
   socket.join("admin_dashboard");
 };
 
-// ============================================
-// AI/ML INTELLIGENCE LAYER SOCKET EVENTS
-// ============================================
-
-/**
- * Emit AI update event to admin dashboard
- */
-export const emitAIUpdate = (branchId: string, data: any) => {
-  const eventData = {
-    success: true,
-    event: "admin:ai_update",
-    data
-  };
-
-  getAdminNamespace().to(`branch_${branchId}`).emit("admin:ai_update", eventData);
-};
-
-/**
- * Emit churn update event to admin dashboard
- */
-export const emitChurnUpdate = (branchId: string, data: any) => {
-  const eventData = {
-    success: true,
-    event: "admin:churn_update",
-    data
-  };
-
-  getAdminNamespace().to(`branch_${branchId}`).emit("admin:churn_update", eventData);
-};
-
-/**
- * Emit demand update event to admin dashboard
- */
-export const emitDemandUpdate = (branchId: string, data: any) => {
-  const eventData = {
-    success: true,
-    event: "admin:demand_update",
-    data
-  };
-
-  getAdminNamespace().to(`branch_${branchId}`).emit("admin:demand_update", eventData);
-};
-
 /**
  * Emit courier performance update event to admin dashboard
  */

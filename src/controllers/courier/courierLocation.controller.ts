@@ -1,4 +1,4 @@
-﻿import { updateDriverLocation } from "../../services/courier/courierDriver.service.ts";
+import { updateDriverLocation } from "../../services/courier/courierDriver.service.ts";
 import { wrap, fail } from "../../contracts/api.js";
 
 export const updateCourierLocation = wrap(async (req) => {

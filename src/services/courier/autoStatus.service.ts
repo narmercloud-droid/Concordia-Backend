@@ -1,4 +1,4 @@
-﻿import { prisma } from "../../prisma/client.ts";
+import { prisma } from "../../prisma/client.ts";
 import { broadcastToTerminal, broadcastToCustomer } from "../realtime/realtime.service.ts";
 import { haversineDistance } from "../../utils/distance.ts";
 import { OrderLifecycleService } from "../order/orderLifecycle.service.ts";

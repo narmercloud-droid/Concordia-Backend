@@ -1,4 +1,4 @@
-﻿import express from "express";
+import express from "express";
 const { Router } = express;
 import { getCourierOrderView } from "../../controllers/courier/courierView.controller.ts";
 import { updateCourierLocation } from "../../controllers/courier/courierLocation.controller.ts";

@@ -4,7 +4,7 @@ import express from "express";
 import type { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import helmet from "helmet";
-import rateLimit from "express-rate-limit";
+import compression from "compression";
 import path from "path";
 import * as Sentry from "@sentry/node";
 
@@ -91,6 +91,7 @@ import adminPrinterFleetRoutes from "./routes/admin/adminPrinterFleet.routes.ts"
 import adminPrinterObservabilityRoutes from "./routes/admin/adminPrinterObservability.routes.ts";
 import adminTerminalRoutes from "./routes/admin/adminTerminal.routes.ts";
 import adminToolsRoutes from "./routes/admin/adminTools.routes.ts";
+import adminAnalyticsRoutes from "./routes/admin/adminAnalytics.routes.ts";
 import { startPrinterDiscoveryWorker } from "./jobs/printerDiscoveryWorker.ts";
 import { startPrinterSyncWorker } from "./jobs/printerCloudSyncWorker.ts";
 
@@ -189,6 +190,7 @@ app.use((_req, res, next) => {
 });
 
 app.use(cors(corsOptions));
+app.use(compression({ threshold: 1024 }));
 
 // Global input validation/sanitization
 app.use(inputValidation);
@@ -219,17 +221,6 @@ if (env.NODE_ENV === "production") {
     next();
   });
 }
-
-app.use(
-  rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 100,
-    standardHeaders: true,
-    legacyHeaders: false,
-    skipFailedRequests: true,
-    message: { error: "Too many requests, please try again later." }
-  })
-);
 
 app.use("/api/paypal/webhook", express.raw({ type: "application/json" }));
 app.use(express.json());
@@ -389,6 +380,8 @@ app.use("/api/admin/printer", adminPrinterObservabilityRoutes);
 // ---------------------------------------------
 app.use("/api/admin", adminAuth, adminRouter);
 app.use("/api/admin", adminRoutes);
+app.use("/api/admin/analytics", adminAuth, adminAnalyticsRoutes);
+app.use("/admin/analytics", adminAuth, adminAnalyticsRoutes);
 app.use("/api/admin", adminTerminalRoutes);
 app.use("/api/admin/tools", adminToolsRoutes);
 app.use("/api/admin/paypal", paypalAdminRoutes);

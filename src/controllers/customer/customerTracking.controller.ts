@@ -1,4 +1,4 @@
-﻿import { prisma } from "../../prisma/client.ts";
+import { prisma } from "../../prisma/client.ts";
 import { getBranchCoords } from "../../services/branch/branchCoords.service.ts";
 import { broadcastToCustomer } from "../../services/realtime/realtime.service.ts";
 import { wrap, fail } from "../../contracts/api.js";

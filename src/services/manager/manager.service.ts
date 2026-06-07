@@ -198,6 +198,9 @@ export async function updateBranchMenuItem(
 
   if (!item) throw new Error("Menu item not found");
 
+  const { invalidateBranchMenuCache } = await import("../customer/branchMenu.service.ts");
+  invalidateBranchMenuCache(branchId);
+
   return prisma.branchMenuItem.update({
     where: { id: branchMenuItemId },
     data: {

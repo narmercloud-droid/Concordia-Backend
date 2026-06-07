@@ -1,4 +1,4 @@
-﻿import { prisma } from "../../prisma/client.ts";
+import { prisma } from "../../prisma/client.ts";
 import { broadcastToTerminal } from "../../services/realtime/realtime.service.ts";
 import { OrderLifecycleService } from "../../services/order/orderLifecycle.service.ts";
 import { resolveBranchByCode } from "../../services/terminal/branchCode.service.ts";
