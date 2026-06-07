@@ -472,26 +472,9 @@ export class OrdersService {
   }
 
   async courierDelivered(orderId: string) {
-    const updatedOrder = await OrderLifecycleService.updateStatus(orderId, "delivered", undefined, {
+    return OrderLifecycleService.updateStatus(orderId, "delivered", undefined, {
       courierStatus: "delivered"
     });
-
-    if (updatedOrder.customerId) {
-      const points = Math.floor(
-        (updatedOrder.items || []).reduce(
-          (sum, item) => sum + (item.price || 0) * (item.quantity || 1),
-          0
-        ) / 10
-      );
-      if (points > 0) {
-        await prisma.customer.update({
-          where: { id: updatedOrder.customerId },
-          data: { loyaltyPoints: { increment: points } }
-        });
-      }
-    }
-
-    return updatedOrder;
   }
 }
 

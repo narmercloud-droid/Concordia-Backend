@@ -201,6 +201,14 @@ export class OrderLifecycleService {
       }
 
       return result;
+    }).then(async (result) => {
+      try {
+        const { awardLoyaltyForCompletedOrder } = await import("../loyalty.service.ts");
+        await awardLoyaltyForCompletedOrder(orderId);
+      } catch (error) {
+        console.error("Loyalty award failed for order", orderId, error);
+      }
+      return result;
     });
   }
 }

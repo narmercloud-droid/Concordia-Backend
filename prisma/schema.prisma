@@ -187,6 +187,7 @@ model Customer {
   id                     String                  @id @default(uuid())
   name                   String
   email                  String                  @unique
+  passwordHash           String?
   phone                  String?
   loginToken             String?                 @db.VarChar(255)
   loginTokenExpires      DateTime?

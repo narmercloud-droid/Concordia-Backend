@@ -4,8 +4,13 @@ import { wrap, fail } from "../contracts/api.js";
 
 export const CustomersController = {
   register: wrap(async (req: Request) => {
-    const customer = await customerService.register(req.body);
-    return customer;
+    const { name, email, password, phone } = req.body ?? {};
+    if (!name?.trim() || !email?.trim() || !password?.trim()) {
+      throw fail("INVALID_INPUT", "Name, email and password are required");
+    }
+    const result = await customerService.register({ name, email, password, phone });
+    if (!result) throw fail("CONFLICT", "An account with this email already exists");
+    return result;
   }),
 
   login: wrap(async (req: Request) => {
@@ -26,6 +31,7 @@ export const CustomersController = {
     const customerId = req.user?.id;
     if (!customerId) throw fail('UNAUTHORIZED', 'Unauthorized');
     const profile = await customerService.getProfile(customerId);
+    if (!profile) throw fail('NOT_FOUND', 'Customer not found');
     return profile;
   }),
 

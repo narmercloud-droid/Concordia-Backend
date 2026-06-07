@@ -2,19 +2,59 @@
 import { prisma } from "../prisma/client.ts";
 import pool from "../db.ts";
 import * as bcrypt from "bcrypt";
-import * as jwt from "jsonwebtoken";
-import { env } from "../config/env.ts";
+import { signToken } from "../utils/jwt.ts";
 
-const ACCESS_TOKEN_EXPIRES = "15m";
-const REFRESH_TOKEN_EXPIRES = "30d";
+const SALT_ROUNDS = 10;
+
+function toPublicCustomer(customer: {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string | null;
+  phoneNumber?: string | null;
+  loyaltyPoints?: number;
+  loyaltyTier?: string;
+  lifetimePoints?: number;
+  marketingConsent?: boolean;
+  marketingEmail?: boolean;
+  marketingSMS?: boolean;
+  marketingWhatsApp?: boolean;
+}) {
+  return {
+    id: customer.id,
+    name: customer.name,
+    email: customer.email,
+    phone: customer.phone ?? customer.phoneNumber ?? null,
+    loyaltyPoints: customer.loyaltyPoints ?? 0,
+    loyaltyTier: customer.loyaltyTier ?? "bronze",
+    lifetimePoints: customer.lifetimePoints ?? 0,
+    marketingConsent: customer.marketingConsent ?? false,
+    marketingEmail: customer.marketingEmail ?? false,
+    marketingSMS: customer.marketingSMS ?? false,
+    marketingWhatsApp: customer.marketingWhatsApp ?? false
+  };
+}
 
 export class CustomerService {
-  async register(data: { name: string; email: string; phone?: string; password?: string }): Promise<any> {
-    return prisma.customer.create({
+  async register(data: {
+    name: string;
+    email: string;
+    phone?: string;
+    password?: string;
+  }): Promise<any> {
+    const email = data.email.trim().toLowerCase();
+    const existing = await prisma.customer.findUnique({ where: { email } });
+    if (existing) return null;
+
+    const password = data.password?.trim();
+    const passwordHash = password ? await bcrypt.hash(password, SALT_ROUNDS) : null;
+
+    const customer = await prisma.customer.create({
       data: {
         id: randomUUID(),
-        name: data.name,
-        email: data.email,
+        name: data.name.trim(),
+        email,
+        passwordHash,
         phone: data.phone ?? null,
         loginToken: null,
         loginTokenExpires: null,
@@ -26,6 +66,9 @@ export class CustomerService {
         phoneNumber: data.phone ?? null
       }
     });
+
+    const tokens = await this.generateTokens(customer);
+    return { ...tokens, user: toPublicCustomer(customer) };
   }
 
   async validatePassword(password: string, hashed: string): Promise<boolean> {
@@ -33,17 +76,28 @@ export class CustomerService {
   }
 
   async generateTokens(customer: { id: string; email: string }): Promise<any> {
-    const accessToken = jwt.sign({ id: customer.id, email: customer.email, type: "customer" }, env.JWT_SECRET as string, { expiresIn: ACCESS_TOKEN_EXPIRES } as jwt.SignOptions);
-    const refreshToken = jwt.sign({ id: customer.id, type: "customer" }, (env.JWT_REFRESH_SECRET as string) || (env.JWT_SECRET as string), { expiresIn: REFRESH_TOKEN_EXPIRES } as jwt.SignOptions);
+    const accessToken = signToken({
+      id: customer.id,
+      role: "customer",
+      branchId: ""
+    });
 
-    return { accessToken, refreshToken };
+    return { accessToken };
   }
 
-  async login(email: string, _password: string): Promise<any> {
-    const customer = await prisma.customer.findUnique({ where: { email } });
+  async login(email: string, password: string): Promise<any> {
+    const normalizedEmail = email.trim().toLowerCase();
+    const customer = await prisma.customer.findUnique({ where: { email: normalizedEmail } });
     if (!customer) return null;
 
-    return this.generateTokens(customer);
+    if (customer.passwordHash) {
+      if (!password) return null;
+      const valid = await this.validatePassword(password, customer.passwordHash);
+      if (!valid) return null;
+    }
+
+    const tokens = await this.generateTokens(customer);
+    return { ...tokens, user: toPublicCustomer(customer) };
   }
 
   async refresh(_refreshToken: string): Promise<any> {
@@ -80,7 +134,7 @@ export class CustomerService {
   async updatePhone(customerId: string, phoneNumber: string): Promise<any> {
     return prisma.customer.update({
       where: { id: customerId },
-      data: { phoneNumber }
+      data: { phoneNumber, phone: phoneNumber }
     });
   }
 
@@ -90,21 +144,20 @@ export class CustomerService {
       include: { addresses: true }
     });
 
+    if (!customer) return null;
+
     const preferencesResult = await pool.query(
       `SELECT preference_type, item FROM preferences WHERE user_id = $1`,
       [id]
     );
 
+    const { passwordHash: _passwordHash, loginToken: _loginToken, ...safe } = customer;
+
     return {
-      ...customer,
+      ...safe,
       preferences: preferencesResult.rows || []
     };
   }
 }
 
 export const customerService = new CustomerService();
-
-
-
-
-

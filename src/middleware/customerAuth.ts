@@ -14,7 +14,9 @@ export function customerAuth(req: Request, res: Response, next: NextFunction) {
 
     if (decoded.role !== "customer") return res.status(403).json({ error: "Forbidden" });
 
-    (req as any).customer = decoded as AuthJwtPayload;
+    const user = decoded as AuthJwtPayload;
+    (req as any).user = user;
+    (req as any).customer = user;
     next();
   } catch {
     return res.status(401).json({ error: "Invalid token" });

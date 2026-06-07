@@ -10,7 +10,7 @@
     "postinstall": "prisma generate",
     "migrate:deploy": "npx prisma migrate deploy",
     "migrate:push": "npx prisma db push",
-    "render-build": "npm run build",
+    "render-build": "npx prisma migrate deploy && npm run build",
     "start": "node --enable-source-maps dist/index.js",
     "start:worker": "node dist/worker.js",
     "start:dev": "nest start --watch",
