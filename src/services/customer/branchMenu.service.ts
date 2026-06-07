@@ -21,7 +21,7 @@ function itemBelongsToBranch(branchId: string, itemId: number) {
 export async function getBranchMenuForCustomer(branchId: string) {
   const categories = await prisma.branchCategory.findMany({
     where: { branchId },
-    orderBy: { id: "asc" },
+    orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
     include: {
       items: {
         where: { isAvailable: true },
@@ -29,6 +29,8 @@ export async function getBranchMenuForCustomer(branchId: string) {
           menuItem: {
             select: {
               id: true,
+              itemNumber: true,
+              sortOrder: true,
               name: true,
               description: true,
               basePrice: true,
@@ -42,17 +44,25 @@ export async function getBranchMenuForCustomer(branchId: string) {
   });
 
   if (categories.length > 0) {
-    return categories.map((cat) => ({
-      id: cat.id,
-      name: cat.name,
-      items: cat.items.map((entry) => ({
-        id: entry.menuItem.id,
-        name: entry.menuItem.name,
-        description: entry.description ?? entry.menuItem.description,
-        price: entry.price ?? entry.menuItem.basePrice ?? 0,
-        imageUrl: entry.imageUrl ?? entry.menuItem.imageUrl
+    return categories
+      .map((cat) => ({
+        id: cat.id,
+        name: cat.name,
+        description: cat.description ?? null,
+        sortOrder: cat.sortOrder ?? 0,
+        items: cat.items
+          .map((entry) => ({
+            id: entry.menuItem.id,
+            itemNumber: entry.menuItem.itemNumber ?? null,
+            sortOrder: entry.menuItem.sortOrder ?? 0,
+            name: entry.menuItem.name,
+            description: entry.description ?? entry.menuItem.description,
+            price: entry.price ?? entry.menuItem.basePrice ?? 0,
+            imageUrl: entry.imageUrl ?? entry.menuItem.imageUrl
+          }))
+          .sort((a, b) => a.sortOrder - b.sortOrder || a.id - b.id)
       }))
-    }));
+      .sort((a, b) => a.sortOrder - b.sortOrder || String(a.name).localeCompare(String(b.name)));
   }
 
   const branchItems = await prisma.branchMenuItem.findMany({
@@ -67,20 +77,24 @@ export async function getBranchMenuForCustomer(branchId: string) {
         isAvailable: true,
         ...(range ? { id: { gte: range.gte, lt: range.lt } } : {})
       },
-      orderBy: { id: "asc" }
+      orderBy: [{ sortOrder: "asc" }, { id: "asc" }]
     });
 
     return [
       {
         id: "all",
         name: "Menu",
-        items: allItems.map((item) => ({
-          id: item.id,
-          name: item.name,
-          description: item.description,
-          price: item.basePrice ?? 0,
-          imageUrl: item.imageUrl
-        }))
+        items: allItems
+          .map((item) => ({
+            id: item.id,
+            itemNumber: item.itemNumber ?? null,
+            sortOrder: item.sortOrder ?? 0,
+            name: item.name,
+            description: item.description,
+            price: item.basePrice ?? 0,
+            imageUrl: item.imageUrl
+          }))
+          .sort((a, b) => a.sortOrder - b.sortOrder || a.id - b.id)
       }
     ];
   }
@@ -89,19 +103,24 @@ export async function getBranchMenuForCustomer(branchId: string) {
     {
       id: "all",
       name: "Menu",
-      items: branchItems.map((entry) => ({
-        id: entry.menuItem.id,
-        name: entry.menuItem.name,
-        description: entry.description ?? entry.menuItem.description,
-        price: entry.price ?? entry.menuItem.basePrice ?? 0,
-        imageUrl: entry.imageUrl ?? entry.menuItem.imageUrl
-      }))
+      items: branchItems
+        .map((entry) => ({
+          id: entry.menuItem.id,
+          itemNumber: entry.menuItem.itemNumber ?? null,
+          sortOrder: entry.menuItem.sortOrder ?? 0,
+          name: entry.menuItem.name,
+          description: entry.description ?? entry.menuItem.description,
+          price: entry.price ?? entry.menuItem.basePrice ?? 0,
+          imageUrl: entry.imageUrl ?? entry.menuItem.imageUrl
+        }))
+        .sort((a, b) => a.sortOrder - b.sortOrder || a.id - b.id)
     }
   ];
 }
 
 function mapOptionGroups(item: {
   id: number;
+  itemNumber?: string | null;
   name: string;
   description: string | null;
   basePrice: number | null;
@@ -171,6 +190,7 @@ function mapOptionGroups(item: {
 
   return {
     id: item.id,
+    itemNumber: item.itemNumber ?? null,
     name: item.name,
     description: item.description,
     price: displayPrice,

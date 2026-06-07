@@ -624,6 +624,8 @@ model MenuItem {
   createdAt                DateTime                 @default(now())
   updatedAt                DateTime                 @updatedAt
   id                       Int                      @id @default(autoincrement())
+  itemNumber               String?
+  sortOrder                Int                      @default(0)
   imageUrl                 String?
   isAvailable              Boolean                  @default(true)
   kitchen                  String                   @default("B")
@@ -838,11 +840,13 @@ model BranchMenuItem {
 }
 
 model BranchCategory {
-  id       Int              @id @default(autoincrement())
-  branchId String
-  name     String
-  branch   Branch           @relation(fields: [branchId], references: [id])
-  items    BranchMenuItem[]
+  id          Int              @id @default(autoincrement())
+  branchId    String
+  name        String
+  description String?
+  sortOrder   Int              @default(0)
+  branch      Branch           @relation(fields: [branchId], references: [id])
+  items       BranchMenuItem[]
 }
 
 model MenuItemExtra {
