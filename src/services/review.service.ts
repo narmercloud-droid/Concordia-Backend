@@ -248,11 +248,35 @@ export const reviewService = {
     });
   },
 
-  async listBranchReviews(branchId: string) {
+  async listBranchReviews(
+    branchId: string,
+    filters?: {
+      fromDate?: Date;
+      toDate?: Date;
+      lowRatingsOnly?: boolean;
+      limit?: number;
+    }
+  ) {
+    const where: {
+      branchId: string;
+      createdAt?: { gte?: Date; lte?: Date };
+      OR?: Array<{ foodRating: { lte: number } } | { deliveryRating: { lte: number } }>;
+    } = { branchId };
+
+    if (filters?.fromDate || filters?.toDate) {
+      where.createdAt = {};
+      if (filters.fromDate) where.createdAt.gte = filters.fromDate;
+      if (filters.toDate) where.createdAt.lte = filters.toDate;
+    }
+
+    if (filters?.lowRatingsOnly) {
+      where.OR = [{ foodRating: { lte: 3 } }, { deliveryRating: { lte: 3 } }];
+    }
+
     const reviews = await prisma.review.findMany({
-      where: { branchId },
+      where,
       orderBy: { createdAt: "desc" },
-      take: 100,
+      take: Math.min(Math.max(filters?.limit ?? 100, 1), 200),
       include: {
         order: {
           select: {

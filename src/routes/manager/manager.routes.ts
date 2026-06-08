@@ -56,6 +56,7 @@ import {
   getCustomers,
   runBranchAutomation
 } from "../../controllers/manager/branchCustomers.controller.ts";
+import { getBranchReviews } from "../../controllers/manager/managerReviews.controller.ts";
 
 const router = Router();
 
@@ -206,5 +207,6 @@ router.post(
   requireManagerPermission("customers_automation"),
   runBranchAutomation
 );
+router.get("/reviews", requireManagerPermission("reviews_view"), getBranchReviews);
 
 export default router;

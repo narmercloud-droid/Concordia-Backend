@@ -15,7 +15,8 @@ export const PERMISSION_KEYS = [
   "customers_export",
   "customers_automation",
   "offers_view",
-  "offers_edit"
+  "offers_edit",
+  "reviews_view"
 ] as const;
 
 export type PermissionKey = (typeof PERMISSION_KEYS)[number];
@@ -48,7 +49,8 @@ export const DEFAULT_MANAGER_PERMISSIONS: ManagerPermissions = {
   customers_export: false,
   customers_automation: false,
   offers_view: true,
-  offers_edit: true
+  offers_edit: true,
+  reviews_view: true
 };
 
 function applyPermissionDependencies(permissions: ManagerPermissions): ManagerPermissions {
