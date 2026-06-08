@@ -144,7 +144,9 @@ const SIZE_HINTS: Record<MenuLanguage, string> = {
   ro: "Prețurile extra depind de mărimea pizza (mică / mare)",
   hi: "अतिरिक्त कीमतें पिज़्ज़ा के आकार पर निर्भर करती हैं (छोटी / बड़ी)",
   ar: "أسعار الإضافات تعتمد على حجم البيتزا (صغيرة / كبيرة)",
-  ku: "نرخی زیادە بەپێی قەبارەی پیتزا دەگۆڕێت (بچووک / گەورە)"
+  ku: "نرخی زیادە بەپێی قەبارەی پیتزا دەگۆڕێت (بچووک / گەورە)",
+  tr: "Ekstra fiyatlar pizza boyutuna bağlıdır (küçük / büyük)",
+  ckb: "نرخی زیادەکان بەپێی قەبارەی پیتزا دەگۆڕێت (بچووک / گەورە)"
 };
 
 export function applyItemTranslations(item: ItemDetail, lang: MenuLanguage): ItemDetail {
