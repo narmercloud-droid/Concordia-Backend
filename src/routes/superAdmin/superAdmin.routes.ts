@@ -8,6 +8,7 @@ import {
   getStaffList,
   listAllBranches,
   removeStaffMember,
+  updateBranchStatus,
   updatePermissions,
   updateStaffMember
 } from "../../controllers/superAdmin/superAdmin.controller.ts";
@@ -23,5 +24,6 @@ router.post("/staff", createStaffMember);
 router.put("/staff/:id", updateStaffMember);
 router.delete("/staff/:id", removeStaffMember);
 router.get("/branches", listAllBranches);
+router.put("/branches/:branchId/status", updateBranchStatus);
 
 export default router;

@@ -12,6 +12,7 @@ import {
   updateStaff
 } from "../../services/manager/staff.service.ts";
 import { prisma } from "../../prisma/client.ts";
+import { invalidateBranchListCache } from "../../services/customer/branchMenu.service.ts";
 
 export const getPermissions = wrap(async () => {
   const permissions = await getManagerPermissionPolicy();
@@ -85,7 +86,54 @@ export const listAllBranches = wrap(async () => {
       id: b.id,
       name: b.name,
       status: config.status ?? "live",
-      city: config.city ?? null
+      city: config.city ?? null,
+      address: config.address ?? null
     };
   });
+});
+
+export const updateBranchStatus = wrap(async (req: Request) => {
+  const branchId = req.params.branchId;
+  const status = req.body?.status;
+
+  if (!branchId || !["live", "coming_soon"].includes(status)) {
+    throw fail("INVALID_INPUT", "status must be live or coming_soon");
+  }
+
+  const branch = await prisma.branch.findUnique({
+    where: { id: branchId },
+    include: { BranchConfig: true }
+  });
+
+  if (!branch) {
+    throw fail("NOT_FOUND", "Branch not found");
+  }
+
+  const existing = (branch.BranchConfig?.configJson ?? {}) as Record<string, unknown>;
+  const configJson = { ...existing, status };
+
+  if (branch.BranchConfig) {
+    await prisma.branchConfig.update({
+      where: { branchId },
+      data: { configJson }
+    });
+  } else {
+    await prisma.branchConfig.create({
+      data: {
+        id: branchId,
+        branchId,
+        configJson
+      }
+    });
+  }
+
+  invalidateBranchListCache();
+
+  return {
+    id: branchId,
+    name: branch.name,
+    status,
+    city: existing.city ?? null,
+    address: existing.address ?? null
+  };
 });
