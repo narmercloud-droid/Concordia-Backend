@@ -2,6 +2,10 @@ import type { Request } from "express";
 import { wrap, fail } from "../../contracts/api.js";
 import { managerHasPermission } from "../../services/manager/managerPermissions.service.ts";
 import * as menuCrud from "../../services/manager/managerMenuCrud.service.ts";
+import {
+  storeMenuItemImage,
+  type UploadedImageFile
+} from "../../services/upload/menuImageStorage.service.ts";
 
 function branchId(req: Request) {
   return (req as any).managerBranchId as string;
@@ -102,6 +106,43 @@ export const updateMenuItemFull = wrap(async (req: Request) => {
       price: updated.price ?? updated.menuItem.basePrice ?? 0,
       isAvailable: updated.isAvailable
     };
+  } catch (err: any) {
+    throw fail("NOT_FOUND", err?.message ?? "Item not found");
+  }
+});
+
+export const uploadMenuItemImage = wrap(async (req: Request) => {
+  await requireStructureEdit(req);
+  const branchMenuItemId = Number(req.params.branchMenuItemId);
+  if (!Number.isFinite(branchMenuItemId)) throw fail("INVALID_INPUT", "Invalid item id");
+
+  const file = (req as any).file as UploadedImageFile | undefined;
+  if (!file) throw fail("INVALID_INPUT", "Image file is required");
+
+  const bid = branchId(req);
+  let menuItemId: number;
+  try {
+    menuItemId = await menuCrud.getBranchMenuItemMenuItemId(bid, branchMenuItemId);
+  } catch (err: any) {
+    throw fail("NOT_FOUND", err?.message ?? "Item not found");
+  }
+
+  let imageUrl: string;
+  try {
+    imageUrl = await storeMenuItemImage(file, bid, menuItemId, req);
+  } catch (err: any) {
+    throw fail("INVALID_INPUT", err?.message ?? "Could not store image");
+  }
+
+  return menuCrud.updateBranchMenuItemImage(bid, branchMenuItemId, imageUrl);
+});
+
+export const clearMenuItemImage = wrap(async (req: Request) => {
+  await requireStructureEdit(req);
+  const branchMenuItemId = Number(req.params.branchMenuItemId);
+  if (!Number.isFinite(branchMenuItemId)) throw fail("INVALID_INPUT", "Invalid item id");
+  try {
+    return await menuCrud.updateBranchMenuItemImage(branchId(req), branchMenuItemId, null);
   } catch (err: any) {
     throw fail("NOT_FOUND", err?.message ?? "Item not found");
   }

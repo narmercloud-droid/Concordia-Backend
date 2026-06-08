@@ -221,6 +221,33 @@ export async function createBranchMenuItem(
   return result;
 }
 
+export async function getBranchMenuItemMenuItemId(branchId: string, branchMenuItemId: number) {
+  const row = await assertBranchMenuItem(branchId, branchMenuItemId);
+  return row.menuItemId;
+}
+
+export async function updateBranchMenuItemImage(
+  branchId: string,
+  branchMenuItemId: number,
+  imageUrl: string | null
+) {
+  const row = await assertBranchMenuItem(branchId, branchMenuItemId);
+
+  await prisma.$transaction([
+    prisma.branchMenuItem.update({
+      where: { id: branchMenuItemId },
+      data: { imageUrl }
+    }),
+    prisma.menuItem.update({
+      where: { id: row.menuItemId },
+      data: { imageUrl }
+    })
+  ]);
+
+  bumpMenuCache(branchId);
+  return { imageUrl, branchMenuItemId, menuItemId: row.menuItemId };
+}
+
 export async function updateBranchMenuItemFull(
   branchId: string,
   branchMenuItemId: number,
@@ -233,6 +260,7 @@ export async function updateBranchMenuItemFull(
     itemNumber?: string;
     sortOrder?: number;
     isAvailable?: boolean;
+    imageUrl?: string | null;
   }
 ) {
   const row = await assertBranchMenuItem(branchId, branchMenuItemId);
@@ -254,7 +282,8 @@ export async function updateBranchMenuItemFull(
         kitchen: data.kitchen === "A" ? "A" : data.kitchen === "B" ? "B" : undefined,
         itemNumber: data.itemNumber !== undefined ? data.itemNumber?.trim() || null : undefined,
         sortOrder: data.sortOrder ?? undefined,
-        isAvailable: data.isAvailable ?? undefined
+        isAvailable: data.isAvailable ?? undefined,
+        imageUrl: data.imageUrl !== undefined ? data.imageUrl : undefined
       }
     });
 
@@ -264,7 +293,8 @@ export async function updateBranchMenuItemFull(
         price: data.price ?? undefined,
         description: data.description !== undefined ? data.description?.trim() || null : undefined,
         categoryId: data.categoryId ?? undefined,
-        isAvailable: data.isAvailable ?? undefined
+        isAvailable: data.isAvailable ?? undefined,
+        imageUrl: data.imageUrl !== undefined ? data.imageUrl : undefined
       },
       include: { menuItem: true }
     });

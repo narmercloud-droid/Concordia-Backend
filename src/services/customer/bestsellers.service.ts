@@ -69,21 +69,15 @@ async function topSellingItemIds(branchId: string, limit: number): Promise<numbe
   return ids;
 }
 
-export async function getBranchBestsellers(branchId: string, limit = 6, lang?: string | null) {
-  const [categories, salesIds] = await Promise.all([
-    getBranchMenuForCustomer(branchId, lang),
-    topSellingItemIds(branchId, limit)
-  ]);
-
-  const availableIds = new Set(flattenMenuItems(categories).map((item) => item.id));
-  const rankedIds = salesIds.filter((id) => availableIds.has(id)).slice(0, limit);
-  const items = mapMenuItems(categories, rankedIds);
+export async function getBranchBestsellers(branchId: string, limit = 6, _lang?: string | null) {
+  const salesIds = await topSellingItemIds(branchId, limit);
+  const rankedIds = salesIds.slice(0, limit);
 
   return {
     periodDays: PERIOD_DAYS,
-    hasSalesData: items.length >= 3,
+    hasSalesData: rankedIds.length >= 3,
     itemIds: rankedIds,
-    items
+    items: []
   };
 }
 

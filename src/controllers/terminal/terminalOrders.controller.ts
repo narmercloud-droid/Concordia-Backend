@@ -2,9 +2,11 @@ import { prisma } from "../../prisma/client.ts";
 import { broadcastToTerminal } from "../../services/realtime/realtime.service.ts";
 import { OrderLifecycleService } from "../../services/order/orderLifecycle.service.ts";
 import { resolveBranchByCode } from "../../services/terminal/branchCode.service.ts";
+import { getTerminalDailyReport } from "../../services/terminal/terminalDailyReport.service.ts";
 import { ordersService } from "../../services/orders.service.ts";
 import { env } from "../../config/env.ts";
 import { wrap, fail } from "../../contracts/api.js";
+import { getBerlinTodayRange, isWithinBerlinToday } from "../../utils/berlinTime.ts";
 
 function buildCourierUrl(token?: string | null) {
   if (!token) return null;
@@ -104,6 +106,9 @@ export const getTerminalOrderDetails = wrap(async (req) => {
     });
 
     if (!order) throw fail('NOT_FOUND', 'Order not found');
+    if (!isWithinBerlinToday(order.createdAt)) {
+      throw fail('NOT_FOUND', 'Order not available');
+    }
 
     const response = enrichOrder(order);
     broadcastToTerminal(order.branchId, "order_update", response);
@@ -122,6 +127,12 @@ export const acceptOrder = wrap(async (req) => {
   req.io.to(`branch_${req.terminal.branchId}`).emit("order_updated", updated);
 
   return updated;
+});
+
+export const getTerminalDailyReportHandler = wrap(async (req) => {
+  const { branchId } = req.query;
+  if (!branchId) throw fail("INVALID_INPUT", "branchId is required");
+  return getTerminalDailyReport(String(branchId));
 });
 
 export const rejectOrder = wrap(async (req) => {

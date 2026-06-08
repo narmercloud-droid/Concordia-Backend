@@ -19,6 +19,7 @@ import {
   updatePromotions
 } from "../../controllers/manager/manager.controller.ts";
 import { getSession } from "../../controllers/manager/managerSession.controller.ts";
+import { handleMenuImageUpload } from "../../middleware/uploadMenuImage.ts";
 import {
   getMenuItemDetail,
   createCategory,
@@ -26,6 +27,8 @@ import {
   deleteCategory,
   createMenuItem,
   updateMenuItemFull,
+  uploadMenuItemImage,
+  clearMenuItemImage,
   deleteMenuItem,
   createVariantGroupHandler,
   updateVariantGroupFull,
@@ -86,6 +89,17 @@ router.delete("/menu/categories/:id", requireManagerPermission("menu_edit_struct
 router.post("/menu/items", requireManagerPermission("menu_edit_structure"), createMenuItem);
 router.patch("/menu/items/:id", updateMenuItem);
 router.patch("/menu/items/:id/full", requireManagerPermission("menu_edit_structure"), updateMenuItemFull);
+router.post(
+  "/menu/items/:branchMenuItemId/image",
+  requireManagerPermission("menu_edit_structure"),
+  handleMenuImageUpload,
+  uploadMenuItemImage
+);
+router.delete(
+  "/menu/items/:branchMenuItemId/image",
+  requireManagerPermission("menu_edit_structure"),
+  clearMenuItemImage
+);
 router.delete(
   "/menu/branch-items/:branchMenuItemId",
   requireManagerPermission("menu_edit_structure"),

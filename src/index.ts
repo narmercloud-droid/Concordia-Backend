@@ -229,6 +229,7 @@ if (env.NODE_ENV === "production") {
 
 app.use("/api/paypal/webhook", express.raw({ type: "application/json" }));
 app.use(express.json());
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   if (typeof (res as any).tson !== "function") {
