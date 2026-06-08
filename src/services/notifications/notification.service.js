@@ -9,10 +9,19 @@ export function sendWS(event, payload) {
 export async function sendPush(subscription, title, body, data = {}) {
   if (!subscription) return;
 
+  let sub = subscription;
+  if (typeof sub === 'string') {
+    try {
+      sub = JSON.parse(sub);
+    } catch {
+      return;
+    }
+  }
+
   const payload = JSON.stringify({ title, body, data });
 
   try {
-    await webpush.sendNotification(subscription, payload);
+    await webpush.sendNotification(sub, payload);
   } catch (err) {
     console.error('Push send error:', err);
   }

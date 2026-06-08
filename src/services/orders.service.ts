@@ -272,6 +272,7 @@ export class OrdersService {
         : (rest.paymentStatus ?? "pending"),
       status: "pending",
       tracking_token: trackingToken,
+      pushToken: rest.pushToken?.trim() || null,
       items: {
         create: buildOrderItems(items)
       }
