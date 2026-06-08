@@ -39,6 +39,7 @@ export type GoogleReview = {
 
 export type BranchGoogleReviews = {
   branchId: string;
+  branchName: string;
   source: "google" | "snapshot" | "unavailable";
   rating: number | null;
   reviewCount: number | null;
@@ -59,23 +60,62 @@ function googleMapsUrlFor(branchId: string, placeId?: string | null) {
   return null;
 }
 
+function enhancePhotoUrl(url?: string) {
+  if (!url) return undefined;
+  return url.replace(/=w\d+-h\d+/, "=w72-h72");
+}
+
+function relativeTimeSortKey(relativeTime?: string) {
+  if (!relativeTime) return Number.MAX_SAFE_INTEGER;
+  const t = relativeTime.toLowerCase();
+  const week = t.match(/vor (\d+) woche/);
+  if (week) return Number(week[1]) * 7;
+  const weeks = t.match(/vor (\d+) wochen/);
+  if (weeks) return Number(weeks[1]) * 7;
+  const month = t.match(/vor (\d+) monat/);
+  if (month) return Number(month[1]) * 30;
+  const months = t.match(/vor (\d+) monaten/);
+  if (months) return Number(months[1]) * 30;
+  if (t.includes("vor einem monat")) return 30;
+  if (t.includes("vor einem jahr")) return 365;
+  const years = t.match(/vor (\d+) jahr/);
+  if (years) return Number(years[1]) * 365;
+  const yearsPlural = t.match(/vor (\d+) jahren/);
+  if (yearsPlural) return Number(yearsPlural[1]) * 365;
+  const parsed = Date.parse(relativeTime);
+  if (!Number.isNaN(parsed)) return Math.max(0, Math.floor((Date.now() - parsed) / 86_400_000));
+  return 10_000;
+}
+
+function normalizeReview(r: GoogleReview): GoogleReview {
+  return {
+    ...r,
+    profilePhotoUrl: enhancePhotoUrl(r.profilePhotoUrl)
+  };
+}
+
+function sortReviewsNewestFirst(reviews: GoogleReview[]) {
+  return [...reviews].sort(
+    (a, b) => relativeTimeSortKey(a.relativeTime) - relativeTimeSortKey(b.relativeTime)
+  );
+}
+
 function pickBestReviews(
-  reviews: Array<{ rating?: number; text?: string; author_name?: string; relative_time_description?: string; profile_photo_url?: string }>
+  reviews: Array<{ rating?: number; text?: string; author_name?: string; relative_time_description?: string; profile_photo_url?: string; time?: number }>
 ): GoogleReview[] {
-  return reviews
-    .map((r) => ({
-      author: String(r.author_name ?? "Google user"),
-      rating: Number(r.rating ?? 0),
-      text: String(r.text ?? "").trim(),
-      relativeTime: r.relative_time_description,
-      profilePhotoUrl: r.profile_photo_url
-    }))
-    .filter((r) => r.rating >= 4 && r.text.length >= 20)
-    .sort((a, b) => {
-      if (b.rating !== a.rating) return b.rating - a.rating;
-      return b.text.length - a.text.length;
-    })
-    .slice(0, 8);
+  return sortReviewsNewestFirst(
+    reviews
+      .map((r) =>
+        normalizeReview({
+          author: String(r.author_name ?? "Google user"),
+          rating: Number(r.rating ?? 0),
+          text: String(r.text ?? "").trim(),
+          relativeTime: r.relative_time_description,
+          profilePhotoUrl: r.profile_photo_url
+        })
+      )
+      .filter((r) => r.rating >= 4 && r.text.length >= 20)
+  ).slice(0, 8);
 }
 
 function loadSnapshot(branchId: string): BranchGoogleReviews | null {
@@ -89,11 +129,12 @@ function loadSnapshot(branchId: string): BranchGoogleReviews | null {
     if (!row?.reviews?.length) return null;
     return {
       branchId,
+      branchName: "",
       source: "snapshot",
       rating: row.rating ?? null,
       reviewCount: row.reviewCount ?? null,
       googleMapsUrl: row.googleMapsUrl ?? googleMapsUrlFor(branchId),
-      reviews: row.reviews
+      reviews: sortReviewsNewestFirst(row.reviews.map(normalizeReview))
     };
   } catch {
     return null;
@@ -214,6 +255,7 @@ export async function getBranchGoogleReviews(branchId: string): Promise<BranchGo
 
   let result: BranchGoogleReviews = {
     branchId,
+    branchName: branch.name,
     source: "unavailable",
     rating: null,
     reviewCount: null,
@@ -229,6 +271,7 @@ export async function getBranchGoogleReviews(branchId: string): Promise<BranchGo
         if (live && live.reviews.length > 0) {
           result = {
             branchId,
+            branchName: branch.name,
             source: "google",
             ...live,
             googleMapsUrl: live.googleMapsUrl ?? googleMapsUrlFor(branchId, placeId)
@@ -242,7 +285,7 @@ export async function getBranchGoogleReviews(branchId: string): Promise<BranchGo
 
   if (result.reviews.length === 0) {
     const snapshot = loadSnapshot(branchId);
-    if (snapshot) result = snapshot;
+    if (snapshot) result = { ...snapshot, branchName: branch.name };
   }
 
   setSimpleCache(cacheKey, result, CACHE_TTL_SEC * 1000);

@@ -29,6 +29,7 @@
     "menu:export": "node scripts/export-menu-catalog.mjs",
     "menu:locales": "node scripts/generate-menu-locales.mjs",
     "sync:google-reviews": "node scripts/sync-google-reviews.mjs",
+    "extract:google-maps-reviews": "node scripts/extract-google-maps-reviews.mjs",
     "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js",
     "lifecycle:test": "node scripts/lifecycle_tests/run_lifecycle_tests.mjs",
     "test:ui": "playwright test",

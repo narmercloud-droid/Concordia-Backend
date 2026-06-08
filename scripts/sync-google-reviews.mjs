@@ -53,6 +53,7 @@ async function fetchDetails(placeId) {
   url.searchParams.set("place_id", placeId);
   url.searchParams.set("fields", "rating,user_ratings_total,reviews,url,place_id");
   url.searchParams.set("key", apiKey);
+  url.searchParams.set("reviews_sort", "newest");
   const res = await fetch(url);
   const data = await res.json();
   if (data.status !== "OK") throw new Error(`Details failed: ${data.status}`);
@@ -65,10 +66,10 @@ function pickBest(reviews = []) {
       author: r.author_name,
       rating: r.rating,
       text: String(r.text ?? "").trim(),
-      relativeTime: r.relative_time_description
+      relativeTime: r.relative_time_description,
+      profilePhotoUrl: r.profile_photo_url?.replace(/=w\d+-h\d+/, "=w72-h72")
     }))
     .filter((r) => r.rating >= 4 && r.text.length >= 20)
-    .sort((a, b) => (b.rating - a.rating) || (b.text.length - a.text.length))
     .slice(0, 8);
 }
 
