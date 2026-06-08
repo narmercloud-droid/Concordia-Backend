@@ -34,6 +34,45 @@ export async function getBranchHours(branchId: string) {
   });
 }
 
+export async function updateBranchVisibility(
+  branchId: string,
+  status: "live" | "coming_soon"
+) {
+  if (!["live", "coming_soon"].includes(status)) {
+    throw new Error("status must be live or coming_soon");
+  }
+
+  const branch = await prisma.branch.findUnique({
+    where: { id: branchId },
+    include: { BranchConfig: true }
+  });
+
+  if (!branch) throw new Error("Branch not found");
+
+  const existing = (branch.BranchConfig?.configJson ?? {}) as Record<string, unknown>;
+  const configJson = { ...existing, status };
+
+  if (branch.BranchConfig) {
+    await prisma.branchConfig.update({
+      where: { branchId },
+      data: { configJson }
+    });
+  } else {
+    await prisma.branchConfig.create({
+      data: {
+        id: `config-${branchId}`,
+        branchId,
+        configJson
+      }
+    });
+  }
+
+  const { invalidateBranchListCache } = await import("../customer/branchMenu.service.ts");
+  invalidateBranchListCache();
+
+  return getManagerBranch(branchId);
+}
+
 export async function updateBranchHours(
   branchId: string,
   hours: Array<{ dayOfWeek: number; openTime: string; closeTime: string }>
@@ -142,7 +181,8 @@ export async function getBranchMenuForManager(branchId: string) {
               id: true,
               name: true,
               basePrice: true,
-              kitchen: true
+              kitchen: true,
+              imageUrl: true
             }
           }
         }
@@ -163,7 +203,8 @@ export async function getBranchMenuForManager(branchId: string) {
       price: entry.price ?? entry.menuItem.basePrice ?? 0,
       kitchen: entry.menuItem.kitchen ?? "B",
       sortOrder: entry.menuItem.sortOrder ?? 0,
-      isAvailable: entry.isAvailable
+      isAvailable: entry.isAvailable,
+      imageUrl: entry.imageUrl ?? entry.menuItem.imageUrl ?? null
     }))
   }));
 }

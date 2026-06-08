@@ -5,6 +5,7 @@ import { managerAccess } from "../../middleware/managerAccess.ts";
 import { requireManagerPermission } from "../../middleware/requireManagerPermission.ts";
 import {
   getBranch,
+  updateBranchVisibility,
   getHours,
   updateHours,
   getConfig,
@@ -67,6 +68,7 @@ router.use(adminAuth, managerAccess);
 
 router.get("/session", getSession);
 router.get("/branch", getBranch);
+router.patch("/branch/status", updateBranchVisibility);
 router.get("/dashboard", requireManagerPermission("dashboard"), getDashboard);
 router.get("/hours", requireManagerPermission("hours_view"), getHours);
 router.put("/hours", requireManagerPermission("hours_edit"), updateHours);

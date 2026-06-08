@@ -27,6 +27,24 @@ export const updateHours = wrap(async (req: Request) => {
   return managerService.updateBranchHours(branchId(req), hours);
 });
 
+export const updateBranchVisibility = wrap(async (req: Request) => {
+  const user = (req as any).user;
+  if (user?.role !== "admin") {
+    throw fail("FORBIDDEN", "Only super admin can change branch visibility");
+  }
+
+  const status = req.body?.status;
+  if (!["live", "coming_soon"].includes(status)) {
+    throw fail("INVALID_INPUT", "status must be live or coming_soon");
+  }
+
+  try {
+    return await managerService.updateBranchVisibility(branchId(req), status);
+  } catch (err: any) {
+    throw fail("INVALID_INPUT", err?.message ?? "Could not update branch status");
+  }
+});
+
 export const getConfig = wrap(async (req: Request) => {
   return managerService.getBranchConfig(branchId(req));
 });
