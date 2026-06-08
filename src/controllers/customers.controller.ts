@@ -1,5 +1,6 @@
 ﻿import type { Request  } from "express";
 import { customerService } from "../services/customers.service.ts";
+import { ordersService } from "../services/orders.service.ts";
 import { wrap, fail } from "../contracts/api.js";
 
 export const CustomersController = {
@@ -81,6 +82,28 @@ export const CustomersController = {
     if (!phoneNumber) throw fail('INVALID_INPUT', 'phoneNumber is required');
     const customer = await customerService.updatePhone(customerId, String(phoneNumber));
     return customer;
+  }),
+
+  myOrders: wrap(async (req: Request) => {
+    const customerId = req.user?.id;
+    if (!customerId) throw fail("UNAUTHORIZED", "Unauthorized");
+    const orders = await ordersService.listCustomerOrders(customerId);
+    return orders.map((order) => ({
+      id: order.id,
+      status: order.status,
+      branchId: order.branchId,
+      fulfillmentType: order.fulfillmentType,
+      createdAt: order.createdAt,
+      orderTotal: order.orderTotal,
+      items: order.items.map((item) => ({
+        itemId: item.itemId,
+        name: item.item?.name ?? "Item",
+        quantity: item.quantity,
+        price: item.price
+      })),
+      hasReview: !!order.review,
+      canReview: ["delivered", "completed", "picked_up"].includes(order.status) && !order.review
+    }));
   })
 };
 

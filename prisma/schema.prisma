@@ -722,17 +722,21 @@ model OrderTrackingEvent {
 }
 
 model Review {
-  id         String   @id @default(uuid())
-  orderId    String   @unique
-  customerId String
-  branchId   String
-  rating     Int
-  comment    String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  branch     Branch   @relation(fields: [branchId], references: [id])
-  customer   Customer @relation(fields: [customerId], references: [id])
-  order      Order    @relation("OrderReview", fields: [orderId], references: [id])
+  id             String    @id @default(uuid())
+  orderId        String    @unique
+  customerId     String?
+  branchId       String
+  foodRating     Int
+  deliveryRating Int?
+  rating         Int?
+  comment        String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  branch         Branch    @relation(fields: [branchId], references: [id])
+  customer       Customer? @relation(fields: [customerId], references: [id])
+  order          Order     @relation("OrderReview", fields: [orderId], references: [id])
+
+  @@index([branchId, createdAt])
 }
 
 model ItemRating {

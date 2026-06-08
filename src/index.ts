@@ -1,4 +1,4 @@
-﻿import "./globalTypes.ts";
+import "./globalTypes.ts";
 
 import express from "express";
 import type { Request, Response, NextFunction } from "express";
@@ -68,6 +68,7 @@ import courierViewRoutes from "./routes/courier/courier.routes.ts";
 import terminalRoutes from "./routes/terminal/terminal.routes.ts";
 import customerTrackingRoutes from "./routes/customer/customerTracking.routes.ts";
 import branchPublicRoutes from "./routes/customer/branchPublic.routes.ts";
+import reviewRoutes from "./routes/review.routes.ts";
 import managerRoutes from "./routes/manager/manager.routes.ts";
 import superAdminRoutes from "./routes/superAdmin/superAdmin.routes.ts";
 import adminCourierRoutes from "./routes/admin/adminCourier.routes.ts";
@@ -425,6 +426,7 @@ app.use("/api/payments", paymentsRoutes);
 app.use("/api/v1/print", printRoutes);
 app.use("/api/v1/courier", courierTrackingRoutes);
 app.use("/api/v1/dashboard", dashboardRoutes);
+app.use("/api/reviews", reviewRoutes);
 
 // ---------------------------------------------
 // Routes - Public

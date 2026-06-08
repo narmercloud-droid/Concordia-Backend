@@ -394,7 +394,8 @@ export class OrdersService {
     const order = await prisma.order.findUnique({
       where: { id: orderId },
       include: {
-        trackingEvents: { orderBy: { timestamp: "asc" } }
+        trackingEvents: { orderBy: { timestamp: "asc" } },
+        review: true
       }
     });
 
@@ -414,11 +415,25 @@ export class OrdersService {
         }))
       : [{ status: order.status, timestamp: order.updatedAt }];
 
+    const reviewableStatuses = new Set(["delivered", "completed", "picked_up"]);
+
     return {
       id: order.id,
       status: order.status,
       courierStatus: order.courierStatus,
       fulfillmentType: order.fulfillmentType,
+      canReview: reviewableStatuses.has(order.status) && !order.review,
+      hasReview: !!order.review,
+      review: order.review
+        ? {
+            id: order.review.id,
+            foodRating: order.review.foodRating,
+            deliveryRating: order.review.deliveryRating,
+            rating: order.review.rating,
+            comment: order.review.comment,
+            createdAt: order.review.createdAt
+          }
+        : null,
       scheduledFor: order.scheduledFor,
       estimatedPrepTime: order.estimatedPrepTime,
       etaReadyAt: order.etaReadyAt,
@@ -452,7 +467,10 @@ export class OrdersService {
     return prisma.order.findMany({
       where: { customerId },
       orderBy: { createdAt: "desc" },
-      include: { items: true }
+      include: {
+        items: { include: { item: true } },
+        review: true
+      }
     });
   }
 

@@ -1,11 +1,21 @@
-﻿import type { AuthenticatedRequest } from "../globalTypes.ts";
+﻿import type { Request } from "express";
+import type { AuthenticatedRequest } from "../globalTypes.ts";
 import { reviewService } from "../services/review.service.ts";
 import { wrap } from "../contracts/api.js";
 
 export const ReviewController = {
+  orderState: wrap(async (req: Request) => {
+    return await reviewService.getOrderReviewState(req.params.orderId);
+  }),
+
   submit: wrap(async (req: AuthenticatedRequest) => {
     const customerId = req.user.id;
     const review = await reviewService.submitReview(customerId, req.body);
+    return review;
+  }),
+
+  submitGuest: wrap(async (req: Request) => {
+    const review = await reviewService.submitGuestReview(req.body);
     return review;
   }),
 
@@ -41,9 +51,3 @@ export const ReviewController = {
     return rating;
   })
 };
-
-
-
-
-
-
