@@ -21,7 +21,8 @@ const BRANCHES = [
     lat: 51.3703503,
     lng: 6.4105939,
     lieferandoUrl: "https://www.lieferando.de/speisekarte/pizzeria-concordia-concordienplatz",
-    websiteUrl: "https://www.pizzeria-concordia-kempen.de/"
+    websiteUrl: "https://www.pizzeria-concordia-kempen.de/",
+    googlePlaceId: null
   },
   {
     id: "concordia-straelen",
@@ -96,6 +97,7 @@ async function upsertBranch(branch, menuData) {
     lng: branch.lng ?? null,
     lieferandoUrl: branch.lieferandoUrl ?? null,
     websiteUrl: branch.websiteUrl ?? null,
+    googlePlaceId: branch.googlePlaceId ?? null,
     supportsPickup: true,
     supportsDelivery: true,
     ...kempenExtras

@@ -1,0 +1,10 @@
+{
+  "concordia-kempen": {
+    "textQuery": "Pizzeria Concordia Concordienplatz 1 Kempen Germany",
+    "googleMapsQuery": "Pizzeria+Concordia+Concordienplatz+1+Kempen"
+  },
+  "concordia-straelen": {
+    "textQuery": "Pizzeria Concordia Venloer Straße 22 Straelen Germany",
+    "googleMapsQuery": "Pizzeria+Concordia+Venloer+Straße+22+Straelen"
+  }
+}

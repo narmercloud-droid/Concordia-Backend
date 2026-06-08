@@ -28,6 +28,7 @@
     "delete:test-branch": "node scripts/delete-test-branch.mjs",
     "menu:export": "node scripts/export-menu-catalog.mjs",
     "menu:locales": "node scripts/generate-menu-locales.mjs",
+    "sync:google-reviews": "node scripts/sync-google-reviews.mjs",
     "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js",
     "lifecycle:test": "node scripts/lifecycle_tests/run_lifecycle_tests.mjs",
     "test:ui": "playwright test",

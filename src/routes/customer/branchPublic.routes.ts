@@ -17,6 +17,7 @@ import {
 import { validateDiscountCode } from "../../services/customer/discountCode.service.ts";
 import { createGiftCardPurchase } from "../../services/customer/giftCard.service.ts";
 import { getFreeDrinkOptions } from "../../services/customer/freeDrink.service.ts";
+import { getBranchGoogleReviews } from "../../services/customer/googleReviews.service.ts";
 import { resolveMenuLanguage } from "../../services/customer/menuTranslation.service.ts";
 import { prisma } from "../../prisma/client.ts";
 import { wrap } from "../../contracts/api.ts";
@@ -159,6 +160,10 @@ router.post("/branches/:branchId/delivery-quote", wrap(async (req) => {
   return quoteDelivery(req.params.branchId, addressText, total, {
     postalCode: postcodeText || undefined
   });
+}));
+
+router.get("/branches/:branchId/google-reviews", publicCache(3600), wrap(async (req) => {
+  return await getBranchGoogleReviews(req.params.branchId);
 }));
 
 router.get("/branches/:branchId/bestsellers", publicCache(300), wrap(async (req) => {

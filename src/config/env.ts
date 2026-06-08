@@ -27,7 +27,8 @@ const envSchema = z.object({
   SENTRY_TRACES_SAMPLE_RATE: z.preprocess(
     (value) => (value ? Number(value) : undefined),
     z.number().min(0).max(1).optional()
-  )
+  ),
+  GOOGLE_PLACES_API_KEY: z.string().min(8).optional()
 });
 
 const parsed = envSchema.safeParse(process.env);
