@@ -63,11 +63,11 @@
       "description": null
     },
     "10006": {
-      "name": "Baguette cu Hinterschinken",
+      "name": "Baguette cu Șuncă",
       "description": null
     },
     "10007": {
-      "name": "Baguette cu Thunfisch",
+      "name": "Baguette cu Ton",
       "description": null
     },
     "10008": {
@@ -76,39 +76,39 @@
     },
     "10009": {
       "name": "Pasta Salmone",
-      "description": "cu spinach, salmon, garlic și Sahnesauce"
+      "description": "cu spinach, salmon, garlic și sos de smântână"
     },
     "10010": {
       "name": "Pasta Vegetarisch",
-      "description": "cu broccoli, bell pepper, frischen mushrooms, onions și tomatoes-Sahnesauce"
+      "description": "cu broccoli, bell pepper, proaspete mushrooms, onions și tomatoes-sos de smântână"
     },
     "10011": {
       "name": "Pasta Gorgonzola",
-      "description": "cu broccoli, frischen mushrooms, Gorgonzolakäse și Sahnesauce"
+      "description": "cu broccoli, proaspete mushrooms, Gorgonzolakäse și sos de smântână"
     },
     "10012": {
       "name": "Pasta Pasta Concordia",
-      "description": "cu Hähnchenbruststreifen, mushrooms, broccoli, scharfen pepperonis, garlic și tomatoes-Sahnesauce"
+      "description": "cu Pui, mushrooms, broccoli, scharfen pepperonis, garlic și tomatoes-sos de smântână"
     },
     "10013": {
       "name": "Pasta Formaggi",
-      "description": "cu vier verschiedenen cheesesorten și Sahnesauce"
+      "description": "cu vier verschiedenen cheesesorten și sos de smântână"
     },
     "10014": {
       "name": "Pasta Alla Chef",
-      "description": "cu Hähnchenbruststreifen, frischen mushrooms, corn, Goudakäse, tomatoes și Sahnesauce"
+      "description": "cu Pui, proaspete mushrooms, corn, brânză Gouda, tomatoes și sos de smântână"
     },
     "10015": {
       "name": "Pasta Carbonara",
-      "description": "cu Hinterschinken, Ei și Sahnesauce"
+      "description": "cu Șuncă, Ei și sos de smântână"
     },
     "10016": {
       "name": "Pasta Alla Panna",
-      "description": "cu Hinterschinken, frischen mushrooms și Sahnesauce"
+      "description": "cu Șuncă, proaspete mushrooms și sos de smântână"
     },
     "10017": {
       "name": "Pasta Toscana",
-      "description": "cu Hinterschinken, Krabben, frischen mushrooms, garlic, tomatoes și Sahnesauce"
+      "description": "cu Șuncă, Creveți, proaspete mushrooms, garlic, tomatoes și sos de smântână"
     },
     "10018": {
       "name": "Pasta Napoli",
@@ -124,83 +124,83 @@
     },
     "10021": {
       "name": "Capricciosa Salată",
-      "description": "gemischter Salat cu tuna, Ei, Hinterschinken și cheese"
+      "description": "salată mixtă cu tuna, Ei, Șuncă și cheese"
     },
     "10022": {
       "name": "Casa Salată",
-      "description": "gemischter Salat cu corn, bell pepper, olives și feta cheese"
+      "description": "salată mixtă cu corn, bell pepper, olives și feta cheese"
     },
     "10023": {
-      "name": "Hähnchen Salată",
-      "description": "gemischter Salat cu gebratene Hähnchenbruststreifen, bell pepper și Rucola"
+      "name": "Pui Salată",
+      "description": "salată mixtă cu prăjite Pui, bell pepper și Rucola"
     },
     "10024": {
       "name": "Hawaii Salată",
-      "description": "gemischter Salat cu Hinterschinken, pineapple și cheese"
+      "description": "salată mixtă cu Șuncă, pineapple și cheese"
     },
     "10025": {
       "name": "Tonno Salată",
-      "description": "gemischter Salat și tuna"
+      "description": "salată mixtă și tuna"
     },
     "10026": {
       "name": "Concordia Salată",
-      "description": "gemischter Salat cu Krabben, frische mushrooms și Rucola"
+      "description": "salată mixtă cu Creveți, proaspete mushrooms și Rucola"
     },
     "10027": {
       "name": "Primavera Salată",
-      "description": "gemischter Salat cu olives, feta cheese, artichokes și Ei"
+      "description": "salată mixtă cu olives, feta cheese, artichokes și Ei"
     },
     "10028": {
       "name": "Mista Salată",
-      "description": "gemischter Salat cu corn și bell pepper"
+      "description": "salată mixtă cu corn și bell pepper"
     },
     "10029": {
       "name": "Fantasia Salată",
-      "description": "gemischter Salat cu tuna, Hinterschinken, artichokes, feta cheese și Ei"
+      "description": "salată mixtă cu tuna, Șuncă, artichokes, feta cheese și Ei"
     },
     "10030": {
       "name": "Penne Bake",
-      "description": "cu Penne, frischen mushrooms, broccoli, corn și Sahnesauce"
+      "description": "cu Penne, proaspete mushrooms, broccoli, corn și sos de smântână"
     },
     "10031": {
       "name": "Tortellini Bake",
-      "description": "cu Tortellini, Hinterschinken, broccoli și Sahnesauce"
+      "description": "cu Tortellini, Șuncă, broccoli și sos de smântână"
     },
     "10032": {
       "name": "Spaghetti Bake",
-      "description": "cu Spaghetti, onions, tomatoes, bell pepper și tomatoes-Sahnesauce"
+      "description": "cu Spaghetti, onions, tomatoes, bell pepper și tomatoes-sos de smântână"
     },
     "10033": {
       "name": "Döner Bake",
-      "description": "cu döner meat, tomatoes, onions, feta cheese, bell pepper și Sahnesauce"
+      "description": "cu döner meat, tomatoes, onions, feta cheese, bell pepper și sos de smântână"
     },
     "10034": {
-      "name": "Gemüse Bake",
-      "description": "cu Spaghetti, frischen mushrooms, spinach, broccoli, bell pepper, onions și tomatoes-Sahnesauce"
+      "name": "Legume Bake",
+      "description": "cu Spaghetti, proaspete mushrooms, spinach, broccoli, bell pepper, onions și tomatoes-sos de smântână"
     },
     "10035": {
-      "name": "Pizza Spargel",
-      "description": "cu Hinterschinken, salami, asparagus și Sauce Hollandaise"
+      "name": "Pizza Sparghel",
+      "description": "cu Șuncă, salami, asparagus și Sos olandez"
     },
     "10036": {
       "name": "Pizza Rustica",
-      "description": "cu Hinterschinken, tuna, onions, bell pepper și scharfe pepperoni"
+      "description": "cu Șuncă, tuna, onions, bell pepper și iute pepperoni"
     },
     "10037": {
       "name": "Pizza Bruno",
-      "description": "cu spinach, Hähnchenbruststreifen și Sauce Hollandaise"
+      "description": "cu spinach, Pui și Sos olandez"
     },
     "10038": {
       "name": "Pizza Enzo",
-      "description": "cu salami și frische mushrooms"
+      "description": "cu salami și proaspete mushrooms"
     },
     "10039": {
-      "name": "Pizza Hähnchen",
-      "description": "cu Hähnchenbruststreifen, broccoli și Sauce Hollandaise"
+      "name": "Pizza Pui",
+      "description": "cu Pui, broccoli și Sos olandez"
     },
     "10040": {
       "name": "Pizza Chef",
-      "description": "cu Krabben, spinach, broccoli, tuna și garlic"
+      "description": "cu Creveți, spinach, broccoli, tuna și garlic"
     },
     "10041": {
       "name": "Pizza Italia",
@@ -208,7 +208,7 @@
     },
     "10042": {
       "name": "Pizza Vegetaria A",
-      "description": "cu spinach, bell pepper, broccoli și frische mushrooms"
+      "description": "cu spinach, bell pepper, broccoli și proaspete mushrooms"
     },
     "10043": {
       "name": "Pizza Vegetaria B",
@@ -216,35 +216,35 @@
     },
     "10044": {
       "name": "Pizza Vegetaria C",
-      "description": "cu frische mushrooms, onions și olives"
+      "description": "cu proaspete mushrooms, onions și olives"
     },
     "10045": {
       "name": "Pizza Vegetaria D",
-      "description": "cu Cherry tomatoes, frische mushrooms, Mozzarella, spinach și garlic"
+      "description": "cu Cherry tomatoes, proaspete mushrooms, Mozzarella, spinach și garlic"
     },
     "10046": {
       "name": "Pizza Mexico",
-      "description": "cu döner meat, onions și Sauce Hollandaise"
+      "description": "cu döner meat, onions și Sos olandez"
     },
     "10047": {
       "name": "Pizza Concordia",
-      "description": "cu döner meat, onions, bell pepper, broccoli și Sauce Hollandaise"
+      "description": "cu döner meat, onions, bell pepper, broccoli și Sos olandez"
     },
     "10048": {
       "name": "Pizza Bella",
-      "description": "cu onions, bell pepper, corn și Hähnchenbruststreifen"
+      "description": "cu onions, bell pepper, corn și Pui"
     },
     "10049": {
       "name": "Pizza Vegas",
-      "description": "cu frische mushrooms, Cherry tomatoes, Sauce Hollandaise, olives și Hähnchenbruststreifen"
+      "description": "cu proaspete mushrooms, Cherry tomatoes, Sos olandez, olives și Pui"
     },
     "10050": {
       "name": "Calzone Spezial",
-      "description": "zugeklappte Pizza gefüllt cu tuna, onions, feta cheese și scharfe pepperoni"
+      "description": "zugeklappte Pizza gefüllt cu tuna, onions, feta cheese și iute pepperoni"
     },
     "10051": {
       "name": "Calzone Concordia",
-      "description": "zugeklappte Pizza gefüllt cu Hinterschinken, salami, tuna, onions și pepperoni"
+      "description": "zugeklappte Pizza gefüllt cu Șuncă, salami, tuna, onions și pepperoni"
     },
     "10052": {
       "name": "Calzone Döner",
@@ -252,7 +252,7 @@
     },
     "10053": {
       "name": "Pizza Parma",
-      "description": "cu Rucola, Parmaschinken, Parmesankäse și frische tomatoes"
+      "description": "cu Rucola, Șuncă Parma, Parmezan și proaspete tomatoes"
     },
     "10054": {
       "name": "Pizza Diavolo",
@@ -264,11 +264,11 @@
     },
     "10056": {
       "name": "Ham & mushroom pizza",
-      "description": "cu Hinterschinken și mushrooms"
+      "description": "cu Șuncă și mushrooms"
     },
     "10057": {
       "name": "Pizza Hawaii",
-      "description": "cu Hinterschinken și pineapple"
+      "description": "cu Șuncă și pineapple"
     },
     "10058": {
       "name": "Pizza Mozzarella",
@@ -284,15 +284,15 @@
     },
     "10061": {
       "name": "Pizza Milano",
-      "description": "cu spinach, Krabben, mushrooms și garlic"
+      "description": "cu spinach, Creveți, mushrooms și garlic"
     },
     "10062": {
-      "name": "Pizza Lachs",
+      "name": "Pizza Somon",
       "description": "cu spinach, salmon și garlic"
     },
     "10063": {
       "name": "Four seasons pizza",
-      "description": "cu salami, Hinterschinken, tuna și onions"
+      "description": "cu salami, Șuncă, tuna și onions"
     },
     "10064": {
       "name": "Four cheeses pizza",
@@ -312,11 +312,11 @@
     },
     "10068": {
       "name": "Pizza Prosciutto",
-      "description": "cu Hinterschinken"
+      "description": "cu Șuncă"
     },
     "10069": {
       "name": "Pizza Funghi",
-      "description": "cu frische mushrooms"
+      "description": "cu proaspete mushrooms"
     },
     "10070": {
       "name": "Pizza Tonno",
@@ -328,7 +328,7 @@
     },
     "10072": {
       "name": "Pizza Scampi",
-      "description": "cu Krabben și garlic"
+      "description": "cu Creveți și garlic"
     },
     "10073": {
       "name": "Seafood pizza",
@@ -347,7 +347,7 @@
       "description": null
     },
     "10077": {
-      "name": "Stuffed pizza rolls cu Hinterschinken",
+      "name": "Stuffed pizza rolls cu Șuncă",
       "description": null
     },
     "10078": {
@@ -355,7 +355,7 @@
       "description": null
     },
     "10079": {
-      "name": "Stuffed pizza rolls cu Dönerfleisch",
+      "name": "Stuffed pizza rolls cu Döner",
       "description": null
     },
     "10080": {
@@ -363,11 +363,11 @@
       "description": null
     },
     "10081": {
-      "name": "Stuffed pizza rolls cu Käse",
+      "name": "Stuffed pizza rolls cu Brânză",
       "description": null
     },
     "10082": {
-      "name": "Stuffed pizza rolls cu Thunfisch",
+      "name": "Stuffed pizza rolls cu Ton",
       "description": null
     },
     "10083": {
@@ -376,7 +376,7 @@
     },
     "10084": {
       "name": "Pizza rolls (10 pcs)",
-      "description": "cu Kräuterbutter"
+      "description": "cu Unt cu ierburi"
     },
     "10085": {
       "name": "Portion of herb butter",
@@ -384,31 +384,31 @@
     },
     "10086": {
       "name": "Schnitzel Hawaii",
-      "description": "cu Hinterschinken, pineapple și Sahnesauce"
+      "description": "cu Șuncă, pineapple și sos de smântână"
     },
     "10087": {
       "name": "Broccoli Schnitzel",
-      "description": "cu broccoli și Sahnesauce"
+      "description": "cu broccoli și sos de smântână"
     },
     "10088": {
       "name": "Zwiebel Schnitzel",
-      "description": "cu gebratene onions și Sahnesauce"
+      "description": "cu prăjite onions și sos de smântână"
     },
     "10089": {
       "name": "Hollandaise Schnitzel",
-      "description": "cu broccoli, frische mushrooms, onions și Sauce Hollandaise"
+      "description": "cu broccoli, proaspete mushrooms, onions și Sos olandez"
     },
     "10090": {
-      "name": "Spinat Schnitzel",
-      "description": "cu spinach, garlic și Sahnesauce"
+      "name": "Spanac Schnitzel",
+      "description": "cu spinach, garlic și sos de smântână"
     },
     "10091": {
-      "name": "Paprikaschnitzel",
+      "name": "Ardeischnitzel",
       "description": "cu Balkansauce"
     },
     "10092": {
-      "name": "Champignonschnitzel",
-      "description": "cu mushrooms și Sahnesauce"
+      "name": "Ciupercichnitzel",
+      "description": "cu mushrooms și sos de smântână"
     },
     "10093": {
       "name": "Wiener schnitzel",
@@ -416,7 +416,7 @@
     },
     "10094": {
       "name": "Jäger schnitzel",
-      "description": "cu Jägersauce"
+      "description": "cu sos vânătoresc"
     },
     "10095": {
       "name": "Double cheese burger",
@@ -428,7 +428,7 @@
     },
     "10097": {
       "name": "Chicken burger",
-      "description": "cu 135g Hähnchenfleisch, Eisbergsalat, Gurken, tomatoes, onions și Sauce"
+      "description": "cu 135g Puifleisch, Eisbergsalat, Gurken, tomatoes, onions și Sauce"
     },
     "10098": {
       "name": "Double burger",
@@ -455,7 +455,7 @@
       "description": null
     },
     "10104": {
-      "name": "Mayonnaise",
+      "name": "Maioneză",
       "description": null
     },
     "10105": {
@@ -504,11 +504,11 @@
     },
     "10116": {
       "name": "Sprite 1,0l (MEHRWEG)",
-      "description": "Bist du bereit für Sprite? Die einzigartige Formel aus grünen Limetten și sonnengelben Zitronen erfrischt dich maximal."
+      "description": null
     },
     "10117": {
       "name": "Mezzo Mix 1,0l (MEHRWEG)",
-      "description": "Mixt euch eine gute Zeit cu Mezzo Mix, dem erfrischend-leckeren Kuss aus Cola și Orange."
+      "description": null
     },
     "10118": {
       "name": "Sparkling mineral water 0,25l",
@@ -520,7 +520,7 @@
     },
     "10120": {
       "name": "Sprite 0,33l (MEHRWEG)",
-      "description": "Bist du bereit für Sprite? Die einzigartige Formel aus grünen Limetten și sonnengelben Zitronen erfrischt dich maximal."
+      "description": null
     },
     "10121": {
       "name": "Still mineral water 0,25l",
@@ -532,15 +532,15 @@
     },
     "10123": {
       "name": "Fanta Orange 0,33l (MEHRWEG)",
-      "description": "Trinke Fanta. Lebe bunter. Spritzig erfrischend begleitet die originale Fanta Orange jede Lebenssituation și macht jetzt noch mehr Spaß."
+      "description": null
     },
     "10124": {
       "name": "Fanta Orange 1,0l (MEHRWEG)",
-      "description": "Trinke Fanta. Lebe bunter. Spritzig erfrischend begleitet die originale Fanta Orange jede Lebenssituation și macht jetzt noch mehr Spaß."
+      "description": null
     },
     "10125": {
       "name": "Coca-Cola 0,33l (MEHRWEG)",
-      "description": "Coca-Cola steht für einzigartigen Geschmack, Erfrischung și Momente voller Lebensfreude. Die 0,33l Glas-Mehrwegflasche ist unsere Ikone für perfekten Trinkgenuss seit 1886."
+      "description": null
     },
     "10126": {
       "name": "Coca-Cola 1,0l (MEHRWEG)",

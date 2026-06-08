@@ -47,7 +47,7 @@
   },
   "items": {
     "10002": {
-      "name": "Baguette के साथ Sucuk",
+      "name": "Baguette के साथ सुजुक",
       "description": null
     },
     "10003": {
@@ -55,7 +55,7 @@
       "description": null
     },
     "10004": {
-      "name": "Baguette के साथ Mozzarella",
+      "name": "Baguette के साथ मोज़ारेला",
       "description": null
     },
     "10005": {
@@ -63,52 +63,52 @@
       "description": null
     },
     "10006": {
-      "name": "Baguette के साथ Hinterschinken",
+      "name": "Baguette के साथ हैम",
       "description": null
     },
     "10007": {
-      "name": "Baguette के साथ Thunfisch",
+      "name": "Baguette के साथ टूना",
       "description": null
     },
     "10008": {
-      "name": "Baguette के साथ Salami",
+      "name": "Baguette के साथ सलामी",
       "description": null
     },
     "10009": {
       "name": "Pasta Salmone",
-      "description": "के साथ spinach, salmon, garlic और Sahnesauce"
+      "description": "के साथ spinach, salmon, garlic और क्रीम सॉस"
     },
     "10010": {
       "name": "Pasta Vegetarisch",
-      "description": "के साथ broccoli, bell pepper, frischen mushrooms, onions और tomatoes-Sahnesauce"
+      "description": "के साथ broccoli, bell pepper, ताज़े mushrooms, onions और tomatoes-क्रीम सॉस"
     },
     "10011": {
-      "name": "Pasta Gorgonzola",
-      "description": "के साथ broccoli, frischen mushrooms, Gorgonzolakäse और Sahnesauce"
+      "name": "Pasta गोरगोंज़ोला",
+      "description": "के साथ broccoli, ताज़े mushrooms, गोरगोंज़ोलाkäse और क्रीम सॉस"
     },
     "10012": {
       "name": "Pasta Pasta Concordia",
-      "description": "के साथ Hähnchenbruststreifen, mushrooms, broccoli, scharfen pepperonis, garlic और tomatoes-Sahnesauce"
+      "description": "के साथ चिकन स्ट्रिप्स, mushrooms, broccoli, scharfen pepperonis, garlic और tomatoes-क्रीम सॉस"
     },
     "10013": {
       "name": "Pasta Formaggi",
-      "description": "के साथ vier verschiedenen cheesesorten और Sahnesauce"
+      "description": "के साथ vier verschiedenen cheesesorten और क्रीम सॉस"
     },
     "10014": {
       "name": "Pasta Alla Chef",
-      "description": "के साथ Hähnchenbruststreifen, frischen mushrooms, corn, Goudakäse, tomatoes और Sahnesauce"
+      "description": "के साथ चिकन स्ट्रिप्स, ताज़े mushrooms, corn, गौडा चीज़, tomatoes और क्रीम सॉस"
     },
     "10015": {
       "name": "Pasta Carbonara",
-      "description": "के साथ Hinterschinken, Ei और Sahnesauce"
+      "description": "के साथ हैम, Ei और क्रीम सॉस"
     },
     "10016": {
       "name": "Pasta Alla Panna",
-      "description": "के साथ Hinterschinken, frischen mushrooms और Sahnesauce"
+      "description": "के साथ हैम, ताज़े mushrooms और क्रीम सॉस"
     },
     "10017": {
       "name": "Pasta Toscana",
-      "description": "के साथ Hinterschinken, Krabben, frischen mushrooms, garlic, tomatoes और Sahnesauce"
+      "description": "के साथ हैम, झींगा, ताज़े mushrooms, garlic, tomatoes और क्रीम सॉस"
     },
     "10018": {
       "name": "Pasta Napoli",
@@ -120,87 +120,87 @@
     },
     "10020": {
       "name": "Caprese Salad",
-      "description": "के साथ tomatoes, Mozzarella और Rucola"
+      "description": "के साथ tomatoes, मोज़ारेला और रुकोला"
     },
     "10021": {
       "name": "Capricciosa Salad",
-      "description": "gemischter Salat के साथ tuna, Ei, Hinterschinken और cheese"
+      "description": "मिश्रित सलाद के साथ tuna, Ei, हैम और cheese"
     },
     "10022": {
       "name": "Casa Salad",
-      "description": "gemischter Salat के साथ corn, bell pepper, olives और feta cheese"
+      "description": "मिश्रित सलाद के साथ corn, bell pepper, olives और feta cheese"
     },
     "10023": {
-      "name": "Hähnchen Salad",
-      "description": "gemischter Salat के साथ gebratene Hähnchenbruststreifen, bell pepper और Rucola"
+      "name": "चिकन Salad",
+      "description": "मिश्रित सलाद के साथ तले हुए चिकन स्ट्रिप्स, bell pepper और रुकोला"
     },
     "10024": {
       "name": "Hawaii Salad",
-      "description": "gemischter Salat के साथ Hinterschinken, pineapple और cheese"
+      "description": "मिश्रित सलाद के साथ हैम, pineapple और cheese"
     },
     "10025": {
       "name": "Tonno Salad",
-      "description": "gemischter Salat और tuna"
+      "description": "मिश्रित सलाद और tuna"
     },
     "10026": {
       "name": "Concordia Salad",
-      "description": "gemischter Salat के साथ Krabben, frische mushrooms और Rucola"
+      "description": "मिश्रित सलाद के साथ झींगा, ताज़ी mushrooms और रुकोला"
     },
     "10027": {
       "name": "Primavera Salad",
-      "description": "gemischter Salat के साथ olives, feta cheese, artichokes और Ei"
+      "description": "मिश्रित सलाद के साथ olives, feta cheese, artichokes और Ei"
     },
     "10028": {
       "name": "Mista Salad",
-      "description": "gemischter Salat के साथ corn और bell pepper"
+      "description": "मिश्रित सलाद के साथ corn और bell pepper"
     },
     "10029": {
       "name": "Fantasia Salad",
-      "description": "gemischter Salat के साथ tuna, Hinterschinken, artichokes, feta cheese और Ei"
+      "description": "मिश्रित सलाद के साथ tuna, हैम, artichokes, feta cheese और Ei"
     },
     "10030": {
-      "name": "Penne Bake",
-      "description": "के साथ Penne, frischen mushrooms, broccoli, corn और Sahnesauce"
+      "name": "पेने Bake",
+      "description": "के साथ पेने, ताज़े mushrooms, broccoli, corn और क्रीम सॉस"
     },
     "10031": {
-      "name": "Tortellini Bake",
-      "description": "के साथ Tortellini, Hinterschinken, broccoli और Sahnesauce"
+      "name": "टोर्टेलिनी Bake",
+      "description": "के साथ टोर्टेलिनी, हैम, broccoli और क्रीम सॉस"
     },
     "10032": {
-      "name": "Spaghetti Bake",
-      "description": "के साथ Spaghetti, onions, tomatoes, bell pepper और tomatoes-Sahnesauce"
+      "name": "स्पघेटी Bake",
+      "description": "के साथ स्पघेटी, onions, tomatoes, bell pepper और tomatoes-क्रीम सॉस"
     },
     "10033": {
       "name": "Döner Bake",
-      "description": "के साथ döner meat, tomatoes, onions, feta cheese, bell pepper और Sahnesauce"
+      "description": "के साथ döner meat, tomatoes, onions, feta cheese, bell pepper और क्रीम सॉस"
     },
     "10034": {
-      "name": "Gemüse Bake",
-      "description": "के साथ Spaghetti, frischen mushrooms, spinach, broccoli, bell pepper, onions और tomatoes-Sahnesauce"
+      "name": "सब्ज़ियाँ Bake",
+      "description": "के साथ स्पघेटी, ताज़े mushrooms, spinach, broccoli, bell pepper, onions और tomatoes-क्रीम सॉस"
     },
     "10035": {
-      "name": "पिज़्ज़ा Spargel",
-      "description": "के साथ Hinterschinken, salami, asparagus और Sauce Hollandaise"
+      "name": "पिज़्ज़ा एस्परैगस",
+      "description": "के साथ हैम, salami, asparagus और हॉलैंडेज़ सॉस"
     },
     "10036": {
       "name": "पिज़्ज़ा Rustica",
-      "description": "के साथ Hinterschinken, tuna, onions, bell pepper और scharfe pepperoni"
+      "description": "के साथ हैम, tuna, onions, bell pepper और तीखी pepperoni"
     },
     "10037": {
       "name": "पिज़्ज़ा Bruno",
-      "description": "के साथ spinach, Hähnchenbruststreifen और Sauce Hollandaise"
+      "description": "के साथ spinach, चिकन स्ट्रिप्स और हॉलैंडेज़ सॉस"
     },
     "10038": {
       "name": "पिज़्ज़ा Enzo",
-      "description": "के साथ salami और frische mushrooms"
+      "description": "के साथ salami और ताज़ी mushrooms"
     },
     "10039": {
-      "name": "पिज़्ज़ा Hähnchen",
-      "description": "के साथ Hähnchenbruststreifen, broccoli और Sauce Hollandaise"
+      "name": "पिज़्ज़ा चिकन",
+      "description": "के साथ चिकन स्ट्रिप्स, broccoli और हॉलैंडेज़ सॉस"
     },
     "10040": {
       "name": "पिज़्ज़ा Chef",
-      "description": "के साथ Krabben, spinach, broccoli, tuna और garlic"
+      "description": "के साथ झींगा, spinach, broccoli, tuna और garlic"
     },
     "10041": {
       "name": "पिज़्ज़ा Italia",
@@ -208,7 +208,7 @@
     },
     "10042": {
       "name": "पिज़्ज़ा Vegetaria A",
-      "description": "के साथ spinach, bell pepper, broccoli और frische mushrooms"
+      "description": "के साथ spinach, bell pepper, broccoli और ताज़ी mushrooms"
     },
     "10043": {
       "name": "पिज़्ज़ा Vegetaria B",
@@ -216,35 +216,35 @@
     },
     "10044": {
       "name": "पिज़्ज़ा Vegetaria C",
-      "description": "के साथ frische mushrooms, onions और olives"
+      "description": "के साथ ताज़ी mushrooms, onions और olives"
     },
     "10045": {
       "name": "पिज़्ज़ा Vegetaria D",
-      "description": "के साथ Cherry tomatoes, frische mushrooms, Mozzarella, spinach और garlic"
+      "description": "के साथ Cherry tomatoes, ताज़ी mushrooms, मोज़ारेला, spinach और garlic"
     },
     "10046": {
       "name": "पिज़्ज़ा Mexico",
-      "description": "के साथ döner meat, onions और Sauce Hollandaise"
+      "description": "के साथ döner meat, onions और हॉलैंडेज़ सॉस"
     },
     "10047": {
       "name": "पिज़्ज़ा Concordia",
-      "description": "के साथ döner meat, onions, bell pepper, broccoli और Sauce Hollandaise"
+      "description": "के साथ döner meat, onions, bell pepper, broccoli और हॉलैंडेज़ सॉस"
     },
     "10048": {
       "name": "पिज़्ज़ा Bella",
-      "description": "के साथ onions, bell pepper, corn और Hähnchenbruststreifen"
+      "description": "के साथ onions, bell pepper, corn और चिकन स्ट्रिप्स"
     },
     "10049": {
       "name": "पिज़्ज़ा Vegas",
-      "description": "के साथ frische mushrooms, Cherry tomatoes, Sauce Hollandaise, olives और Hähnchenbruststreifen"
+      "description": "के साथ ताज़ी mushrooms, Cherry tomatoes, हॉलैंडेज़ सॉस, olives और चिकन स्ट्रिप्स"
     },
     "10050": {
       "name": "Calzone Spezial",
-      "description": "zugeklappte Pizza gefüllt के साथ tuna, onions, feta cheese और scharfe pepperoni"
+      "description": "zugeklappte Pizza gefüllt के साथ tuna, onions, feta cheese और तीखी pepperoni"
     },
     "10051": {
       "name": "Calzone Concordia",
-      "description": "zugeklappte Pizza gefüllt के साथ Hinterschinken, salami, tuna, onions और pepperoni"
+      "description": "zugeklappte Pizza gefüllt के साथ हैम, salami, tuna, onions और pepperoni"
     },
     "10052": {
       "name": "Calzone Döner",
@@ -252,7 +252,7 @@
     },
     "10053": {
       "name": "पिज़्ज़ा Parma",
-      "description": "के साथ Rucola, Parmaschinken, Parmesankäse और frische tomatoes"
+      "description": "के साथ रुकोला, पार्मा हैम, पार्मेज़ान और ताज़ी tomatoes"
     },
     "10054": {
       "name": "पिज़्ज़ा Diavolo",
@@ -264,59 +264,59 @@
     },
     "10056": {
       "name": "Ham & mushroom pizza",
-      "description": "के साथ Hinterschinken और mushrooms"
+      "description": "के साथ हैम और mushrooms"
     },
     "10057": {
       "name": "पिज़्ज़ा Hawaii",
-      "description": "के साथ Hinterschinken और pineapple"
+      "description": "के साथ हैम और pineapple"
     },
     "10058": {
-      "name": "पिज़्ज़ा Mozzarella",
-      "description": "के साथ Mozzarella और Cherry tomatoes"
+      "name": "पिज़्ज़ा मोज़ारेला",
+      "description": "के साथ मोज़ारेला और Cherry tomatoes"
     },
     "10059": {
       "name": "पिज़्ज़ा Bolognese",
       "description": "के साथ bolognese sauce और onions"
     },
     "10060": {
-      "name": "पिज़्ज़ा Spaghetti Bolognese",
-      "description": "के साथ Spaghetti और bolognese sauce"
+      "name": "पिज़्ज़ा स्पघेटी Bolognese",
+      "description": "के साथ स्पघेटी और bolognese sauce"
     },
     "10061": {
       "name": "पिज़्ज़ा Milano",
-      "description": "के साथ spinach, Krabben, mushrooms और garlic"
+      "description": "के साथ spinach, झींगा, mushrooms और garlic"
     },
     "10062": {
-      "name": "पिज़्ज़ा Lachs",
+      "name": "पिज़्ज़ा सैल्मन",
       "description": "के साथ spinach, salmon और garlic"
     },
     "10063": {
       "name": "Four seasons pizza",
-      "description": "के साथ salami, Hinterschinken, tuna और onions"
+      "description": "के साथ salami, हैम, tuna और onions"
     },
     "10064": {
       "name": "Four cheeses pizza",
-      "description": "के साथ Gorgonzola, Gouda cheese, feta cheese और Mozzarella"
+      "description": "के साथ गोरगोंज़ोला, Gouda cheese, feta cheese और मोज़ारेला"
     },
     "10065": {
       "name": "पिज़्ज़ा Margherita",
       "description": "के साथ tomato sauce और cheese"
     },
     "10066": {
-      "name": "पिज़्ज़ा Broccoli",
+      "name": "पिज़्ज़ा ब्रोकली",
       "description": "के साथ broccoli"
     },
     "10067": {
-      "name": "पिज़्ज़ा Salami",
+      "name": "पिज़्ज़ा सलामी",
       "description": "के साथ salami"
     },
     "10068": {
       "name": "पिज़्ज़ा Prosciutto",
-      "description": "के साथ Hinterschinken"
+      "description": "के साथ हैम"
     },
     "10069": {
       "name": "पिज़्ज़ा Funghi",
-      "description": "के साथ frische mushrooms"
+      "description": "के साथ ताज़ी mushrooms"
     },
     "10070": {
       "name": "पिज़्ज़ा Tonno",
@@ -328,14 +328,14 @@
     },
     "10072": {
       "name": "पिज़्ज़ा Scampi",
-      "description": "के साथ Krabben और garlic"
+      "description": "के साथ झींगा और garlic"
     },
     "10073": {
       "name": "Seafood pizza",
       "description": "के साथ seafood और garlic"
     },
     "10074": {
-      "name": "पिज़्ज़ा Sucuk",
+      "name": "पिज़्ज़ा सुजुक",
       "description": "के साथ türkisch garlicwurst"
     },
     "10075": {
@@ -343,11 +343,11 @@
       "description": null
     },
     "10076": {
-      "name": "Stuffed pizza rolls के साथ Sucuk",
+      "name": "Stuffed pizza rolls के साथ सुजुक",
       "description": null
     },
     "10077": {
-      "name": "Stuffed pizza rolls के साथ Hinterschinken",
+      "name": "Stuffed pizza rolls के साथ हैम",
       "description": null
     },
     "10078": {
@@ -355,7 +355,7 @@
       "description": null
     },
     "10079": {
-      "name": "Stuffed pizza rolls के साथ Dönerfleisch",
+      "name": "Stuffed pizza rolls के साथ दोनर",
       "description": null
     },
     "10080": {
@@ -363,20 +363,20 @@
       "description": null
     },
     "10081": {
-      "name": "Stuffed pizza rolls के साथ Käse",
+      "name": "Stuffed pizza rolls के साथ पनीर",
       "description": null
     },
     "10082": {
-      "name": "Stuffed pizza rolls के साथ Thunfisch",
+      "name": "Stuffed pizza rolls के साथ टूना",
       "description": null
     },
     "10083": {
-      "name": "Stuffed pizza rolls के साथ Salami",
+      "name": "Stuffed pizza rolls के साथ सलामी",
       "description": null
     },
     "10084": {
       "name": "पिज़्ज़ा rolls (10 pcs)",
-      "description": "के साथ Kräuterbutter"
+      "description": "के साथ हर्ब बटर"
     },
     "10085": {
       "name": "Portion of herb butter",
@@ -384,31 +384,31 @@
     },
     "10086": {
       "name": "Schnitzel Hawaii",
-      "description": "के साथ Hinterschinken, pineapple और Sahnesauce"
+      "description": "के साथ हैम, pineapple और क्रीम सॉस"
     },
     "10087": {
-      "name": "Broccoli Schnitzel",
-      "description": "के साथ broccoli और Sahnesauce"
+      "name": "ब्रोकली Schnitzel",
+      "description": "के साथ broccoli और क्रीम सॉस"
     },
     "10088": {
       "name": "Zwiebel Schnitzel",
-      "description": "के साथ gebratene onions और Sahnesauce"
+      "description": "के साथ तले हुए onions और क्रीम सॉस"
     },
     "10089": {
       "name": "Hollandaise Schnitzel",
-      "description": "के साथ broccoli, frische mushrooms, onions और Sauce Hollandaise"
+      "description": "के साथ broccoli, ताज़ी mushrooms, onions और हॉलैंडेज़ सॉस"
     },
     "10090": {
-      "name": "Spinat Schnitzel",
-      "description": "के साथ spinach, garlic और Sahnesauce"
+      "name": "पालक Schnitzel",
+      "description": "के साथ spinach, garlic और क्रीम सॉस"
     },
     "10091": {
-      "name": "Paprikaschnitzel",
+      "name": "शिमला मिर्चschnitzel",
       "description": "के साथ Balkansauce"
     },
     "10092": {
-      "name": "Champignonschnitzel",
-      "description": "के साथ mushrooms और Sahnesauce"
+      "name": "मशरूमchnitzel",
+      "description": "के साथ mushrooms और क्रीम सॉस"
     },
     "10093": {
       "name": "Wiener schnitzel",
@@ -416,7 +416,7 @@
     },
     "10094": {
       "name": "Jäger schnitzel",
-      "description": "के साथ Jägersauce"
+      "description": "के साथ हंटर सॉस"
     },
     "10095": {
       "name": "Double cheese burger",
@@ -428,7 +428,7 @@
     },
     "10097": {
       "name": "Chicken burger",
-      "description": "के साथ 135g Hähnchenfleisch, Eisbergsalat, Gurken, tomatoes, onions और Sauce"
+      "description": "के साथ 135g चिकनfleisch, Eisbergsalat, Gurken, tomatoes, onions और Sauce"
     },
     "10098": {
       "name": "Double burger",
@@ -455,15 +455,15 @@
       "description": null
     },
     "10104": {
-      "name": "Mayonnaise",
+      "name": "मेयोनेज़",
       "description": null
     },
     "10105": {
-      "name": "Ketchup",
+      "name": "केचप",
       "description": null
     },
     "10106": {
-      "name": "Mozzarella sticks",
+      "name": "मोज़ारेला sticks",
       "description": "के साथ Pommes"
     },
     "10107": {
@@ -504,11 +504,11 @@
     },
     "10116": {
       "name": "Sprite 1,0l (MEHRWEG)",
-      "description": "Bist du bereit für Sprite? Die einzigartige Formel aus grünen Limetten और sonnengelben Zitronen erfrischt dich maximal."
+      "description": null
     },
     "10117": {
       "name": "Mezzo Mix 1,0l (MEHRWEG)",
-      "description": "Mixt euch eine gute Zeit के साथ Mezzo Mix, dem erfrischend-leckeren Kuss aus Cola और Orange."
+      "description": null
     },
     "10118": {
       "name": "Sparkling mineral water 0,25l",
@@ -520,7 +520,7 @@
     },
     "10120": {
       "name": "Sprite 0,33l (MEHRWEG)",
-      "description": "Bist du bereit für Sprite? Die einzigartige Formel aus grünen Limetten और sonnengelben Zitronen erfrischt dich maximal."
+      "description": null
     },
     "10121": {
       "name": "Still mineral water 0,25l",
@@ -532,15 +532,15 @@
     },
     "10123": {
       "name": "Fanta Orange 0,33l (MEHRWEG)",
-      "description": "Trinke Fanta. Lebe bunter. Spritzig erfrischend begleitet die originale Fanta Orange jede Lebenssituation और macht jetzt noch mehr Spaß."
+      "description": null
     },
     "10124": {
       "name": "Fanta Orange 1,0l (MEHRWEG)",
-      "description": "Trinke Fanta. Lebe bunter. Spritzig erfrischend begleitet die originale Fanta Orange jede Lebenssituation और macht jetzt noch mehr Spaß."
+      "description": null
     },
     "10125": {
       "name": "Coca-Cola 0,33l (MEHRWEG)",
-      "description": "Coca-Cola steht für einzigartigen Geschmack, Erfrischung और Momente voller Lebensfreude. Die 0,33l Glas-Mehrwegflasche ist unsere Ikone für perfekten Trinkgenuss seit 1886."
+      "description": null
     },
     "10126": {
       "name": "Coca-Cola 1,0l (MEHRWEG)",

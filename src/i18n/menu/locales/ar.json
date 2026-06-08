@@ -47,7 +47,7 @@
   },
   "items": {
     "10002": {
-      "name": "Baguette مع Sucuk",
+      "name": "Baguette مع سوجق",
       "description": null
     },
     "10003": {
@@ -55,7 +55,7 @@
       "description": null
     },
     "10004": {
-      "name": "Baguette مع Mozzarella",
+      "name": "Baguette مع موزاريلا",
       "description": null
     },
     "10005": {
@@ -63,52 +63,52 @@
       "description": null
     },
     "10006": {
-      "name": "Baguette مع Hinterschinken",
+      "name": "Baguette مع لحم خنزير",
       "description": null
     },
     "10007": {
-      "name": "Baguette مع Thunfisch",
+      "name": "Baguette مع تونة",
       "description": null
     },
     "10008": {
-      "name": "Baguette مع Salami",
+      "name": "Baguette مع سلامي",
       "description": null
     },
     "10009": {
       "name": "Pasta Salmone",
-      "description": "مع spinach, salmon, garlic و Sahnesauce"
+      "description": "مع spinach, salmon, garlic و صلصة كريمة"
     },
     "10010": {
       "name": "Pasta Vegetarisch",
-      "description": "مع broccoli, bell pepper, frischen mushrooms, onions و tomatoes-Sahnesauce"
+      "description": "مع broccoli, bell pepper, طازج mushrooms, onions و tomatoes-صلصة كريمة"
     },
     "10011": {
-      "name": "Pasta Gorgonzola",
-      "description": "مع broccoli, frischen mushrooms, Gorgonzolakäse و Sahnesauce"
+      "name": "Pasta جورغونزولا",
+      "description": "مع broccoli, طازج mushrooms, جورغونزولاkäse و صلصة كريمة"
     },
     "10012": {
       "name": "Pasta Pasta Concordia",
-      "description": "مع Hähnchenbruststreifen, mushrooms, broccoli, scharfen pepperonis, garlic و tomatoes-Sahnesauce"
+      "description": "مع دجاج, mushrooms, broccoli, حار pepperonis, garlic و tomatoes-صلصة كريمة"
     },
     "10013": {
       "name": "Pasta Formaggi",
-      "description": "مع vier verschiedenen cheesesorten و Sahnesauce"
+      "description": "مع vier verschiedenen cheesesorten و صلصة كريمة"
     },
     "10014": {
       "name": "Pasta Alla Chef",
-      "description": "مع Hähnchenbruststreifen, frischen mushrooms, corn, Goudakäse, tomatoes و Sahnesauce"
+      "description": "مع دجاج, طازج mushrooms, corn, جبنة جودا, tomatoes و صلصة كريمة"
     },
     "10015": {
       "name": "Pasta Carbonara",
-      "description": "مع Hinterschinken, Ei و Sahnesauce"
+      "description": "مع لحم خنزير, Ei و صلصة كريمة"
     },
     "10016": {
       "name": "Pasta Alla Panna",
-      "description": "مع Hinterschinken, frischen mushrooms و Sahnesauce"
+      "description": "مع لحم خنزير, طازج mushrooms و صلصة كريمة"
     },
     "10017": {
       "name": "Pasta Toscana",
-      "description": "مع Hinterschinken, Krabben, frischen mushrooms, garlic, tomatoes و Sahnesauce"
+      "description": "مع لحم خنزير, جمبري, طازج mushrooms, garlic, tomatoes و صلصة كريمة"
     },
     "10018": {
       "name": "Pasta Napoli",
@@ -120,87 +120,87 @@
     },
     "10020": {
       "name": "Caprese Salad",
-      "description": "مع tomatoes, Mozzarella و Rucola"
+      "description": "مع tomatoes, موزاريلا و جرجير"
     },
     "10021": {
       "name": "Capricciosa Salad",
-      "description": "gemischter Salat مع tuna, Ei, Hinterschinken و cheese"
+      "description": "سلطة مشكلة مع tuna, Ei, لحم خنزير و cheese"
     },
     "10022": {
       "name": "Casa Salad",
-      "description": "gemischter Salat مع corn, bell pepper, olives و feta cheese"
+      "description": "سلطة مشكلة مع corn, bell pepper, olives و feta cheese"
     },
     "10023": {
-      "name": "Hähnchen Salad",
-      "description": "gemischter Salat مع gebratene Hähnchenbruststreifen, bell pepper و Rucola"
+      "name": "دجاج Salad",
+      "description": "سلطة مشكلة مع مقلية دجاج, bell pepper و جرجير"
     },
     "10024": {
       "name": "Hawaii Salad",
-      "description": "gemischter Salat مع Hinterschinken, pineapple و cheese"
+      "description": "سلطة مشكلة مع لحم خنزير, pineapple و cheese"
     },
     "10025": {
       "name": "Tonno Salad",
-      "description": "gemischter Salat و tuna"
+      "description": "سلطة مشكلة و tuna"
     },
     "10026": {
       "name": "Concordia Salad",
-      "description": "gemischter Salat مع Krabben, frische mushrooms و Rucola"
+      "description": "سلطة مشكلة مع جمبري, طازجة mushrooms و جرجير"
     },
     "10027": {
       "name": "Primavera Salad",
-      "description": "gemischter Salat مع olives, feta cheese, artichokes و Ei"
+      "description": "سلطة مشكلة مع olives, feta cheese, artichokes و Ei"
     },
     "10028": {
       "name": "Mista Salad",
-      "description": "gemischter Salat مع corn و bell pepper"
+      "description": "سلطة مشكلة مع corn و bell pepper"
     },
     "10029": {
       "name": "Fantasia Salad",
-      "description": "gemischter Salat مع tuna, Hinterschinken, artichokes, feta cheese و Ei"
+      "description": "سلطة مشكلة مع tuna, لحم خنزير, artichokes, feta cheese و Ei"
     },
     "10030": {
-      "name": "Penne Bake",
-      "description": "مع Penne, frischen mushrooms, broccoli, corn و Sahnesauce"
+      "name": "بيني Bake",
+      "description": "مع بيني, طازج mushrooms, broccoli, corn و صلصة كريمة"
     },
     "10031": {
-      "name": "Tortellini Bake",
-      "description": "مع Tortellini, Hinterschinken, broccoli و Sahnesauce"
+      "name": "تورتيليني Bake",
+      "description": "مع تورتيليني, لحم خنزير, broccoli و صلصة كريمة"
     },
     "10032": {
-      "name": "Spaghetti Bake",
-      "description": "مع Spaghetti, onions, tomatoes, bell pepper و tomatoes-Sahnesauce"
+      "name": "سباغيتي Bake",
+      "description": "مع سباغيتي, onions, tomatoes, bell pepper و tomatoes-صلصة كريمة"
     },
     "10033": {
       "name": "Döner Bake",
-      "description": "مع döner meat, tomatoes, onions, feta cheese, bell pepper و Sahnesauce"
+      "description": "مع döner meat, tomatoes, onions, feta cheese, bell pepper و صلصة كريمة"
     },
     "10034": {
-      "name": "Gemüse Bake",
-      "description": "مع Spaghetti, frischen mushrooms, spinach, broccoli, bell pepper, onions و tomatoes-Sahnesauce"
+      "name": "خضار Bake",
+      "description": "مع سباغيتي, طازج mushrooms, spinach, broccoli, bell pepper, onions و tomatoes-صلصة كريمة"
     },
     "10035": {
-      "name": "بيتزا Spargel",
-      "description": "مع Hinterschinken, salami, asparagus و Sauce Hollandaise"
+      "name": "بيتزا هليون",
+      "description": "مع لحم خنزير, salami, asparagus و صلصة هولنديز"
     },
     "10036": {
       "name": "بيتزا Rustica",
-      "description": "مع Hinterschinken, tuna, onions, bell pepper و scharfe pepperoni"
+      "description": "مع لحم خنزير, tuna, onions, bell pepper و حار pepperoni"
     },
     "10037": {
       "name": "بيتزا Bruno",
-      "description": "مع spinach, Hähnchenbruststreifen و Sauce Hollandaise"
+      "description": "مع spinach, دجاج و صلصة هولنديز"
     },
     "10038": {
       "name": "بيتزا Enzo",
-      "description": "مع salami و frische mushrooms"
+      "description": "مع salami و طازجة mushrooms"
     },
     "10039": {
-      "name": "بيتزا Hähnchen",
-      "description": "مع Hähnchenbruststreifen, broccoli و Sauce Hollandaise"
+      "name": "بيتزا دجاج",
+      "description": "مع دجاج, broccoli و صلصة هولنديز"
     },
     "10040": {
       "name": "بيتزا Chef",
-      "description": "مع Krabben, spinach, broccoli, tuna و garlic"
+      "description": "مع جمبري, spinach, broccoli, tuna و garlic"
     },
     "10041": {
       "name": "بيتزا Italia",
@@ -208,7 +208,7 @@
     },
     "10042": {
       "name": "بيتزا Vegetaria A",
-      "description": "مع spinach, bell pepper, broccoli و frische mushrooms"
+      "description": "مع spinach, bell pepper, broccoli و طازجة mushrooms"
     },
     "10043": {
       "name": "بيتزا Vegetaria B",
@@ -216,35 +216,35 @@
     },
     "10044": {
       "name": "بيتزا Vegetaria C",
-      "description": "مع frische mushrooms, onions و olives"
+      "description": "مع طازجة mushrooms, onions و olives"
     },
     "10045": {
       "name": "بيتزا Vegetaria D",
-      "description": "مع Cherry tomatoes, frische mushrooms, Mozzarella, spinach و garlic"
+      "description": "مع Cherry tomatoes, طازجة mushrooms, موزاريلا, spinach و garlic"
     },
     "10046": {
       "name": "بيتزا Mexico",
-      "description": "مع döner meat, onions و Sauce Hollandaise"
+      "description": "مع döner meat, onions و صلصة هولنديز"
     },
     "10047": {
       "name": "بيتزا Concordia",
-      "description": "مع döner meat, onions, bell pepper, broccoli و Sauce Hollandaise"
+      "description": "مع döner meat, onions, bell pepper, broccoli و صلصة هولنديز"
     },
     "10048": {
       "name": "بيتزا Bella",
-      "description": "مع onions, bell pepper, corn و Hähnchenbruststreifen"
+      "description": "مع onions, bell pepper, corn و دجاج"
     },
     "10049": {
       "name": "بيتزا Vegas",
-      "description": "مع frische mushrooms, Cherry tomatoes, Sauce Hollandaise, olives و Hähnchenbruststreifen"
+      "description": "مع طازجة mushrooms, Cherry tomatoes, صلصة هولنديز, olives و دجاج"
     },
     "10050": {
       "name": "Calzone Spezial",
-      "description": "zugeklappte Pizza gefüllt مع tuna, onions, feta cheese و scharfe pepperoni"
+      "description": "zugeklappte Pizza gefüllt مع tuna, onions, feta cheese و حار pepperoni"
     },
     "10051": {
       "name": "Calzone Concordia",
-      "description": "zugeklappte Pizza gefüllt مع Hinterschinken, salami, tuna, onions و pepperoni"
+      "description": "zugeklappte Pizza gefüllt مع لحم خنزير, salami, tuna, onions و pepperoni"
     },
     "10052": {
       "name": "Calzone Döner",
@@ -252,7 +252,7 @@
     },
     "10053": {
       "name": "بيتزا Parma",
-      "description": "مع Rucola, Parmaschinken, Parmesankäse و frische tomatoes"
+      "description": "مع جرجير, بارما, بارميزان و طازجة tomatoes"
     },
     "10054": {
       "name": "بيتزا Diavolo",
@@ -264,59 +264,59 @@
     },
     "10056": {
       "name": "Ham & mushroom pizza",
-      "description": "مع Hinterschinken و mushrooms"
+      "description": "مع لحم خنزير و mushrooms"
     },
     "10057": {
       "name": "بيتزا Hawaii",
-      "description": "مع Hinterschinken و pineapple"
+      "description": "مع لحم خنزير و pineapple"
     },
     "10058": {
-      "name": "بيتزا Mozzarella",
-      "description": "مع Mozzarella و Cherry tomatoes"
+      "name": "بيتزا موزاريلا",
+      "description": "مع موزاريلا و Cherry tomatoes"
     },
     "10059": {
       "name": "بيتزا Bolognese",
       "description": "مع bolognese sauce و onions"
     },
     "10060": {
-      "name": "بيتزا Spaghetti Bolognese",
-      "description": "مع Spaghetti و bolognese sauce"
+      "name": "بيتزا سباغيتي Bolognese",
+      "description": "مع سباغيتي و bolognese sauce"
     },
     "10061": {
       "name": "بيتزا Milano",
-      "description": "مع spinach, Krabben, mushrooms و garlic"
+      "description": "مع spinach, جمبري, mushrooms و garlic"
     },
     "10062": {
-      "name": "بيتزا Lachs",
+      "name": "بيتزا سلمون",
       "description": "مع spinach, salmon و garlic"
     },
     "10063": {
       "name": "Four seasons pizza",
-      "description": "مع salami, Hinterschinken, tuna و onions"
+      "description": "مع salami, لحم خنزير, tuna و onions"
     },
     "10064": {
       "name": "Four cheeses pizza",
-      "description": "مع Gorgonzola, Gouda cheese, feta cheese و Mozzarella"
+      "description": "مع جورغونزولا, Gouda cheese, feta cheese و موزاريلا"
     },
     "10065": {
       "name": "بيتزا Margherita",
       "description": "مع tomato sauce و cheese"
     },
     "10066": {
-      "name": "بيتزا Broccoli",
+      "name": "بيتزا بروكلي",
       "description": "مع broccoli"
     },
     "10067": {
-      "name": "بيتزا Salami",
+      "name": "بيتزا سلامي",
       "description": "مع salami"
     },
     "10068": {
       "name": "بيتزا Prosciutto",
-      "description": "مع Hinterschinken"
+      "description": "مع لحم خنزير"
     },
     "10069": {
       "name": "بيتزا Funghi",
-      "description": "مع frische mushrooms"
+      "description": "مع طازجة mushrooms"
     },
     "10070": {
       "name": "بيتزا Tonno",
@@ -328,14 +328,14 @@
     },
     "10072": {
       "name": "بيتزا Scampi",
-      "description": "مع Krabben و garlic"
+      "description": "مع جمبري و garlic"
     },
     "10073": {
       "name": "Seafood pizza",
       "description": "مع seafood و garlic"
     },
     "10074": {
-      "name": "بيتزا Sucuk",
+      "name": "بيتزا سوجق",
       "description": "مع türkisch garlicwurst"
     },
     "10075": {
@@ -343,11 +343,11 @@
       "description": null
     },
     "10076": {
-      "name": "Stuffed pizza rolls مع Sucuk",
+      "name": "Stuffed pizza rolls مع سوجق",
       "description": null
     },
     "10077": {
-      "name": "Stuffed pizza rolls مع Hinterschinken",
+      "name": "Stuffed pizza rolls مع لحم خنزير",
       "description": null
     },
     "10078": {
@@ -355,7 +355,7 @@
       "description": null
     },
     "10079": {
-      "name": "Stuffed pizza rolls مع Dönerfleisch",
+      "name": "Stuffed pizza rolls مع دونر",
       "description": null
     },
     "10080": {
@@ -363,20 +363,20 @@
       "description": null
     },
     "10081": {
-      "name": "Stuffed pizza rolls مع Käse",
+      "name": "Stuffed pizza rolls مع جبن",
       "description": null
     },
     "10082": {
-      "name": "Stuffed pizza rolls مع Thunfisch",
+      "name": "Stuffed pizza rolls مع تونة",
       "description": null
     },
     "10083": {
-      "name": "Stuffed pizza rolls مع Salami",
+      "name": "Stuffed pizza rolls مع سلامي",
       "description": null
     },
     "10084": {
       "name": "بيتزا rolls (10 pcs)",
-      "description": "مع Kräuterbutter"
+      "description": "مع زبدة أعشاب"
     },
     "10085": {
       "name": "Portion of herb butter",
@@ -384,31 +384,31 @@
     },
     "10086": {
       "name": "Schnitzel Hawaii",
-      "description": "مع Hinterschinken, pineapple و Sahnesauce"
+      "description": "مع لحم خنزير, pineapple و صلصة كريمة"
     },
     "10087": {
-      "name": "Broccoli Schnitzel",
-      "description": "مع broccoli و Sahnesauce"
+      "name": "بروكلي Schnitzel",
+      "description": "مع broccoli و صلصة كريمة"
     },
     "10088": {
       "name": "Zwiebel Schnitzel",
-      "description": "مع gebratene onions و Sahnesauce"
+      "description": "مع مقلية onions و صلصة كريمة"
     },
     "10089": {
       "name": "Hollandaise Schnitzel",
-      "description": "مع broccoli, frische mushrooms, onions و Sauce Hollandaise"
+      "description": "مع broccoli, طازجة mushrooms, onions و صلصة هولنديز"
     },
     "10090": {
-      "name": "Spinat Schnitzel",
-      "description": "مع spinach, garlic و Sahnesauce"
+      "name": "سبانخ Schnitzel",
+      "description": "مع spinach, garlic و صلصة كريمة"
     },
     "10091": {
-      "name": "Paprikaschnitzel",
-      "description": "مع Balkansauce"
+      "name": "فلفلschnitzel",
+      "description": "مع صلصة بلقانية"
     },
     "10092": {
-      "name": "Champignonschnitzel",
-      "description": "مع mushrooms و Sahnesauce"
+      "name": "فطرchnitzel",
+      "description": "مع mushrooms و صلصة كريمة"
     },
     "10093": {
       "name": "Wiener schnitzel",
@@ -416,7 +416,7 @@
     },
     "10094": {
       "name": "Jäger schnitzel",
-      "description": "مع Jägersauce"
+      "description": "مع صلصة صياد"
     },
     "10095": {
       "name": "Double cheese burger",
@@ -428,7 +428,7 @@
     },
     "10097": {
       "name": "Chicken burger",
-      "description": "مع 135g Hähnchenfleisch, Eisbergsalat, Gurken, tomatoes, onions و Sauce"
+      "description": "مع 135g دجاجfleisch, Eisbergsalat, Gurken, tomatoes, onions و Sauce"
     },
     "10098": {
       "name": "Double burger",
@@ -455,15 +455,15 @@
       "description": null
     },
     "10104": {
-      "name": "Mayonnaise",
+      "name": "مايونيز",
       "description": null
     },
     "10105": {
-      "name": "Ketchup",
+      "name": "كاتشب",
       "description": null
     },
     "10106": {
-      "name": "Mozzarella sticks",
+      "name": "موزاريلا sticks",
       "description": "مع Pommes"
     },
     "10107": {
@@ -504,11 +504,11 @@
     },
     "10116": {
       "name": "Sprite 1,0l (MEHRWEG)",
-      "description": "Bist du bereit für Sprite? Die einzigartige Formel aus grünen Limetten و sonnengelben Zitronen erfrischt dich maximal."
+      "description": null
     },
     "10117": {
       "name": "Mezzo Mix 1,0l (MEHRWEG)",
-      "description": "Mixt euch eine gute Zeit مع Mezzo Mix, dem erfrischend-leckeren Kuss aus Cola و Orange."
+      "description": null
     },
     "10118": {
       "name": "Sparkling mineral water 0,25l",
@@ -520,7 +520,7 @@
     },
     "10120": {
       "name": "Sprite 0,33l (MEHRWEG)",
-      "description": "Bist du bereit für Sprite? Die einzigartige Formel aus grünen Limetten و sonnengelben Zitronen erfrischt dich maximal."
+      "description": null
     },
     "10121": {
       "name": "Still mineral water 0,25l",
@@ -532,15 +532,15 @@
     },
     "10123": {
       "name": "Fanta Orange 0,33l (MEHRWEG)",
-      "description": "Trinke Fanta. Lebe bunter. Spritzig erfrischend begleitet die originale Fanta Orange jede Lebenssituation و macht jetzt noch mehr Spaß."
+      "description": null
     },
     "10124": {
       "name": "Fanta Orange 1,0l (MEHRWEG)",
-      "description": "Trinke Fanta. Lebe bunter. Spritzig erfrischend begleitet die originale Fanta Orange jede Lebenssituation و macht jetzt noch mehr Spaß."
+      "description": null
     },
     "10125": {
       "name": "Coca-Cola 0,33l (MEHRWEG)",
-      "description": "Coca-Cola steht für einzigartigen Geschmack, Erfrischung و Momente voller Lebensfreude. Die 0,33l Glas-Mehrwegflasche ist unsere Ikone für perfekten Trinkgenuss seit 1886."
+      "description": null
     },
     "10126": {
       "name": "Coca-Cola 1,0l (MEHRWEG)",

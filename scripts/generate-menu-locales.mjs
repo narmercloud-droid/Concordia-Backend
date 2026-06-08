@@ -1036,6 +1036,34 @@ const ITEM_OVERRIDES = {
     "Pizza Frutti di Mare": "Zeevruchten pizza",
     "Jägerschnitzel": "Jägerschnitzel",
     "Schnitzel Wiener Art": "Wiener schnitzel"
+  },
+  tr: {
+    "Baguette mit Thunfisch und Ei": "Ton balıklı ve yumurtalı baget",
+    "Baguette mit Sucuk und Ei": "Sucuklu ve yumurtalı baget",
+    "Baguette mit Mozzarella": "Mozzarellalı baget",
+    "Baguette mit Thunfisch": "Ton balıklı baget",
+    "Baguette mit Sucuk": "Sucuklu baget",
+    "Baguette mit Salami": "Salamlı baget",
+    "Baguette mit Hinterschinken": "Jambonlu baget",
+    "Gefüllte Pizzabrötchen mit Thunfisch, Zwiebeln, Fetakäse":
+      "Ton balıklı, soğanlı ve feta dolgulu pizza ruloları",
+    "Gefüllte Pizzabrötchen mit Spinat und Fetakäse": "Ispanaklı ve feta dolgulu pizza ruloları",
+    "Pizza Tonno e Cipolla": "Ton balıklı ve soğanlı pizza",
+    "Pizza Prosciutto Funghi": "Jambonlu ve mantarlı pizza",
+    "Pizza Quattro Stagioni": "Dört mevsim pizza",
+    "Pizza Quattro Formaggi": "Dört peynirli pizza",
+    "Pizza Frutti di Mare": "Deniz ürünlü pizza",
+    "Jägerschnitzel": "Avcı şinitzeli",
+    "Schnitzel Wiener Art": "Viyana şinitzeli"
+  },
+  ckb: {
+    "Baguette mit Thunfisch und Ei": "باگێتی تونا و هێلکە",
+    "Baguette mit Sucuk und Ei": "باگێتی سوجوق و هێلکە",
+    "Baguette mit Mozzarella": "باگێتی موزارێلا",
+    "Pizza Margherita": "پیتزای مارگەریتا",
+    "Pizza Tonno e Cipolla": "پیتزای تونا و پیاز",
+    "Jägerschnitzel": "شنیتسلی ڕاوچی",
+    "Schnitzel Wiener Art": "شنیتسلی ڤیەننا"
   }
 }
 
@@ -1145,15 +1173,174 @@ function translateItemName(deName, lang) {
       ro: { " with ": " cu ", " and ": " și ", Salad: "Salată" },
       hi: { " with ": " के साथ ", " and ": " और ", Pizza: "पिज़्ज़ा" },
       ar: { " with ": " مع ", " and ": " و ", Pizza: "بيتزا" },
-      ku: { " with ": " bi ", " and ": " û ", Pizza: "Pîzza" }
+      ku: { " with ": " bi ", " and ": " û ", Pizza: "Pîzza" },
+      tr: {
+        " with ": " ile ",
+        " and ": " ve ",
+        Salad: "Salata",
+        Bake: "Fırın",
+        Schnitzel: "Şinitzel",
+        fries: "patates",
+        burger: "burger",
+        Pizza: "Pizza"
+      },
+      ckb: {
+        " with ": " لەگەڵ ",
+        " and ": " و ",
+        Salad: "سەلاطە",
+        Bake: "خواردنی پخاو",
+        Schnitzel: "شنیتسل",
+        Pizza: "پیتزا"
+      }
     }
     for (const [from, to] of Object.entries(swaps[lang] ?? {})) {
       name = name.split(from).join(to)
     }
-    return name
+    return applyLexiconToText(name, lang)
   }
 
   return deName
+}
+
+const PHRASE_FIXES = {
+  tr: {
+    "frischen ": "taze ",
+    "frische ": "taze ",
+    "gebratene ": "ızgaralı ",
+    "gemischter Salat ": "Karışık salata ",
+    "gemischter Salat": "Karışık salata",
+    "zugeklappte Pizza gefüllt mit ": "Kapalı pizza, içi: ",
+    "Sahnesauce": "krema sosu",
+    "Jägersauce": "avcı sosu",
+    "Balkansauce": "Balkan sosu",
+    "Tomaten-Sahnesauce": "domates krema sosu",
+    "Goudakäse": "Gouda peyniri",
+    "Gorgonzolakäse": "Gorgonzola",
+    "scharfen ": "acı ",
+    "scharfe ": "acı ",
+    "vier verschiedenen Käsesorten": "dört farklı peynir"
+  },
+  ckb: {
+    "frischen ": "تازە ",
+    "frische ": "تازە ",
+    "gebratene ": "برژاو ",
+    "gemischter Salat ": "سەلاطەی تێکەڵ ",
+    "gemischter Salat": "سەلاطەی تێکەڵ",
+    "zugeklappte Pizza gefüllt mit ": "پیتزای داخراو پڕکراو بە ",
+    "Sahnesauce": "سۆسی کریم",
+    "Jägersauce": "سۆسی شکاری",
+    "Balkansauce": "سۆسی بالکان",
+    "Tomaten-Sahnesauce": "سۆسی کریمی تەماتە",
+    "Goudakäse": "پەنیرەی Gouda",
+    "Gorgonzolakäse": "Gorgonzola",
+    "scharfen ": "تیژ ",
+    "scharfe ": "تیژ ",
+    "vier verschiedenen Käsesorten": "چوار جۆری پەنیر"
+  },
+  ar: {
+    "frischen ": "طازج ",
+    "frische ": "طازجة ",
+    "gebratene ": "مقلية ",
+    "gemischter Salat ": "سلطة مشكلة ",
+    "gemischter Salat": "سلطة مشكلة",
+    "zugeklappte Pizza gefüllt mit ": "بيتزا مطوية محشوة بـ ",
+    "Sahnesauce": "صلصة كريمة",
+    "Jägersauce": "صلصة صياد",
+    "Balkansauce": "صلصة بلقانية",
+    "Tomaten-Sahnesauce": "صلصة كريمة بالطماطم",
+    "Goudakäse": "جبنة جودا",
+    "Gorgonzolakäse": "جبنة جورغونزولا",
+    "scharfen ": "حار ",
+    "scharfe ": "حار ",
+    "vier verschiedenen Käsesorten": "أربعة أنواع جبن"
+  },
+  ku: {
+    "frischen ": "taze ",
+    "frische ": "taze ",
+    "gebratene ": "qelandî ",
+    "gemischter Salat ": "salata tevlihev ",
+    "gemischter Salat": "salata tevlihev",
+    "zugeklappte Pizza gefüllt mit ": "pîzzaya girtî tije bi ",
+    "Sahnesauce": "sosa kremê",
+    "Jägersauce": "sosa nêçîrvan",
+    "Balkansauce": "sosa balkan",
+    "Tomaten-Sahnesauce": "sosa kremê tomatê",
+    "Goudakäse": "penîra Gouda",
+    "Gorgonzolakäse": "Gorgonzola",
+    "scharfen ": "tûj ",
+    "scharfe ": "tûj ",
+    "vier verschiedenen Käsesorten": "çar cure penîr"
+  },
+  pl: {
+    "frischen ": "świeże ",
+    "frische ": "świeże ",
+    "gebratene ": "smażone ",
+    "gemischter Salat ": "sałatka mieszana ",
+    "Sahnesauce": "sos śmietankowy",
+    "Jägersauce": "sos myśliwski",
+    "Goudakäse": "ser Gouda",
+    "scharfe ": "ostra "
+  },
+  ru: {
+    "frischen ": "свежие ",
+    "frische ": "свежие ",
+    "gebratene ": "жареные ",
+    "gemischter Salat ": "смешанный салат ",
+    "Sahnesauce": "сливочный соус",
+    "Jägersauce": "охотничий соус",
+    "Goudakäse": "сыр Гауда",
+    "scharfe ": "острый "
+  },
+  ro: {
+    "frischen ": "proaspete ",
+    "frische ": "proaspete ",
+    "gebratene ": "prăjite ",
+    "gemischter Salat ": "salată mixtă ",
+    "Sahnesauce": "sos de smântână",
+    "Jägersauce": "sos vânătoresc",
+    "Goudakäse": "brânză Gouda",
+    "scharfe ": "iute "
+  },
+  hi: {
+    "frischen ": "ताज़े ",
+    "frische ": "ताज़ी ",
+    "gebratene ": "तले हुए ",
+    "gemischter Salat ": "मिश्रित सलाद ",
+    "Sahnesauce": "क्रीम सॉस",
+    "Jägersauce": "हंटर सॉस",
+    "Goudakäse": "गौडा चीज़",
+    "scharfe ": "तीखी "
+  }
+}
+
+function applyLexiconToText(text, lang) {
+  if (!text || lang === "de") return text
+  const lex = lexiconFor(lang)
+  let out = text
+  const termPairs = []
+  for (const bucket of [lex.addOns, lex.variants, lex.variantGroups, lex.addOnGroups]) {
+    for (const [de, loc] of Object.entries(bucket || {})) {
+      if (de && loc && de !== loc) termPairs.push([de, loc])
+    }
+  }
+  termPairs.sort((a, b) => b[0].length - a[0].length)
+  for (const [de, loc] of termPairs) out = out.split(de).join(loc)
+
+  const phrases = PHRASE_FIXES[lang]
+  if (phrases) {
+    const keys = Object.keys(phrases).sort((a, b) => b.length - a.length)
+    for (const key of keys) out = out.split(key).join(phrases[key])
+  }
+  return out
+}
+
+function finalizeDescription(desc, lang) {
+  if (!desc) return null
+  let text = applyLexiconToText(translateDescription(desc, lang), lang)
+  if (/Coca-Cola steht|Bist du bereit|Trinke Fanta|Mezzo Mix|begeistert mit ihrem/i.test(text)) {
+    return null
+  }
+  return text
 }
 
 for (const lang of LANGS) {
@@ -1171,9 +1358,10 @@ for (const lang of LANGS) {
   }
 
   for (const [id, item] of Object.entries(catalog.items)) {
+    const name = applyLexiconToText(translateItemName(item.name, lang), lang)
     locale.items[id] = {
-      name: translateItemName(item.name, lang),
-      description: translateDescription(item.description, lang)
+      name,
+      description: finalizeDescription(item.description, lang)
     }
   }
 

@@ -47,68 +47,68 @@
   },
   "items": {
     "10002": {
-      "name": "Baguette with Sucuk",
+      "name": "Baguette لەگەڵ Sucuk",
       "description": null
     },
     "10003": {
-      "name": "Baguette with tuna and egg",
+      "name": "باگێتی تونا و هێلکە",
       "description": null
     },
     "10004": {
-      "name": "Baguette with Mozzarella",
+      "name": "باگێتی موزارێلا",
       "description": null
     },
     "10005": {
-      "name": "Baguette with sucuk and egg",
+      "name": "باگێتی سوجوق و هێلکە",
       "description": null
     },
     "10006": {
-      "name": "Baguette with Hinterschinken",
+      "name": "Baguette لەگەڵ بەرەنوس",
       "description": null
     },
     "10007": {
-      "name": "Baguette with Thunfisch",
+      "name": "Baguette لەگەڵ تونا",
       "description": null
     },
     "10008": {
-      "name": "Baguette with Salami",
+      "name": "Baguette لەگەڵ سەڵامێ",
       "description": null
     },
     "10009": {
       "name": "Pasta Salmone",
-      "description": "لەگەڵ spinach, salmon, garlic و Sahnesauce"
+      "description": "لەگەڵ spinach, salmon, garlic و سۆسی کریم"
     },
     "10010": {
       "name": "Pasta Vegetarisch",
-      "description": "لەگەڵ broccoli, bell pepper, frischen mushrooms, onions و tomatoes-Sahnesauce"
+      "description": "لەگەڵ broccoli, bell pepper, تازە mushrooms, onions و tomatoes-سۆسی کریم"
     },
     "10011": {
       "name": "Pasta Gorgonzola",
-      "description": "لەگەڵ broccoli, frischen mushrooms, Gorgonzolakäse و Sahnesauce"
+      "description": "لەگەڵ broccoli, تازە mushrooms, Gorgonzola و سۆسی کریم"
     },
     "10012": {
       "name": "Pasta Pasta Concordia",
-      "description": "لەگەڵ Hähnchenbruststreifen, mushrooms, broccoli, scharfen pepperonis, garlic و tomatoes-Sahnesauce"
+      "description": "لەگەڵ مریشک, mushrooms, broccoli, تیژ pepperonis, garlic و tomatoes-سۆسی کریم"
     },
     "10013": {
       "name": "Pasta Formaggi",
-      "description": "لەگەڵ vier verschiedenen cheesesorten و Sahnesauce"
+      "description": "لەگەڵ vier verschiedenen cheesesorten و سۆسی کریم"
     },
     "10014": {
       "name": "Pasta Alla Chef",
-      "description": "لەگەڵ Hähnchenbruststreifen, frischen mushrooms, corn, Goudakäse, tomatoes و Sahnesauce"
+      "description": "لەگەڵ مریشک, تازە mushrooms, corn, پەنیرەی Gouda, tomatoes و سۆسی کریم"
     },
     "10015": {
       "name": "Pasta Carbonara",
-      "description": "لەگەڵ Hinterschinken, Ei و Sahnesauce"
+      "description": "لەگەڵ بەرەنوس, Ei و سۆسی کریم"
     },
     "10016": {
       "name": "Pasta Alla Panna",
-      "description": "لەگەڵ Hinterschinken, frischen mushrooms و Sahnesauce"
+      "description": "لەگەڵ بەرەنوس, تازە mushrooms و سۆسی کریم"
     },
     "10017": {
       "name": "Pasta Toscana",
-      "description": "لەگەڵ Hinterschinken, Krabben, frischen mushrooms, garlic, tomatoes و Sahnesauce"
+      "description": "لەگەڵ بەرەنوس, میگو, تازە mushrooms, garlic, tomatoes و سۆسی کریم"
     },
     "10018": {
       "name": "Pasta Napoli",
@@ -119,304 +119,304 @@
       "description": "لەگەڵ bolognese sauce"
     },
     "10020": {
-      "name": "Caprese Salad",
+      "name": "Caprese سەلاطە",
       "description": "لەگەڵ tomatoes, Mozzarella و Rucola"
     },
     "10021": {
-      "name": "Capricciosa Salad",
-      "description": "gemischter Salat لەگەڵ tuna, Ei, Hinterschinken و cheese"
+      "name": "Capricciosa سەلاطە",
+      "description": "سەلاطەی تێکەڵ لەگەڵ tuna, Ei, بەرەنوس و cheese"
     },
     "10022": {
-      "name": "Casa Salad",
-      "description": "gemischter Salat لەگەڵ corn, bell pepper, olives و feta cheese"
+      "name": "Casa سەلاطە",
+      "description": "سەلاطەی تێکەڵ لەگەڵ corn, bell pepper, olives و feta cheese"
     },
     "10023": {
-      "name": "Hähnchen Salad",
-      "description": "gemischter Salat لەگەڵ gebratene Hähnchenbruststreifen, bell pepper و Rucola"
+      "name": "مریشک سەلاطە",
+      "description": "سەلاطەی تێکەڵ لەگەڵ برژاو مریشک, bell pepper و Rucola"
     },
     "10024": {
-      "name": "Hawaii Salad",
-      "description": "gemischter Salat لەگەڵ Hinterschinken, pineapple و cheese"
+      "name": "Hawaii سەلاطە",
+      "description": "سەلاطەی تێکەڵ لەگەڵ بەرەنوس, pineapple و cheese"
     },
     "10025": {
-      "name": "Tonno Salad",
-      "description": "gemischter Salat و tuna"
+      "name": "Tonno سەلاطە",
+      "description": "سەلاطەی تێکەڵ و tuna"
     },
     "10026": {
-      "name": "Concordia Salad",
-      "description": "gemischter Salat لەگەڵ Krabben, frische mushrooms و Rucola"
+      "name": "Concordia سەلاطە",
+      "description": "سەلاطەی تێکەڵ لەگەڵ میگو, تازە mushrooms و Rucola"
     },
     "10027": {
-      "name": "Primavera Salad",
-      "description": "gemischter Salat لەگەڵ olives, feta cheese, artichokes و Ei"
+      "name": "Primavera سەلاطە",
+      "description": "سەلاطەی تێکەڵ لەگەڵ olives, feta cheese, artichokes و Ei"
     },
     "10028": {
-      "name": "Mista Salad",
-      "description": "gemischter Salat لەگەڵ corn و bell pepper"
+      "name": "Mista سەلاطە",
+      "description": "سەلاطەی تێکەڵ لەگەڵ corn و bell pepper"
     },
     "10029": {
-      "name": "Fantasia Salad",
-      "description": "gemischter Salat لەگەڵ tuna, Hinterschinken, artichokes, feta cheese و Ei"
+      "name": "Fantasia سەلاطە",
+      "description": "سەلاطەی تێکەڵ لەگەڵ tuna, بەرەنوس, artichokes, feta cheese و Ei"
     },
     "10030": {
-      "name": "Penne Bake",
-      "description": "لەگەڵ Penne, frischen mushrooms, broccoli, corn و Sahnesauce"
+      "name": "Penne خواردنی پخاو",
+      "description": "لەگەڵ Penne, تازە mushrooms, broccoli, corn و سۆسی کریم"
     },
     "10031": {
-      "name": "Tortellini Bake",
-      "description": "لەگەڵ Tortellini, Hinterschinken, broccoli و Sahnesauce"
+      "name": "Tortellini خواردنی پخاو",
+      "description": "لەگەڵ Tortellini, بەرەنوس, broccoli و سۆسی کریم"
     },
     "10032": {
-      "name": "Spaghetti Bake",
-      "description": "لەگەڵ Spaghetti, onions, tomatoes, bell pepper و tomatoes-Sahnesauce"
+      "name": "Spaghetti خواردنی پخاو",
+      "description": "لەگەڵ Spaghetti, onions, tomatoes, bell pepper و tomatoes-سۆسی کریم"
     },
     "10033": {
-      "name": "Döner Bake",
-      "description": "لەگەڵ döner meat, tomatoes, onions, feta cheese, bell pepper و Sahnesauce"
+      "name": "Döner خواردنی پخاو",
+      "description": "لەگەڵ döner meat, tomatoes, onions, feta cheese, bell pepper و سۆسی کریم"
     },
     "10034": {
-      "name": "Gemüse Bake",
-      "description": "لەگەڵ Spaghetti, frischen mushrooms, spinach, broccoli, bell pepper, onions و tomatoes-Sahnesauce"
+      "name": "سەوزە خواردنی پخاو",
+      "description": "لەگەڵ Spaghetti, تازە mushrooms, spinach, broccoli, bell pepper, onions و tomatoes-سۆسی کریم"
     },
     "10035": {
-      "name": "Pizza Spargel",
-      "description": "لەگەڵ Hinterschinken, salami, asparagus و Sauce Hollandaise"
+      "name": "پیتزا ئەسپەراج",
+      "description": "لەگەڵ بەرەنوس, salami, asparagus و سۆسی Hollandaise"
     },
     "10036": {
-      "name": "Pizza Rustica",
-      "description": "لەگەڵ Hinterschinken, tuna, onions, bell pepper و scharfe pepperoni"
+      "name": "پیتزا Rustica",
+      "description": "لەگەڵ بەرەنوس, tuna, onions, bell pepper و تیژ pepperoni"
     },
     "10037": {
-      "name": "Pizza Bruno",
-      "description": "لەگەڵ spinach, Hähnchenbruststreifen و Sauce Hollandaise"
+      "name": "پیتزا Bruno",
+      "description": "لەگەڵ spinach, مریشک و سۆسی Hollandaise"
     },
     "10038": {
-      "name": "Pizza Enzo",
-      "description": "لەگەڵ salami و frische mushrooms"
+      "name": "پیتزا Enzo",
+      "description": "لەگەڵ salami و تازە mushrooms"
     },
     "10039": {
-      "name": "Pizza Hähnchen",
-      "description": "لەگەڵ Hähnchenbruststreifen, broccoli و Sauce Hollandaise"
+      "name": "پیتزا مریشک",
+      "description": "لەگەڵ مریشک, broccoli و سۆسی Hollandaise"
     },
     "10040": {
-      "name": "Pizza Chef",
-      "description": "لەگەڵ Krabben, spinach, broccoli, tuna و garlic"
+      "name": "پیتزا Chef",
+      "description": "لەگەڵ میگو, spinach, broccoli, tuna و garlic"
     },
     "10041": {
-      "name": "Pizza Italia",
+      "name": "پیتزا Italia",
       "description": "لەگەڵ spinach, bell pepper و onions"
     },
     "10042": {
-      "name": "Pizza Vegetaria A",
-      "description": "لەگەڵ spinach, bell pepper, broccoli و frische mushrooms"
+      "name": "پیتزا Vegetaria A",
+      "description": "لەگەڵ spinach, bell pepper, broccoli و تازە mushrooms"
     },
     "10043": {
-      "name": "Pizza Vegetaria B",
+      "name": "پیتزا Vegetaria B",
       "description": "لەگەڵ spinach, onions, bell pepper و corn"
     },
     "10044": {
-      "name": "Pizza Vegetaria C",
-      "description": "لەگەڵ frische mushrooms, onions و olives"
+      "name": "پیتزا Vegetaria C",
+      "description": "لەگەڵ تازە mushrooms, onions و olives"
     },
     "10045": {
-      "name": "Pizza Vegetaria D",
-      "description": "لەگەڵ Cherry tomatoes, frische mushrooms, Mozzarella, spinach و garlic"
+      "name": "پیتزا Vegetaria D",
+      "description": "لەگەڵ Cherry tomatoes, تازە mushrooms, Mozzarella, spinach و garlic"
     },
     "10046": {
-      "name": "Pizza Mexico",
-      "description": "لەگەڵ döner meat, onions و Sauce Hollandaise"
+      "name": "پیتزا Mexico",
+      "description": "لەگەڵ döner meat, onions و سۆسی Hollandaise"
     },
     "10047": {
-      "name": "Pizza Concordia",
-      "description": "لەگەڵ döner meat, onions, bell pepper, broccoli و Sauce Hollandaise"
+      "name": "پیتزا Concordia",
+      "description": "لەگەڵ döner meat, onions, bell pepper, broccoli و سۆسی Hollandaise"
     },
     "10048": {
-      "name": "Pizza Bella",
-      "description": "لەگەڵ onions, bell pepper, corn و Hähnchenbruststreifen"
+      "name": "پیتزا Bella",
+      "description": "لەگەڵ onions, bell pepper, corn و مریشک"
     },
     "10049": {
-      "name": "Pizza Vegas",
-      "description": "لەگەڵ frische mushrooms, Cherry tomatoes, Sauce Hollandaise, olives و Hähnchenbruststreifen"
+      "name": "پیتزا Vegas",
+      "description": "لەگەڵ تازە mushrooms, Cherry tomatoes, سۆسی Hollandaise, olives و مریشک"
     },
     "10050": {
       "name": "Calzone Spezial",
-      "description": "zugeklappte Pizza gefüllt لەگەڵ tuna, onions, feta cheese و scharfe pepperoni"
+      "description": "zugeklappte Pizza gefüllt لەگەڵ tuna, onions, feta cheese و تیژ pepperoni"
     },
     "10051": {
       "name": "Calzone Concordia",
-      "description": "zugeklappte Pizza gefüllt لەگەڵ Hinterschinken, salami, tuna, onions و pepperoni"
+      "description": "zugeklappte Pizza gefüllt لەگەڵ بەرەنوس, salami, tuna, onions و pepperoni"
     },
     "10052": {
       "name": "Calzone Döner",
       "description": "zugeklappte Pizza gefüllt لەگەڵ döner meat, feta cheese و pepperoni"
     },
     "10053": {
-      "name": "Pizza Parma",
-      "description": "لەگەڵ Rucola, Parmaschinken, Parmesankäse و frische tomatoes"
+      "name": "پیتزا Parma",
+      "description": "لەگەڵ Rucola, بەرەنوسی Parma, Parmesan و تازە tomatoes"
     },
     "10054": {
-      "name": "Pizza Diavolo",
+      "name": "پیتزا Diavolo",
       "description": "لەگەڵ salami, tuna, bell pepper و pepperoni"
     },
     "10055": {
-      "name": "Tuna & onion pizza",
+      "name": "پیتزای تونا و پیاز",
       "description": "لەگەڵ tuna و onions"
     },
     "10056": {
       "name": "Ham & mushroom pizza",
-      "description": "لەگەڵ Hinterschinken و mushrooms"
+      "description": "لەگەڵ بەرەنوس و mushrooms"
     },
     "10057": {
-      "name": "Pizza Hawaii",
-      "description": "لەگەڵ Hinterschinken و pineapple"
+      "name": "پیتزا Hawaii",
+      "description": "لەگەڵ بەرەنوس و pineapple"
     },
     "10058": {
-      "name": "Pizza Mozzarella",
+      "name": "پیتزا Mozzarella",
       "description": "لەگەڵ Mozzarella و Cherry tomatoes"
     },
     "10059": {
-      "name": "Pizza Bolognese",
+      "name": "پیتزا Bolognese",
       "description": "لەگەڵ bolognese sauce و onions"
     },
     "10060": {
-      "name": "Pizza Spaghetti Bolognese",
+      "name": "پیتزا Spaghetti Bolognese",
       "description": "لەگەڵ Spaghetti و bolognese sauce"
     },
     "10061": {
-      "name": "Pizza Milano",
-      "description": "لەگەڵ spinach, Krabben, mushrooms و garlic"
+      "name": "پیتزا Milano",
+      "description": "لەگەڵ spinach, میگو, mushrooms و garlic"
     },
     "10062": {
-      "name": "Pizza Lachs",
+      "name": "پیتزا سەمۆن",
       "description": "لەگەڵ spinach, salmon و garlic"
     },
     "10063": {
       "name": "Four seasons pizza",
-      "description": "لەگەڵ salami, Hinterschinken, tuna و onions"
+      "description": "لەگەڵ salami, بەرەنوس, tuna و onions"
     },
     "10064": {
       "name": "Four cheeses pizza",
       "description": "لەگەڵ Gorgonzola, Gouda cheese, feta cheese و Mozzarella"
     },
     "10065": {
-      "name": "Pizza Margherita",
+      "name": "پیتزای مارگەریتا",
       "description": "لەگەڵ tomato sauce و cheese"
     },
     "10066": {
-      "name": "Pizza Broccoli",
+      "name": "پیتزا بڕۆکۆلی",
       "description": "لەگەڵ broccoli"
     },
     "10067": {
-      "name": "Pizza Salami",
+      "name": "پیتزا سەڵامێ",
       "description": "لەگەڵ salami"
     },
     "10068": {
-      "name": "Pizza Prosciutto",
-      "description": "لەگەڵ Hinterschinken"
+      "name": "پیتزا Prosciutto",
+      "description": "لەگەڵ بەرەنوس"
     },
     "10069": {
-      "name": "Pizza Funghi",
-      "description": "لەگەڵ frische mushrooms"
+      "name": "پیتزا Funghi",
+      "description": "لەگەڵ تازە mushrooms"
     },
     "10070": {
-      "name": "Pizza Tonno",
+      "name": "پیتزا Tonno",
       "description": "لەگەڵ tuna"
     },
     "10071": {
-      "name": "Pizza Spinaci",
+      "name": "پیتزا Spinaci",
       "description": "لەگەڵ spinach و garlic"
     },
     "10072": {
-      "name": "Pizza Scampi",
-      "description": "لەگەڵ Krabben و garlic"
+      "name": "پیتزا Scampi",
+      "description": "لەگەڵ میگو و garlic"
     },
     "10073": {
       "name": "Seafood pizza",
       "description": "لەگەڵ seafood و garlic"
     },
     "10074": {
-      "name": "Pizza Sucuk",
+      "name": "پیتزا Sucuk",
       "description": "لەگەڵ türkisch garlicwurst"
     },
     "10075": {
-      "name": "Stuffed pizza rolls with Bolognese",
+      "name": "Stuffed pizza rolls لەگەڵ Bolognese",
       "description": null
     },
     "10076": {
-      "name": "Stuffed pizza rolls with Sucuk",
+      "name": "Stuffed pizza rolls لەگەڵ Sucuk",
       "description": null
     },
     "10077": {
-      "name": "Stuffed pizza rolls with Hinterschinken",
+      "name": "Stuffed pizza rolls لەگەڵ بەرەنوس",
       "description": null
     },
     "10078": {
-      "name": "Stuffed pizza rolls with tuna, onions, feta",
+      "name": "Stuffed pizza rolls لەگەڵ tuna, onions, feta",
       "description": null
     },
     "10079": {
-      "name": "Stuffed pizza rolls with Dönerfleisch",
+      "name": "Stuffed pizza rolls لەگەڵ دۆنەر",
       "description": null
     },
     "10080": {
-      "name": "Stuffed pizza rolls with spinach and feta",
+      "name": "Stuffed pizza rolls لەگەڵ spinach و feta",
       "description": null
     },
     "10081": {
-      "name": "Stuffed pizza rolls with Käse",
+      "name": "Stuffed pizza rolls لەگەڵ پەنیر",
       "description": null
     },
     "10082": {
-      "name": "Stuffed pizza rolls with Thunfisch",
+      "name": "Stuffed pizza rolls لەگەڵ تونا",
       "description": null
     },
     "10083": {
-      "name": "Stuffed pizza rolls with Salami",
+      "name": "Stuffed pizza rolls لەگەڵ سەڵامێ",
       "description": null
     },
     "10084": {
-      "name": "Pizza rolls (10 pcs)",
-      "description": "لەگەڵ Kräuterbutter"
+      "name": "پیتزا rolls (10 pcs)",
+      "description": "لەگەڵ کری تۆو"
     },
     "10085": {
       "name": "Portion of herb butter",
       "description": null
     },
     "10086": {
-      "name": "Schnitzel Hawaii",
-      "description": "لەگەڵ Hinterschinken, pineapple و Sahnesauce"
+      "name": "شنیتسل Hawaii",
+      "description": "لەگەڵ بەرەنوس, pineapple و سۆسی کریم"
     },
     "10087": {
-      "name": "Broccoli Schnitzel",
-      "description": "لەگەڵ broccoli و Sahnesauce"
+      "name": "بڕۆکۆلی شنیتسل",
+      "description": "لەگەڵ broccoli و سۆسی کریم"
     },
     "10088": {
-      "name": "Zwiebel Schnitzel",
-      "description": "لەگەڵ gebratene onions و Sahnesauce"
+      "name": "Zwiebel شنیتسل",
+      "description": "لەگەڵ برژاو onions و سۆسی کریم"
     },
     "10089": {
-      "name": "Hollandaise Schnitzel",
-      "description": "لەگەڵ broccoli, frische mushrooms, onions و Sauce Hollandaise"
+      "name": "Hollandaise شنیتسل",
+      "description": "لەگەڵ broccoli, تازە mushrooms, onions و سۆسی Hollandaise"
     },
     "10090": {
-      "name": "Spinat Schnitzel",
-      "description": "لەگەڵ spinach, garlic و Sahnesauce"
+      "name": "ئیسپیناخ شنیتسل",
+      "description": "لەگەڵ spinach, garlic و سۆسی کریم"
     },
     "10091": {
-      "name": "Paprikaschnitzel",
-      "description": "لەگەڵ Balkansauce"
+      "name": "بیبەرschnitzel",
+      "description": "لەگەڵ سۆسی بالکان"
     },
     "10092": {
-      "name": "Champignonschnitzel",
-      "description": "لەگەڵ mushrooms و Sahnesauce"
+      "name": "قارچchnitzel",
+      "description": "لەگەڵ mushrooms و سۆسی کریم"
     },
     "10093": {
-      "name": "Wiener schnitzel",
+      "name": "شنیتسلی ڤیەننا",
       "description": "لەگەڵ Zitronenscheibe"
     },
     "10094": {
-      "name": "Jäger schnitzel",
-      "description": "لەگەڵ Jägersauce"
+      "name": "شنیتسلی ڕاوچی",
+      "description": "لەگەڵ سۆسی شکاری"
     },
     "10095": {
       "name": "Double cheese burger",
@@ -428,7 +428,7 @@
     },
     "10097": {
       "name": "Chicken burger",
-      "description": "لەگەڵ 135g Hähnchenfleisch, Eisbergsalat, Gurken, tomatoes, onions و Sauce"
+      "description": "لەگەڵ 135g مریشکfleisch, Eisbergsalat, Gurken, tomatoes, onions و Sauce"
     },
     "10098": {
       "name": "Double burger",
@@ -455,11 +455,11 @@
       "description": null
     },
     "10104": {
-      "name": "Mayonnaise",
+      "name": "مایۆنێز",
       "description": null
     },
     "10105": {
-      "name": "Ketchup",
+      "name": "کێتچەپ",
       "description": null
     },
     "10106": {
@@ -504,11 +504,11 @@
     },
     "10116": {
       "name": "Sprite 1,0l (MEHRWEG)",
-      "description": "Bist du bereit für Sprite? Die einzigartige Formel aus grünen Limetten و sonnengelben Zitronen erfrischt dich maximal."
+      "description": null
     },
     "10117": {
       "name": "Mezzo Mix 1,0l (MEHRWEG)",
-      "description": "Mixt euch eine gute Zeit لەگەڵ Mezzo Mix, dem erfrischend-leckeren Kuss aus Cola و Orange."
+      "description": null
     },
     "10118": {
       "name": "Sparkling mineral water 0,25l",
@@ -520,7 +520,7 @@
     },
     "10120": {
       "name": "Sprite 0,33l (MEHRWEG)",
-      "description": "Bist du bereit für Sprite? Die einzigartige Formel aus grünen Limetten و sonnengelben Zitronen erfrischt dich maximal."
+      "description": null
     },
     "10121": {
       "name": "Still mineral water 0,25l",
@@ -532,15 +532,15 @@
     },
     "10123": {
       "name": "Fanta Orange 0,33l (MEHRWEG)",
-      "description": "Trinke Fanta. Lebe bunter. Spritzig erfrischend begleitet die originale Fanta Orange jede Lebenssituation و macht jetzt noch mehr Spaß."
+      "description": null
     },
     "10124": {
       "name": "Fanta Orange 1,0l (MEHRWEG)",
-      "description": "Trinke Fanta. Lebe bunter. Spritzig erfrischend begleitet die originale Fanta Orange jede Lebenssituation و macht jetzt noch mehr Spaß."
+      "description": null
     },
     "10125": {
       "name": "Coca-Cola 0,33l (MEHRWEG)",
-      "description": "Coca-Cola steht für einzigartigen Geschmack, Erfrischung و Momente voller Lebensfreude. Die 0,33l Glas-Mehrwegflasche ist unsere Ikone für perfekten Trinkgenuss seit 1886."
+      "description": null
     },
     "10126": {
       "name": "Coca-Cola 1,0l (MEHRWEG)",

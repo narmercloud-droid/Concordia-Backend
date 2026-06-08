@@ -63,11 +63,11 @@
       "description": null
     },
     "10006": {
-      "name": "Baguette met Hinterschinken",
+      "name": "Baguette met Achterham",
       "description": null
     },
     "10007": {
-      "name": "Baguette met Thunfisch",
+      "name": "Baguette met Tonijn",
       "description": null
     },
     "10008": {
@@ -76,7 +76,7 @@
     },
     "10009": {
       "name": "Pasta Salmone",
-      "description": "met spinazie, Lachs, Knoblauch en Sahnesauce"
+      "description": "met spinazie, Zalm, Knoflook en Sahnesauce"
     },
     "10010": {
       "name": "Pasta Vegetarisch",
@@ -88,7 +88,7 @@
     },
     "10012": {
       "name": "Pasta Pasta Concordia",
-      "description": "met Hähnchenbruststreifen, champignons, Broccoli, scharfen Peperonis, Knoblauch en Tomaten-Sahnesauce"
+      "description": "met Kipreepjes, champignons, Broccoli, scharfen Peperonis, Knoflook en Tomaten-Sahnesauce"
     },
     "10013": {
       "name": "Pasta Formaggi",
@@ -96,19 +96,19 @@
     },
     "10014": {
       "name": "Pasta Alla Chef",
-      "description": "met Hähnchenbruststreifen, frischen champignons, Mais, Goudakäse, Tomaten en Sahnesauce"
+      "description": "met Kipreepjes, frischen champignons, Mais, Goudakäse, Tomaten en Sahnesauce"
     },
     "10015": {
       "name": "Pasta Carbonara",
-      "description": "met Hinterschinken, Ei en Sahnesauce"
+      "description": "met Achterham, Ei en Sahnesauce"
     },
     "10016": {
       "name": "Pasta Alla Panna",
-      "description": "met Hinterschinken, frischen champignons en Sahnesauce"
+      "description": "met Achterham, frischen champignons en Sahnesauce"
     },
     "10017": {
       "name": "Pasta Toscana",
-      "description": "met Hinterschinken, Krabben, frischen champignons, Knoblauch, Tomaten en Sahnesauce"
+      "description": "met Achterham, Garnalen, frischen champignons, Knoflook, Tomaten en Sahnesauce"
     },
     "10018": {
       "name": "Pasta Napoli",
@@ -116,7 +116,7 @@
     },
     "10019": {
       "name": "Pasta Bolognese",
-      "description": "met Hackfleischsauce"
+      "description": "met Bolognesesaus"
     },
     "10020": {
       "name": "Caprese Salade",
@@ -124,19 +124,19 @@
     },
     "10021": {
       "name": "Capricciosa Salade",
-      "description": "gemischter Salat met tonijn, Ei, Hinterschinken en kaas"
+      "description": "gemischter Salat met tonijn, Ei, Achterham en kaas"
     },
     "10022": {
       "name": "Casa Salade",
-      "description": "gemischter Salat met Mais, Paprika, Oliven en feta"
+      "description": "gemischter Salat met Mais, Paprika, Olijven en feta"
     },
     "10023": {
-      "name": "Hähnchen Salade",
-      "description": "gemischter Salat met gebratene Hähnchenbruststreifen, Paprika en Rucola"
+      "name": "Kip Salade",
+      "description": "gemischter Salat met gebratene Kipreepjes, Paprika en Rucola"
     },
     "10024": {
       "name": "Hawaii Salade",
-      "description": "gemischter Salat met Hinterschinken, Ananas en kaas"
+      "description": "gemischter Salat met Achterham, Ananas en kaas"
     },
     "10025": {
       "name": "Tonno Salade",
@@ -144,11 +144,11 @@
     },
     "10026": {
       "name": "Concordia Salade",
-      "description": "gemischter Salat met Krabben, frische champignons en Rucola"
+      "description": "gemischter Salat met Garnalen, frische champignons en Rucola"
     },
     "10027": {
       "name": "Primavera Salade",
-      "description": "gemischter Salat met Oliven, feta, Artischocken en Ei"
+      "description": "gemischter Salat met Olijven, feta, Artisjokken en Ei"
     },
     "10028": {
       "name": "Mista Salade",
@@ -156,7 +156,7 @@
     },
     "10029": {
       "name": "Fantasia Salade",
-      "description": "gemischter Salat met tonijn, Hinterschinken, Artischocken, feta en Ei"
+      "description": "gemischter Salat met tonijn, Achterham, Artisjokken, feta en Ei"
     },
     "10030": {
       "name": "Penne Ovenschotel",
@@ -164,7 +164,7 @@
     },
     "10031": {
       "name": "Tortellini Ovenschotel",
-      "description": "met Tortellini, Hinterschinken, Broccoli en Sahnesauce"
+      "description": "met Tortellini, Achterham, Broccoli en Sahnesauce"
     },
     "10032": {
       "name": "Spaghetti Ovenschotel",
@@ -175,32 +175,32 @@
       "description": "met döner, Tomaten, ui, feta, Paprika en Sahnesauce"
     },
     "10034": {
-      "name": "Gemüse Ovenschotel",
+      "name": "Groenten Ovenschotel",
       "description": "met Spaghetti, frischen champignons, spinazie, Broccoli, Paprika, ui en Tomaten-Sahnesauce"
     },
     "10035": {
-      "name": "Pizza Spargel",
-      "description": "met Hinterschinken, Salami, Spargel en Sauce Hollandaise"
+      "name": "Pizza Asperges",
+      "description": "met Achterham, Salami, Asperges en Hollandaise"
     },
     "10036": {
       "name": "Pizza Rustica",
-      "description": "met Hinterschinken, tonijn, ui, Paprika en scharfe Peperoni"
+      "description": "met Achterham, tonijn, ui, Paprika en Pittige peper"
     },
     "10037": {
       "name": "Pizza Bruno",
-      "description": "met spinazie, Hähnchenbruststreifen en Sauce Hollandaise"
+      "description": "met spinazie, Kipreepjes en Hollandaise"
     },
     "10038": {
       "name": "Pizza Enzo",
       "description": "met Salami en frische champignons"
     },
     "10039": {
-      "name": "Pizza Hähnchen",
-      "description": "met Hähnchenbruststreifen, Broccoli en Sauce Hollandaise"
+      "name": "Pizza Kip",
+      "description": "met Kipreepjes, Broccoli en Hollandaise"
     },
     "10040": {
       "name": "Pizza Chef",
-      "description": "met Krabben, spinazie, Broccoli, tonijn en Knoblauch"
+      "description": "met Garnalen, spinazie, Broccoli, tonijn en Knoflook"
     },
     "10041": {
       "name": "Pizza Italia",
@@ -216,35 +216,35 @@
     },
     "10044": {
       "name": "Pizza Vegetaria C",
-      "description": "met frische champignons, ui en Oliven"
+      "description": "met frische champignons, ui en Olijven"
     },
     "10045": {
       "name": "Pizza Vegetaria D",
-      "description": "met Cherry Tomaten, frische champignons, Mozzarella, spinazie en Knoblauch"
+      "description": "met Cherrytomaten, frische champignons, Mozzarella, spinazie en Knoflook"
     },
     "10046": {
       "name": "Pizza Mexico",
-      "description": "met döner, ui en Sauce Hollandaise"
+      "description": "met döner, ui en Hollandaise"
     },
     "10047": {
       "name": "Pizza Concordia",
-      "description": "met döner, ui, Paprika, Broccoli en Sauce Hollandaise"
+      "description": "met döner, ui, Paprika, Broccoli en Hollandaise"
     },
     "10048": {
       "name": "Pizza Bella",
-      "description": "met ui, Paprika, Mais en Hähnchenbruststreifen"
+      "description": "met ui, Paprika, Mais en Kipreepjes"
     },
     "10049": {
       "name": "Pizza Vegas",
-      "description": "met frische champignons, Cherry Tomaten, Sauce Hollandaise, Oliven en Hähnchenbruststreifen"
+      "description": "met frische champignons, Cherrytomaten, Hollandaise, Olijven en Kipreepjes"
     },
     "10050": {
       "name": "Calzone Spezial",
-      "description": "zugeklappte Pizza gefüllt met tonijn, ui, feta en scharfe Peperoni"
+      "description": "zugeklappte Pizza gefüllt met tonijn, ui, feta en Pittige peper"
     },
     "10051": {
       "name": "Calzone Concordia",
-      "description": "zugeklappte Pizza gefüllt met Hinterschinken, Salami, tonijn, ui en Peperoni"
+      "description": "zugeklappte Pizza gefüllt met Achterham, Salami, tonijn, ui en Peperoni"
     },
     "10052": {
       "name": "Calzone Döner",
@@ -252,7 +252,7 @@
     },
     "10053": {
       "name": "Pizza Parma",
-      "description": "met Rucola, Parmaschinken, Parmesankäse en frische Tomaten"
+      "description": "met Rucola, Parmaham, Parmezaan en frische Tomaten"
     },
     "10054": {
       "name": "Pizza Diavolo",
@@ -264,35 +264,35 @@
     },
     "10056": {
       "name": "Ham & champignon pizza",
-      "description": "met Hinterschinken en champignons"
+      "description": "met Achterham en champignons"
     },
     "10057": {
       "name": "Pizza Hawaii",
-      "description": "met Hinterschinken en Ananas"
+      "description": "met Achterham en Ananas"
     },
     "10058": {
       "name": "Pizza Mozzarella",
-      "description": "met Mozzarella en Cherry Tomaten"
+      "description": "met Mozzarella en Cherrytomaten"
     },
     "10059": {
       "name": "Pizza Bolognese",
-      "description": "met Hackfleischsauce en ui"
+      "description": "met Bolognesesaus en ui"
     },
     "10060": {
       "name": "Pizza Spaghetti Bolognese",
-      "description": "met Spaghetti en Hackfleischsauce"
+      "description": "met Spaghetti en Bolognesesaus"
     },
     "10061": {
       "name": "Pizza Milano",
-      "description": "met spinazie, Krabben, champignons en Knoblauch"
+      "description": "met spinazie, Garnalen, champignons en Knoflook"
     },
     "10062": {
-      "name": "Pizza Lachs",
-      "description": "met spinazie, Lachs en Knoblauch"
+      "name": "Pizza Zalm",
+      "description": "met spinazie, Zalm en Knoflook"
     },
     "10063": {
       "name": "Quattro stagioni pizza",
-      "description": "met Salami, Hinterschinken, tonijn en ui"
+      "description": "met Salami, Achterham, tonijn en ui"
     },
     "10064": {
       "name": "Quattro formaggi pizza",
@@ -312,7 +312,7 @@
     },
     "10068": {
       "name": "Pizza Prosciutto",
-      "description": "met Hinterschinken"
+      "description": "met Achterham"
     },
     "10069": {
       "name": "Pizza Funghi",
@@ -324,19 +324,19 @@
     },
     "10071": {
       "name": "Pizza Spinaci",
-      "description": "met spinazie en Knoblauch"
+      "description": "met spinazie en Knoflook"
     },
     "10072": {
       "name": "Pizza Scampi",
-      "description": "met Krabben en Knoblauch"
+      "description": "met Garnalen en Knoflook"
     },
     "10073": {
       "name": "Zeevruchten pizza",
-      "description": "met zeevruchten en Knoblauch"
+      "description": "met zeevruchten en Knoflook"
     },
     "10074": {
       "name": "Pizza Sucuk",
-      "description": "met türkisch Knoblauchwurst"
+      "description": "met türkisch Knoflookwurst"
     },
     "10075": {
       "name": "Gevulde pizzabroodjes met Bolognese",
@@ -347,7 +347,7 @@
       "description": null
     },
     "10077": {
-      "name": "Gevulde pizzabroodjes met Hinterschinken",
+      "name": "Gevulde pizzabroodjes met Achterham",
       "description": null
     },
     "10078": {
@@ -355,7 +355,7 @@
       "description": null
     },
     "10079": {
-      "name": "Gevulde pizzabroodjes met Dönerfleisch",
+      "name": "Gevulde pizzabroodjes met Döner",
       "description": null
     },
     "10080": {
@@ -363,11 +363,11 @@
       "description": null
     },
     "10081": {
-      "name": "Gevulde pizzabroodjes met Käse",
+      "name": "Gevulde pizzabroodjes met Kaas",
       "description": null
     },
     "10082": {
-      "name": "Gevulde pizzabroodjes met Thunfisch",
+      "name": "Gevulde pizzabroodjes met Tonijn",
       "description": null
     },
     "10083": {
@@ -376,7 +376,7 @@
     },
     "10084": {
       "name": "Pizzabroodjes (10 stuks)",
-      "description": "met Kräuterbutter"
+      "description": "met Kruidenboter"
     },
     "10085": {
       "name": "Portie kruidenboter",
@@ -384,7 +384,7 @@
     },
     "10086": {
       "name": "Schnitzel Hawaii",
-      "description": "met Hinterschinken, Ananas en Sahnesauce"
+      "description": "met Achterham, Ananas en Sahnesauce"
     },
     "10087": {
       "name": "Broccoli Schnitzel",
@@ -396,11 +396,11 @@
     },
     "10089": {
       "name": "Hollandaise Schnitzel",
-      "description": "met Broccoli, frische champignons, ui en Sauce Hollandaise"
+      "description": "met Broccoli, frische champignons, ui en Hollandaise"
     },
     "10090": {
-      "name": "Spinat Schnitzel",
-      "description": "met spinazie, Knoblauch en Sahnesauce"
+      "name": "Spinazie Schnitzel",
+      "description": "met spinazie, Knoflook en Sahnesauce"
     },
     "10091": {
       "name": "Paprikaschnitzel",
@@ -428,7 +428,7 @@
     },
     "10097": {
       "name": "Chicken Burger",
-      "description": "met 135g Hähnchenfleisch, Eisbergsalat, Gurken, Tomaten, ui en Sauce"
+      "description": "met 135g Kipfleisch, Eisbergsalat, Gurken, Tomaten, ui en Sauce"
     },
     "10098": {
       "name": "Dubbele burger",
@@ -455,7 +455,7 @@
       "description": null
     },
     "10104": {
-      "name": "Mayonnaise",
+      "name": "Mayonaise",
       "description": null
     },
     "10105": {
@@ -504,11 +504,11 @@
     },
     "10116": {
       "name": "Sprite 1,0l (MEHRWEG)",
-      "description": "Bist du bereit für Sprite? Die einzigartige Formel aus grünen Limetten en sonnengelben Zitronen erfrischt dich maximal."
+      "description": null
     },
     "10117": {
       "name": "Mezzo Mix 1,0l (MEHRWEG)",
-      "description": "Mixt euch eine gute Zeit met Mezzo Mix, dem erfrischend-leckeren Kuss aus Cola en Orange."
+      "description": null
     },
     "10118": {
       "name": "Bruisend mineraalwater 0,25l",
@@ -520,7 +520,7 @@
     },
     "10120": {
       "name": "Sprite 0,33l (MEHRWEG)",
-      "description": "Bist du bereit für Sprite? Die einzigartige Formel aus grünen Limetten en sonnengelben Zitronen erfrischt dich maximal."
+      "description": null
     },
     "10121": {
       "name": "Plat mineraalwater 0,25l",
@@ -532,15 +532,15 @@
     },
     "10123": {
       "name": "Fanta Orange 0,33l (MEHRWEG)",
-      "description": "Trinke Fanta. Lebe bunter. Spritzig erfrischend begleitet die originale Fanta Orange jede Lebenssituation en macht jetzt noch mehr Spaß."
+      "description": null
     },
     "10124": {
       "name": "Fanta Orange 1,0l (MEHRWEG)",
-      "description": "Trinke Fanta. Lebe bunter. Spritzig erfrischend begleitet die originale Fanta Orange jede Lebenssituation en macht jetzt noch mehr Spaß."
+      "description": null
     },
     "10125": {
       "name": "Coca-Cola 0,33l (MEHRWEG)",
-      "description": "Coca-Cola steht für einzigartigen Geschmack, Erfrischung en Momente voller Lebensfreude. Die 0,33l Glas-Mehrwegflasche ist unsere Ikone für perfekten Trinkgenuss seit 1886."
+      "description": null
     },
     "10126": {
       "name": "Coca-Cola 1,0l (MEHRWEG)",

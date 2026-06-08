@@ -63,11 +63,11 @@
       "description": null
     },
     "10006": {
-      "name": "Baguette z Hinterschinken",
+      "name": "Baguette z Szynka",
       "description": null
     },
     "10007": {
-      "name": "Baguette z Thunfisch",
+      "name": "Baguette z Tuńczyk",
       "description": null
     },
     "10008": {
@@ -76,39 +76,39 @@
     },
     "10009": {
       "name": "Pasta Salmone",
-      "description": "z spinach, salmon, garlic i Sahnesauce"
+      "description": "z spinach, salmon, garlic i sos śmietankowy"
     },
     "10010": {
       "name": "Pasta Vegetarisch",
-      "description": "z broccoli, bell pepper, frischen mushrooms, onions i tomatoes-Sahnesauce"
+      "description": "z broccoli, bell pepper, świeże mushrooms, onions i tomatoes-sos śmietankowy"
     },
     "10011": {
       "name": "Pasta Gorgonzola",
-      "description": "z broccoli, frischen mushrooms, Gorgonzolakäse i Sahnesauce"
+      "description": "z broccoli, świeże mushrooms, Gorgonzolakäse i sos śmietankowy"
     },
     "10012": {
       "name": "Pasta Pasta Concordia",
-      "description": "z Hähnchenbruststreifen, mushrooms, broccoli, scharfen pepperonis, garlic i tomatoes-Sahnesauce"
+      "description": "z Kurczak w paski, mushrooms, broccoli, scharfen pepperonis, garlic i tomatoes-sos śmietankowy"
     },
     "10013": {
       "name": "Pasta Formaggi",
-      "description": "z vier verschiedenen cheesesorten i Sahnesauce"
+      "description": "z vier verschiedenen cheesesorten i sos śmietankowy"
     },
     "10014": {
       "name": "Pasta Alla Chef",
-      "description": "z Hähnchenbruststreifen, frischen mushrooms, corn, Goudakäse, tomatoes i Sahnesauce"
+      "description": "z Kurczak w paski, świeże mushrooms, corn, ser Gouda, tomatoes i sos śmietankowy"
     },
     "10015": {
       "name": "Pasta Carbonara",
-      "description": "z Hinterschinken, Ei i Sahnesauce"
+      "description": "z Szynka, Ei i sos śmietankowy"
     },
     "10016": {
       "name": "Pasta Alla Panna",
-      "description": "z Hinterschinken, frischen mushrooms i Sahnesauce"
+      "description": "z Szynka, świeże mushrooms i sos śmietankowy"
     },
     "10017": {
       "name": "Pasta Toscana",
-      "description": "z Hinterschinken, Krabben, frischen mushrooms, garlic, tomatoes i Sahnesauce"
+      "description": "z Szynka, Krewetki, świeże mushrooms, garlic, tomatoes i sos śmietankowy"
     },
     "10018": {
       "name": "Pasta Napoli",
@@ -120,87 +120,87 @@
     },
     "10020": {
       "name": "Caprese Sałatka",
-      "description": "z tomatoes, Mozzarella i Rucola"
+      "description": "z tomatoes, Mozzarella i Rukola"
     },
     "10021": {
       "name": "Capricciosa Sałatka",
-      "description": "gemischter Salat z tuna, Ei, Hinterschinken i serem"
+      "description": "sałatka mieszana z tuna, Ei, Szynka i serem"
     },
     "10022": {
       "name": "Casa Sałatka",
-      "description": "gemischter Salat z corn, bell pepper, olives i feta serem"
+      "description": "sałatka mieszana z corn, bell pepper, olives i feta serem"
     },
     "10023": {
-      "name": "Hähnchen Sałatka",
-      "description": "gemischter Salat z gebratene Hähnchenbruststreifen, bell pepper i Rucola"
+      "name": "Kurczak Sałatka",
+      "description": "sałatka mieszana z smażone Kurczak w paski, bell pepper i Rukola"
     },
     "10024": {
       "name": "Hawaii Sałatka",
-      "description": "gemischter Salat z Hinterschinken, pineapple i serem"
+      "description": "sałatka mieszana z Szynka, pineapple i serem"
     },
     "10025": {
       "name": "Tonno Sałatka",
-      "description": "gemischter Salat i tuna"
+      "description": "sałatka mieszana i tuna"
     },
     "10026": {
       "name": "Concordia Sałatka",
-      "description": "gemischter Salat z Krabben, frische mushrooms i Rucola"
+      "description": "sałatka mieszana z Krewetki, świeże mushrooms i Rukola"
     },
     "10027": {
       "name": "Primavera Sałatka",
-      "description": "gemischter Salat z olives, feta serem, artichokes i Ei"
+      "description": "sałatka mieszana z olives, feta serem, artichokes i Ei"
     },
     "10028": {
       "name": "Mista Sałatka",
-      "description": "gemischter Salat z corn i bell pepper"
+      "description": "sałatka mieszana z corn i bell pepper"
     },
     "10029": {
       "name": "Fantasia Sałatka",
-      "description": "gemischter Salat z tuna, Hinterschinken, artichokes, feta serem i Ei"
+      "description": "sałatka mieszana z tuna, Szynka, artichokes, feta serem i Ei"
     },
     "10030": {
       "name": "Penne Zapiekanka",
-      "description": "z Penne, frischen mushrooms, broccoli, corn i Sahnesauce"
+      "description": "z Penne, świeże mushrooms, broccoli, corn i sos śmietankowy"
     },
     "10031": {
       "name": "Tortellini Zapiekanka",
-      "description": "z Tortellini, Hinterschinken, broccoli i Sahnesauce"
+      "description": "z Tortellini, Szynka, broccoli i sos śmietankowy"
     },
     "10032": {
       "name": "Spaghetti Zapiekanka",
-      "description": "z Spaghetti, onions, tomatoes, bell pepper i tomatoes-Sahnesauce"
+      "description": "z Spaghetti, onions, tomatoes, bell pepper i tomatoes-sos śmietankowy"
     },
     "10033": {
       "name": "Döner Zapiekanka",
-      "description": "z döner meat, tomatoes, onions, feta serem, bell pepper i Sahnesauce"
+      "description": "z döner meat, tomatoes, onions, feta serem, bell pepper i sos śmietankowy"
     },
     "10034": {
-      "name": "Gemüse Zapiekanka",
-      "description": "z Spaghetti, frischen mushrooms, spinach, broccoli, bell pepper, onions i tomatoes-Sahnesauce"
+      "name": "Warzywa Zapiekanka",
+      "description": "z Spaghetti, świeże mushrooms, spinach, broccoli, bell pepper, onions i tomatoes-sos śmietankowy"
     },
     "10035": {
-      "name": "Pizza Spargel",
-      "description": "z Hinterschinken, salami, asparagus i sosem Hollandaise"
+      "name": "Pizza Szparagi",
+      "description": "z Szynka, salami, asparagus i sosem Hollandaise"
     },
     "10036": {
       "name": "Pizza Rustica",
-      "description": "z Hinterschinken, tuna, onions, bell pepper i scharfe pepperoni"
+      "description": "z Szynka, tuna, onions, bell pepper i ostra pepperoni"
     },
     "10037": {
       "name": "Pizza Bruno",
-      "description": "z spinach, Hähnchenbruststreifen i sosem Hollandaise"
+      "description": "z spinach, Kurczak w paski i sosem Hollandaise"
     },
     "10038": {
       "name": "Pizza Enzo",
-      "description": "z salami i frische mushrooms"
+      "description": "z salami i świeże mushrooms"
     },
     "10039": {
-      "name": "Pizza Hähnchen",
-      "description": "z Hähnchenbruststreifen, broccoli i sosem Hollandaise"
+      "name": "Pizza Kurczak",
+      "description": "z Kurczak w paski, broccoli i sosem Hollandaise"
     },
     "10040": {
       "name": "Pizza Chef",
-      "description": "z Krabben, spinach, broccoli, tuna i garlic"
+      "description": "z Krewetki, spinach, broccoli, tuna i garlic"
     },
     "10041": {
       "name": "Pizza Italia",
@@ -208,7 +208,7 @@
     },
     "10042": {
       "name": "Pizza Vegetaria A",
-      "description": "z spinach, bell pepper, broccoli i frische mushrooms"
+      "description": "z spinach, bell pepper, broccoli i świeże mushrooms"
     },
     "10043": {
       "name": "Pizza Vegetaria B",
@@ -216,11 +216,11 @@
     },
     "10044": {
       "name": "Pizza Vegetaria C",
-      "description": "z frische mushrooms, onions i olives"
+      "description": "z świeże mushrooms, onions i olives"
     },
     "10045": {
       "name": "Pizza Vegetaria D",
-      "description": "z Cherry tomatoes, frische mushrooms, Mozzarella, spinach i garlic"
+      "description": "z Cherry tomatoes, świeże mushrooms, Mozzarella, spinach i garlic"
     },
     "10046": {
       "name": "Pizza Mexico",
@@ -232,19 +232,19 @@
     },
     "10048": {
       "name": "Pizza Bella",
-      "description": "z onions, bell pepper, corn i Hähnchenbruststreifen"
+      "description": "z onions, bell pepper, corn i Kurczak w paski"
     },
     "10049": {
       "name": "Pizza Vegas",
-      "description": "z frische mushrooms, Cherry tomatoes, sosem Hollandaise, olives i Hähnchenbruststreifen"
+      "description": "z świeże mushrooms, Cherry tomatoes, sosem Hollandaise, olives i Kurczak w paski"
     },
     "10050": {
       "name": "Calzone Spezial",
-      "description": "zugeklappte Pizza gefüllt z tuna, onions, feta serem i scharfe pepperoni"
+      "description": "zugeklappte Pizza gefüllt z tuna, onions, feta serem i ostra pepperoni"
     },
     "10051": {
       "name": "Calzone Concordia",
-      "description": "zugeklappte Pizza gefüllt z Hinterschinken, salami, tuna, onions i pepperoni"
+      "description": "zugeklappte Pizza gefüllt z Szynka, salami, tuna, onions i pepperoni"
     },
     "10052": {
       "name": "Calzone Döner",
@@ -252,7 +252,7 @@
     },
     "10053": {
       "name": "Pizza Parma",
-      "description": "z Rucola, Parmaschinken, Parmesankäse i frische tomatoes"
+      "description": "z Rukola, Szynka parmeńska, Parmezan i świeże tomatoes"
     },
     "10054": {
       "name": "Pizza Diavolo",
@@ -264,11 +264,11 @@
     },
     "10056": {
       "name": "Ham & mushroom pizza",
-      "description": "z Hinterschinken i mushrooms"
+      "description": "z Szynka i mushrooms"
     },
     "10057": {
       "name": "Pizza Hawaii",
-      "description": "z Hinterschinken i pineapple"
+      "description": "z Szynka i pineapple"
     },
     "10058": {
       "name": "Pizza Mozzarella",
@@ -284,15 +284,15 @@
     },
     "10061": {
       "name": "Pizza Milano",
-      "description": "z spinach, Krabben, mushrooms i garlic"
+      "description": "z spinach, Krewetki, mushrooms i garlic"
     },
     "10062": {
-      "name": "Pizza Lachs",
+      "name": "Pizza Łosoś",
       "description": "z spinach, salmon i garlic"
     },
     "10063": {
       "name": "Four seasons pizza",
-      "description": "z salami, Hinterschinken, tuna i onions"
+      "description": "z salami, Szynka, tuna i onions"
     },
     "10064": {
       "name": "Four cheeses pizza",
@@ -312,11 +312,11 @@
     },
     "10068": {
       "name": "Pizza Prosciutto",
-      "description": "z Hinterschinken"
+      "description": "z Szynka"
     },
     "10069": {
       "name": "Pizza Funghi",
-      "description": "z frische mushrooms"
+      "description": "z świeże mushrooms"
     },
     "10070": {
       "name": "Pizza Tonno",
@@ -328,7 +328,7 @@
     },
     "10072": {
       "name": "Pizza Scampi",
-      "description": "z Krabben i garlic"
+      "description": "z Krewetki i garlic"
     },
     "10073": {
       "name": "Seafood pizza",
@@ -347,7 +347,7 @@
       "description": null
     },
     "10077": {
-      "name": "Stuffed pizza rolls z Hinterschinken",
+      "name": "Stuffed pizza rolls z Szynka",
       "description": null
     },
     "10078": {
@@ -355,7 +355,7 @@
       "description": null
     },
     "10079": {
-      "name": "Stuffed pizza rolls z Dönerfleisch",
+      "name": "Stuffed pizza rolls z Kebab",
       "description": null
     },
     "10080": {
@@ -363,11 +363,11 @@
       "description": null
     },
     "10081": {
-      "name": "Stuffed pizza rolls z Käse",
+      "name": "Stuffed pizza rolls z Ser",
       "description": null
     },
     "10082": {
-      "name": "Stuffed pizza rolls z Thunfisch",
+      "name": "Stuffed pizza rolls z Tuńczyk",
       "description": null
     },
     "10083": {
@@ -376,7 +376,7 @@
     },
     "10084": {
       "name": "Pizza rolls (10 pcs)",
-      "description": "z Kräuterbutter"
+      "description": "z Masło ziołowe"
     },
     "10085": {
       "name": "Portion of herb butter",
@@ -384,31 +384,31 @@
     },
     "10086": {
       "name": "Schnitzel Hawaii",
-      "description": "z Hinterschinken, pineapple i Sahnesauce"
+      "description": "z Szynka, pineapple i sos śmietankowy"
     },
     "10087": {
       "name": "Broccoli Schnitzel",
-      "description": "z broccoli i Sahnesauce"
+      "description": "z broccoli i sos śmietankowy"
     },
     "10088": {
       "name": "Zwiebel Schnitzel",
-      "description": "z gebratene onions i Sahnesauce"
+      "description": "z smażone onions i sos śmietankowy"
     },
     "10089": {
       "name": "Hollandaise Schnitzel",
-      "description": "z broccoli, frische mushrooms, onions i sosem Hollandaise"
+      "description": "z broccoli, świeże mushrooms, onions i sosem Hollandaise"
     },
     "10090": {
-      "name": "Spinat Schnitzel",
-      "description": "z spinach, garlic i Sahnesauce"
+      "name": "Szpinak Schnitzel",
+      "description": "z spinach, garlic i sos śmietankowy"
     },
     "10091": {
-      "name": "Paprikaschnitzel",
+      "name": "Paprykaschnitzel",
       "description": "z Balkansauce"
     },
     "10092": {
-      "name": "Champignonschnitzel",
-      "description": "z mushrooms i Sahnesauce"
+      "name": "Pieczarkichnitzel",
+      "description": "z mushrooms i sos śmietankowy"
     },
     "10093": {
       "name": "Wiener schnitzel",
@@ -416,7 +416,7 @@
     },
     "10094": {
       "name": "Jäger schnitzel",
-      "description": "z Jägersauce"
+      "description": "z sos myśliwski"
     },
     "10095": {
       "name": "Double cheese burger",
@@ -428,7 +428,7 @@
     },
     "10097": {
       "name": "Chicken burger",
-      "description": "z 135g Hähnchenfleisch, Eisbergsalat, Gurken, tomatoes, onions i sosem"
+      "description": "z 135g Kurczakfleisch, Eisbergsalat, Gurken, tomatoes, onions i sosem"
     },
     "10098": {
       "name": "Double burger",
@@ -504,11 +504,11 @@
     },
     "10116": {
       "name": "Sprite 1,0l (MEHRWEG)",
-      "description": "Bist du bereit für Sprite? Die einzigartige Formel aus grünen Limetten i sonnengelben Zitronen erfrischt dich maximal."
+      "description": null
     },
     "10117": {
       "name": "Mezzo Mix 1,0l (MEHRWEG)",
-      "description": "Mixt euch eine gute Zeit z Mezzo Mix, dem erfrischend-leckeren Kuss aus Cola i Orange."
+      "description": null
     },
     "10118": {
       "name": "Sparkling mineral water 0,25l",
@@ -520,7 +520,7 @@
     },
     "10120": {
       "name": "Sprite 0,33l (MEHRWEG)",
-      "description": "Bist du bereit für Sprite? Die einzigartige Formel aus grünen Limetten i sonnengelben Zitronen erfrischt dich maximal."
+      "description": null
     },
     "10121": {
       "name": "Still mineral water 0,25l",
@@ -532,15 +532,15 @@
     },
     "10123": {
       "name": "Fanta Orange 0,33l (MEHRWEG)",
-      "description": "Trinke Fanta. Lebe bunter. Spritzig erfrischend begleitet die originale Fanta Orange jede Lebenssituation i macht jetzt noch mehr Spaß."
+      "description": null
     },
     "10124": {
       "name": "Fanta Orange 1,0l (MEHRWEG)",
-      "description": "Trinke Fanta. Lebe bunter. Spritzig erfrischend begleitet die originale Fanta Orange jede Lebenssituation i macht jetzt noch mehr Spaß."
+      "description": null
     },
     "10125": {
       "name": "Coca-Cola 0,33l (MEHRWEG)",
-      "description": "Coca-Cola steht für einzigartigen Geschmack, Erfrischung i Momente voller Lebensfreude. Die 0,33l Glas-Mehrwegflasche ist unsere Ikone für perfekten Trinkgenuss seit 1886."
+      "description": null
     },
     "10126": {
       "name": "Coca-Cola 1,0l (MEHRWEG)",

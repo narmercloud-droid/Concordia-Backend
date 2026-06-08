@@ -47,68 +47,68 @@
   },
   "items": {
     "10002": {
-      "name": "Baguette with Sucuk",
+      "name": "Sucuklu baget",
       "description": null
     },
     "10003": {
-      "name": "Baguette with tuna and egg",
+      "name": "Ton balıklı ve yumurtalı baget",
       "description": null
     },
     "10004": {
-      "name": "Baguette with Mozzarella",
+      "name": "Mozzarellalı baget",
       "description": null
     },
     "10005": {
-      "name": "Baguette with sucuk and egg",
+      "name": "Sucuklu ve yumurtalı baget",
       "description": null
     },
     "10006": {
-      "name": "Baguette with Hinterschinken",
+      "name": "Jambonlu baget",
       "description": null
     },
     "10007": {
-      "name": "Baguette with Thunfisch",
+      "name": "Ton balıklı baget",
       "description": null
     },
     "10008": {
-      "name": "Baguette with Salami",
+      "name": "Salamlı baget",
       "description": null
     },
     "10009": {
       "name": "Pasta Salmone",
-      "description": "ile spinach, salmon, garlic ve Sahnesauce"
+      "description": "ile spinach, salmon, garlic ve krema sosu"
     },
     "10010": {
       "name": "Pasta Vegetarisch",
-      "description": "ile broccoli, bell pepper, frischen mushrooms, onions ve tomatoes-Sahnesauce"
+      "description": "ile broccoli, bell pepper, taze mushrooms, onions ve tomatoes-krema sosu"
     },
     "10011": {
       "name": "Pasta Gorgonzola",
-      "description": "ile broccoli, frischen mushrooms, Gorgonzolakäse ve Sahnesauce"
+      "description": "ile broccoli, taze mushrooms, Gorgonzola ve krema sosu"
     },
     "10012": {
       "name": "Pasta Pasta Concordia",
-      "description": "ile Hähnchenbruststreifen, mushrooms, broccoli, scharfen pepperonis, garlic ve tomatoes-Sahnesauce"
+      "description": "ile Tavuk şeritleri, mushrooms, broccoli, acı pepperonis, garlic ve tomatoes-krema sosu"
     },
     "10013": {
       "name": "Pasta Formaggi",
-      "description": "ile vier verschiedenen cheesesorten ve Sahnesauce"
+      "description": "ile vier verschiedenen cheesesorten ve krema sosu"
     },
     "10014": {
       "name": "Pasta Alla Chef",
-      "description": "ile Hähnchenbruststreifen, frischen mushrooms, corn, Goudakäse, tomatoes ve Sahnesauce"
+      "description": "ile Tavuk şeritleri, taze mushrooms, corn, Gouda peyniri, tomatoes ve krema sosu"
     },
     "10015": {
       "name": "Pasta Carbonara",
-      "description": "ile Hinterschinken, Ei ve Sahnesauce"
+      "description": "ile Jambon, Ei ve krema sosu"
     },
     "10016": {
       "name": "Pasta Alla Panna",
-      "description": "ile Hinterschinken, frischen mushrooms ve Sahnesauce"
+      "description": "ile Jambon, taze mushrooms ve krema sosu"
     },
     "10017": {
       "name": "Pasta Toscana",
-      "description": "ile Hinterschinken, Krabben, frischen mushrooms, garlic, tomatoes ve Sahnesauce"
+      "description": "ile Jambon, Karides, taze mushrooms, garlic, tomatoes ve krema sosu"
     },
     "10018": {
       "name": "Pasta Napoli",
@@ -119,88 +119,88 @@
       "description": "ile bolognese sauce"
     },
     "10020": {
-      "name": "Caprese Salad",
-      "description": "ile tomatoes, Mozzarella ve Rucola"
+      "name": "Caprese Salata",
+      "description": "ile tomatoes, Mozzarella ve Roka"
     },
     "10021": {
-      "name": "Capricciosa Salad",
-      "description": "gemischter Salat ile tuna, Ei, Hinterschinken ve cheese"
+      "name": "Capricciosa Salata",
+      "description": "Karışık salata ile tuna, Ei, Jambon ve cheese"
     },
     "10022": {
-      "name": "Casa Salad",
-      "description": "gemischter Salat ile corn, bell pepper, olives ve feta cheese"
+      "name": "Casa Salata",
+      "description": "Karışık salata ile corn, bell pepper, olives ve feta cheese"
     },
     "10023": {
-      "name": "Hähnchen Salad",
-      "description": "gemischter Salat ile gebratene Hähnchenbruststreifen, bell pepper ve Rucola"
+      "name": "Tavuk Salata",
+      "description": "Karışık salata ile ızgaralı Tavuk şeritleri, bell pepper ve Roka"
     },
     "10024": {
-      "name": "Hawaii Salad",
-      "description": "gemischter Salat ile Hinterschinken, pineapple ve cheese"
+      "name": "Hawaii Salata",
+      "description": "Karışık salata ile Jambon, pineapple ve cheese"
     },
     "10025": {
-      "name": "Tonno Salad",
-      "description": "gemischter Salat ve tuna"
+      "name": "Tonno Salata",
+      "description": "Karışık salata ve tuna"
     },
     "10026": {
-      "name": "Concordia Salad",
-      "description": "gemischter Salat ile Krabben, frische mushrooms ve Rucola"
+      "name": "Concordia Salata",
+      "description": "Karışık salata ile Karides, taze mushrooms ve Roka"
     },
     "10027": {
-      "name": "Primavera Salad",
-      "description": "gemischter Salat ile olives, feta cheese, artichokes ve Ei"
+      "name": "Primavera Salata",
+      "description": "Karışık salata ile olives, feta cheese, artichokes ve Ei"
     },
     "10028": {
-      "name": "Mista Salad",
-      "description": "gemischter Salat ile corn ve bell pepper"
+      "name": "Mista Salata",
+      "description": "Karışık salata ile corn ve bell pepper"
     },
     "10029": {
-      "name": "Fantasia Salad",
-      "description": "gemischter Salat ile tuna, Hinterschinken, artichokes, feta cheese ve Ei"
+      "name": "Fantasia Salata",
+      "description": "Karışık salata ile tuna, Jambon, artichokes, feta cheese ve Ei"
     },
     "10030": {
-      "name": "Penne Bake",
-      "description": "ile Penne, frischen mushrooms, broccoli, corn ve Sahnesauce"
+      "name": "Penne Fırın",
+      "description": "ile Penne, taze mushrooms, broccoli, corn ve krema sosu"
     },
     "10031": {
-      "name": "Tortellini Bake",
-      "description": "ile Tortellini, Hinterschinken, broccoli ve Sahnesauce"
+      "name": "Tortellini Fırın",
+      "description": "ile Tortellini, Jambon, broccoli ve krema sosu"
     },
     "10032": {
-      "name": "Spaghetti Bake",
-      "description": "ile Spaghetti, onions, tomatoes, bell pepper ve tomatoes-Sahnesauce"
+      "name": "Spagetti Fırın",
+      "description": "ile Spagetti, onions, tomatoes, bell pepper ve tomatoes-krema sosu"
     },
     "10033": {
-      "name": "Döner Bake",
-      "description": "ile döner meat, tomatoes, onions, feta cheese, bell pepper ve Sahnesauce"
+      "name": "Döner Fırın",
+      "description": "ile döner meat, tomatoes, onions, feta cheese, bell pepper ve krema sosu"
     },
     "10034": {
-      "name": "Gemüse Bake",
-      "description": "ile Spaghetti, frischen mushrooms, spinach, broccoli, bell pepper, onions ve tomatoes-Sahnesauce"
+      "name": "Sebzeler Fırın",
+      "description": "ile Spagetti, taze mushrooms, spinach, broccoli, bell pepper, onions ve tomatoes-krema sosu"
     },
     "10035": {
-      "name": "Pizza Spargel",
-      "description": "ile Hinterschinken, salami, asparagus ve Sauce Hollandaise"
+      "name": "Pizza Kuşkonmaz",
+      "description": "ile Jambon, salami, asparagus ve Hollandaise sosu"
     },
     "10036": {
       "name": "Pizza Rustica",
-      "description": "ile Hinterschinken, tuna, onions, bell pepper ve scharfe pepperoni"
+      "description": "ile Jambon, tuna, onions, bell pepper ve acı pepperoni"
     },
     "10037": {
       "name": "Pizza Bruno",
-      "description": "ile spinach, Hähnchenbruststreifen ve Sauce Hollandaise"
+      "description": "ile spinach, Tavuk şeritleri ve Hollandaise sosu"
     },
     "10038": {
       "name": "Pizza Enzo",
-      "description": "ile salami ve frische mushrooms"
+      "description": "ile salami ve taze mushrooms"
     },
     "10039": {
-      "name": "Pizza Hähnchen",
-      "description": "ile Hähnchenbruststreifen, broccoli ve Sauce Hollandaise"
+      "name": "Pizza Tavuk",
+      "description": "ile Tavuk şeritleri, broccoli ve Hollandaise sosu"
     },
     "10040": {
       "name": "Pizza Chef",
-      "description": "ile Krabben, spinach, broccoli, tuna ve garlic"
+      "description": "ile Karides, spinach, broccoli, tuna ve garlic"
     },
     "10041": {
       "name": "Pizza Italia",
@@ -208,7 +208,7 @@
     },
     "10042": {
       "name": "Pizza Vegetaria A",
-      "description": "ile spinach, bell pepper, broccoli ve frische mushrooms"
+      "description": "ile spinach, bell pepper, broccoli ve taze mushrooms"
     },
     "10043": {
       "name": "Pizza Vegetaria B",
@@ -216,35 +216,35 @@
     },
     "10044": {
       "name": "Pizza Vegetaria C",
-      "description": "ile frische mushrooms, onions ve olives"
+      "description": "ile taze mushrooms, onions ve olives"
     },
     "10045": {
       "name": "Pizza Vegetaria D",
-      "description": "ile Cherry tomatoes, frische mushrooms, Mozzarella, spinach ve garlic"
+      "description": "ile Cherry tomatoes, taze mushrooms, Mozzarella, spinach ve garlic"
     },
     "10046": {
       "name": "Pizza Mexico",
-      "description": "ile döner meat, onions ve Sauce Hollandaise"
+      "description": "ile döner meat, onions ve Hollandaise sosu"
     },
     "10047": {
       "name": "Pizza Concordia",
-      "description": "ile döner meat, onions, bell pepper, broccoli ve Sauce Hollandaise"
+      "description": "ile döner meat, onions, bell pepper, broccoli ve Hollandaise sosu"
     },
     "10048": {
       "name": "Pizza Bella",
-      "description": "ile onions, bell pepper, corn ve Hähnchenbruststreifen"
+      "description": "ile onions, bell pepper, corn ve Tavuk şeritleri"
     },
     "10049": {
       "name": "Pizza Vegas",
-      "description": "ile frische mushrooms, Cherry tomatoes, Sauce Hollandaise, olives ve Hähnchenbruststreifen"
+      "description": "ile taze mushrooms, Cherry tomatoes, Hollandaise sosu, olives ve Tavuk şeritleri"
     },
     "10050": {
       "name": "Calzone Spezial",
-      "description": "zugeklappte Pizza gefüllt ile tuna, onions, feta cheese ve scharfe pepperoni"
+      "description": "zugeklappte Pizza gefüllt ile tuna, onions, feta cheese ve acı pepperoni"
     },
     "10051": {
       "name": "Calzone Concordia",
-      "description": "zugeklappte Pizza gefüllt ile Hinterschinken, salami, tuna, onions ve pepperoni"
+      "description": "zugeklappte Pizza gefüllt ile Jambon, salami, tuna, onions ve pepperoni"
     },
     "10052": {
       "name": "Calzone Döner",
@@ -252,23 +252,23 @@
     },
     "10053": {
       "name": "Pizza Parma",
-      "description": "ile Rucola, Parmaschinken, Parmesankäse ve frische tomatoes"
+      "description": "ile Roka, Parma jambonu, Parmesan ve taze tomatoes"
     },
     "10054": {
       "name": "Pizza Diavolo",
       "description": "ile salami, tuna, bell pepper ve pepperoni"
     },
     "10055": {
-      "name": "Tuna & onion pizza",
+      "name": "Ton balıklı ve soğanlı pizza",
       "description": "ile tuna ve onions"
     },
     "10056": {
-      "name": "Ham & mushroom pizza",
-      "description": "ile Hinterschinken ve mushrooms"
+      "name": "Jambonlu ve mantarlı pizza",
+      "description": "ile Jambon ve mushrooms"
     },
     "10057": {
       "name": "Pizza Hawaii",
-      "description": "ile Hinterschinken ve pineapple"
+      "description": "ile Jambon ve pineapple"
     },
     "10058": {
       "name": "Pizza Mozzarella",
@@ -279,23 +279,23 @@
       "description": "ile bolognese sauce ve onions"
     },
     "10060": {
-      "name": "Pizza Spaghetti Bolognese",
-      "description": "ile Spaghetti ve bolognese sauce"
+      "name": "Pizza Spagetti Bolognese",
+      "description": "ile Spagetti ve bolognese sauce"
     },
     "10061": {
       "name": "Pizza Milano",
-      "description": "ile spinach, Krabben, mushrooms ve garlic"
+      "description": "ile spinach, Karides, mushrooms ve garlic"
     },
     "10062": {
-      "name": "Pizza Lachs",
+      "name": "Pizza Somon",
       "description": "ile spinach, salmon ve garlic"
     },
     "10063": {
-      "name": "Four seasons pizza",
-      "description": "ile salami, Hinterschinken, tuna ve onions"
+      "name": "Dört mevsim pizza",
+      "description": "ile salami, Jambon, tuna ve onions"
     },
     "10064": {
-      "name": "Four cheeses pizza",
+      "name": "Dört peynirli pizza",
       "description": "ile Gorgonzola, Gouda cheese, feta cheese ve Mozzarella"
     },
     "10065": {
@@ -303,20 +303,20 @@
       "description": "ile tomato sauce ve cheese"
     },
     "10066": {
-      "name": "Pizza Broccoli",
+      "name": "Pizza Brokoli",
       "description": "ile broccoli"
     },
     "10067": {
-      "name": "Pizza Salami",
+      "name": "Pizza Salam",
       "description": "ile salami"
     },
     "10068": {
       "name": "Pizza Prosciutto",
-      "description": "ile Hinterschinken"
+      "description": "ile Jambon"
     },
     "10069": {
       "name": "Pizza Funghi",
-      "description": "ile frische mushrooms"
+      "description": "ile taze mushrooms"
     },
     "10070": {
       "name": "Pizza Tonno",
@@ -328,10 +328,10 @@
     },
     "10072": {
       "name": "Pizza Scampi",
-      "description": "ile Krabben ve garlic"
+      "description": "ile Karides ve garlic"
     },
     "10073": {
-      "name": "Seafood pizza",
+      "name": "Deniz ürünlü pizza",
       "description": "ile seafood ve garlic"
     },
     "10074": {
@@ -339,84 +339,84 @@
       "description": "ile türkisch garlicwurst"
     },
     "10075": {
-      "name": "Stuffed pizza rolls with Bolognese",
+      "name": "Stuffed pizza rolls ile Bolognese",
       "description": null
     },
     "10076": {
-      "name": "Stuffed pizza rolls with Sucuk",
+      "name": "Stuffed pizza rolls ile Sucuk",
       "description": null
     },
     "10077": {
-      "name": "Stuffed pizza rolls with Hinterschinken",
+      "name": "Stuffed pizza rolls ile Jambon",
       "description": null
     },
     "10078": {
-      "name": "Stuffed pizza rolls with tuna, onions, feta",
+      "name": "Ton balıklı, soğanlı ve feta dolgulu pizza ruloları",
       "description": null
     },
     "10079": {
-      "name": "Stuffed pizza rolls with Dönerfleisch",
+      "name": "Stuffed pizza rolls ile Döner eti",
       "description": null
     },
     "10080": {
-      "name": "Stuffed pizza rolls with spinach and feta",
+      "name": "Ispanaklı ve feta dolgulu pizza ruloları",
       "description": null
     },
     "10081": {
-      "name": "Stuffed pizza rolls with Käse",
+      "name": "Stuffed pizza rolls ile Peynir",
       "description": null
     },
     "10082": {
-      "name": "Stuffed pizza rolls with Thunfisch",
+      "name": "Stuffed pizza rolls ile Ton balığı",
       "description": null
     },
     "10083": {
-      "name": "Stuffed pizza rolls with Salami",
+      "name": "Stuffed pizza rolls ile Salam",
       "description": null
     },
     "10084": {
       "name": "Pizza rolls (10 pcs)",
-      "description": "ile Kräuterbutter"
+      "description": "ile Otlu tereyağı"
     },
     "10085": {
       "name": "Portion of herb butter",
       "description": null
     },
     "10086": {
-      "name": "Schnitzel Hawaii",
-      "description": "ile Hinterschinken, pineapple ve Sahnesauce"
+      "name": "Şinitzel Hawaii",
+      "description": "ile Jambon, pineapple ve krema sosu"
     },
     "10087": {
-      "name": "Broccoli Schnitzel",
-      "description": "ile broccoli ve Sahnesauce"
+      "name": "Brokoli Şinitzel",
+      "description": "ile broccoli ve krema sosu"
     },
     "10088": {
-      "name": "Zwiebel Schnitzel",
-      "description": "ile gebratene onions ve Sahnesauce"
+      "name": "Zwiebel Şinitzel",
+      "description": "ile ızgaralı onions ve krema sosu"
     },
     "10089": {
-      "name": "Hollandaise Schnitzel",
-      "description": "ile broccoli, frische mushrooms, onions ve Sauce Hollandaise"
+      "name": "Hollandaise Şinitzel",
+      "description": "ile broccoli, taze mushrooms, onions ve Hollandaise sosu"
     },
     "10090": {
-      "name": "Spinat Schnitzel",
-      "description": "ile spinach, garlic ve Sahnesauce"
+      "name": "Ispanak Şinitzel",
+      "description": "ile spinach, garlic ve krema sosu"
     },
     "10091": {
-      "name": "Paprikaschnitzel",
-      "description": "ile Balkansauce"
+      "name": "Biberschnitzel",
+      "description": "ile Balkan sosu"
     },
     "10092": {
-      "name": "Champignonschnitzel",
-      "description": "ile mushrooms ve Sahnesauce"
+      "name": "Mantarchnitzel",
+      "description": "ile mushrooms ve krema sosu"
     },
     "10093": {
-      "name": "Wiener schnitzel",
+      "name": "Viyana şinitzeli",
       "description": "ile Zitronenscheibe"
     },
     "10094": {
-      "name": "Jäger schnitzel",
-      "description": "ile Jägersauce"
+      "name": "Avcı şinitzeli",
+      "description": "ile avcı sosu"
     },
     "10095": {
       "name": "Double cheese burger",
@@ -428,7 +428,7 @@
     },
     "10097": {
       "name": "Chicken burger",
-      "description": "ile 135g Hähnchenfleisch, Eisbergsalat, Gurken, tomatoes, onions ve Sauce"
+      "description": "ile 135g Tavukfleisch, Eisbergsalat, Gurken, tomatoes, onions ve Sauce"
     },
     "10098": {
       "name": "Double burger",
@@ -455,11 +455,11 @@
       "description": null
     },
     "10104": {
-      "name": "Mayonnaise",
+      "name": "Mayonez",
       "description": null
     },
     "10105": {
-      "name": "Ketchup",
+      "name": "Ketçap",
       "description": null
     },
     "10106": {
@@ -483,11 +483,11 @@
       "description": "ile Pommes"
     },
     "10111": {
-      "name": "French fries",
+      "name": "French patates",
       "description": null
     },
     "10112": {
-      "name": "Special fries",
+      "name": "Special patates",
       "description": null
     },
     "10113": {
@@ -504,11 +504,11 @@
     },
     "10116": {
       "name": "Sprite 1,0l (MEHRWEG)",
-      "description": "Bist du bereit für Sprite? Die einzigartige Formel aus grünen Limetten ve sonnengelben Zitronen erfrischt dich maximal."
+      "description": null
     },
     "10117": {
       "name": "Mezzo Mix 1,0l (MEHRWEG)",
-      "description": "Mixt euch eine gute Zeit ile Mezzo Mix, dem erfrischend-leckeren Kuss aus Cola ve Orange."
+      "description": null
     },
     "10118": {
       "name": "Sparkling mineral water 0,25l",
@@ -520,7 +520,7 @@
     },
     "10120": {
       "name": "Sprite 0,33l (MEHRWEG)",
-      "description": "Bist du bereit für Sprite? Die einzigartige Formel aus grünen Limetten ve sonnengelben Zitronen erfrischt dich maximal."
+      "description": null
     },
     "10121": {
       "name": "Still mineral water 0,25l",
@@ -532,15 +532,15 @@
     },
     "10123": {
       "name": "Fanta Orange 0,33l (MEHRWEG)",
-      "description": "Trinke Fanta. Lebe bunter. Spritzig erfrischend begleitet die originale Fanta Orange jede Lebenssituation ve macht jetzt noch mehr Spaß."
+      "description": null
     },
     "10124": {
       "name": "Fanta Orange 1,0l (MEHRWEG)",
-      "description": "Trinke Fanta. Lebe bunter. Spritzig erfrischend begleitet die originale Fanta Orange jede Lebenssituation ve macht jetzt noch mehr Spaß."
+      "description": null
     },
     "10125": {
       "name": "Coca-Cola 0,33l (MEHRWEG)",
-      "description": "Coca-Cola steht für einzigartigen Geschmack, Erfrischung ve Momente voller Lebensfreude. Die 0,33l Glas-Mehrwegflasche ist unsere Ikone für perfekten Trinkgenuss seit 1886."
+      "description": null
     },
     "10126": {
       "name": "Coca-Cola 1,0l (MEHRWEG)",
