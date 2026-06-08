@@ -15,7 +15,7 @@ function resolveMenuLocalesDir() {
   return candidates[0];
 }
 
-export const MENU_LANGUAGES = ["de", "en", "nl", "pl", "ru", "ro", "hi", "ar", "ku"] as const;
+export const MENU_LANGUAGES = ["de", "en", "nl", "pl", "ru", "ro", "hi", "ar", "ku", "tr", "ckb"] as const;
 export type MenuLanguage = (typeof MENU_LANGUAGES)[number];
 
 type TextEntry = { name: string; description?: string | null };

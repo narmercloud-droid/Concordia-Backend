@@ -9,7 +9,7 @@ const catalog = JSON.parse(fs.readFileSync("src/i18n/menu/de.json", "utf8"))
 const outDir = "src/i18n/menu/locales"
 fs.mkdirSync(outDir, { recursive: true })
 
-const LANGS = ["en", "nl", "pl", "ru", "ro", "hi", "ar", "ku"]
+const LANGS = ["en", "nl", "pl", "ru", "ro", "hi", "ar", "ku", "tr", "ckb"]
 
 const CATEGORY_T = {
   en: {
@@ -115,6 +115,32 @@ const CATEGORY_T = {
     46: { name: "Snacks", description: "" },
     47: { name: "Vexwarinên nealkolîk", description: "" },
     48: { name: "Vexwarinên alkolîk", description: "" }
+  },
+  tr: {
+    38: { name: "Bagetler", description: "Buzdolabı marulu, domates, salatalık, remoulade ile" },
+    39: { name: "Makarna", description: "Spagetti, penne veya tortellini seçimi" },
+    40: { name: "Salatalar", description: "Seçtiğiniz sos ile" },
+    41: { name: "Al Forno Yemekleri", description: "" },
+    42: { name: "Pizzalar", description: "Küçük 24 cm · Büyük 30 cm" },
+    43: { name: "Pizza ruloları", description: "10 adet ot tereyağı ile · Dolgulu çeşitler" },
+    44: { name: "Şinitzel", description: "Tüm yemekler patates ve salata ile" },
+    45: { name: "Burgerler", description: "" },
+    46: { name: "Atıştırmalıklar", description: "" },
+    47: { name: "Alkolsüz İçecekler", description: "" },
+    48: { name: "Alkollü İçecekler", description: "" }
+  },
+  ckb: {
+    38: { name: "باگێت", description: "لەگەڵ سەوزی iceberg، تەماتە، خیار، remoulade" },
+    39: { name: "ماکارۆنی", description: "هەڵبژاردن لە نێوان spaghetti، penne یان tortellini" },
+    40: { name: "سەلاطە", description: "لەگەڵ ڕەنگینی دڵخواز" },
+    41: { name: "خواردنەکانی Al Forno", description: "" },
+    42: { name: "پیتزا", description: "بچووک 24 cm · گەورە 30 cm" },
+    43: { name: "پیتزا برۆتچن", description: "10 پارچە لەگەڵ کری تۆو · پڕکراو" },
+    44: { name: "شنیتسل", description: "هەموو خواردن لەگەڵ پەتاتە و سەلاطە" },
+    45: { name: "بەرگەر", description: "" },
+    46: { name: "خواردنی سووک", description: "" },
+    47: { name: "خواردنەوەی بێ ئەلکۆل", description: "" },
+    48: { name: "خواردنەوەی ئەلکۆلدار", description: "" }
   }
 }
 
@@ -672,6 +698,166 @@ function lexiconFor(lang) {
     }
   }
 
+  if (lang === "tr") {
+    return {
+      variantGroups: {
+        Dressing: "Sos",
+        Fleischwahl: "Et seçimi",
+        Größe: "Boyut",
+        Nudelsorte: "Makarna türü",
+        "Wählen Sie": "Seçin"
+      },
+      variants: {
+        "Essig & Öl": "Sirke ve yağ",
+        "French Dressing": "French sos",
+        "French-Dressing": "French sos",
+        Hähnchen: "Tavuk",
+        Joghurtsauce: "Yoğurt sosu",
+        Jogurtsauce: "Yoğurt sosu",
+        Penne: "Penne",
+        Schwein: "Domuz",
+        Spaghetti: "Spagetti",
+        Tortellini: "Tortellini",
+        "groß 30 cm": "büyük 30 cm",
+        "klein 24 cm": "küçük 24 cm",
+        "ohne Dressing": "sos yok"
+      },
+      addOnGroups: {
+        "Beilagen & Saucen": "Garnitürler ve soslar",
+        Extras: "Ekstralar",
+        "Fleisch & Wurst": "Et ve sosis",
+        Gemüse: "Sebzeler",
+        Meeresfrüchte: "Deniz ürünleri",
+        "Saucen & Käse": "Soslar ve peynir"
+      },
+      addOns: {
+        Ananas: "Ananas",
+        Artischocken: "Enginar",
+        Broccoli: "Brokoli",
+        Champignons: "Mantar",
+        "Cherry Tomaten": "Cherry domates",
+        Currysauce: "Köri sosu",
+        Dönerfleisch: "Döner eti",
+        Fetakäse: "Feta peyniri",
+        Gorgonzola: "Gorgonzola",
+        "Gouda Käse": "Gouda peyniri",
+        Hackfleischsauce: "Bolognese sosu",
+        Hinterschinken: "Jambon",
+        Hähnchenbruststreifen: "Tavuk şeritleri",
+        Ketchup: "Ketçap",
+        Knoblauch: "Sarımsak",
+        Krabben: "Karides",
+        Kräuterbutter: "Otlu tereyağı",
+        Käse: "Peynir",
+        Lachs: "Somon",
+        Mais: "Mısır",
+        Mayonnaise: "Mayonez",
+        Meeresfrüchte: "Deniz ürünleri",
+        "Mit Käse überbacken": "Peynirli",
+        Mozzarella: "Mozzarella",
+        Oliven: "Zeytin",
+        Paprika: "Biber",
+        Parmaschinken: "Parma jambonu",
+        Parmesankäse: "Parmesan",
+        Peperoni: "Peperoni",
+        Rucola: "Roka",
+        Salami: "Salam",
+        "Sauce Hollandaise": "Hollandaise sosu",
+        Spaghetti: "Spagetti",
+        Spargel: "Kuşkonmaz",
+        Spinat: "Ispanak",
+        Sucuk: "Sucuk",
+        Thunfisch: "Ton balığı",
+        Tomaten: "Domates",
+        Tomatensauce: "Domates sosu",
+        "Türkisch Knoblauchwurst": "Türk sarımsaklı sosis",
+        Zwiebeln: "Soğan",
+        "ohne Beilage": "garnitürsüz",
+        "scharfe Peperoni": "Acı biber"
+      }
+    }
+  }
+
+  if (lang === "ckb") {
+    return {
+      variantGroups: {
+        Dressing: "ڕەنگین",
+        Fleischwahl: "هەڵبژاردنی گۆشت",
+        Größe: "قەبارە",
+        Nudelsorte: "جۆری ماکارۆنی",
+        "Wählen Sie": "هەڵبژێرە"
+      },
+      variants: {
+        "Essig & Öl": "سرکە و زەیتی",
+        "French Dressing": "ڕەنگینی فەڕەنسی",
+        "French-Dressing": "ڕەنگینی فەڕەنسی",
+        Hähnchen: "مریشک",
+        Joghurtsauce: "سۆسی مەست",
+        Jogurtsauce: "سۆسی مەست",
+        Penne: "Penne",
+        Schwein: "بەراز",
+        Spaghetti: "Spaghetti",
+        Tortellini: "Tortellini",
+        "groß 30 cm": "گەورە 30 cm",
+        "klein 24 cm": "بچووک 24 cm",
+        "ohne Dressing": "بەبێ ڕەنگین"
+      },
+      addOnGroups: {
+        "Beilagen & Saucen": "لاوەکی و سۆس",
+        Extras: "زیادەکان",
+        "Fleisch & Wurst": "گۆشت و سۆسێس",
+        Gemüse: "سەوزە",
+        Meeresfrüchte: "خواردنی دەریا",
+        "Saucen & Käse": "سۆس و پەنیر"
+      },
+      addOns: {
+        Ananas: "ئەناناس",
+        Artischocken: "ئارتیشۆک",
+        Broccoli: "بڕۆکۆلی",
+        Champignons: "قارچ",
+        "Cherry Tomaten": "تەماتەی cherry",
+        Currysauce: "سۆسی کاری",
+        Dönerfleisch: "دۆنەر",
+        Fetakäse: "پەنیرەی فێتا",
+        Gorgonzola: "Gorgonzola",
+        "Gouda Käse": "پەنیرەی Gouda",
+        Hackfleischsauce: "سۆسی بۆلۆنێز",
+        Hinterschinken: "بەرەنوس",
+        Hähnchenbruststreifen: "مریشک",
+        Ketchup: "کێتچەپ",
+        Knoblauch: "سیر",
+        Krabben: "میگو",
+        Kräuterbutter: "کری تۆو",
+        Käse: "پەنیر",
+        Lachs: "سەمۆن",
+        Mais: "گەنمەشامی",
+        Mayonnaise: "مایۆنێز",
+        Meeresfrüchte: "خواردنی دەریا",
+        "Mit Käse überbacken": "لەگەڵ پەنیر",
+        Mozzarella: "Mozzarella",
+        Oliven: "زەیتوون",
+        Paprika: "بیبەر",
+        Parmaschinken: "بەرەنوسی Parma",
+        Parmesankäse: "Parmesan",
+        Peperoni: "Peperoni",
+        Rucola: "Rucola",
+        Salami: "سەڵامێ",
+        "Sauce Hollandaise": "سۆسی Hollandaise",
+        Spaghetti: "Spaghetti",
+        Spargel: "ئەسپەراج",
+        Spinat: "ئیسپیناخ",
+        Sucuk: "Sucuk",
+        Thunfisch: "تونا",
+        Tomaten: "تەماتە",
+        Tomatensauce: "سۆسی تەماتە",
+        "Türkisch Knoblauchwurst": "سۆسێسی سیری تورکی",
+        Zwiebeln: "پیاز",
+        "ohne Beilage": "بەبێ لاوەکی",
+        "scharfe Peperoni": "بیبەری تیژ"
+      }
+    }
+  }
+
   if (lang === "ku") {
     return {
       variantGroups: {
@@ -928,7 +1114,9 @@ function translateDescription(desc, lang) {
     ro: { with: "cu", and: "și" },
     hi: { with: "के साथ", and: "और" },
     ar: { with: "مع", and: "و" },
-    ku: { with: "bi", and: "û" }
+    ku: { with: "bi", and: "û" },
+    tr: { with: "ile", and: "ve" },
+    ckb: { with: "لەگەڵ", and: "و" }
   }
   let out = en
   for (const [from, to] of Object.entries(swaps[lang] ?? {})) {
