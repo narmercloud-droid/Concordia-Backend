@@ -7,11 +7,27 @@ import { getCache, setCache } from "../../lib/redis.ts";
 import logger from "../../logger.ts";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const BRANCH_PLACES = JSON.parse(
-  fs.readFileSync(path.join(__dirname, "../../config/branchGooglePlaces.json"), "utf8")
-) as Record<string, { textQuery?: string; googleMapsQuery?: string; placeId?: string }>;
+const CONFIG_DIR = path.join(__dirname, "../../config");
+const SNAPSHOT_PATH = path.join(CONFIG_DIR, "googleReviewsSnapshot.json");
 
-const SNAPSHOT_PATH = path.join(__dirname, "../../config/googleReviewsSnapshot.json");
+type BranchPlacesConfig = Record<
+  string,
+  { textQuery?: string; googleMapsQuery?: string; placeId?: string }
+>;
+
+let branchPlacesCache: BranchPlacesConfig | null = null;
+
+function getBranchPlaces(): BranchPlacesConfig {
+  if (branchPlacesCache) return branchPlacesCache;
+  const filePath = path.join(CONFIG_DIR, "branchGooglePlaces.json");
+  try {
+    branchPlacesCache = JSON.parse(fs.readFileSync(filePath, "utf8")) as BranchPlacesConfig;
+  } catch (err) {
+    logger.warn({ err, filePath }, "branchGooglePlaces.json missing or invalid");
+    branchPlacesCache = {};
+  }
+  return branchPlacesCache;
+}
 
 export type GoogleReview = {
   author: string;
@@ -33,7 +49,7 @@ export type BranchGoogleReviews = {
 const CACHE_TTL_SEC = 6 * 60 * 60;
 
 function googleMapsUrlFor(branchId: string, placeId?: string | null) {
-  const meta = BRANCH_PLACES[branchId];
+  const meta = getBranchPlaces()[branchId];
   if (placeId) {
     return `https://www.google.com/maps/place/?q=place_id:${placeId}`;
   }
@@ -91,7 +107,7 @@ async function resolvePlaceId(
 ): Promise<string | null> {
   if (configPlaceId) return configPlaceId;
 
-  const meta = BRANCH_PLACES[branchId];
+  const meta = getBranchPlaces()[branchId];
   if (!meta?.textQuery) return null;
 
   const url = new URL("https://maps.googleapis.com/maps/api/place/findplacefromtext/json");
@@ -193,7 +209,8 @@ export async function getBranchGoogleReviews(branchId: string): Promise<BranchGo
 
   const config = (branch.BranchConfig?.configJson ?? {}) as Record<string, unknown>;
   const apiKey = process.env.GOOGLE_PLACES_API_KEY?.trim();
-  const configPlaceId = String(config.googlePlaceId ?? BRANCH_PLACES[branchId]?.placeId ?? "").trim() || null;
+  const configPlaceId =
+    String(config.googlePlaceId ?? getBranchPlaces()[branchId]?.placeId ?? "").trim() || null;
 
   let result: BranchGoogleReviews = {
     branchId,
