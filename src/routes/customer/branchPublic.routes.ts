@@ -29,21 +29,21 @@ function menuLang(req: express.Request) {
 
 const router = express.Router();
 
-function publicCache(maxAgeSec: number) {
+function publicCache(maxAgeSec: number, staleSec = 300) {
   return (_req: express.Request, res: express.Response, next: express.NextFunction) => {
     res.setHeader(
       "Cache-Control",
-      `public, max-age=${maxAgeSec}, stale-while-revalidate=120`
+      `public, max-age=${maxAgeSec}, stale-while-revalidate=${staleSec}`
     );
     next();
   };
 }
 
-router.get("/branches", publicCache(180), wrap(async () => {
+router.get("/branches", publicCache(300, 600), wrap(async () => {
   return await listBranchesForCustomer();
 }));
 
-router.get("/branches/:branchId/menu", publicCache(300), wrap(async (req) => {
+router.get("/branches/:branchId/menu", publicCache(600, 900), wrap(async (req) => {
   const branchId = req.params.branchId;
   const lang = menuLang(req);
   const cached = await peekBranchMenuCache(branchId, lang);
@@ -173,11 +173,11 @@ router.post("/branches/:branchId/delivery-quote", wrap(async (req) => {
   });
 }));
 
-router.get("/branches/:branchId/google-reviews", publicCache(3600), wrap(async (req) => {
+router.get("/branches/:branchId/google-reviews", publicCache(3600, 7200), wrap(async (req) => {
   return await getBranchGoogleReviews(req.params.branchId);
 }));
 
-router.get("/branches/:branchId/bestsellers", publicCache(300), wrap(async (req) => {
+router.get("/branches/:branchId/bestsellers", publicCache(600, 900), wrap(async (req) => {
   const limit = Math.min(Math.max(Number(req.query.limit ?? 6) || 6, 1), 12);
   return getBranchBestsellers(req.params.branchId, limit, menuLang(req));
 }));

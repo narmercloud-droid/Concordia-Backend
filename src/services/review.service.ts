@@ -93,7 +93,7 @@ function validateReviewInput(
     if (!deliveryRating) {
       throw { code: "INVALID_INPUT", message: "Delivery rating must be between 1 and 5" };
     }
-  } else if (input.deliveryRating != null && input.deliveryRating !== "") {
+  } else if (input.deliveryRating != null) {
     deliveryRating = clampRating(input.deliveryRating);
   }
 

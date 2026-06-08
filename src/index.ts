@@ -117,6 +117,7 @@ import inputValidation from "./middleware/inputValidation.ts";
 import requireApiKey from "./middleware/apiKey.ts";
 import { adminAuth as adminAuthMiddleware } from "./middleware/adminAuth.ts";
 import logger from "./utils/logger.ts";
+import { startNeonKeepAlive } from "./keepAlive.ts";
 import rateLimitRedis from "./middleware/rateLimitRedis.ts";
 import cacheMiddleware from "./middleware/cacheMiddleware.ts";
 import metricsRoutes from "./routes/metrics.ts";
@@ -597,6 +598,15 @@ async function startServer() {
         timers.push(marketingTimer as any);
       } catch (e) {
         logger.error({ e }, "Failed to start branch marketing scheduler");
+      }
+
+      if (env.NODE_ENV === "production") {
+        try {
+          startNeonKeepAlive();
+          logger.info("Neon keep-alive started");
+        } catch (e) {
+          logger.warn({ e }, "Failed to start Neon keep-alive");
+        }
       }
 
       // mark workers as initialized once we've attempted to start them

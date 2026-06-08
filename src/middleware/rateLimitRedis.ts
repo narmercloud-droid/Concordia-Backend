@@ -17,7 +17,7 @@ function shouldSkipRateLimit(req: Request) {
       path === "/ready" ||
       path === "/version" ||
       path === "/api/branches" ||
-      /^\/api\/branches\/[^/]+\/(menu|bestsellers)$/.test(path)
+      /^\/api\/branches\/[^/]+\/(menu|bestsellers|google-reviews|free-drink-options)$/.test(path)
     ) {
       return true;
     }
