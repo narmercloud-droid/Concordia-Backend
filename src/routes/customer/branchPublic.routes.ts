@@ -2,7 +2,8 @@ import express from "express";
 import {
   getBranchMenuForCustomer,
   getBranchItemForCustomer,
-  listBranchesForCustomer
+  listBranchesForCustomer,
+  peekBranchMenuCache
 } from "../../services/customer/branchMenu.service.ts";
 import { generateTimeSlots } from "../../services/scheduling/scheduling.service.ts";
 import {
@@ -30,19 +31,29 @@ const router = express.Router();
 
 function publicCache(maxAgeSec: number) {
   return (_req: express.Request, res: express.Response, next: express.NextFunction) => {
-    res.setHeader("Cache-Control", `public, max-age=${maxAgeSec}, stale-while-revalidate=60`);
+    res.setHeader(
+      "Cache-Control",
+      `public, max-age=${maxAgeSec}, stale-while-revalidate=120`
+    );
     next();
   };
 }
 
-router.get("/branches", publicCache(60), wrap(async () => {
+router.get("/branches", publicCache(180), wrap(async () => {
   return await listBranchesForCustomer();
 }));
 
-router.get("/branches/:branchId/menu", publicCache(120), wrap(async (req) => {
+router.get("/branches/:branchId/menu", publicCache(300), wrap(async (req) => {
+  const branchId = req.params.branchId;
+  const lang = menuLang(req);
+  const cached = await peekBranchMenuCache(branchId, lang);
+  if (cached) {
+    return { categories: cached };
+  }
+
   const branch = await prisma.branch.findUnique({
-    where: { id: req.params.branchId },
-    include: { BranchConfig: true }
+    where: { id: branchId },
+    select: { id: true, BranchConfig: { select: { configJson: true } } }
   });
 
   if (!branch) {
@@ -54,7 +65,7 @@ router.get("/branches/:branchId/menu", publicCache(120), wrap(async (req) => {
     throw { code: "FORBIDDEN", message: "This branch is not available yet" };
   }
 
-  const categories = await getBranchMenuForCustomer(req.params.branchId, menuLang(req));
+  const categories = await getBranchMenuForCustomer(branchId, lang);
   return { categories };
 }));
 

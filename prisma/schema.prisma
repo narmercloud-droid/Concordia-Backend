@@ -853,6 +853,8 @@ model BranchMenuItem {
   branch      Branch          @relation(fields: [branchId], references: [id])
   category    BranchCategory? @relation(fields: [categoryId], references: [id])
   menuItem    MenuItem        @relation(fields: [menuItemId], references: [id])
+
+  @@index([branchId, isAvailable])
 }
 
 model BranchCategory {
@@ -864,6 +866,8 @@ model BranchCategory {
   branch      Branch                      @relation(fields: [branchId], references: [id])
   items       BranchMenuItem[]
   extraPresets BranchExtraPresetCategory[]
+
+  @@index([branchId])
 }
 
 model BranchExtraPreset {

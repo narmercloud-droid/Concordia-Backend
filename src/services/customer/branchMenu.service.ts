@@ -1,5 +1,5 @@
 import { prisma } from "../../prisma/client.ts";
-import { getCache, setCache } from "../../lib/redis.ts";
+import { deleteCache, getCache, setCache } from "../../lib/redis.ts";
 import { deleteSimpleCache, getSimpleCache, setSimpleCache } from "../../lib/simpleCache.ts";
 import {
   applyItemTranslations,
@@ -14,18 +14,62 @@ import {
 } from "./extraPricing.service.ts";
 
 const BRANCHES_CACHE_KEY = "customer:branches:v1";
-const BRANCHES_TTL_SEC = 90;
-const MENU_TTL_SEC = 120;
+const BRANCHES_TTL_SEC = 300;
+const MENU_TTL_SEC = 300;
+const MENU_LANGS = ["de", "en", "nl", "pl", "ru", "ro", "hi", "ar", "ku", "tr", "ckb"] as const;
+
+type CachedBranchRow = {
+  id: string;
+  name: string;
+  address: string;
+  city: string;
+  postalCode: string;
+  lat: number;
+  lng: number;
+  phone: string;
+  status: string;
+  comingSoon: boolean;
+  supportsPickup: boolean;
+  supportsDelivery: boolean;
+  promotions: {
+    freeDrinkMinOrder: number | null;
+    freeDrinkMessage: string;
+  };
+  hours: Array<{ dayOfWeek: number; openTime: string; closeTime: string }>;
+};
 
 export function invalidateBranchListCache() {
   deleteSimpleCache(BRANCHES_CACHE_KEY);
+  void deleteCache(BRANCHES_CACHE_KEY);
 }
 
 export function invalidateBranchMenuCache(branchId: string) {
-  for (const lang of ["de", "en", "nl", "pl", "ru", "ro", "hi", "ar", "ku"]) {
-    deleteSimpleCache(`customer:menu:${branchId}:${lang}:v2`);
+  for (const lang of MENU_LANGS) {
+    const key = `customer:menu:${branchId}:${lang}:v2`;
+    deleteSimpleCache(key);
+    void deleteCache(`${key}:json`);
   }
   deleteSimpleCache(`customer:menu:${branchId}:v1`);
+  void deleteCache(`customer:menu:${branchId}:v1:json`);
+}
+
+export async function peekBranchMenuCache(branchId: string, lang?: string | null) {
+  const resolvedLang = resolveMenuLanguage(lang);
+  const memoryKey = `customer:menu:${branchId}:${resolvedLang}:v2`;
+  const cachedMemory = getSimpleCache<Awaited<ReturnType<typeof buildBranchMenu>>>(memoryKey);
+  if (cachedMemory) return cachedMemory;
+
+  const redisKey = `${memoryKey}:json`;
+  const cachedRedis = await getCache(redisKey);
+  if (!cachedRedis) return null;
+
+  try {
+    const parsed = JSON.parse(cachedRedis) as Awaited<ReturnType<typeof buildBranchMenu>>;
+    setSimpleCache(memoryKey, parsed, MENU_TTL_SEC * 1000);
+    return parsed;
+  } catch {
+    return null;
+  }
 }
 
 function menuItemIdRange(branchId: string): { gte: number; lt: number } | null {
@@ -381,56 +425,69 @@ export async function getBranchItemForCustomer(
 }
 
 export async function listBranchesForCustomer() {
-  const cachedMemory = getSimpleCache<Awaited<ReturnType<typeof fetchBranchesList>>>(
-    BRANCHES_CACHE_KEY
-  );
-  if (cachedMemory) return cachedMemory;
-
-  const cachedRedis = await getCache(BRANCHES_CACHE_KEY);
-  if (cachedRedis) {
-    try {
-      const parsed = JSON.parse(cachedRedis) as Awaited<ReturnType<typeof fetchBranchesList>>;
-      setSimpleCache(BRANCHES_CACHE_KEY, parsed, BRANCHES_TTL_SEC * 1000);
-      return parsed;
-    } catch {
-      // ignore corrupt cache
+  let rows = getSimpleCache<CachedBranchRow[]>(BRANCHES_CACHE_KEY);
+  if (!rows) {
+    const cachedRedis = await getCache(BRANCHES_CACHE_KEY);
+    if (cachedRedis) {
+      try {
+        rows = JSON.parse(cachedRedis) as CachedBranchRow[];
+        setSimpleCache(BRANCHES_CACHE_KEY, rows, BRANCHES_TTL_SEC * 1000);
+      } catch {
+        // ignore corrupt cache
+      }
     }
   }
 
-  const result = await fetchBranchesList();
-  setSimpleCache(BRANCHES_CACHE_KEY, result, BRANCHES_TTL_SEC * 1000);
-  await setCache(BRANCHES_CACHE_KEY, JSON.stringify(result), BRANCHES_TTL_SEC);
-  return result;
+  if (!rows) {
+    rows = await fetchBranchesList();
+    setSimpleCache(BRANCHES_CACHE_KEY, rows, BRANCHES_TTL_SEC * 1000);
+    await setCache(BRANCHES_CACHE_KEY, JSON.stringify(rows), BRANCHES_TTL_SEC);
+  }
+
+  return applyOpenStatus(rows);
 }
 
 const HIDDEN_BRANCH_IDS = new Set(["branch-001", "test-branch-1"]);
 
-async function fetchBranchesList() {
-  const branches = await prisma.branch.findMany({
-    orderBy: { createdAt: "asc" },
-    include: {
-      BranchConfig: true,
-      branchHours: { orderBy: { dayOfWeek: "asc" } }
-    }
-  }).then((rows) => rows.filter((b) => !HIDDEN_BRANCH_IDS.has(b.id)));
-
+function applyOpenStatus(rows: CachedBranchRow[]) {
   const now = new Date();
   const day = now.getDay();
   const time = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
 
-  return branches.map((branch) => {
-    const config = (branch.BranchConfig?.configJson ?? {}) as Record<string, unknown>;
-    const status = String(config.status ?? "live");
-    const todayHours = branch.branchHours.find((h) => h.dayOfWeek === day);
+  return rows.map((branch) => {
+    const todayHours = branch.hours.find((h) => h.dayOfWeek === day);
     const isClosedToday =
-      !todayHours || todayHours.openTime === "00:00" && todayHours.closeTime === "00:00";
+      !todayHours || (todayHours.openTime === "00:00" && todayHours.closeTime === "00:00");
     const isOpenNow =
-      status === "live" &&
+      branch.status === "live" &&
       !isClosedToday &&
       !!todayHours &&
       time >= todayHours.openTime &&
       time <= todayHours.closeTime;
 
+    const { hours: _hours, ...rest } = branch;
+    return { ...rest, isOpen: isOpenNow };
+  });
+}
+
+async function fetchBranchesList(): Promise<CachedBranchRow[]> {
+  const branches = await prisma.branch.findMany({
+    where: { id: { notIn: [...HIDDEN_BRANCH_IDS] } },
+    orderBy: { createdAt: "asc" },
+    select: {
+      id: true,
+      name: true,
+      BranchConfig: { select: { configJson: true } },
+      branchHours: {
+        orderBy: { dayOfWeek: "asc" },
+        select: { dayOfWeek: true, openTime: true, closeTime: true }
+      }
+    }
+  });
+
+  return branches.map((branch) => {
+    const config = (branch.BranchConfig?.configJson ?? {}) as Record<string, unknown>;
+    const status = String(config.status ?? "live");
     const promotions = (config.promotions ?? {}) as Record<string, unknown>;
 
     return {
@@ -443,14 +500,14 @@ async function fetchBranchesList() {
       lng: Number(config.lng ?? 0),
       phone: "",
       status,
-      isOpen: isOpenNow,
       comingSoon: status === "coming_soon",
       supportsPickup: config.supportsPickup !== false,
       supportsDelivery: config.supportsDelivery !== false,
       promotions: {
         freeDrinkMinOrder: Number(promotions.freeDrinkMinOrder ?? 0) || null,
         freeDrinkMessage: String(promotions.freeDrinkMessage ?? "")
-      }
+      },
+      hours: branch.branchHours
     };
   });
 }

@@ -57,6 +57,9 @@ export async function updateBranchHours(
     });
   }
 
+  const { invalidateBranchListCache } = await import("../customer/branchMenu.service.ts");
+  invalidateBranchListCache();
+
   return getBranchHours(branchId);
 }
 
