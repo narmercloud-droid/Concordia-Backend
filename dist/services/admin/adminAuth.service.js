@@ -58,7 +58,8 @@ export class AdminAuthService {
                 return false;
             return this.generateTokens(admin);
         }
-        catch (error) {
+        catch (_error) {
+            void _error;
             return false;
         }
     }

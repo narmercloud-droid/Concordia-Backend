@@ -26,7 +26,8 @@ async function cacheKDSEventData(event, branchId, data) {
     const cacheKey = getCacheKey(event, branchId);
     await batchSet([{ key: cacheKey, value: JSON.stringify(data), ttl: CACHE_TTL }]);
 }
-export function registerKDSEvents(io, socket) {
+export function registerKDSEvents(_io, socket) {
+    void _io;
     const branchId = socket.data?.branchId;
     socket.on("kds:join", (data) => {
         socket.data.branchId = data.branchId;
@@ -36,7 +37,7 @@ export function registerKDSEvents(io, socket) {
     socket.on("kds:accept_order", async (data) => {
         const start = Date.now();
         try {
-            const order = await OrderService.updateStatus(data.orderId, "accepted");
+            await OrderService.updateStatus(data.orderId, "accepted");
             socket.emit("kds:order_accepted", {
                 success: true,
                 event: "kds:order_accepted",
@@ -56,7 +57,7 @@ export function registerKDSEvents(io, socket) {
     socket.on("kds:start_preparing", async (data) => {
         const start = Date.now();
         try {
-            const order = await OrderService.updateStatus(data.orderId, "preparing");
+            await OrderService.updateStatus(data.orderId, "preparing");
             socket.emit("kds:preparing_started", {
                 success: true,
                 event: "kds:preparing_started",
@@ -76,7 +77,7 @@ export function registerKDSEvents(io, socket) {
     socket.on("kds:mark_ready", async (data) => {
         const start = Date.now();
         try {
-            const order = await OrderService.updateStatus(data.orderId, "ready_for_pickup");
+            await OrderService.updateStatus(data.orderId, "ready_for_pickup");
             socket.emit("kds:order_ready", {
                 success: true,
                 event: "kds:order_ready",

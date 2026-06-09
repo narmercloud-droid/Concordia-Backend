@@ -5,16 +5,15 @@ const prisma = new PrismaClient();
 async function main() {
   console.log("🌱 Seeding database (full restaurant)...");
 
-  // Branch (ensure seed branch exists)
+  // Use the real Kempen branch for local dev seed data (never recreate legacy test branches)
   const branch = await prisma.branch.upsert({
-    where: { id: "branch-001" },
+    where: { id: "concordia-kempen" },
     update: {},
     create: {
-      id: "branch-001",
-      name: "Test Branch",
-      printerType: "network",
-      printerUrl: "http://localhost",
-      avgPrepTimeBaseline: 10,
+      id: "concordia-kempen",
+      name: "Concordia Kempen",
+      printerType: "virtual",
+      avgPrepTimeBaseline: 15,
       currentLoadLevel: 0
     }
   });

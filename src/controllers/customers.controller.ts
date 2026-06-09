@@ -1,4 +1,4 @@
-﻿import type { Request  } from "express";
+import type { Request  } from "express";
 import { customerService } from "../services/customers.service.ts";
 import { ordersService } from "../services/orders.service.ts";
 import { wrap, fail } from "../contracts/api.js";

@@ -4,7 +4,8 @@ import { SunmiPrinter } from "../printers/sunmiPrinter.js";
 import { PrintService } from "../services/print/print.service.js";
 const router = Router();
 const printer = new SunmiPrinter();
-router.get("/status", (req, res) => {
+router.get("/status", (_req, res) => {
+    void _req;
     const connected = !!printer.printer;
     res.tson({ success: true, connected, message: connected ? "Sunmi printer connected" : "No Sunmi printer" });
 });
@@ -36,7 +37,8 @@ router.post("/order-push", async (req, res) => {
        VALUES ($1, 'pending')`, [order_id]);
         res.json({ success: true, message: "Order queued for Sunmi push" });
     }
-    catch (err) {
+    catch (_err) {
+        void _err;
         res.status(500).json({ error: "Failed to queue order for Sunmi" });
     }
 });
@@ -50,7 +52,8 @@ router.post("/order-status", async (req, res) => {
         await pool.query(`UPDATE orders SET status=$1 WHERE id=$2`, [status, order_id]);
         res.json({ success: true, message: "Order status updated" });
     }
-    catch (err) {
+    catch (_err) {
+        void _err;
         res.status(500).json({ error: "Failed to update order status" });
     }
 });

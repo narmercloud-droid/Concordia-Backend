@@ -4,10 +4,10 @@ import logger from "../lib/logger.js";
 import { wrap, fail } from "../contracts/api.js";
 const prisma = new PrismaClient();
 export const HealthController = {
-    async liveness(req) {
+    async liveness(_req) {
         return { status: "ok" };
     },
-    readiness: wrap(async (req) => {
+    readiness: wrap(async (_req) => {
         const healthCheck = {
             uptime: process.uptime(),
             timestamp: Date.now(),
@@ -53,7 +53,7 @@ export const HealthController = {
             throw fail('SERVICE_UNAVAILABLE', 'One or more services are not ready');
         }
     }),
-    comprehensive: wrap(async (req) => {
+    comprehensive: wrap(async (_req) => {
         const healthCheck = {
             uptime: process.uptime(),
             message: "OK",

@@ -22,6 +22,6 @@ export async function isAddressWithinDeliveryRadius(addressId, branchId) {
         throw new Error("Address lacks geo coordinates");
     if (branch.lat == null || branch.lng == null)
         throw new Error("Branch lacks geo coordinates");
-    const distance = haversineDistanceKm(address.lat, address.lng, branch.lat, branch.lng);
+    haversineDistanceKm(address.lat, address.lng, branch.lat, branch.lng);
     return true;
 }

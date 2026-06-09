@@ -1,6 +1,6 @@
 import { getAvailableDrivers, getDriver } from "../services/driverService.js";
 import { wrap, fail } from "../contracts/api.js";
-export const getAvailableDriversController = wrap(async (req) => {
+export const getAvailableDriversController = wrap(async (_req) => {
     const drivers = await getAvailableDrivers();
     return drivers;
 });

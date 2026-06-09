@@ -1,6 +1,6 @@
 export const loyaltyService = {
-    applyPoints: (...args) => null,
-    redeemReward: (...args) => null,
-    applyPromoCode: (...args) => null,
-    applyReferral: (...args) => null
+    applyPoints: (..._args) => null,
+    redeemReward: (..._args) => null,
+    applyPromoCode: (..._args) => null,
+    applyReferral: (..._args) => null
 };

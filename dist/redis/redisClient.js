@@ -1,17 +1,6 @@
 import redisClient from "./client.js";
 import logger from "../logger.js";
 const client = redisClient;
-async function safeConnect() {
-    try {
-        if (client && typeof client.connect === "function") {
-            await client.connect();
-            logger.info("Redis wrapper: connected");
-        }
-    }
-    catch (err) {
-        logger.error({ err }, "Redis wrapper: connect failed");
-    }
-}
 // Helper: get cached value by key (returns parsed JSON or null)
 export async function getCache(key) {
     try {
@@ -21,7 +10,8 @@ export async function getCache(key) {
         try {
             return JSON.parse(val);
         }
-        catch (e) {
+        catch (_e) {
+            void _e;
             return val;
         }
     }

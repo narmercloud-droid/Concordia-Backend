@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-export async function GET(req, { params }) {
+export async function GET(_req, { params }) {
     const prisma = new PrismaClient();
     const orders = await prisma.order.findMany({
         where: { branchId: params.branchId },

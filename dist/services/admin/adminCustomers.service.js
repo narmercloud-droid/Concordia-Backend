@@ -55,13 +55,13 @@ export class AdminCustomersService {
             }
         });
     }
-    static async update(customerId, branchId, data) {
+    static async update(customerId, _branchId, data) {
         return prisma.customer.update({
             where: { id: customerId },
             data
         });
     }
-    static async toggleBan(customerId, branchId) {
+    static async toggleBan(customerId, _branchId) {
         const customer = await prisma.customer.findUnique({ where: { id: customerId } });
         if (!customer)
             throw new Error("Customer not found");

@@ -39,13 +39,17 @@ export class MenuService {
     async deleteItem(id) {
         return prisma.menuItem.delete({ where: { id } });
     }
-    async createVariant(data) {
+    async createVariant(_data) {
+        void _data;
         throw new Error("Variants are not supported by the current schema");
     }
-    async updateVariant(id, data) {
+    async updateVariant(_id, _data) {
+        void _id;
+        void _data;
         throw new Error("Variants are not supported by the current schema");
     }
-    async deleteVariant(id) {
+    async deleteVariant(_id) {
+        void _id;
         throw new Error("Variants are not supported by the current schema");
     }
     async setItemAvailability(id, available) {
@@ -58,7 +62,9 @@ export class MenuService {
             available: !updated.autoDisable
         };
     }
-    async setVariantAvailability(id, available) {
+    async setVariantAvailability(_id, _available) {
+        void _id;
+        void _available;
         throw new Error("Variants are not supported by the current schema");
     }
 }

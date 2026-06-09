@@ -56,6 +56,8 @@ import courierRoutes from "./routes/courier.js";
 import courierViewRoutes from "./routes/courier/courier.routes.js";
 import terminalRoutes from "./routes/terminal/terminal.routes.js";
 import customerTrackingRoutes from "./routes/customer/customerTracking.routes.js";
+import branchPublicRoutes from "./routes/customer/branchPublic.routes.js";
+import managerRoutes from "./routes/manager/manager.routes.js";
 import adminCourierRoutes from "./routes/admin/adminCourier.routes.js";
 import trackRoutes from "./routes/track.js";
 import campaignRoutes from "./routes/campaigns.js";
@@ -98,7 +100,6 @@ import requireApiKey from "./middleware/apiKey.js";
 import { adminAuth as adminAuthMiddleware } from "./middleware/adminAuth.js";
 import logger from "./utils/logger.js";
 import rateLimitRedis from "./middleware/rateLimitRedis.js";
-import cacheMiddleware from "./middleware/cacheMiddleware.js";
 import metricsRoutes from "./routes/metrics.js";
 import { httpRequestsTotal, httpRequestDurationSeconds, errorsTotal } from "./metrics/metrics.js";
 import registry from "./metrics/metrics.js";
@@ -123,18 +124,37 @@ registerEvents(io);
 // ---------------------------------------------
 // Production middleware
 // ---------------------------------------------
-const frontend = env.FRONTEND_URL || env.CORS_ORIGIN || "";
+const allowedOrigins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    env.FRONTEND_URL,
+    env.CORS_ORIGIN
+].filter(Boolean);
 const corsOptions = {
-    origin: "http://localhost:5173",
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+            return;
+        }
+        callback(null, false);
+    },
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "X-API-KEY", "X-Request-Id"],
+    allowedHeaders: [
+        "Content-Type",
+        "Authorization",
+        "X-Requested-With",
+        "X-API-KEY",
+        "X-Request-Id",
+        "x-terminal-token",
+        "x-terminal-id"
+    ],
     exposedHeaders: ["X-Request-Id", "X-RateLimit-Limit", "X-RateLimit-Remaining"],
     credentials: true,
     optionsSuccessStatus: 200
 };
 // Security headers
 app.use(helmet({ crossOriginEmbedderPolicy: false }));
-app.use((req, res, next) => {
+app.use((_req, res, next) => {
     res.setHeader("X-Frame-Options", "DENY");
     res.setHeader("X-Content-Type-Options", "nosniff");
     res.setHeader("Referrer-Policy", "no-referrer");
@@ -206,7 +226,7 @@ if (env.SENTRY_DSN) {
     });
 }
 // Root health-check
-app.get("/", (req, res) => {
+app.get("/", (_req, res) => {
     res.tson({
         status: "online",
         service: "Concordia Backend",
@@ -235,9 +255,10 @@ app.get("/ready", async (_req, res) => {
         await prisma.$queryRaw `SELECT 1`;
         result.services.database = "up";
     }
-    catch (e) {
+    catch (_e) {
+        void _e;
         result.services.database = "down";
-        logger.warn({ err: e }, "Readiness: Prisma not ready");
+        logger.warn({ err: _e }, "Readiness: Prisma not ready");
     }
     try {
         if (redisClient && typeof redisClient.ping === "function") {
@@ -252,14 +273,16 @@ app.get("/ready", async (_req, res) => {
             result.services.redis = "disabled";
         }
     }
-    catch (e) {
+    catch (_e) {
+        void _e;
         result.services.redis = "down";
-        logger.warn({ err: e }, "Readiness: Redis not ready");
+        logger.warn({ err: _e }, "Readiness: Redis not ready");
     }
     try {
         result.services.workers = workersInitialized ? "up" : "initializing";
     }
-    catch (e) {
+    catch (_e) {
+        void _e;
         result.services.workers = "down";
     }
     const ok = Object.values(result.services).every((s) => s === "up");
@@ -277,7 +300,8 @@ app.get("/version", async (_req, res) => {
             const data = await fs.readFile(path, "utf8");
             commit = data.trim();
         }
-        catch (e) {
+        catch (_e) {
+            void _e;
             // ignore
         }
     }
@@ -286,7 +310,8 @@ app.get("/version", async (_req, res) => {
         const pkg = await import("../package.json", { with: { type: "json" } });
         pkgVersion = pkg.default?.version ?? "unknown";
     }
-    catch (e) {
+    catch (_e) {
+        void _e;
         // ignore
     }
     res.json({ commit, version: pkgVersion });
@@ -332,6 +357,7 @@ app.use("/offers", offersRoutes);
 // ---------------------------------------------
 // Routes - Menu management
 // ---------------------------------------------
+app.use("/api/v1/manager", managerRoutes);
 app.use("/api/v1", menuRoutes);
 app.use("/api/v1/admin/categories", adminCategoryRoutes);
 app.use("/api/v1/admin/items", adminItemRoutes);
@@ -360,13 +386,10 @@ app.use("/api/v1/dashboard", dashboardRoutes);
 // Routes - Public
 // ---------------------------------------------
 app.use("/api/public", publicRoutes);
+app.use("/api", branchPublicRoutes);
 app.use("/api/paypal/webhook", paypalWebhookRoutes);
-app.get("/api/branches", cacheMiddleware({ ttl: 60, keyPrefix: "branches" }), (req, res) => {
-    const branchesFile = path.join(process.cwd(), "src", "config", "branches.json");
-    res.type("application/json");
-    res.sendFile(branchesFile);
-});
-app.get("/chat", (req, res) => {
+app.get("/chat", (_req, res) => {
+    void _req;
     res.sendFile(path.join(process.cwd(), "public", "chat.html"));
 });
 // Sunmi printer endpoints used by Agent
@@ -386,7 +409,8 @@ app.get("/metrics-lite", requireApiKey, async (_req, res) => {
                 });
             });
         }
-        catch (e) {
+        catch (_e) {
+            void _e;
             activeConnections = null;
         }
         let metricsJson = [];
@@ -399,7 +423,8 @@ app.get("/metrics-lite", requireApiKey, async (_req, res) => {
                 metricsJson = [{ name: "raw", value: text }];
             }
         }
-        catch (e) {
+        catch (_e) {
+            void _e;
             metricsJson = [];
         }
         const findMetric = (name) => metricsJson.find((m) => m.name === name);
@@ -408,7 +433,8 @@ app.get("/metrics-lite", requireApiKey, async (_req, res) => {
         const cacheMisses = findMetric("api_cache_misses_total");
         res.json({ uptime, memory, activeConnections, requestCount, http_requests_total: httpReq || null, cacheHits: cacheHits || null, cacheMisses: cacheMisses || null });
     }
-    catch (err) {
+    catch (_err) {
+        void _err;
         res.status(500).json({ error: "failed to collect lite metrics" });
     }
 });
@@ -429,7 +455,9 @@ app.use((err, req, res, next) => {
     try {
         errorsTotal.inc(1);
     }
-    catch (e) { /* ignore metric errors */ }
+    catch (_e) {
+        void _e;
+    }
     return errorMiddleware(err, req, res, next);
 });
 // ---------------------------------------------

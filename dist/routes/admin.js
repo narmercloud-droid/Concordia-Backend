@@ -6,14 +6,14 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const router = Router();
-// Path to store JSON data
-const dataPath = path.join(__dirname, "../../data.js");
+// Path to store JSON data (writable dir — not "data.js")
+const dataPath = path.join(process.cwd(), "data");
 const hoursFile = path.join(dataPath, "opening-hours.tson");
 const holidayOverridesFile = path.join(dataPath, "holiday-overrides.tson");
 const zonesFile = path.join(dataPath, "delivery-zones.tson");
 // Ensure data folder exists
 if (!fs.existsSync(dataPath)) {
-    fs.mkdirSync(dataPath);
+    fs.mkdirSync(dataPath, { recursive: true });
 }
 function loadHolidayOverrides() {
     if (!fs.existsSync(holidayOverridesFile))
@@ -21,7 +21,8 @@ function loadHolidayOverrides() {
     try {
         return JSON.parse(fs.readFileSync(holidayOverridesFile, "utf8")) || [];
     }
-    catch (err) {
+    catch (_err) {
+        void _err;
         return [];
     }
 }
@@ -65,7 +66,8 @@ function loadAllowedBranches() {
         const cfg = JSON.parse(raw);
         return Object.keys(cfg);
     }
-    catch (err) {
+    catch (_err) {
+        void _err;
         return [];
     }
 }
@@ -125,8 +127,8 @@ function shiftTimeString(time, minutesDelta) {
     const match = time.match(/^(\d{1,2}):(\d{2})$/);
     if (!match)
         return time;
-    let hh = parseInt(match[1], 10);
-    let mm = parseInt(match[2], 10);
+    const hh = parseInt(match[1], 10);
+    const mm = parseInt(match[2], 10);
     let total = hh * 60 + mm + minutesDelta;
     if (total < 0)
         total = 0;
@@ -242,9 +244,7 @@ function getHoursArrayValidationError(hours) {
         return "Hours must contain exactly one entry for each weekday.";
     return null;
 }
-function validateHoursArray(hours) {
-    return getHoursArrayValidationError(hours) === null;
-}
+// helper removed: _validateHoursArray is unused
 function validateAndCleanBranches(rawBranches, allowed) {
     const cleaned = {};
     for (const id of allowed) {
@@ -255,7 +255,7 @@ function validateAndCleanBranches(rawBranches, allowed) {
     }
     return cleaned;
 }
-router.get("/opening-hours", (req, res) => {
+router.get("/opening-hours", (_req, res) => {
     let branches = {};
     const allowed = loadAllowedBranches();
     if (fs.existsSync(hoursFile)) {
@@ -421,7 +421,7 @@ router.delete("/holiday-overrides", (req, res) => {
 // ----------------------
 // Delivery Zones
 // ----------------------
-router.get("/delivery-zones", (req, res) => {
+router.get("/delivery-zones", (_req, res) => {
     if (!fs.existsSync(zonesFile)) {
         return res.tson({ success: true, zones: [] });
     }
@@ -440,7 +440,4 @@ router.get("/me", (req, res) => {
     res.tson({ user });
 });
 // ----------------------
-router.get("/", (req, res) => {
-    res.tson({ message: "Admin route working" });
-});
 export default router;

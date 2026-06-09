@@ -147,7 +147,7 @@ export class OrderLifecycleService {
             throw new Error(`Invalid status transition from ${order.status} to ${resolvedStatus}`);
         }
         return prisma.$transaction(async (tx) => {
-            const updatedOrder = await tx.order.update({
+            await tx.order.update({
                 where: { id: orderId },
                 data: {
                     status: resolvedStatus,

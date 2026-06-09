@@ -7,7 +7,8 @@ const ROOM_CLEANUP_CHECK_INTERVAL = 30000; // Check every 30 seconds
 /**
  * Get or create a room (lazy creation)
  */
-export const getOrCreateRoom = (namespace, roomName, branchId) => {
+export const getOrCreateRoom = (_namespace, roomName, branchId) => {
+    void _namespace;
     if (!rooms.has(roomName)) {
         rooms.set(roomName, {
             name: roomName,
@@ -150,7 +151,8 @@ export const updateSocketRoomCount = (roomName) => {
 /**
  * Start automatic cleanup of inactive rooms
  */
-export const startRoomCleanup = (namespace) => {
+export const startRoomCleanup = (_namespace) => {
+    void _namespace;
     return setInterval(async () => {
         const now = Date.now();
         const toDelete = [];
@@ -170,7 +172,8 @@ export const startRoomCleanup = (namespace) => {
                     const logger = (await import("../../logger.js")).default;
                     logger.info({ roomName, idleSeconds: (now - room.lastActivity) / 1000 }, "Auto-cleanup: inactive room");
                 }
-                catch (e) {
+                catch (_e) {
+                    void _e;
                     // Fallback to console if logger import fails
                     // eslint-disable-next-line no-console
                     console.log(`Auto-cleanup: room "${roomName}" inactive for ${(now - room.lastActivity) / 1000}s`);

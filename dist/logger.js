@@ -12,7 +12,7 @@ const httpLogger = pinoHttp({
         const headerId = req.headers["x-request-id"] || req.headers["x_request_id"] || req.headers["x_correlation_id"];
         return headerId || randomUUID();
     },
-    customProps: (req, res) => ({
+    customProps: (req, _res) => ({
         reqId: req.id,
     }),
 });

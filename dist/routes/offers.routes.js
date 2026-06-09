@@ -13,7 +13,8 @@ router.post("/validate", async (req, res) => {
         }
         res.json(offer);
     }
-    catch (err) {
+    catch (_err) {
+        void _err;
         res.status(500).json({ error: "Unable to validate offer." });
     }
 });

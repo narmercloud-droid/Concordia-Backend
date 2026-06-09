@@ -18,7 +18,8 @@ export class AdminCouriersService {
         });
     }
     static async create(branchId, data) {
-        const { password, ...courierData } = data;
+        const { password: _password, ...courierData } = data;
+        void _password;
         return prisma.courier.create({
             data: {
                 ...courierData,

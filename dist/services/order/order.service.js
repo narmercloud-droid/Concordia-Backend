@@ -21,7 +21,6 @@ export class OrderService {
         if (!items || items.length === 0) {
             throw new Error("Order must have at least one item");
         }
-        const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
         const order = await prisma.order.create({
             data: {
                 id: randomUUID(),

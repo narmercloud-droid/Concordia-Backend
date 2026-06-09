@@ -2,12 +2,20 @@ import { ordersService } from "../services/orders.service.js";
 import { wrap, fail } from "../contracts/api.js";
 export const OrdersController = {
     create: wrap(async (req) => {
-        const order = await ordersService.createOrder(req.body);
-        return order;
+        try {
+            const order = await ordersService.createOrder(req.body);
+            return order;
+        }
+        catch (err) {
+            throw fail("INVALID_INPUT", err?.message ?? "Could not create order");
+        }
     }),
     listBranchOrders: wrap(async (req) => {
         const orders = await ordersService.listBranchOrders(req.params.branchId);
         return orders;
+    }),
+    getStatus: wrap(async (req) => {
+        return await ordersService.getOrderStatus(req.params.id);
     }),
     updateStatus: wrap(async (req) => {
         const order = await ordersService.updateStatus(req.params.id, req.body.status);

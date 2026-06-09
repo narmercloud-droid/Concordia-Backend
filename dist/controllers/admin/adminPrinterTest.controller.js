@@ -3,7 +3,7 @@ import { wrap, fail } from "../../contracts/api.js";
 export const runPrinterTest = wrap(async (req) => {
     try {
         const { kitchen } = req.params;
-        const result = await testKitchenPrinter(kitchen);
+        await testKitchenPrinter(kitchen);
         return {
             success: true,
             kitchen,

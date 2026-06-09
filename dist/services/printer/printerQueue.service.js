@@ -13,7 +13,7 @@ export async function enqueuePrintJob(kitchen, order, items) {
 }
 export async function processPrintJob(job) {
     try {
-        const { kitchen, payload } = job;
+        const { payload } = job;
         const start = Date.now();
         const printer = selectPrinter(job.kitchen);
         const isVerified = await verifyPrinter(printer);

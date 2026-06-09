@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
-export async function health(req, res) {
+export async function health(_req, res) {
     try {
         await prisma.$queryRaw `SELECT 1`;
         res.json({
@@ -16,7 +16,7 @@ export async function health(req, res) {
         });
     }
 }
-export async function deepHealth(req, res) {
+export async function deepHealth(_req, res) {
     const checks = {};
     try {
         await prisma.$queryRaw `SELECT 1`;

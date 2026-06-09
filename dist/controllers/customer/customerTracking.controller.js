@@ -1,4 +1,5 @@
 import { prisma } from "../../prisma/client.js";
+import { getBranchCoords } from "../../services/branch/branchCoords.service.js";
 import { broadcastToCustomer } from "../../services/realtime/realtime.service.js";
 import { wrap, fail } from "../../contracts/api.js";
 export const getCustomerTracking = wrap(async (req) => {
@@ -15,31 +16,42 @@ export const getCustomerTracking = wrap(async (req) => {
             }
         });
         if (!order)
-            throw fail('NOT_FOUND', 'Invalid tracking token');
+            throw fail("NOT_FOUND", "Invalid tracking token");
+        const branchCoords = await getBranchCoords(order.branchId);
+        const latestLocation = order.courierLocations[0];
         const response = {
             orderId: order.id,
             status: order.status,
             courierStatus: order.courierStatus,
             timeline: order.trackingEvents,
-            courierLocation: order.courierLocations[0] || null,
-            items: order.items.map(i => ({
+            courierLocation: latestLocation
+                ? {
+                    lat: latestLocation.latitude,
+                    lng: latestLocation.longitude,
+                    updatedAt: latestLocation.createdAt
+                }
+                : null,
+            items: order.items.map((i) => ({
                 name: i.item.name,
                 quantity: i.quantity,
                 notes: i.notes
             })),
             branch: {
                 name: order.branch.name,
-                address: order.branch.address || null,
-                lat: order.branch.lat ?? null,
-                lng: order.branch.lng ?? null
+                address: branchCoords?.address ?? null,
+                lat: branchCoords?.lat ?? null,
+                lng: branchCoords?.lng ?? null
             },
-            customerAddress: order.customer.addresses?.[0] || null
+            deliveryAddress: order.deliveryAddress,
+            deliveryLat: order.deliveryLat,
+            deliveryLng: order.deliveryLng,
+            driverAccepted: !!order.driverAcceptedAt
         };
         broadcastToCustomer(token, "tracking_update", response);
         return response;
     }
     catch (err) {
         console.error(err);
-        throw fail('INTERNAL_ERROR', 'Server error');
+        throw fail("INTERNAL_ERROR", "Server error");
     }
 });

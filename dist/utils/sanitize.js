@@ -7,7 +7,16 @@ export function escapeHtml(str) {
         .replace(/'/g, "&#039;");
 }
 export function normalizeString(input) {
-    return input.trim().replace(/[\u0000-\u001F\u007F]+/g, "");
+    // Remove control characters (0x00-0x1F, 0x7F) without using regex literals
+    const s = input.trim();
+    let out = "";
+    for (let i = 0; i < s.length; i++) {
+        const code = s.charCodeAt(i);
+        if ((code >= 0x00 && code <= 0x1f) || code === 0x7f)
+            continue;
+        out += s[i];
+    }
+    return out;
 }
 function isPlainObject(obj) {
     return Object.prototype.toString.call(obj) === "[object Object]";

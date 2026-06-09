@@ -1,4 +1,4 @@
-﻿import { getAdminNamespace } from "./index.ts";
+import { getAdminNamespace } from "./index.ts";
 import { batchSet, batchGet } from "../lib/redis.ts";
 import { trackSocketBroadcast } from "../metrics/metrics.ts";
 

@@ -18,7 +18,8 @@ if (isRedisUrlValid) {
         // Use a larger command queue for heavy bursts and pipelining throughput
         commandsQueueMaxLength: 10000,
     });
-    client.on && client.on("error", (err) => logger.error({ err }, "Redis Client Error"));
+    if (client.on)
+        client.on("error", (err) => logger.error({ err }, "Redis Client Error"));
 }
 else {
     redisEnabled = false;

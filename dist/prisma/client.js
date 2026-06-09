@@ -19,7 +19,8 @@ function getDatabaseUrlFallback() {
             return modified;
         }
     }
-    catch (e) {
+    catch (_e) {
+        void _e;
         // ignore and return raw
     }
     return raw;
@@ -114,11 +115,13 @@ function ensurePrisma() {
 export const prisma = new Proxy({}, {
     get(_target, prop) {
         const client = ensurePrisma();
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore forward property access
         return client[prop];
     },
     set(_target, prop, value) {
         const client = ensurePrisma();
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore forward set
         client[prop] = value;
         return true;

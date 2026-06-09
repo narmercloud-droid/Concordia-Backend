@@ -1,4 +1,4 @@
-﻿import { syncPrintersToCloud } from "../services/printer/printerCloudSync.service.ts";
+import { syncPrintersToCloud } from "../services/printer/printerCloudSync.service.ts";
 import { prisma } from "../prisma/client.ts";
 import logger from "../logger.ts";
 
@@ -8,7 +8,7 @@ export async function startPrinterSyncWorker() {
 
   const timer = setInterval(async () => {
     try {
-      await syncPrintersToCloud(process.env.PRINTER_BRANCH_ID || "branch-001");
+      await syncPrintersToCloud(process.env.PRINTER_BRANCH_ID || "concordia-kempen");
     } catch (err) {
       logger.error({ err }, "Printer sync failed");
     }

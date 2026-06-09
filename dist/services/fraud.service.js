@@ -84,7 +84,8 @@ export class FraudService {
         }
         return { score, level, events };
     }
-    async getRisk(orderId) {
+    async getRisk(_orderId) {
+        void _orderId;
         // riskScore model is not defined in the current Prisma schema
         return null;
     }

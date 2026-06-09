@@ -1,45 +1,58 @@
+import { prisma } from "../../prisma/client.js";
 import { broadcastToTerminal, broadcastToCustomer } from "../realtime/realtime.service.js";
 import { haversineDistance } from "../../utils/distance.js";
 import { OrderLifecycleService } from "../order/orderLifecycle.service.js";
+import { getBranchCoords } from "../branch/branchCoords.service.js";
 export async function autoUpdateStatus(order, courierLat, courierLng) {
-    const customerAddress = order.customer?.addresses?.[0];
-    if (!customerAddress)
-        return;
-    const restaurantLat = order.branch.lat;
-    const restaurantLng = order.branch.lng;
-    const customerLatVal = customerAddress.lat;
-    const customerLngVal = customerAddress.lng;
-    const distToRestaurant = haversineDistance(courierLat, courierLng, restaurantLat, restaurantLng);
-    const distToCustomer = haversineDistance(courierLat, courierLng, customerLatVal, customerLngVal);
-    // Auto: picked_up
-    if (order.courierStatus !== "picked_up" &&
-        distToRestaurant < 150) {
-        await OrderLifecycleService.updateStatus(order.id, "picked_up", undefined, {
-            courierStatus: "picked_up"
-        });
-        broadcastToTerminal(order.branchId, "order_status", {
-            orderId: order.id,
-            status: "picked_up"
-        });
-        broadcastToCustomer(order.tracking_token, "order_status", {
-            status: "picked_up"
-        });
-        return "picked_up";
+    if (order.courierStatus !== "accepted" && order.courierStatus !== "picked_up") {
+        return null;
     }
-    // Auto: delivered
-    if (order.courierStatus !== "delivered" &&
-        distToCustomer < 120) {
-        await OrderLifecycleService.updateStatus(order.id, "delivered", undefined, {
-            courierStatus: "delivered"
-        });
-        broadcastToTerminal(order.branchId, "order_status", {
-            orderId: order.id,
-            status: "delivered"
-        });
-        broadcastToCustomer(order.tracking_token, "order_status", {
-            status: "delivered"
-        });
-        return "delivered";
+    const branchCoords = await getBranchCoords(order.branchId);
+    const customerLat = order.deliveryLat;
+    const customerLng = order.deliveryLng;
+    if (branchCoords && order.courierStatus === "accepted") {
+        const distToRestaurant = haversineDistance(courierLat, courierLng, branchCoords.lat, branchCoords.lng);
+        if (distToRestaurant < 150) {
+            await OrderLifecycleService.updateCourierStatus(order.id, "picked_up");
+            await prisma.order.update({
+                where: { id: order.id },
+                data: { pickedUpAt: new Date() }
+            });
+            broadcastToTerminal(order.branchId, "order_status", {
+                orderId: order.id,
+                courierStatus: "picked_up"
+            });
+            if (order.tracking_token) {
+                broadcastToCustomer(order.tracking_token, "order_status", {
+                    courierStatus: "picked_up"
+                });
+            }
+            return "picked_up";
+        }
+    }
+    if (customerLat != null &&
+        customerLng != null &&
+        order.courierStatus === "picked_up") {
+        const distToCustomer = haversineDistance(courierLat, courierLng, customerLat, customerLng);
+        if (distToCustomer < 120) {
+            await OrderLifecycleService.updateCourierStatus(order.id, "delivered");
+            await prisma.order.update({
+                where: { id: order.id },
+                data: { deliveredAt: new Date(), status: "delivered" }
+            });
+            broadcastToTerminal(order.branchId, "order_status", {
+                orderId: order.id,
+                status: "delivered",
+                courierStatus: "delivered"
+            });
+            if (order.tracking_token) {
+                broadcastToCustomer(order.tracking_token, "order_status", {
+                    status: "delivered",
+                    courierStatus: "delivered"
+                });
+            }
+            return "delivered";
+        }
     }
     return null;
 }

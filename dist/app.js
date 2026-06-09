@@ -93,7 +93,7 @@ app.use(helmet({
     crossOriginEmbedderPolicy: false,
 }));
 // Security headers
-app.use((req, res, next) => {
+app.use((_req, res, next) => {
     res.setHeader("X-Frame-Options", "DENY");
     res.setHeader("X-Content-Type-Options", "nosniff");
     res.setHeader("Referrer-Policy", "no-referrer");
@@ -130,14 +130,14 @@ app.use(inputValidation);
 app.use(httpLogger);
 app.use(requestContextMiddleware);
 // Log suspicious requests
-app.use((req, res, next) => {
+app.use((req, _res, next) => {
     if (req.url.includes('..') || req.url.includes('%00')) {
         console.warn('Suspicious request detected:', req.url);
     }
     next();
 });
 // Basic request logging
-app.use((req, res, next) => {
+app.use((req, _res, next) => {
     console.log(`[REQ] ${req.method} ${req.url}`);
     next();
 });

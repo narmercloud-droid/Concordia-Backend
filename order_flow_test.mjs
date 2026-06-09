@@ -5,7 +5,7 @@ const BASE = process.env.BASE_URL || 'http://127.0.0.1:4000';
 async function main() {
   try {
     const branchesRes = await axios.get(`${BASE}/api/branches`);
-    const branchId = (branchesRes?.data?.value && branchesRes.data.value[0] && branchesRes.data.value[0].id) || 'test-branch-1';
+    const branchId = (branchesRes?.data?.value && branchesRes.data.value[0] && branchesRes.data.value[0].id) || 'concordia-kempen';
 
     const menuRes = await axios.get(`${BASE}/api/v1/`);
     const firstCat = Array.isArray(menuRes.data) ? menuRes.data[0] : null;

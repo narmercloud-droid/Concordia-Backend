@@ -50,7 +50,7 @@ export const MenuController = {
         return updated;
     }),
     // Customer menu browsing
-    listMenu: wrap(async (req) => {
+    listMenu: wrap(async (_req) => {
         const menu = await menuService.listCategories();
         return menu;
     })

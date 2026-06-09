@@ -1,7 +1,7 @@
 import { getFleet, updatePrinterPolicy, updatePrinterFirmware } from "../../services/printer/printerFleet.service.js";
 import { remoteRestart, remoteReset, remoteTestPrint } from "../../services/printer/printerRemoteCommands.service.js";
 import { wrap } from "../../contracts/api.js";
-export const listFleet = wrap(async (req) => {
+export const listFleet = wrap(async (_req) => {
     const fleet = await getFleet("branch-001");
     return fleet;
 });

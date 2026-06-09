@@ -3,7 +3,7 @@ import axios from "axios";
 async function test() {
   try {
     const response = await axios.post("http://localhost:4000/api/v1/order", {
-      branchId: "branch-001",        // must exist or be nullable in DB
+      branchId: "concordia-kempen",
       customerId: "test-customer",   // must exist or be nullable in DB
       paymentMethod: "cash",
       status: "pending",

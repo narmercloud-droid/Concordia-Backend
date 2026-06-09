@@ -1,4 +1,4 @@
-﻿import express from "express";
+import express from "express";
 const { Router } = express;
 import { CustomersController } from "../controllers/customers.controller.ts";
 import { customerAuth } from "../middleware/customerAuth.ts";

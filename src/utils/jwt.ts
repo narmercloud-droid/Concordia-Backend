@@ -6,7 +6,7 @@ const JWT_SECRET = env.JWT_SECRET as string;
 export type AuthJwtPayload = {
   id: string;
   role: string;
-  branchId: string;
+  branchId: string | null;
 };
 
 export type TerminalActivationJwtPayload = {
@@ -29,7 +29,9 @@ export function validateJwtPayload(payload: unknown): asserts payload is AuthJwt
 
   if (typeof id !== "string" || !id) throw new Error("Invalid token payload: id");
   if (typeof role !== "string" || !role) throw new Error("Invalid token payload: role");
-  if (typeof branchId !== "string" || !branchId) throw new Error("Invalid token payload: branchId");
+  if (branchId !== null && typeof branchId !== "string") {
+    throw new Error("Invalid token payload: branchId");
+  }
 }
 
 export function signToken(payload: JwtPayload) {

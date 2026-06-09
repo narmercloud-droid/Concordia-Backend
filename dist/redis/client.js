@@ -24,7 +24,6 @@ if (isRedisUrl) {
 else {
     // Export a noop stub when REDIS_URL is not a redis:// URL (development fallback)
     logger.warn("REDIS_URL does not appear to be a redis:// URL — Redis disabled locally");
-    const noop = async () => undefined;
     const stub = {
         connect: async () => undefined,
         on: () => undefined,

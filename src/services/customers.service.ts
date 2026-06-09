@@ -1,4 +1,4 @@
-﻿import { randomUUID } from "crypto";
+import { randomUUID } from "crypto";
 import { prisma } from "../prisma/client.ts";
 import pool from "../db.ts";
 import * as bcrypt from "bcrypt";

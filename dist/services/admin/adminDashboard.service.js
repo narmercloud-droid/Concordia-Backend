@@ -45,7 +45,7 @@ export class AdminDashboardService {
         await cacheDashboardMetrics(branchId, metrics, 5);
         return metrics;
     }
-    static async getSalesChart(period, branchId) {
+    static async getSalesChart(_period, _branchId) {
         const data = [];
         for (let i = 0; i < 30; i++) {
             const date = new Date();
@@ -57,7 +57,7 @@ export class AdminDashboardService {
         }
         return data.reverse();
     }
-    static async getOrderChart(period, branchId) {
+    static async getOrderChart(_period, _branchId) {
         const data = [];
         for (let i = 0; i < 30; i++) {
             const date = new Date();

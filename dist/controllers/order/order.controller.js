@@ -25,7 +25,9 @@ OrderController.createOrder = wrap(async (req) => {
     try {
         ordersCreatedTotal.inc(1);
     }
-    catch (e) { /* ignore metric errors */ }
+    catch (_e) {
+        void _e; /* ignore metric errors */
+    }
     return order;
 });
 // -----------------------------------------------------

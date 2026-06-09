@@ -1,4 +1,4 @@
-import { prisma } from "../prisma/client.js";
+import { prisma } from '../prisma/client.js';
 import bcrypt from 'bcryptjs';
 import { randomUUID } from 'crypto';
 async function main() {

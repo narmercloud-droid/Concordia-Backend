@@ -6,7 +6,6 @@ export async function checkPrinterStatus(kitchen) {
         return null;
     return new Promise((resolve) => {
         const socket = new net.Socket();
-        const start = Date.now();
         socket.setTimeout(2000);
         socket
             .connect(cfg.port, cfg.host, () => {

@@ -1,10 +1,6 @@
 import cluster from "cluster";
 import os from "os";
-import { fileURLToPath } from "url";
-import { dirname } from "path";
 import logger from "./logger.js";
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 const numCPUs = os.cpus().length;
 if (cluster.isPrimary) {
     // Primary cluster management code

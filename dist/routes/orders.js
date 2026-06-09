@@ -17,7 +17,8 @@ router.post("/create", async (req, res) => {
         }
         res.json({ order_id: orderId });
     }
-    catch (err) {
+    catch (_err) {
+        void _err;
         res.status(500).json({ error: "Failed to create order" });
     }
 });
@@ -31,7 +32,8 @@ router.get("/customer/:id", customerAuth, async (req, res) => {
         });
         res.json({ orders });
     }
-    catch (error) {
+    catch (_error) {
+        void _error;
         res.status(500).json({ error: "Unable to fetch order history" });
     }
 });

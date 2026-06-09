@@ -5,7 +5,7 @@ import { prisma } from "../prisma/client.js";
 import { emailCampaignService } from "../services/emailCampaign.service.js";
 const router = Router();
 router.use(adminAuth);
-router.get("/campaigns", async (req, res) => {
+router.get("/campaigns", async (_req, res) => {
     const campaigns = await prisma.campaign.findMany({ include: { segment: true } });
     res.json(campaigns);
 });
@@ -67,11 +67,12 @@ router.post("/campaigns/:id/send-now", async (req, res) => {
         const result = await emailCampaignService.sendCampaign(id);
         res.json(result);
     }
-    catch (error) {
+    catch (_error) {
+        void _error;
         res.status(500).json({ error: "Unable to send campaign now." });
     }
 });
-router.get("/segments", async (req, res) => {
+router.get("/segments", async (_req, res) => {
     const segments = await prisma.segment.findMany();
     res.json(segments);
 });

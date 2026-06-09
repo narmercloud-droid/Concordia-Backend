@@ -2,13 +2,15 @@ import { prisma } from "../prisma/client.js";
 import { randomUUID } from "crypto";
 export class ManagerDashboardService {
     // MENU ITEMS FOR BRANCH
-    async menu(branchId) {
+    async menu(_branchId) {
+        void _branchId;
         return prisma.menuItem.findMany({
             include: { category: true }
         });
     }
     // UPDATE ITEM AVAILABILITY
-    async setItemAvailability(branchId, itemId, available) {
+    async setItemAvailability(_branchId, itemId, available) {
+        void _branchId;
         return prisma.menuItem.updateMany({
             where: { id: itemId },
             data: { available: available }

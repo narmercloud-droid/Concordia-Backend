@@ -1,5 +1,5 @@
 import { DEFAULT_INTERNAL_ERROR_MESSAGE } from '../contracts/errors.js';
-export function errorMiddleware(err, req, res, next) {
+export function errorMiddleware(err, req, res, _next) {
     // If it's already an ApiError-like object, return normalized envelope
     const apiErr = err;
     if (apiErr && typeof apiErr.code === 'string') {

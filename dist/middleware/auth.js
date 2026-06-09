@@ -8,7 +8,8 @@ export function auth(req, res, next) {
         req.user = decoded;
         next();
     }
-    catch (err) {
+    catch (_err) {
+        void _err;
         return res.status(401).json({ error: "Invalid token" });
     }
 }

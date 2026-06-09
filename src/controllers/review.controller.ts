@@ -1,4 +1,4 @@
-﻿import type { Request } from "express";
+import type { Request } from "express";
 import type { AuthenticatedRequest } from "../globalTypes.ts";
 import { reviewService } from "../services/review.service.ts";
 import { wrap } from "../contracts/api.js";

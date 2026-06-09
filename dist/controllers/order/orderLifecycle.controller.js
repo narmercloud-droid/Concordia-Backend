@@ -28,7 +28,7 @@ export const OrderLifecycleController = {
     createOrder: wrap(async (req) => {
         const customerId = req.body.customerId;
         const branchId = req.body.branchId;
-        const { items, addressId, paymentMethod } = req.body;
+        const { items, addressId: _addressId, paymentMethod } = req.body;
         if (!branchId) {
             throw fail('INVALID_INPUT', 'branchId is required to create an order');
         }

@@ -1,6 +1,6 @@
 import logger from "../logger.js";
 import { env } from "../config/env.js";
-export default function errorHandler(err, req, res, next) {
+export default function errorHandler(err, req, res, _next) {
     const reqId = req.id || req.headers["x-request-id"] || null;
     const log = req.log || logger;
     // Log full error with context (stack only in non-production)

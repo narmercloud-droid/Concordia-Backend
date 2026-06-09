@@ -22,6 +22,7 @@
     "sync:straelen-menu": "node scripts/sync-straelen-menu.mjs",
     "setup:straelen": "node scripts/setup-straelen-branch.mjs",
     "import:straelen-menu": "node scripts/import-straelen-menu.mjs",
+    "activate:straelen": "node scripts/activate-straelen-branch.mjs",
     "seed:admins": "node scripts/seed-admins.mjs",
     "seed:promo": "node scripts/seed-promo-codes.mjs",
     "import:kempen-menu": "node scripts/parse-kempen-menu.mjs",

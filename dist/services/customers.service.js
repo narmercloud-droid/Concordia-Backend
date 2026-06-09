@@ -59,7 +59,7 @@ export class CustomerService {
     async getAddress(customerId, addressId) {
         return prisma.address.findFirst({ where: { id: addressId, customerId } });
     }
-    async deleteAddress(customerId, id) {
+    async deleteAddress(_customerId, id) {
         return prisma.address.delete({
             where: { id }
         });
