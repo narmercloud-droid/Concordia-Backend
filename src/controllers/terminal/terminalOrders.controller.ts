@@ -213,6 +213,41 @@ export const getTerminalBranchStatus = wrap(async (req) => {
   };
 });
 
+const TERMINAL_STATUS_TARGETS = new Set([
+  "preparing",
+  "ready_for_pickup",
+  "ready",
+  "out_for_delivery",
+  "picked_up",
+  "delivered",
+  "completed"
+]);
+
+export const updateTerminalOrderStatus = wrap(async (req) => {
+  const { id } = req.params;
+  const status = String(req.body?.status ?? "").trim();
+  if (!status || !TERMINAL_STATUS_TARGETS.has(status)) {
+    throw fail("INVALID_INPUT", "Invalid terminal order status");
+  }
+
+  const order = await prisma.order.findUnique({ where: { id } });
+  if (!order) throw fail("NOT_FOUND", "Order not found");
+
+  const resolved = status === "ready" ? "ready_for_pickup" : status;
+  const updated = await OrderLifecycleService.updateStatus(id, resolved);
+
+  const fullOrder = await prisma.order.findUnique({
+    where: { id },
+    include: {
+      items: { include: { item: true, variants: true, extras: true } }
+    }
+  });
+
+  const payload = enrichOrder(fullOrder ?? updated);
+  broadcastToTerminal(order.branchId, "order_update", payload);
+  return payload;
+});
+
 export const updateTerminalBranchStatus = wrap(async (req) => {
   const branchId = String(req.body?.branchId ?? "");
   if (!branchId) throw fail("INVALID_INPUT", "branchId is required");

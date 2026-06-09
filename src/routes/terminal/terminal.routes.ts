@@ -8,7 +8,8 @@ import {
   getTerminalDailyReportHandler,
   rejectTerminalOrder,
   getTerminalBranchStatus,
-  updateTerminalBranchStatus
+  updateTerminalBranchStatus,
+  updateTerminalOrderStatus
 } from "../../controllers/terminal/terminalOrders.controller.ts";
 
 const router = Router();
@@ -21,6 +22,7 @@ router.patch("/branch/status", updateTerminalBranchStatus);
 router.get("/order/:id", getTerminalOrderDetails);
 router.post("/orders/:id/confirm", confirmTerminalOrder);
 router.post("/orders/:id/reject", rejectTerminalOrder);
+router.post("/orders/:id/status", updateTerminalOrderStatus);
 
 export default router;
 

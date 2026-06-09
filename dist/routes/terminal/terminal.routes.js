@@ -1,6 +1,6 @@
 import express from "express";
 const { Router } = express;
-import { getTerminalOrders, getTerminalOrderDetails, activateTerminalByCode, confirmTerminalOrder, getTerminalDailyReportHandler, rejectTerminalOrder, getTerminalBranchStatus, updateTerminalBranchStatus } from "../../controllers/terminal/terminalOrders.controller.js";
+import { getTerminalOrders, getTerminalOrderDetails, activateTerminalByCode, confirmTerminalOrder, getTerminalDailyReportHandler, rejectTerminalOrder, getTerminalBranchStatus, updateTerminalBranchStatus, updateTerminalOrderStatus } from "../../controllers/terminal/terminalOrders.controller.js";
 const router = Router();
 router.post("/activate", activateTerminalByCode);
 router.get("/orders", getTerminalOrders);
@@ -10,4 +10,5 @@ router.patch("/branch/status", updateTerminalBranchStatus);
 router.get("/order/:id", getTerminalOrderDetails);
 router.post("/orders/:id/confirm", confirmTerminalOrder);
 router.post("/orders/:id/reject", rejectTerminalOrder);
+router.post("/orders/:id/status", updateTerminalOrderStatus);
 export default router;
