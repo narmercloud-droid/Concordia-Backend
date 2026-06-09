@@ -173,9 +173,6 @@ export class OrdersService {
     const totalDiscount = websiteDiscount + promoDiscount;
     const discountedSubtotal = Math.max(0, subtotal - totalDiscount);
 
-    const branchConfig = await prisma.branchConfig.findUnique({
-      where: { branchId: rest.branchId }
-    });
     const config = (branchConfig?.configJson ?? {}) as Record<string, unknown>;
     const promotions = (config.promotions ?? {}) as Record<string, unknown>;
     const freeDrinkMin = Number(promotions.freeDrinkMinOrder ?? 0);

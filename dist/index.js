@@ -2,7 +2,7 @@ import "./globalTypes.js";
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
-import rateLimit from "express-rate-limit";
+import compression from "compression";
 import path from "path";
 import * as Sentry from "@sentry/node";
 import adminRouter from "./routes/admin.js";
@@ -57,7 +57,9 @@ import courierViewRoutes from "./routes/courier/courier.routes.js";
 import terminalRoutes from "./routes/terminal/terminal.routes.js";
 import customerTrackingRoutes from "./routes/customer/customerTracking.routes.js";
 import branchPublicRoutes from "./routes/customer/branchPublic.routes.js";
+import reviewRoutes from "./routes/review.routes.js";
 import managerRoutes from "./routes/manager/manager.routes.js";
+import superAdminRoutes from "./routes/superAdmin/superAdmin.routes.js";
 import adminCourierRoutes from "./routes/admin/adminCourier.routes.js";
 import trackRoutes from "./routes/track.js";
 import campaignRoutes from "./routes/campaigns.js";
@@ -66,6 +68,7 @@ import offersRoutes from "./routes/offers.routes.js";
 import walletRoutes from "./routes/wallet.routes.js";
 import voucherRoutes from "./routes/voucher.routes.js";
 import paymentRoutes from "./routes/payment.routes.js";
+import paymentsRoutes from "./routes/payments.routes.js";
 import paypalWebhookRoutes from "./routes/paypal/paypalWebhook.routes.js";
 import paypalAdminRoutes from "./routes/admin/paypalAdmin.routes.js";
 import adminPrinterRoutes from "./routes/admin/adminPrinter.routes.js";
@@ -80,6 +83,7 @@ import adminPrinterFleetRoutes from "./routes/admin/adminPrinterFleet.routes.js"
 import adminPrinterObservabilityRoutes from "./routes/admin/adminPrinterObservability.routes.js";
 import adminTerminalRoutes from "./routes/admin/adminTerminal.routes.js";
 import adminToolsRoutes from "./routes/admin/adminTools.routes.js";
+import adminAnalyticsRoutes from "./routes/admin/adminAnalytics.routes.js";
 import { startPrinterDiscoveryWorker } from "./jobs/printerDiscoveryWorker.js";
 import { startPrinterSyncWorker } from "./jobs/printerCloudSyncWorker.js";
 // Public routes
@@ -92,6 +96,7 @@ import { registerEvents } from "./events/index.js";
 import { setIO } from "./lib/socket.js";
 import { initPrisma, prisma } from "./prisma/client.js";
 import { startLifecycleScheduler } from "./jobs/lifecycleScheduler.js";
+import { startBranchMarketingScheduler } from "./jobs/branchMarketingScheduler.js";
 import { connectRedis } from "./redis/client.js";
 import { redisClient } from "./lib/redis.js";
 import { env } from "./config/env.js";
@@ -99,6 +104,7 @@ import inputValidation from "./middleware/inputValidation.js";
 import requireApiKey from "./middleware/apiKey.js";
 import { adminAuth as adminAuthMiddleware } from "./middleware/adminAuth.js";
 import logger from "./utils/logger.js";
+import { startNeonKeepAlive } from "./keepAlive.js";
 import rateLimitRedis from "./middleware/rateLimitRedis.js";
 import metricsRoutes from "./routes/metrics.js";
 import { httpRequestsTotal, httpRequestDurationSeconds, errorsTotal } from "./metrics/metrics.js";
@@ -130,13 +136,24 @@ const allowedOrigins = [
     env.FRONTEND_URL,
     env.CORS_ORIGIN
 ].filter(Boolean);
+function isAllowedCorsOrigin(origin) {
+    if (!origin)
+        return true;
+    if (allowedOrigins.includes(origin))
+        return true;
+    try {
+        const { hostname } = new URL(origin);
+        if (hostname.endsWith(".vercel.app"))
+            return true;
+    }
+    catch {
+        return false;
+    }
+    return false;
+}
 const corsOptions = {
     origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-            return;
-        }
-        callback(null, false);
+        callback(null, isAllowedCorsOrigin(origin));
     },
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: [
@@ -166,6 +183,7 @@ app.use((_req, res, next) => {
     next();
 });
 app.use(cors(corsOptions));
+app.use(compression({ threshold: 1024 }));
 // Global input validation/sanitization
 app.use(inputValidation);
 // Global Redis-backed rate limiter (IP-based)
@@ -192,16 +210,9 @@ if (env.NODE_ENV === "production") {
         next();
     });
 }
-app.use(rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 100,
-    standardHeaders: true,
-    legacyHeaders: false,
-    skipFailedRequests: true,
-    message: { error: "Too many requests, please try again later." }
-}));
 app.use("/api/paypal/webhook", express.raw({ type: "application/json" }));
 app.use(express.json());
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 app.use((req, res, next) => {
     if (typeof res.tson !== "function") {
         res.tson = (payload) => res.json(payload);
@@ -346,6 +357,8 @@ app.use("/api/admin/printer", adminPrinterObservabilityRoutes);
 // ---------------------------------------------
 app.use("/api/admin", adminAuth, adminRouter);
 app.use("/api/admin", adminRoutes);
+app.use("/api/admin/analytics", adminAuth, adminAnalyticsRoutes);
+app.use("/admin/analytics", adminAuth, adminAnalyticsRoutes);
 app.use("/api/admin", adminTerminalRoutes);
 app.use("/api/admin/tools", adminToolsRoutes);
 app.use("/api/admin/paypal", paypalAdminRoutes);
@@ -358,6 +371,7 @@ app.use("/offers", offersRoutes);
 // Routes - Menu management
 // ---------------------------------------------
 app.use("/api/v1/manager", managerRoutes);
+app.use("/api/v1/super-admin", superAdminRoutes);
 app.use("/api/v1", menuRoutes);
 app.use("/api/v1/admin/categories", adminCategoryRoutes);
 app.use("/api/v1/admin/items", adminItemRoutes);
@@ -379,9 +393,11 @@ app.use("/api/v1/orders", orderLifecycleRoutes);
 app.use("/api/v1/wallet", walletRoutes);
 app.use("/api/v1/voucher", voucherRoutes);
 app.use("/api/payment", paymentRoutes);
+app.use("/api/payments", paymentsRoutes);
 app.use("/api/v1/print", printRoutes);
 app.use("/api/v1/courier", courierTrackingRoutes);
 app.use("/api/v1/dashboard", dashboardRoutes);
+app.use("/api/reviews", reviewRoutes);
 // ---------------------------------------------
 // Routes - Public
 // ---------------------------------------------
@@ -543,6 +559,22 @@ async function startServer() {
             }
             catch (e) {
                 logger.error({ e }, "Failed to start printer discovery worker");
+            }
+            try {
+                const marketingTimer = startBranchMarketingScheduler();
+                timers.push(marketingTimer);
+            }
+            catch (e) {
+                logger.error({ e }, "Failed to start branch marketing scheduler");
+            }
+            if (env.NODE_ENV === "production") {
+                try {
+                    startNeonKeepAlive();
+                    logger.info("Neon keep-alive started");
+                }
+                catch (e) {
+                    logger.warn({ e }, "Failed to start Neon keep-alive");
+                }
             }
             // mark workers as initialized once we've attempted to start them
             workersInitialized = true;

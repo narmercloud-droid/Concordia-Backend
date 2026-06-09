@@ -12,6 +12,11 @@ import logger from "../logger.js";
 import { geocodeAddress } from "./geo/geocode.service.js";
 import { getGuestCourierId } from "./branch/branchCoords.service.js";
 import { calcWebsiteDiscount } from "../config/websitePromo.js";
+import { redeemPromoCode } from "./customer/promoCode.service.js";
+import { validateDiscountCode } from "./customer/discountCode.service.js";
+import { redeemGiftCard } from "./customer/giftCard.service.js";
+import { findFreeDrinkOption, getFreeDrinkOptions } from "./customer/freeDrink.service.js";
+import { syncBranchCustomerFromOrder } from "./customer/branchCustomer.service.js";
 function buildOrderItems(items) {
     return items.map((i) => {
         const itemId = Number(i.itemId ?? i.product_id ?? i.item_id ?? i.item?.id ?? i.id);
@@ -56,7 +61,19 @@ function normalizePaymentMethod(method) {
     const value = (method ?? "cash").toLowerCase();
     if (value === "cash" || value === "cod")
         return "COD";
+    if (value === "card")
+        return "CARD";
+    if (value === "paypal")
+        return "PAYPAL";
+    if (value === "klarna")
+        return "KLARNA";
+    if (value === "sepa")
+        return "SEPA";
     return method ?? "COD";
+}
+function requiresOnlinePayment(method) {
+    const normalized = normalizePaymentMethod(method);
+    return ["CARD", "PAYPAL", "KLARNA", "SEPA"].includes(normalized);
 }
 function buildCourierUrl(token) {
     const base = env.FRONTEND_URL ?? "http://localhost:5173";
@@ -76,6 +93,13 @@ export class OrdersService {
         }
         if (!rest.branchId) {
             throw new Error("branchId is required");
+        }
+        const branchConfig = await prisma.branchConfig.findUnique({
+            where: { branchId: rest.branchId }
+        });
+        const branchStatus = String(branchConfig?.configJson?.status ?? "live");
+        if (branchStatus === "coming_soon") {
+            throw new Error("This branch is not accepting orders yet");
         }
         const fulfillmentType = rest.fulfillmentType ?? rest.orderType ?? "delivery";
         const customerName = rest.customerName?.trim();
@@ -102,20 +126,46 @@ export class OrdersService {
         }
         const subtotal = items.reduce((sum, item) => sum + Number(item.price ?? item.unit_price ?? 0) * Number(item.quantity ?? item.qty ?? 1), 0);
         const websiteDiscount = calcWebsiteDiscount(subtotal);
-        const discountedSubtotal = Math.max(0, subtotal - websiteDiscount);
-        const branchConfig = await prisma.branchConfig.findUnique({
-            where: { branchId: rest.branchId }
-        });
+        let promoDiscount = 0;
+        let promoCodeId = null;
+        let giftCardId = null;
+        let giftCardAmount = 0;
+        const promoCodeInput = String(rest.promoCode ?? "").trim();
+        if (promoCodeInput) {
+            const discount = await validateDiscountCode(rest.branchId, promoCodeInput, subtotal);
+            promoDiscount = discount.discountAmount;
+            if (discount.kind === "promo") {
+                promoCodeId = discount.promoCodeId;
+            }
+            else {
+                giftCardId = discount.giftCardId;
+                giftCardAmount = discount.discountAmount;
+            }
+        }
+        const totalDiscount = websiteDiscount + promoDiscount;
+        const discountedSubtotal = Math.max(0, subtotal - totalDiscount);
         const config = (branchConfig?.configJson ?? {});
         const promotions = (config.promotions ?? {});
         const freeDrinkMin = Number(promotions.freeDrinkMinOrder ?? 0);
-        if (freeDrinkMin > 0 && subtotal >= freeDrinkMin) {
-            const promoLine = "[PROMO] Kunde hat Anspruch auf 1 gratis Getränk (Flyer-Aktion).";
+        const qualifiesForFreeDrink = freeDrinkMin > 0 && subtotal >= freeDrinkMin;
+        let freeDrinkChoice = null;
+        if (qualifiesForFreeDrink) {
+            const drinkOptions = await getFreeDrinkOptions(rest.branchId);
+            const selected = findFreeDrinkOption(drinkOptions, rest.freeDrinkChoice);
+            if (!selected) {
+                throw new Error("Bitte wählen Sie Ihr Gratisgetränk aus");
+            }
+            freeDrinkChoice = selected.label;
+            const promoLine = `[GRATISGETRÄNK] ${selected.label}`;
             notes = notes ? `${notes}\n${promoLine}` : promoLine;
         }
         if (websiteDiscount > 0) {
             const discountLine = `[PROMO] 10% Online-Rabatt (-${websiteDiscount.toFixed(2)} €)`;
             notes = notes ? `${notes}\n${discountLine}` : discountLine;
+        }
+        if (promoDiscount > 0 && promoCodeInput) {
+            const voucherLine = `[GUTSCHEIN] ${promoCodeInput.toUpperCase()} (-${promoDiscount.toFixed(2)} €)`;
+            notes = notes ? `${notes}\n${voucherLine}` : voucherLine;
         }
         let deliveryFee = 0;
         let postalCode = rest.postalCode ?? null;
@@ -141,21 +191,39 @@ export class OrdersService {
                 deliveryLng = geo.lng;
             }
         }
+        const paymentMethod = normalizePaymentMethod(rest.paymentMethod);
+        const marketingEmail = Boolean(rest.marketingEmail);
+        const marketingSMS = Boolean(rest.marketingSMS);
+        const marketingWhatsApp = Boolean(rest.marketingWhatsApp);
+        const hasMarketingConsent = marketingEmail || marketingSMS || marketingWhatsApp;
+        const customerEmail = rest.customerEmail?.trim() || null;
+        if (marketingEmail && !customerEmail) {
+            throw new Error("E-Mail-Adresse erforderlich für Angebote per E-Mail");
+        }
         const createPayload = {
             id: randomUUID(),
             branchId: rest.branchId,
             customerId: rest.customerId,
             customerName,
             customerPhone,
+            customerEmail,
+            freeDrinkChoice,
+            marketingEmail,
+            marketingSMS,
+            marketingWhatsApp,
+            marketingConsentAt: hasMarketingConsent ? new Date() : null,
             deliveryAddress: isDelivery ? deliveryAddress : null,
             fulfillmentType,
             postalCode,
             notes: notes || null,
             orderTotal: discountedSubtotal + deliveryFee,
-            discount: websiteDiscount,
+            discount: totalDiscount,
+            promoCodeId,
+            giftCardId,
+            giftCardAmount: giftCardAmount > 0 ? giftCardAmount : null,
             deliveryFee,
             scheduledFor,
-            paymentMethod: normalizePaymentMethod(rest.paymentMethod),
+            paymentMethod,
             isGuest: rest.isGuest ?? true,
             courierStatus: isDelivery ? "pending" : null,
             courierId,
@@ -163,9 +231,12 @@ export class OrdersService {
             courierTokenExpiresAt,
             deliveryLat,
             deliveryLng,
-            paymentStatus: rest.paymentStatus ?? "pending",
+            paymentStatus: requiresOnlinePayment(paymentMethod)
+                ? "awaiting_payment"
+                : (rest.paymentStatus ?? "pending"),
             status: "pending",
             tracking_token: trackingToken,
+            pushToken: rest.pushToken?.trim() || null,
             items: {
                 create: buildOrderItems(items)
             }
@@ -179,6 +250,22 @@ export class OrdersService {
                 }
             }
         });
+        if (promoCodeId) {
+            await redeemPromoCode(promoCodeId);
+        }
+        if (giftCardId && giftCardAmount > 0) {
+            await redeemGiftCard(giftCardId, giftCardAmount);
+        }
+        await syncBranchCustomerFromOrder({
+            branchId: rest.branchId,
+            phone: customerPhone,
+            name: customerName,
+            email: customerEmail,
+            birthday: rest.birthday ?? null,
+            marketingEmail,
+            marketingSMS,
+            marketingWhatsApp
+        });
         await prisma.orderTrackingEvent.create({
             data: {
                 id: randomUUID(),
@@ -187,6 +274,23 @@ export class OrdersService {
                 timestamp: new Date()
             }
         });
+        const payload = enrichOrder(order);
+        if (!requiresOnlinePayment(paymentMethod)) {
+            broadcastToTerminal(order.branchId, "order:new", payload);
+        }
+        return payload;
+    }
+    async notifyKitchenOrder(orderId) {
+        const order = await prisma.order.findUnique({
+            where: { id: orderId },
+            include: {
+                items: {
+                    include: { item: true }
+                }
+            }
+        });
+        if (!order)
+            throw new Error("Order not found");
         const payload = enrichOrder(order);
         broadcastToTerminal(order.branchId, "order:new", payload);
         return payload;
@@ -237,7 +341,8 @@ export class OrdersService {
         const order = await prisma.order.findUnique({
             where: { id: orderId },
             include: {
-                trackingEvents: { orderBy: { timestamp: "asc" } }
+                trackingEvents: { orderBy: { timestamp: "asc" } },
+                review: true
             }
         });
         if (!order) {
@@ -253,11 +358,24 @@ export class OrdersService {
                 timestamp: event.timestamp
             }))
             : [{ status: order.status, timestamp: order.updatedAt }];
+        const reviewableStatuses = new Set(["delivered", "completed", "picked_up"]);
         return {
             id: order.id,
             status: order.status,
             courierStatus: order.courierStatus,
             fulfillmentType: order.fulfillmentType,
+            canReview: reviewableStatuses.has(order.status) && !order.review,
+            hasReview: !!order.review,
+            review: order.review
+                ? {
+                    id: order.review.id,
+                    foodRating: order.review.foodRating,
+                    deliveryRating: order.review.deliveryRating,
+                    rating: order.review.rating,
+                    comment: order.review.comment,
+                    createdAt: order.review.createdAt
+                }
+                : null,
             scheduledFor: order.scheduledFor,
             estimatedPrepTime: order.estimatedPrepTime,
             etaReadyAt: order.etaReadyAt,
@@ -288,7 +406,10 @@ export class OrdersService {
         return prisma.order.findMany({
             where: { customerId },
             orderBy: { createdAt: "desc" },
-            include: { items: true }
+            include: {
+                items: { include: { item: true } },
+                review: true
+            }
         });
     }
     async validateCourierToken(orderId, token) {
@@ -309,19 +430,9 @@ export class OrdersService {
         });
     }
     async courierDelivered(orderId) {
-        const updatedOrder = await OrderLifecycleService.updateStatus(orderId, "delivered", undefined, {
+        return OrderLifecycleService.updateStatus(orderId, "delivered", undefined, {
             courierStatus: "delivered"
         });
-        if (updatedOrder.customerId) {
-            const points = Math.floor((updatedOrder.items || []).reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 1), 0) / 10);
-            if (points > 0) {
-                await prisma.customer.update({
-                    where: { id: updatedOrder.customerId },
-                    data: { loyaltyPoints: { increment: points } }
-                });
-            }
-        }
-        return updatedOrder;
     }
 }
 export const ordersService = new OrdersService();

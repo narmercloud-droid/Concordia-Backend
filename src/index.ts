@@ -157,13 +157,21 @@ const allowedOrigins = [
   env.CORS_ORIGIN
 ].filter(Boolean) as string[];
 
+function isAllowedCorsOrigin(origin: string | undefined): boolean {
+  if (!origin) return true;
+  if (allowedOrigins.includes(origin)) return true;
+  try {
+    const { hostname } = new URL(origin);
+    if (hostname.endsWith(".vercel.app")) return true;
+  } catch {
+    return false;
+  }
+  return false;
+}
+
 const corsOptions = {
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-      return;
-    }
-    callback(null, false);
+    callback(null, isAllowedCorsOrigin(origin));
   },
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: [
