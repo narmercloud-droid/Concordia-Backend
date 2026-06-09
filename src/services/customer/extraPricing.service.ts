@@ -14,8 +14,10 @@ const PREMIUM_EXTRA_NAMES = new Set([
 
 export function normalizeSizeKey(sizeName: string): "klein" | "gross" | null {
   const n = sizeName.toLowerCase();
-  if (n.includes("klein") || n.includes("24")) return "klein";
-  if (n.includes("groß") || n.includes("gross") || n.includes("30")) return "gross";
+  if (n.includes("klein") || n.includes("small") || n.includes("24")) return "klein";
+  if (n.includes("groß") || n.includes("gross") || n.includes("large") || n.includes("30")) {
+    return "gross";
+  }
   return null;
 }
 
