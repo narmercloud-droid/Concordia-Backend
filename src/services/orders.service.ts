@@ -111,11 +111,13 @@ export class OrdersService {
     const branchConfig = await prisma.branchConfig.findUnique({
       where: { branchId: rest.branchId }
     });
-    const branchStatus = String(
-      (branchConfig?.configJson as Record<string, unknown> | null)?.status ?? "live"
-    );
+    const branchConfigJson = (branchConfig?.configJson as Record<string, unknown> | null) ?? {};
+    const branchStatus = String(branchConfigJson.status ?? "live");
     if (branchStatus === "coming_soon") {
       throw new Error("This branch is not accepting orders yet");
+    }
+    if (Boolean(branchConfigJson.ordersPaused)) {
+      throw new Error("This branch is temporarily not accepting new orders");
     }
 
     const fulfillmentType = rest.fulfillmentType ?? rest.orderType ?? "delivery";

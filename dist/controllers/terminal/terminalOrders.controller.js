@@ -2,24 +2,38 @@ import { prisma } from "../../prisma/client.js";
 import { broadcastToTerminal } from "../../services/realtime/realtime.service.js";
 import { OrderLifecycleService } from "../../services/order/orderLifecycle.service.js";
 import { resolveBranchByCode } from "../../services/terminal/branchCode.service.js";
+import { getTerminalDailyReport } from "../../services/terminal/terminalDailyReport.service.js";
 import { ordersService } from "../../services/orders.service.js";
 import { env } from "../../config/env.js";
 import { wrap, fail } from "../../contracts/api.js";
+import { isWithinBerlinToday } from "../../utils/berlinTime.js";
 function buildCourierUrl(token) {
     if (!token)
         return null;
     const base = env.FRONTEND_URL ?? "http://localhost:5173";
     return `${base}/courier/order?token=${token}`;
 }
+function mapOrderLine(line) {
+    return {
+        ...line,
+        kitchen: line.item?.kitchen ?? "B",
+        name: line.item?.name ?? line.name,
+        variants: (line.variants ?? []).map((v) => ({
+            name: v.name,
+            price: Number(v.price ?? 0)
+        })),
+        extras: (line.extras ?? []).map((e) => ({
+            name: e.name,
+            price: Number(e.price ?? 0)
+        })),
+        notes: line.notes ?? null
+    };
+}
 function enrichOrder(order) {
     return {
         ...order,
         courierUrl: buildCourierUrl(order.courierToken),
-        items: order.items?.map((line) => ({
-            ...line,
-            kitchen: line.item?.kitchen ?? "B",
-            name: line.item?.name ?? line.name
-        }))
+        items: order.items?.map(mapOrderLine)
     };
 }
 export const activateTerminalByCode = wrap(async (req) => {
@@ -49,7 +63,13 @@ export const getTerminalOrders = wrap(async (req) => {
         const orders = await prisma.order.findMany({
             where: { branchId: String(branchId) },
             include: {
-                items: { include: { item: true } },
+                items: {
+                    include: {
+                        item: true,
+                        variants: true,
+                        extras: true
+                    }
+                },
                 trackingEvents: true,
                 courierLocations: {
                     orderBy: { createdAt: "desc" },
@@ -88,7 +108,11 @@ export const getTerminalOrderDetails = wrap(async (req) => {
                     take: 1
                 },
                 items: {
-                    include: { item: true }
+                    include: {
+                        item: true,
+                        variants: true,
+                        extras: true
+                    }
                 },
                 customer: {
                     include: { addresses: true }
@@ -97,6 +121,9 @@ export const getTerminalOrderDetails = wrap(async (req) => {
         });
         if (!order)
             throw fail('NOT_FOUND', 'Order not found');
+        if (!isWithinBerlinToday(order.createdAt)) {
+            throw fail('NOT_FOUND', 'Order not available');
+        }
         const response = enrichOrder(order);
         broadcastToTerminal(order.branchId, "order_update", response);
         return response;
@@ -112,9 +139,70 @@ export const acceptOrder = wrap(async (req) => {
     req.io.to(`branch_${req.terminal.branchId}`).emit("order_updated", updated);
     return updated;
 });
+export const getTerminalDailyReportHandler = wrap(async (req) => {
+    const { branchId } = req.query;
+    if (!branchId)
+        throw fail("INVALID_INPUT", "branchId is required");
+    return getTerminalDailyReport(String(branchId));
+});
 export const rejectOrder = wrap(async (req) => {
     const { orderId } = req.params;
     const updated = await OrderLifecycleService.updateStatus(orderId, "rejected");
     req.io.to(`branch_${req.terminal.branchId}`).emit("order_updated", updated);
     return updated;
+});
+export const rejectTerminalOrder = wrap(async (req) => {
+    const { id } = req.params;
+    const reason = String(req.body?.reason ?? req.body?.rejectReason ?? "").trim() || null;
+    const order = await prisma.order.findUnique({ where: { id } });
+    if (!order)
+        throw fail("NOT_FOUND", "Order not found");
+    if (!["pending", "new", "assigned", "acknowledged"].includes(order.status)) {
+        throw fail("INVALID_INPUT", "Order cannot be rejected in its current state");
+    }
+    const updated = await OrderLifecycleService.updateStatus(id, "rejected", undefined, {
+        ...(reason ? { notes: order.notes ? `${order.notes}\n[Rejected] ${reason}` : `[Rejected] ${reason}` } : {})
+    });
+    const fullOrder = await prisma.order.findUnique({
+        where: { id },
+        include: {
+            items: { include: { item: true, variants: true, extras: true } }
+        }
+    });
+    const payload = enrichOrder(fullOrder);
+    broadcastToTerminal(order.branchId, "order:rejected", payload);
+    return payload;
+});
+function readBranchConfig(configJson) {
+    return (configJson && typeof configJson === "object" ? configJson : {});
+}
+export const getTerminalBranchStatus = wrap(async (req) => {
+    const { branchId } = req.query;
+    if (!branchId)
+        throw fail("INVALID_INPUT", "branchId is required");
+    const config = await prisma.branchConfig.findUnique({
+        where: { branchId: String(branchId) }
+    });
+    const json = readBranchConfig(config?.configJson);
+    return {
+        branchId: String(branchId),
+        status: String(json.status ?? "live"),
+        ordersPaused: Boolean(json.ordersPaused ?? false)
+    };
+});
+export const updateTerminalBranchStatus = wrap(async (req) => {
+    const branchId = String(req.body?.branchId ?? "");
+    if (!branchId)
+        throw fail("INVALID_INPUT", "branchId is required");
+    const ordersPaused = Boolean(req.body?.ordersPaused);
+    const existing = await prisma.branchConfig.findUnique({ where: { branchId } });
+    const json = readBranchConfig(existing?.configJson);
+    const nextJson = { ...json, ordersPaused };
+    await prisma.branchConfig.upsert({
+        where: { branchId },
+        create: { branchId, configJson: nextJson },
+        update: { configJson: nextJson }
+    });
+    broadcastToTerminal(branchId, "branch:status", { branchId, ordersPaused });
+    return { branchId, status: String(nextJson.status ?? "live"), ordersPaused };
 });
