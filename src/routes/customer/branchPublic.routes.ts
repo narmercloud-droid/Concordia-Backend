@@ -77,12 +77,28 @@ router.get("/branches/:branchId/delivery-areas", wrap(async (req) => {
 router.get("/branches/:branchId/address-suggest", wrap(async (req) => {
   const q = String(req.query.q ?? "").trim();
   const postalCode = String(req.query.postalCode ?? "").trim() || undefined;
+  const city = String(req.query.city ?? "").trim() || undefined;
 
-  if (!q) {
+  if (!q || q.length < 2) {
     return { suggestions: [] };
   }
 
-  const suggestions = await suggestAddresses(q, { postalCode });
+  const branch = await prisma.branch.findUnique({
+    where: { id: req.params.branchId },
+    select: { BranchConfig: { select: { configJson: true } } }
+  });
+  const config = (branch?.BranchConfig?.configJson ?? {}) as Record<string, unknown>;
+  const nearCity = city || String(config.city ?? "Kempen");
+  const lat = Number(config.lat ?? 0);
+  const lng = Number(config.lng ?? 0);
+
+  const suggestions = await suggestAddresses(q, {
+    postalCode,
+    city: nearCity,
+    nearCity,
+    lat: Number.isFinite(lat) && lat !== 0 ? lat : undefined,
+    lng: Number.isFinite(lng) && lng !== 0 ? lng : undefined
+  });
   return { suggestions };
 }));
 
