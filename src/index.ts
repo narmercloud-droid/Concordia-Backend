@@ -153,6 +153,11 @@ registerEvents(io);
 const allowedOrigins = [
   "http://localhost:5173",
   "http://127.0.0.1:5173",
+  // Capacitor Android/iOS WebView (androidScheme: https)
+  "https://localhost",
+  "http://localhost",
+  "capacitor://localhost",
+  "ionic://localhost",
   env.FRONTEND_URL,
   env.CORS_ORIGIN
 ].filter(Boolean) as string[];
@@ -163,9 +168,8 @@ function isAllowedCorsOrigin(origin: string | undefined): boolean {
   try {
     const { hostname, protocol } = new URL(origin);
     if (hostname.endsWith(".vercel.app")) return true;
-    // Capacitor Android/iOS WebView (androidScheme: https)
     if (hostname === "localhost" || hostname === "127.0.0.1") return true;
-    if (protocol === "capacitor:") return true;
+    if (protocol === "capacitor:" || protocol === "ionic:") return true;
   } catch {
     return false;
   }
@@ -173,8 +177,12 @@ function isAllowedCorsOrigin(origin: string | undefined): boolean {
 }
 
 const corsOptions = {
-  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-    callback(null, isAllowedCorsOrigin(origin));
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean | string) => void) => {
+    if (!origin || isAllowedCorsOrigin(origin)) {
+      callback(null, origin ?? true);
+      return;
+    }
+    callback(null, false);
   },
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: [
