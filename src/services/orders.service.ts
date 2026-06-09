@@ -108,6 +108,16 @@ export class OrdersService {
       throw new Error("branchId is required");
     }
 
+    const branchConfig = await prisma.branchConfig.findUnique({
+      where: { branchId: rest.branchId }
+    });
+    const branchStatus = String(
+      (branchConfig?.configJson as Record<string, unknown> | null)?.status ?? "live"
+    );
+    if (branchStatus === "coming_soon") {
+      throw new Error("This branch is not accepting orders yet");
+    }
+
     const fulfillmentType = rest.fulfillmentType ?? rest.orderType ?? "delivery";
     const customerName = rest.customerName?.trim();
     const customerPhone = rest.customerPhone?.trim();

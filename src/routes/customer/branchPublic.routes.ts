@@ -60,11 +60,6 @@ router.get("/branches/:branchId/menu", publicCache(600, 900), wrap(async (req) =
     throw { code: "NOT_FOUND", message: "Branch not found" };
   }
 
-  const config = (branch.BranchConfig?.configJson ?? {}) as Record<string, unknown>;
-  if (config.status === "coming_soon") {
-    throw { code: "FORBIDDEN", message: "This branch is not available yet" };
-  }
-
   const categories = await getBranchMenuForCustomer(branchId, lang);
   return { categories };
 }));
