@@ -161,8 +161,11 @@ function isAllowedCorsOrigin(origin: string | undefined): boolean {
   if (!origin) return true;
   if (allowedOrigins.includes(origin)) return true;
   try {
-    const { hostname } = new URL(origin);
+    const { hostname, protocol } = new URL(origin);
     if (hostname.endsWith(".vercel.app")) return true;
+    // Capacitor Android/iOS WebView (androidScheme: https)
+    if (hostname === "localhost" || hostname === "127.0.0.1") return true;
+    if (protocol === "capacitor:") return true;
   } catch {
     return false;
   }
