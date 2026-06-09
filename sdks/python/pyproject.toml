@@ -1,0 +1,13 @@
+[project]
+name = "concordia-sdk-python"
+version = "1.0.0"
+description = "Concordia Python SDK"
+authors = [ { name = "Concordia" } ]
+readme = "README.md"
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = ["concordia_client", "models"]

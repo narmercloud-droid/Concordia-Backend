@@ -1,0 +1,1027 @@
+{
+  "source": "https://www.lieferando.de/speisekarte/pizzeria-concordia-concordienplatz",
+  "website": "https://www.pizzeria-concordia-kempen.de/",
+  "restaurant": "Concordia Kempen",
+  "address": {
+    "street": "Concordienplatz 1",
+    "postalCode": "47906",
+    "city": "Kempen",
+    "lat": 51.3703503,
+    "lng": 6.4105939
+  },
+  "openingHours": [
+    {
+      "day": 1,
+      "open": "12:00",
+      "close": "21:00"
+    },
+    {
+      "day": 2,
+      "open": "12:00",
+      "close": "21:00"
+    },
+    {
+      "day": 3,
+      "closed": true
+    },
+    {
+      "day": 4,
+      "open": "12:00",
+      "close": "21:00"
+    },
+    {
+      "day": 5,
+      "open": "12:00",
+      "close": "21:00"
+    },
+    {
+      "day": 6,
+      "open": "12:00",
+      "close": "21:00"
+    },
+    {
+      "day": 0,
+      "open": "13:00",
+      "close": "21:00"
+    }
+  ],
+  "categories": [
+    {
+      "id": "cat1",
+      "name": "Baguettes",
+      "description": "Alle Baguettes mit Eisbergsalat, Tomaten, Gurken, Remoulade.",
+      "products": [
+        {
+          "externalId": "373771QPQO",
+          "name": "Baguette mit Sucuk",
+          "description": null,
+          "price": 7,
+          "hasVariants": false
+        },
+        {
+          "externalId": "35Q771QPQO",
+          "name": "Baguette mit Thunfisch und Ei",
+          "description": null,
+          "price": 7.5,
+          "hasVariants": false
+        },
+        {
+          "externalId": "3ONQ71QPQO",
+          "name": "Baguette mit Mozzarella",
+          "description": null,
+          "price": 7.5,
+          "hasVariants": false
+        },
+        {
+          "externalId": "30PQ71QPQO",
+          "name": "Baguette mit Sucuk und Ei",
+          "description": null,
+          "price": 7.5,
+          "hasVariants": false
+        },
+        {
+          "externalId": "311R71QPQO",
+          "name": "Baguette mit Hinterschinken",
+          "description": null,
+          "price": 7,
+          "hasVariants": false
+        },
+        {
+          "externalId": "3NPR71QPQO",
+          "name": "Baguette mit Thunfisch",
+          "description": null,
+          "price": 7,
+          "hasVariants": false
+        },
+        {
+          "externalId": "3P10Q1QPQO",
+          "name": "Baguette mit Salami",
+          "description": null,
+          "price": 7,
+          "hasVariants": false
+        }
+      ]
+    },
+    {
+      "id": "cat2",
+      "name": "Pasta",
+      "description": "Alle Gerichten serviert wir 5 Stück Pizzabrötchen mit Kräuterbutter.",
+      "products": [
+        {
+          "externalId": "3P70Q1QPQO",
+          "name": "Pasta Salmone",
+          "description": "mit Spinat, Lachs, Knoblauch und Sahnesauce",
+          "price": 11,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3301Q1QPQO",
+          "name": "Pasta Vegetarisch",
+          "description": "mit Broccoli, Paprika, frischen Champignons, Zwiebeln und Tomaten-Sahnesauce",
+          "price": 11,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3P31Q1QPQO",
+          "name": "Pasta Gorgonzola",
+          "description": "mit Broccoli, frischen Champignons, Gorgonzolakäse und Sahnesauce",
+          "price": 10,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3PP1Q1QPQO",
+          "name": "Pasta Pasta Concordia",
+          "description": "mit Hähnchenbruststreifen, Champignons, Broccoli, scharfen Peperonis, Knoblauch und Tomaten-Sahnesauce",
+          "price": 10.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "33R1Q1QPQO",
+          "name": "Pasta Formaggi",
+          "description": "mit vier verschiedenen Käsesorten und Sahnesauce",
+          "price": 10.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "30NNQ1QPQO",
+          "name": "Pasta Alla Chef",
+          "description": "mit Hähnchenbruststreifen, frischen Champignons, Mais, Goudakäse, Tomaten und Sahnesauce",
+          "price": 11,
+          "hasVariants": true
+        },
+        {
+          "externalId": "335NQ1QPQO",
+          "name": "Pasta Carbonara",
+          "description": "mit Hinterschinken, Ei und Sahnesauce",
+          "price": 10,
+          "hasVariants": true
+        },
+        {
+          "externalId": "30QNQ1QPQO",
+          "name": "Pasta Alla Panna",
+          "description": "mit Hinterschinken, frischen Champignons und Sahnesauce",
+          "price": 10.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3O03Q1QPQO",
+          "name": "Pasta Toscana",
+          "description": "mit Hinterschinken, Krabben, frischen Champignons, Knoblauch, Tomaten und Sahnesauce",
+          "price": 11,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3O33Q1QPQO",
+          "name": "Pasta Napoli",
+          "description": "mit Tomatensauce",
+          "price": 9,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3N53Q1QPQO",
+          "name": "Pasta Bolognese",
+          "description": "mit Hackfleischsauce",
+          "price": 10,
+          "hasVariants": true
+        }
+      ]
+    },
+    {
+      "id": "cat3",
+      "name": "Salate",
+      "description": "Zu allen Salaten reichen wir 5 Stück Pizzabrötchen mit Kräuterbutter. Unser gemischter Salat mit Eisbergsalat, Gurken, Tomaten und Zwiebeln",
+      "products": [
+        {
+          "externalId": "357NO1QPQO",
+          "name": "Salat Caprese",
+          "description": "mit Tomaten, Mozzarella und Rucola",
+          "price": 9,
+          "hasVariants": true
+        },
+        {
+          "externalId": "33RNO1QPQO",
+          "name": "Salat Capricciosa",
+          "description": "gemischter Salat mit Thunfisch, Ei, Hinterschinken und Käse",
+          "price": 10,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3503O1QPQO",
+          "name": "Salat Casa",
+          "description": "gemischter Salat mit Mais, Paprika, Oliven und Fetakäse",
+          "price": 10.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3713O1QPQO",
+          "name": "Salat Hähnchen",
+          "description": "gemischter Salat mit gebratene Hähnchenbruststreifen, Paprika und Rucola",
+          "price": 11,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3RN3O1QPQO",
+          "name": "Salat Hawaii",
+          "description": "gemischter Salat mit Hinterschinken, Ananas und Käse",
+          "price": 9.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3QP3O1QPQO",
+          "name": "Salat Tonno",
+          "description": "gemischter Salat und Thunfisch",
+          "price": 9,
+          "hasVariants": true
+        },
+        {
+          "externalId": "310OO1QPQO",
+          "name": "Salat Concordia",
+          "description": "gemischter Salat mit Krabben, frische Champignons und Rucola",
+          "price": 10,
+          "hasVariants": true
+        },
+        {
+          "externalId": "35NOO1QPQO",
+          "name": "Salat Primavera",
+          "description": "gemischter Salat mit Oliven, Fetakäse, Artischocken und Ei",
+          "price": 10,
+          "hasVariants": true
+        },
+        {
+          "externalId": "31POO1QPQO",
+          "name": "Salat Mista",
+          "description": "gemischter Salat mit Mais und Paprika",
+          "price": 7.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3R7OO1QPQO",
+          "name": "Salat Fantasia",
+          "description": "gemischter Salat mit Thunfisch, Hinterschinken, Artischocken, Fetakäse und Ei",
+          "price": 10,
+          "hasVariants": true
+        }
+      ]
+    },
+    {
+      "id": "cat4",
+      "name": "Al Forno Gerichte",
+      "description": "Alle Gerichten serviert wir 5 Stück Pizzabrötchen mit Kräuterbutter.",
+      "products": [
+        {
+          "externalId": "3Q15O1QPQO",
+          "name": "Penne Auflauf",
+          "description": "mit Penne, frischen Champignons, Broccoli, Mais und Sahnesauce",
+          "price": 12,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3R35O1QPQO",
+          "name": "Tortellini Auflauf",
+          "description": "mit Tortellini, Hinterschinken, Broccoli und Sahnesauce",
+          "price": 12,
+          "hasVariants": true
+        },
+        {
+          "externalId": "33P5O1QPQO",
+          "name": "Spaghetti Auflauf",
+          "description": "mit Spaghetti, Zwiebeln, Tomaten, Paprika und Tomaten-Sahnesauce",
+          "price": 12,
+          "hasVariants": true
+        },
+        {
+          "externalId": "31Q5O1QPQO",
+          "name": "Döner Auflauf",
+          "description": "mit Dönerfleisch, Tomaten, Zwiebeln, Fetakäse, Paprika und Sahnesauce",
+          "price": 12,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3RR5O1QPQO",
+          "name": "Gemüse Auflauf",
+          "description": "mit Spaghetti, frischen Champignons, Spinat, Broccoli, Paprika, Zwiebeln und Tomaten-Sahnesauce",
+          "price": 12,
+          "hasVariants": true
+        }
+      ]
+    },
+    {
+      "id": "cat5",
+      "name": "Pizzen",
+      "description": "",
+      "products": [
+        {
+          "externalId": "3PNPO1QPQO",
+          "name": "Pizza Pizza Spargel",
+          "description": "mit Hinterschinken, Salami, Spargel und Sauce Hollandaise",
+          "price": 8.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "377PO1QPQO",
+          "name": "Pizza Rustica",
+          "description": "mit Hinterschinken, Thunfisch, Zwiebeln, Paprika und scharfe Peperoni",
+          "price": 8.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3137O1QPQO",
+          "name": "Pizza Bruno",
+          "description": "mit Spinat, Hähnchenbruststreifen und Sauce Hollandaise",
+          "price": 8.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "31P7O1QPQO",
+          "name": "Pizza Enzo",
+          "description": "mit Salami und frische Champignons",
+          "price": 7.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "35Q7O1QPQO",
+          "name": "Pizza Hähnchen",
+          "description": "mit Hähnchenbruststreifen, Broccoli und Sauce Hollandaise",
+          "price": 8.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "351QO1QPQO",
+          "name": "Pizza Chef",
+          "description": "mit Krabben, Spinat, Broccoli, Thunfisch und Knoblauch",
+          "price": 8.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "35OQO1QPQO",
+          "name": "Pizza Italia",
+          "description": "mit Spinat, Paprika und Zwiebeln",
+          "price": 8,
+          "hasVariants": true
+        },
+        {
+          "externalId": "357QO1QPQO",
+          "name": "Pizza Vegetaria A",
+          "description": "mit Spinat, Paprika, Broccoli und frische Champignons",
+          "price": 8.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3RRQO1QPQO",
+          "name": "Pizza Vegetaria B",
+          "description": "mit Spinat, Zwiebeln, Paprika und Mais",
+          "price": 8.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3PNRO1QPQO",
+          "name": "Pizza Vegetaria C",
+          "description": "mit frische Champignons, Zwiebeln und Oliven",
+          "price": 8.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3R5RO1QPQO",
+          "name": "Pizza Vegetaria D",
+          "description": "mit Cherry Tomaten, frische Champignons, Mozzarella, Spinat und Knoblauch",
+          "price": 8.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3NRRO1QPQO",
+          "name": "Pizza Mexico",
+          "description": "mit Dönerfleisch, Zwiebeln und Sauce Hollandaise",
+          "price": 8.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3Q5051QPQO",
+          "name": "Pizza Concordia",
+          "description": "mit Dönerfleisch, Zwiebeln, Paprika, Broccoli und Sauce Hollandaise",
+          "price": 8.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "31N151QPQO",
+          "name": "Pizza Bella",
+          "description": "mit Zwiebeln, Paprika, Mais und Hähnchenbruststreifen",
+          "price": 8.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "375151QPQO",
+          "name": "Pizza Vegas",
+          "description": "mit frische Champignons, Cherry Tomaten, Sauce Hollandaise, Oliven und Hähnchenbruststreifen",
+          "price": 8.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3PR151QPQO",
+          "name": "Calzone Spezial",
+          "description": "zugeklappte Pizza gefüllt mit Thunfisch, Zwiebeln, Fetakäse und scharfe Peperoni",
+          "price": 10.5,
+          "hasVariants": false
+        },
+        {
+          "externalId": "350N51QPQO",
+          "name": "Calzone Concordia",
+          "description": "zugeklappte Pizza gefüllt mit Hinterschinken, Salami, Thunfisch, Zwiebeln und Peperoni",
+          "price": 10.5,
+          "hasVariants": false
+        },
+        {
+          "externalId": "371N51QPQO",
+          "name": "Calzone Döner",
+          "description": "zugeklappte Pizza gefüllt mit Dönerfleisch, Fetakäse und Peperoni",
+          "price": 10.5,
+          "hasVariants": false
+        },
+        {
+          "externalId": "3PNN51QPQO",
+          "name": "Pizza Parma",
+          "description": "mit Rucola, Parmaschinken, Parmesankäse und frische Tomaten",
+          "price": 8.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "335N51QPQO",
+          "name": "Pizza Diavolo",
+          "description": "mit Salami, Thunfisch, Paprika und Peperoni",
+          "price": 8,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3P1351QPQO",
+          "name": "Pizza Tonno e Cipolla",
+          "description": "mit Thunfisch und Zwiebeln",
+          "price": 7.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3OR351QPQO",
+          "name": "Pizza Prosciutto Funghi",
+          "description": "mit Hinterschinken und Champignons",
+          "price": 7.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "37QO51QPQO",
+          "name": "Pizza Hawaii",
+          "description": "mit Hinterschinken und Ananas",
+          "price": 7.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "301P51QPQO",
+          "name": "Pizza Mozzarella",
+          "description": "mit Mozzarella und Cherry Tomaten",
+          "price": 7.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3NO751QPQO",
+          "name": "Pizza Bolognese",
+          "description": "mit Hackfleischsauce und Zwiebeln",
+          "price": 7,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3O7Q51QPQO",
+          "name": "Pizza Spaghetti Bolognese",
+          "description": "mit Spaghetti und Hackfleischsauce",
+          "price": 7.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "37RR51QPQO",
+          "name": "Pizza Milano",
+          "description": "mit Spinat, Krabben, Champignons und Knoblauch",
+          "price": 8,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3PR0P1QPQO",
+          "name": "Pizza Lachs",
+          "description": "mit Spinat, Lachs und Knoblauch",
+          "price": 8,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3NNNP1QPQO",
+          "name": "Pizza Quattro Stagioni",
+          "description": "mit Salami, Hinterschinken, Thunfisch und Zwiebeln",
+          "price": 8.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3033P1QPQO",
+          "name": "Pizza Quattro Formaggi",
+          "description": "mit Gorgonzola, Gouda Käse, Fetakäse und Mozzarella",
+          "price": 8.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "350OP1QPQO",
+          "name": "Pizza Margherita",
+          "description": "mit Tomatensauce und Käse",
+          "price": 5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3015P1QPQO",
+          "name": "Pizza Broccoli",
+          "description": "mit Broccoli",
+          "price": 6.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "37NPP1QPQO",
+          "name": "Pizza Salami",
+          "description": "mit Salami",
+          "price": 6.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3OO7P1QPQO",
+          "name": "Pizza Prosciutto",
+          "description": "mit Hinterschinken",
+          "price": 6.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "33OQP1QPQO",
+          "name": "Pizza Funghi",
+          "description": "mit frische Champignons",
+          "price": 6.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3Q7RP1QPQO",
+          "name": "Pizza Tonno",
+          "description": "mit Thunfisch",
+          "price": 7,
+          "hasVariants": true
+        },
+        {
+          "externalId": "355171QPQO",
+          "name": "Pizza Spinaci",
+          "description": "mit Spinat und Knoblauch",
+          "price": 6.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3PRN71QPQO",
+          "name": "Pizza Scampi",
+          "description": "mit Krabben und Knoblauch",
+          "price": 8,
+          "hasVariants": true
+        },
+        {
+          "externalId": "33OO71QPQO",
+          "name": "Pizza Frutti di Mare",
+          "description": "mit Meeresfrüchte und Knoblauch",
+          "price": 8,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3N7571QPQO",
+          "name": "Pizza Sucuk",
+          "description": "mit türkisch Knoblauchwurst",
+          "price": 7,
+          "hasVariants": true
+        }
+      ]
+    },
+    {
+      "id": "cat6",
+      "name": "Pizzabrötchen",
+      "description": "",
+      "products": [
+        {
+          "externalId": "371PO1QPQO",
+          "name": "Gefüllte Pizzabrötchen mit Bolognese",
+          "description": null,
+          "price": 7,
+          "hasVariants": true
+        },
+        {
+          "externalId": "353PO1QPQO",
+          "name": "Gefüllte Pizzabrötchen mit Sucuk",
+          "description": null,
+          "price": 7,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3P5PO1QPQO",
+          "name": "Gefüllte Pizzabrötchen mit Hinterschinken",
+          "description": null,
+          "price": 7,
+          "hasVariants": true
+        },
+        {
+          "externalId": "30QPO1QPQO",
+          "name": "Gefüllte Pizzabrötchen mit Thunfisch, Zwiebeln, Fetakäse",
+          "description": null,
+          "price": 8,
+          "hasVariants": true
+        },
+        {
+          "externalId": "35RPO1QPQO",
+          "name": "Gefüllte Pizzabrötchen mit Dönerfleisch",
+          "description": null,
+          "price": 8,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3017O1QPQO",
+          "name": "Gefüllte Pizzabrötchen mit Spinat und Fetakäse",
+          "description": null,
+          "price": 7.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3QN7O1QPQO",
+          "name": "Gefüllte Pizzabrötchen mit Käse",
+          "description": null,
+          "price": 6,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3O37O1QPQO",
+          "name": "Gefüllte Pizzabrötchen mit Thunfisch",
+          "description": null,
+          "price": 7,
+          "hasVariants": true
+        },
+        {
+          "externalId": "33O7O1QPQO",
+          "name": "Gefüllte Pizzabrötchen mit Salami",
+          "description": null,
+          "price": 7,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3Q57O1QPQO",
+          "name": "Pizzabrötchen 10 Stück",
+          "description": "mit Kräuterbutter",
+          "price": 3.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "37P7O1QPQO",
+          "name": "Portion Kräuterbutter",
+          "description": null,
+          "price": 1.5,
+          "hasVariants": false
+        }
+      ]
+    },
+    {
+      "id": "cat7",
+      "name": "Schnitzel",
+      "description": "Alle Schnitzelgerichte serviert mit Pommes und Salat.",
+      "products": [
+        {
+          "externalId": "3Q7NO1QPQO",
+          "name": "Schnitzel Hawaii",
+          "description": "mit Hinterschinken, Ananas und Sahnesauce",
+          "price": 12,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3PRNO1QPQO",
+          "name": "Broccoli Schnitzel",
+          "description": "mit Broccoli und Sahnesauce",
+          "price": 12,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3Q03O1QPQO",
+          "name": "Zwiebel Schnitzel",
+          "description": "mit gebratene Zwiebeln und Sahnesauce",
+          "price": 12,
+          "hasVariants": true
+        },
+        {
+          "externalId": "33N3O1QPQO",
+          "name": "Hollandaise Schnitzel",
+          "description": "mit Broccoli, frische Champignons, Zwiebeln und Sauce Hollandaise",
+          "price": 12.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3533O1QPQO",
+          "name": "Spinat Schnitzel",
+          "description": "mit Spinat, Knoblauch und Sahnesauce",
+          "price": 12,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3353O1QPQO",
+          "name": "Paprikaschnitzel",
+          "description": "mit Balkansauce",
+          "price": 11,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3NR3O1QPQO",
+          "name": "Champignonschnitzel",
+          "description": "mit Champignons und Sahnesauce",
+          "price": 12,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3NNOO1QPQO",
+          "name": "Schnitzel Wiener Art",
+          "description": "mit Zitronenscheibe",
+          "price": 10.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3ROOO1QPQO",
+          "name": "Jägerschnitzel",
+          "description": "mit Jägersauce",
+          "price": 11,
+          "hasVariants": true
+        }
+      ]
+    },
+    {
+      "id": "cat8",
+      "name": "Burger",
+      "description": "",
+      "products": [
+        {
+          "externalId": "3QQOO1QPQO",
+          "name": "Doppel Chess Burger",
+          "description": "mit 2 x 180g Rinderhackfleisch, Eisbergsalat, Gurken, Tomaten, Zwiebeln, Käse undSauce",
+          "price": 12,
+          "hasVariants": false
+        },
+        {
+          "externalId": "3305O1QPQO",
+          "name": "Chicken Nugget Burger",
+          "description": "mit Chicken Nuggets, Eisbergsalat, Gurken, Tomaten, Zwiebeln und Sauce",
+          "price": 8,
+          "hasVariants": false
+        },
+        {
+          "externalId": "3ON5O1QPQO",
+          "name": "Chicken Burger",
+          "description": "mit 135g Hähnchenfleisch, Eisbergsalat, Gurken, Tomaten, Zwiebeln und Sauce",
+          "price": 8,
+          "hasVariants": false
+        },
+        {
+          "externalId": "3155O1QPQO",
+          "name": "Doppel-Burger",
+          "description": "mit 2 x 180g Rinderhackfleisch, Eisbergsalat, Gurken, Tomaten, Zwiebeln und Sauce",
+          "price": 11.5,
+          "hasVariants": false
+        },
+        {
+          "externalId": "3N75O1QPQO",
+          "name": "Chess Burger",
+          "description": "mit 180g Rinderhackfleisch, Eisbergsalat, Gurken, Tomaten, Zwiebeln, Käse und Sauce",
+          "price": 9,
+          "hasVariants": false
+        },
+        {
+          "externalId": "37Q5O1QPQO",
+          "name": "Burger Klassik",
+          "description": "mit 180g Rinderhackfleisch, Eisbergsalat, Gurken, Tomaten, Zwiebeln und Sauce",
+          "price": 8.5,
+          "hasVariants": false
+        }
+      ]
+    },
+    {
+      "id": "cat9",
+      "name": "Imbiss",
+      "description": "",
+      "products": [
+        {
+          "externalId": "310051QPQO",
+          "name": "Chicken Nuggets 6 Stück",
+          "description": "mit Pommes",
+          "price": 6,
+          "hasVariants": true
+        },
+        {
+          "externalId": "301051QPQO",
+          "name": "Chicken Wings 8 Stück",
+          "description": "mit Pommes",
+          "price": 8.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "313051QPQO",
+          "name": "Kartoffel-Kroketten 6 Stück",
+          "description": null,
+          "price": 3.5,
+          "hasVariants": false
+        },
+        {
+          "externalId": "33O051QPQO",
+          "name": "Mayonnaise",
+          "description": null,
+          "price": 1,
+          "hasVariants": false
+        },
+        {
+          "externalId": "3OP051QPQO",
+          "name": "Ketchup",
+          "description": null,
+          "price": 1,
+          "hasVariants": false
+        },
+        {
+          "externalId": "3R7051QPQO",
+          "name": "Mozzarella Sticks",
+          "description": "mit Pommes",
+          "price": 8,
+          "hasVariants": true
+        },
+        {
+          "externalId": "330151QPQO",
+          "name": "Rindfleischkrokette",
+          "description": "mit Pommes",
+          "price": 5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3N1151QPQO",
+          "name": "Bratrolle Spezial",
+          "description": "mit Pommes",
+          "price": 7.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "333151QPQO",
+          "name": "Bratwurst",
+          "description": "mit Pommes",
+          "price": 6,
+          "hasVariants": true
+        },
+        {
+          "externalId": "315151QPQO",
+          "name": "Currywurst",
+          "description": "mit Pommes",
+          "price": 6.5,
+          "hasVariants": true
+        },
+        {
+          "externalId": "3PP151QPQO",
+          "name": "Pommes frites",
+          "description": null,
+          "price": 3,
+          "hasVariants": false
+        },
+        {
+          "externalId": "3N7151QPQO",
+          "name": "Pommes Spezial",
+          "description": null,
+          "price": 4.5,
+          "hasVariants": false
+        },
+        {
+          "externalId": "3Q7151QPQO",
+          "name": "Bratrolle",
+          "description": "mit Pommes",
+          "price": 6,
+          "hasVariants": true
+        }
+      ]
+    },
+    {
+      "id": "cat10",
+      "name": "Alkoholfreie Getränke",
+      "description": "",
+      "products": [
+        {
+          "externalId": "3NQ7O1QPQO",
+          "name": "Lift Apfelschorle 1,0l (MEHRWEG)",
+          "description": "Die Lift Apfelschorle begeistert mit ihrem einmaligen Geschmack und maximaler Erfrischung.",
+          "price": 4,
+          "hasVariants": false
+        },
+        {
+          "externalId": "3OR7O1QPQO",
+          "name": "Uludag 0,33l",
+          "description": null,
+          "price": 2,
+          "hasVariants": false
+        },
+        {
+          "externalId": "3P0QO1QPQO",
+          "name": "Sprite 1,0l (MEHRWEG)",
+          "description": "Bist du bereit für Sprite? Die einzigartige Formel aus grünen Limetten und sonnengelben Zitronen erfrischt dich maximal.",
+          "price": 4,
+          "hasVariants": false
+        },
+        {
+          "externalId": "3Q1QO1QPQO",
+          "name": "Mezzo Mix 1,0l (MEHRWEG)",
+          "description": "Mixt euch eine gute Zeit mit Mezzo Mix, dem erfrischend-leckeren Kuss aus Cola und Orange.",
+          "price": 4,
+          "hasVariants": false
+        },
+        {
+          "externalId": "303QO1QPQO",
+          "name": "Mineralwasser mit Kohlensäure 0,25l",
+          "description": null,
+          "price": 2,
+          "hasVariants": false
+        },
+        {
+          "externalId": "3R3QO1QPQO",
+          "name": "Durstlöscher 0,5l",
+          "description": null,
+          "price": 2,
+          "hasVariants": false
+        },
+        {
+          "externalId": "315QO1QPQO",
+          "name": "Sprite 0,33l (MEHRWEG)",
+          "description": "Bist du bereit für Sprite? Die einzigartige Formel aus grünen Limetten und sonnengelben Zitronen erfrischt dich maximal.",
+          "price": 2,
+          "hasVariants": false
+        },
+        {
+          "externalId": "30PQO1QPQO",
+          "name": "Mineralwasser Still 0,25l",
+          "description": null,
+          "price": 2,
+          "hasVariants": false
+        },
+        {
+          "externalId": "3RPQO1QPQO",
+          "name": "Coca-Cola Zero Sugar 1,0l (MEHRWEG)",
+          "description": "Keine Kalorien. Null Zucker. Für alle Coke Liebhaber, die beim Geschmack keinen Kompromiss eingehen wollen.",
+          "price": 4,
+          "hasVariants": false
+        },
+        {
+          "externalId": "31QQO1QPQO",
+          "name": "Fanta Orange 0,33l (MEHRWEG)",
+          "description": "Trinke Fanta. Lebe bunter. Spritzig erfrischend begleitet die originale Fanta Orange jede Lebenssituation und macht jetzt noch mehr Spaß.",
+          "price": 2,
+          "hasVariants": false
+        },
+        {
+          "externalId": "350RO1QPQO",
+          "name": "Fanta Orange 1,0l (MEHRWEG)",
+          "description": "Trinke Fanta. Lebe bunter. Spritzig erfrischend begleitet die originale Fanta Orange jede Lebenssituation und macht jetzt noch mehr Spaß.",
+          "price": 4,
+          "hasVariants": false
+        },
+        {
+          "externalId": "30NRO1QPQO",
+          "name": "Coca-Cola 0,33l (MEHRWEG)",
+          "description": "Coca-Cola steht für einzigartigen Geschmack, Erfrischung und Momente voller Lebensfreude. Die 0,33l Glas-Mehrwegflasche ist unsere Ikone für perfekten Trinkgenuss seit 1886.",
+          "price": 2,
+          "hasVariants": false
+        },
+        {
+          "externalId": "353RO1QPQO",
+          "name": "Coca-Cola 1,0l (MEHRWEG)",
+          "description": null,
+          "price": 4,
+          "hasVariants": false
+        },
+        {
+          "externalId": "37ORO1QPQO",
+          "name": "Coca-Cola Zero Sugar 0,33l (MEHRWEG)",
+          "description": "Keine Kalorien. Null Zucker. Für alle Coke Liebhaber, die beim Geschmack keinen Kompromiss eingehen wollen.",
+          "price": 2,
+          "hasVariants": false
+        }
+      ]
+    },
+    {
+      "id": "cat11",
+      "name": "Alkoholische Getränke",
+      "description": "",
+      "products": [
+        {
+          "externalId": "3QPRO1QPQO",
+          "name": "Radler Weizenbier 0,5l",
+          "description": null,
+          "price": 4,
+          "hasVariants": false
+        },
+        {
+          "externalId": "3O7RO1QPQO",
+          "name": "Krombacher Pills 0,5l",
+          "description": null,
+          "price": 3,
+          "hasVariants": false
+        }
+      ]
+    }
+  ],
+  "stats": {
+    "categoryCount": 11,
+    "productCount": 128
+  }
+}
