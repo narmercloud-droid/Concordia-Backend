@@ -3,7 +3,7 @@ import { prisma } from "../../prisma/client.js";
 const STATUS_TRANSITIONS = {
     pending: ["accepted", "rejected", "cancelled", "assigned", "acknowledged"],
     accepted: ["preparing", "rejected", "out_for_delivery", "cancelled"],
-    preparing: ["ready_for_pickup", "rejected", "cancelled"],
+    preparing: ["ready_for_pickup", "out_for_delivery", "rejected", "cancelled"],
     ready_for_pickup: ["picked_up", "cancelled"],
     out_for_delivery: ["picked_up", "delivered", "cancelled"],
     picked_up: ["delivered", "cancelled"],
@@ -174,6 +174,15 @@ export class OrderLifecycleService {
             });
             if (!result) {
                 throw new Error("Failed to fetch updated order");
+            }
+            return result;
+        }).then(async (result) => {
+            try {
+                const { awardLoyaltyForCompletedOrder } = await import("../loyalty.service.js");
+                await awardLoyaltyForCompletedOrder(orderId);
+            }
+            catch (error) {
+                console.error("Loyalty award failed for order", orderId, error);
             }
             return result;
         });

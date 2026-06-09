@@ -3,6 +3,7 @@ import { broadcastToTerminal } from "../../services/realtime/realtime.service.ts
 import { OrderLifecycleService } from "../../services/order/orderLifecycle.service.ts";
 import { resolveBranchByCode } from "../../services/terminal/branchCode.service.ts";
 import { getTerminalDailyReport } from "../../services/terminal/terminalDailyReport.service.ts";
+import { advanceTerminalOrderStatus } from "../../services/terminal/terminalOrderStatus.service.ts";
 import { ordersService } from "../../services/orders.service.ts";
 import { env } from "../../config/env.ts";
 import { wrap, fail } from "../../contracts/api.js";
@@ -233,8 +234,12 @@ export const updateTerminalOrderStatus = wrap(async (req) => {
   const order = await prisma.order.findUnique({ where: { id } });
   if (!order) throw fail("NOT_FOUND", "Order not found");
 
-  const resolved = status === "ready" ? "ready_for_pickup" : status;
-  const updated = await OrderLifecycleService.updateStatus(id, resolved);
+  let updated;
+  try {
+    updated = await advanceTerminalOrderStatus(id, status);
+  } catch (err: any) {
+    throw fail("INVALID_INPUT", err?.message ?? "Could not update order status");
+  }
 
   const fullOrder = await prisma.order.findUnique({
     where: { id },

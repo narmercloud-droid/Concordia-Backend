@@ -4,7 +4,7 @@ import { prisma } from "../../prisma/client.js";
 const STATUS_TRANSITIONS: Record<string, string[]> = {
   pending: ["accepted", "rejected", "cancelled", "assigned", "acknowledged"],
   accepted: ["preparing", "rejected", "out_for_delivery", "cancelled"],
-  preparing: ["ready_for_pickup", "rejected", "cancelled"],
+  preparing: ["ready_for_pickup", "out_for_delivery", "rejected", "cancelled"],
   ready_for_pickup: ["picked_up", "cancelled"],
   out_for_delivery: ["picked_up", "delivered", "cancelled"],
   picked_up: ["delivered", "cancelled"],

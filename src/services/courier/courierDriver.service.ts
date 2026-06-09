@@ -4,6 +4,7 @@ import { validateCourierToken } from "./courierToken.service.ts";
 import { autoUpdateStatus } from "./autoStatus.service.ts";
 import { broadcastToTerminal, broadcastToCustomer } from "../realtime/realtime.service.ts";
 import { getBranchCoords, getGuestCourierId } from "../branch/branchCoords.service.ts";
+import { OrderLifecycleService } from "../order/orderLifecycle.service.ts";
 
 export async function buildCourierOrderView(order: any) {
   const branchCoords = await getBranchCoords(order.branchId);
@@ -52,24 +53,51 @@ export async function acceptCourierOrder(token: string) {
 
   const courierId = order.courierId ?? (await getGuestCourierId(order.branchId));
 
-  const updated = await prisma.order.update({
+  await prisma.order.update({
     where: { id: order.id },
     data: {
       courierStatus: "accepted",
       driverAcceptedAt: new Date(),
       courierId
-    },
+    }
+  });
+
+  const transitStatuses = new Set(["accepted", "preparing", "ready_for_pickup", "ready"]);
+  let updated = await prisma.order.findUnique({
+    where: { id: order.id },
     include: {
       branch: true,
-      items: { include: { item: true } },
+      items: { include: { item: true, variants: true, extras: true } },
       customer: { include: { addresses: true } }
     }
   });
 
+  if (updated && transitStatuses.has(updated.status)) {
+    try {
+      await OrderLifecycleService.updateStatus(order.id, "out_for_delivery");
+      updated = await prisma.order.findUnique({
+        where: { id: order.id },
+        include: {
+          branch: true,
+          items: { include: { item: true, variants: true, extras: true } },
+          customer: { include: { addresses: true } }
+        }
+      });
+    } catch {
+      // Keep driver acceptance even if status transition is not allowed.
+    }
+  }
+
+  if (!updated) {
+    throw new Error("Order not found after driver acceptance");
+  }
+
+  broadcastToTerminal(updated.branchId, "order_update", updated);
   broadcastToTerminal(updated.branchId, "order_status", {
     orderId: updated.id,
     status: updated.status,
-    courierStatus: "accepted"
+    courierStatus: "accepted",
+    order: updated
   });
 
   if (updated.tracking_token) {
