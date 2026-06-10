@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { prisma } from "../../prisma/client.ts";
 import { broadcastToTerminal } from "../../services/realtime/realtime.service.ts";
 import { OrderLifecycleService } from "../../services/order/orderLifecycle.service.ts";
@@ -264,8 +265,8 @@ export const updateTerminalBranchStatus = wrap(async (req) => {
   const nextJson: Record<string, unknown> = { ...json, ordersPaused };
   await prisma.branchConfig.upsert({
     where: { branchId },
-    create: { branchId, configJson: nextJson },
-    update: { configJson: nextJson }
+    create: { id: randomUUID(), branchId, configJson: nextJson },
+    update: { configJson: nextJson, version: { increment: 1 } }
   });
 
   broadcastToTerminal(branchId, "branch:status", { branchId, ordersPaused });
