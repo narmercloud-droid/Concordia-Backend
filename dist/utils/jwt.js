@@ -14,8 +14,9 @@ export function validateJwtPayload(payload) {
         throw new Error("Invalid token payload: id");
     if (typeof role !== "string" || !role)
         throw new Error("Invalid token payload: role");
-    if (typeof branchId !== "string" || !branchId)
+    if (branchId !== null && typeof branchId !== "string") {
         throw new Error("Invalid token payload: branchId");
+    }
 }
 export function signToken(payload) {
     return jwt.sign(payload, JWT_SECRET, {

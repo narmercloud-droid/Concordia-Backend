@@ -4,7 +4,7 @@ export async function recordTrace(printer, event, durationMs = null) {
         data: {
             printerId: printer.id,
             kitchen: printer.kitchen || "B",
-            branchId: "branch-001",
+            branchId: "concordia-kempen",
             event,
             durationMs
         }
@@ -18,7 +18,7 @@ export async function updateHealth(printer, delta) {
         return prisma.printerHealth.create({
             data: {
                 printerId: printer.id,
-                branchId: "branch-001",
+                branchId: "concordia-kempen",
                 score: 100 + delta
             }
         });
@@ -35,7 +35,7 @@ export async function recordAnomaly(printer, type, severity) {
     return prisma.printerAnomaly.create({
         data: {
             printerId: printer.id,
-            branchId: "branch-001",
+            branchId: "concordia-kempen",
             type,
             severity
         }

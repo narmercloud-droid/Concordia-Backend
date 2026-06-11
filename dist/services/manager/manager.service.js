@@ -29,6 +29,37 @@ export async function getBranchHours(branchId) {
         orderBy: { dayOfWeek: "asc" }
     });
 }
+export async function updateBranchVisibility(branchId, status) {
+    if (!["live", "coming_soon"].includes(status)) {
+        throw new Error("status must be live or coming_soon");
+    }
+    const branch = await prisma.branch.findUnique({
+        where: { id: branchId },
+        include: { BranchConfig: true }
+    });
+    if (!branch)
+        throw new Error("Branch not found");
+    const existing = (branch.BranchConfig?.configJson ?? {});
+    const configJson = { ...existing, status };
+    if (branch.BranchConfig) {
+        await prisma.branchConfig.update({
+            where: { branchId },
+            data: { configJson }
+        });
+    }
+    else {
+        await prisma.branchConfig.create({
+            data: {
+                id: `config-${branchId}`,
+                branchId,
+                configJson
+            }
+        });
+    }
+    const { invalidateBranchListCache } = await import("../customer/branchMenu.service.js");
+    invalidateBranchListCache();
+    return getManagerBranch(branchId);
+}
 export async function updateBranchHours(branchId, hours) {
     for (const entry of hours) {
         await prisma.branchHours.upsert({
@@ -48,6 +79,8 @@ export async function updateBranchHours(branchId, hours) {
             }
         });
     }
+    const { invalidateBranchListCache } = await import("../customer/branchMenu.service.js");
+    invalidateBranchListCache();
     return getBranchHours(branchId);
 }
 export async function getBranchConfig(branchId) {
@@ -96,7 +129,8 @@ export async function getBranchMenuForManager(branchId) {
                             id: true,
                             name: true,
                             basePrice: true,
-                            kitchen: true
+                            kitchen: true,
+                            imageUrl: true
                         }
                     }
                 }
@@ -106,13 +140,18 @@ export async function getBranchMenuForManager(branchId) {
     return categories.map((cat) => ({
         id: cat.id,
         name: cat.name,
+        description: cat.description,
+        sortOrder: cat.sortOrder ?? 0,
         items: cat.items.map((entry) => ({
             branchMenuItemId: entry.id,
             menuItemId: entry.menuItem.id,
             name: entry.menuItem.name,
+            description: entry.description ?? entry.menuItem.description,
             price: entry.price ?? entry.menuItem.basePrice ?? 0,
             kitchen: entry.menuItem.kitchen ?? "B",
-            isAvailable: entry.isAvailable
+            sortOrder: entry.menuItem.sortOrder ?? 0,
+            isAvailable: entry.isAvailable,
+            imageUrl: entry.imageUrl ?? entry.menuItem.imageUrl ?? null
         }))
     }));
 }
@@ -141,6 +180,8 @@ export async function updateBranchMenuItem(branchId, branchMenuItemId, data) {
     });
     if (!item)
         throw new Error("Menu item not found");
+    const { invalidateBranchMenuCache } = await import("../customer/branchMenu.service.js");
+    invalidateBranchMenuCache(branchId);
     return prisma.branchMenuItem.update({
         where: { id: branchMenuItemId },
         data: {
@@ -159,6 +200,45 @@ export async function getBranchOrders(branchId, limit = 50) {
             items: { include: { item: true } }
         }
     });
+}
+export async function getBranchPromotions(branchId) {
+    const config = await getBranchConfig(branchId);
+    const promotions = (config.promotions ?? {});
+    return {
+        freeDrinkMinOrder: Number(promotions.freeDrinkMinOrder ?? 35),
+        freeDrinkMessage: String(promotions.freeDrinkMessage ?? ""),
+        websiteDiscountEnabled: promotions.websiteDiscountEnabled !== false
+    };
+}
+export async function updateBranchPromotions(branchId, input) {
+    const existing = await prisma.branchConfig.findUnique({ where: { branchId } });
+    const current = (existing?.configJson ?? {});
+    const promotions = (current.promotions ?? {});
+    const configJson = {
+        ...current,
+        promotions: {
+            ...promotions,
+            ...(input.freeDrinkMinOrder != null
+                ? { freeDrinkMinOrder: input.freeDrinkMinOrder }
+                : {}),
+            ...(input.freeDrinkMessage != null
+                ? { freeDrinkMessage: input.freeDrinkMessage }
+                : {}),
+            ...(input.websiteDiscountEnabled != null
+                ? { websiteDiscountEnabled: input.websiteDiscountEnabled }
+                : {})
+        }
+    };
+    await prisma.branchConfig.upsert({
+        where: { branchId },
+        update: { configJson, version: { increment: 1 } },
+        create: {
+            id: randomUUID(),
+            branchId,
+            configJson
+        }
+    });
+    return getBranchPromotions(branchId);
 }
 export async function getBranchDashboard(branchId) {
     const today = new Date();

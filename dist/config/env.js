@@ -21,7 +21,8 @@ const envSchema = z.object({
     PAYPAL_CLIENT_SECRET: z.string().min(8).optional(),
     PAYPAL_MODE: z.enum(["sandbox", "live"]).default("sandbox"),
     SENTRY_DSN: z.string().url().optional(),
-    SENTRY_TRACES_SAMPLE_RATE: z.preprocess((value) => (value ? Number(value) : undefined), z.number().min(0).max(1).optional())
+    SENTRY_TRACES_SAMPLE_RATE: z.preprocess((value) => (value ? Number(value) : undefined), z.number().min(0).max(1).optional()),
+    GOOGLE_PLACES_API_KEY: z.string().min(8).optional()
 });
 const parsed = envSchema.safeParse(process.env);
 if (!parsed.success) {

@@ -9,7 +9,9 @@ export function customerAuth(req, res, next) {
         validateJwtPayload(decoded);
         if (decoded.role !== "customer")
             return res.status(403).json({ error: "Forbidden" });
-        req.customer = decoded;
+        const user = decoded;
+        req.user = user;
+        req.customer = user;
         next();
     }
     catch {

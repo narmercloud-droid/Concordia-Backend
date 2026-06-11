@@ -4,3 +4,14 @@ node_modules
 
 /src/generated/prisma
 uploads/
+
+# Build artifacts / local SDK packaging
+sdks/python/build/
+sdks/python/dist/
+sdks/python/*.egg-info/
+sdks/typescript/dist/
+sdks/typescript/*.tgz
+
+# Local dev scripts
+scripts/find-rolls-item.mjs
+scripts/test-order-rolls.mjs

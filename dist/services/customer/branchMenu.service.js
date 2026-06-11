@@ -1,5 +1,44 @@
 import { prisma } from "../../prisma/client.js";
+import { deleteCache, getCache, setCache } from "../../lib/redis.js";
+import { deleteSimpleCache, getSimpleCache, setSimpleCache } from "../../lib/simpleCache.js";
+import { applyItemTranslations, applyMenuTranslations, resolveMenuLanguage } from "./menuTranslation.service.js";
 import { buildPricesBySize, itemUsesSizeBasedExtras, normalizeSizeKey, resolveExtraPrice } from "./extraPricing.service.js";
+const BRANCHES_CACHE_KEY = "customer:branches:v1";
+const BRANCHES_TTL_SEC = 600;
+const MENU_TTL_SEC = 600;
+const MENU_LANGS = ["de", "en", "nl", "pl", "ru", "ro", "hi", "ar", "ku", "tr", "ckb"];
+export function invalidateBranchListCache() {
+    deleteSimpleCache(BRANCHES_CACHE_KEY);
+    void deleteCache(BRANCHES_CACHE_KEY);
+}
+export function invalidateBranchMenuCache(branchId) {
+    for (const lang of MENU_LANGS) {
+        const key = `customer:menu:${branchId}:${lang}:v2`;
+        deleteSimpleCache(key);
+        void deleteCache(`${key}:json`);
+    }
+    deleteSimpleCache(`customer:menu:${branchId}:v1`);
+    void deleteCache(`customer:menu:${branchId}:v1:json`);
+}
+export async function peekBranchMenuCache(branchId, lang) {
+    const resolvedLang = resolveMenuLanguage(lang);
+    const memoryKey = `customer:menu:${branchId}:${resolvedLang}:v2`;
+    const cachedMemory = getSimpleCache(memoryKey);
+    if (cachedMemory)
+        return cachedMemory;
+    const redisKey = `${memoryKey}:json`;
+    const cachedRedis = await getCache(redisKey);
+    if (!cachedRedis)
+        return null;
+    try {
+        const parsed = JSON.parse(cachedRedis);
+        setSimpleCache(memoryKey, parsed, MENU_TTL_SEC * 1000);
+        return parsed;
+    }
+    catch {
+        return null;
+    }
+}
 function menuItemIdRange(branchId) {
     if (branchId === "concordia-kempen")
         return { gte: 10000, lt: 20000 };
@@ -13,7 +52,30 @@ function itemBelongsToBranch(branchId, itemId) {
         return true;
     return itemId >= range.gte && itemId < range.lt;
 }
-export async function getBranchMenuForCustomer(branchId) {
+export async function getBranchMenuForCustomer(branchId, lang) {
+    const resolvedLang = resolveMenuLanguage(lang);
+    const memoryKey = `customer:menu:${branchId}:${resolvedLang}:v2`;
+    const cachedMemory = getSimpleCache(memoryKey);
+    if (cachedMemory)
+        return cachedMemory;
+    const redisKey = `${memoryKey}:json`;
+    const cachedRedis = await getCache(redisKey);
+    if (cachedRedis) {
+        try {
+            const parsed = JSON.parse(cachedRedis);
+            setSimpleCache(memoryKey, parsed, MENU_TTL_SEC * 1000);
+            return parsed;
+        }
+        catch {
+            // ignore corrupt cache
+        }
+    }
+    const menu = applyMenuTranslations(await buildBranchMenu(branchId), resolvedLang);
+    setSimpleCache(memoryKey, menu, MENU_TTL_SEC * 1000);
+    await setCache(redisKey, JSON.stringify(menu), MENU_TTL_SEC);
+    return menu;
+}
+async function buildBranchMenu(branchId) {
     const categories = await prisma.branchCategory.findMany({
         where: { branchId },
         orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
@@ -171,7 +233,8 @@ export function priceForAddOn(option, sizeVariantName, itemName) {
     }
     return resolveExtraPrice(option.name, option.price, sizeVariantName, itemName);
 }
-export async function getBranchItemForCustomer(branchId, itemId) {
+export async function getBranchItemForCustomer(branchId, itemId, lang) {
+    const resolvedLang = resolveMenuLanguage(lang);
     const optionInclude = {
         variantGroups: {
             orderBy: { id: "asc" },
@@ -190,12 +253,34 @@ export async function getBranchItemForCustomer(branchId, itemId) {
     });
     if (branchItem) {
         const mapped = mapOptionGroups(branchItem.menuItem);
-        return {
+        let presetGroups = [];
+        try {
+            const { getPresetAddOnGroupsForItem } = await import("../manager/extraPreset.service.js");
+            presetGroups = await getPresetAddOnGroupsForItem(branchId, branchItem.categoryId);
+        }
+        catch (err) {
+            console.warn("[menu] preset extras unavailable", branchId, itemId, err);
+        }
+        const presetAddOnGroups = presetGroups.map((g) => ({
+            id: g.id,
+            name: g.name,
+            required: g.required,
+            minSelect: g.minSelect,
+            maxSelect: g.maxSelect,
+            options: g.options.map((o) => ({
+                id: o.id,
+                name: o.name,
+                price: o.price,
+                pricesBySize: buildPricesBySize(o.name, o.price, branchItem.menuItem.name)
+            }))
+        }));
+        return applyItemTranslations({
             ...mapped,
             description: branchItem.description ?? mapped.description,
             price: branchItem.price ?? mapped.price,
-            imageUrl: branchItem.imageUrl ?? mapped.imageUrl
-        };
+            imageUrl: branchItem.imageUrl ?? mapped.imageUrl,
+            addOnGroups: [...mapped.addOnGroups, ...presetAddOnGroups]
+        }, resolvedLang);
     }
     if (!itemBelongsToBranch(branchId, itemId)) {
         return null;
@@ -206,29 +291,92 @@ export async function getBranchItemForCustomer(branchId, itemId) {
     });
     if (!item)
         return null;
-    return mapOptionGroups(item);
+    const mapped = mapOptionGroups(item);
+    const branchMenuItem = await prisma.branchMenuItem.findFirst({
+        where: { branchId, menuItemId: itemId },
+        select: { categoryId: true }
+    });
+    let presetGroups = [];
+    try {
+        const { getPresetAddOnGroupsForItem } = await import("../manager/extraPreset.service.js");
+        presetGroups = await getPresetAddOnGroupsForItem(branchId, branchMenuItem?.categoryId);
+    }
+    catch (err) {
+        console.warn("[menu] preset extras unavailable", branchId, itemId, err);
+    }
+    const presetAddOnGroups = presetGroups.map((g) => ({
+        id: g.id,
+        name: g.name,
+        required: g.required,
+        minSelect: g.minSelect,
+        maxSelect: g.maxSelect,
+        options: g.options.map((o) => ({
+            id: o.id,
+            name: o.name,
+            price: o.price,
+            pricesBySize: buildPricesBySize(o.name, o.price, item.name)
+        }))
+    }));
+    return applyItemTranslations({
+        ...mapped,
+        addOnGroups: [...mapped.addOnGroups, ...presetAddOnGroups]
+    }, resolvedLang);
 }
 export async function listBranchesForCustomer() {
-    const branches = await prisma.branch.findMany({
-        orderBy: { createdAt: "asc" },
-        include: {
-            BranchConfig: true,
-            branchHours: { orderBy: { dayOfWeek: "asc" } }
+    let rows = getSimpleCache(BRANCHES_CACHE_KEY);
+    if (!rows) {
+        const cachedRedis = await getCache(BRANCHES_CACHE_KEY);
+        if (cachedRedis) {
+            try {
+                rows = JSON.parse(cachedRedis);
+                setSimpleCache(BRANCHES_CACHE_KEY, rows, BRANCHES_TTL_SEC * 1000);
+            }
+            catch {
+                // ignore corrupt cache
+            }
         }
-    });
+    }
+    if (!rows) {
+        rows = await fetchBranchesList();
+        setSimpleCache(BRANCHES_CACHE_KEY, rows, BRANCHES_TTL_SEC * 1000);
+        await setCache(BRANCHES_CACHE_KEY, JSON.stringify(rows), BRANCHES_TTL_SEC);
+    }
+    return applyOpenStatus(rows);
+}
+const HIDDEN_BRANCH_IDS = new Set(["branch-001", "test-branch-1"]);
+function applyOpenStatus(rows) {
     const now = new Date();
     const day = now.getDay();
     const time = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
-    return branches.map((branch) => {
-        const config = (branch.BranchConfig?.configJson ?? {});
-        const status = String(config.status ?? "live");
-        const todayHours = branch.branchHours.find((h) => h.dayOfWeek === day);
-        const isClosedToday = !todayHours || todayHours.openTime === "00:00" && todayHours.closeTime === "00:00";
-        const isOpenNow = status === "live" &&
+    return rows.map((branch) => {
+        const todayHours = branch.hours.find((h) => h.dayOfWeek === day);
+        const isClosedToday = !todayHours || (todayHours.openTime === "00:00" && todayHours.closeTime === "00:00");
+        const isOpenNow = branch.status === "live" &&
             !isClosedToday &&
             !!todayHours &&
             time >= todayHours.openTime &&
             time <= todayHours.closeTime;
+        const { hours: _hours, ...rest } = branch;
+        return { ...rest, isOpen: isOpenNow };
+    });
+}
+async function fetchBranchesList() {
+    const branches = await prisma.branch.findMany({
+        where: { id: { notIn: [...HIDDEN_BRANCH_IDS] } },
+        orderBy: { createdAt: "asc" },
+        select: {
+            id: true,
+            name: true,
+            BranchConfig: { select: { configJson: true } },
+            branchHours: {
+                orderBy: { dayOfWeek: "asc" },
+                select: { dayOfWeek: true, openTime: true, closeTime: true }
+            }
+        }
+    });
+    return branches.map((branch) => {
+        const config = (branch.BranchConfig?.configJson ?? {});
+        const status = String(config.status ?? "live");
         const promotions = (config.promotions ?? {});
         return {
             id: branch.id,
@@ -240,14 +388,14 @@ export async function listBranchesForCustomer() {
             lng: Number(config.lng ?? 0),
             phone: "",
             status,
-            isOpen: isOpenNow,
             comingSoon: status === "coming_soon",
             supportsPickup: config.supportsPickup !== false,
             supportsDelivery: config.supportsDelivery !== false,
             promotions: {
                 freeDrinkMinOrder: Number(promotions.freeDrinkMinOrder ?? 0) || null,
                 freeDrinkMessage: String(promotions.freeDrinkMessage ?? "")
-            }
+            },
+            hours: branch.branchHours
         };
     });
 }

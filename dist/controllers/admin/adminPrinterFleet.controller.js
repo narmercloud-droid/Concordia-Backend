@@ -2,7 +2,7 @@ import { getFleet, updatePrinterPolicy, updatePrinterFirmware } from "../../serv
 import { remoteRestart, remoteReset, remoteTestPrint } from "../../services/printer/printerRemoteCommands.service.js";
 import { wrap } from "../../contracts/api.js";
 export const listFleet = wrap(async (_req) => {
-    const fleet = await getFleet("branch-001");
+    const fleet = await getFleet("concordia-kempen");
     return fleet;
 });
 export const setPolicy = wrap(async (req) => {
@@ -14,7 +14,7 @@ export const setPolicy = wrap(async (req) => {
 export const setFirmware = wrap(async (req) => {
     const { printerId } = req.params;
     const { version } = req.body;
-    const updated = await updatePrinterFirmware("branch-001", printerId, version);
+    const updated = await updatePrinterFirmware("concordia-kempen", printerId, version);
     return updated;
 });
 export const sendCommand = wrap(async (req) => {

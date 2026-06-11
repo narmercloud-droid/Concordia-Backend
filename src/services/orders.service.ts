@@ -20,6 +20,7 @@ import {
   getFreeDrinkOptions
 } from "./customer/freeDrink.service.ts";
 import { syncBranchCustomerFromOrder } from "./customer/branchCustomer.service.ts";
+import { buildOrderReviewUrl, buildOrderTrackingUrl } from "../utils/customerOrderUrls.ts";
 
 function buildOrderItems(items: any[]) {
   return items.map((i) => {
@@ -427,13 +428,17 @@ export class OrdersService {
 
     const reviewableStatuses = new Set(["delivered", "completed", "picked_up"]);
 
+    const canReview = reviewableStatuses.has(order.status) && !order.review;
+
     return {
       id: order.id,
       status: order.status,
       courierStatus: order.courierStatus,
       fulfillmentType: order.fulfillmentType,
-      canReview: reviewableStatuses.has(order.status) && !order.review,
+      canReview,
       hasReview: !!order.review,
+      trackingUrl: buildOrderTrackingUrl(order.id),
+      reviewUrl: canReview ? buildOrderReviewUrl(order.id) : null,
       review: order.review
         ? {
             id: order.review.id,

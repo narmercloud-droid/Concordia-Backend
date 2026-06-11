@@ -1,26 +1,53 @@
 import { paymentsService } from "../services/payments.service.js";
-import { wrap } from "../contracts/api.js";
+import { wrap, fail } from "../contracts/api.js";
 export const PaymentsController = {
-    // STRIPE
-    createStripeIntent: wrap(async (req) => {
-        const { orderId, amount } = req.body;
-        const intent = await paymentsService.createStripePaymentIntent(orderId, amount);
-        return { clientSecret: intent.client_secret };
-    }),
-    // PAYPAL
+    getConfig: wrap(async () => paymentsService.getConfig()),
     createPayPalOrder: wrap(async (req) => {
-        const { orderId, amount } = req.body;
-        const order = await paymentsService.createPayPalOrder(orderId, amount);
-        return order;
+        const { orderId } = req.body;
+        if (!orderId || typeof orderId !== "string") {
+            throw fail("INVALID_INPUT", "orderId is required");
+        }
+        try {
+            return await paymentsService.createPayPalOrder(orderId);
+        }
+        catch (err) {
+            throw fail("PAYMENT_FAILED", err?.message ?? "Could not start card payment");
+        }
     }),
     capturePayPalOrder: wrap(async (req) => {
         const { orderId } = req.body;
-        const result = await paymentsService.capturePayPalOrder(orderId);
-        return result;
+        if (!orderId || typeof orderId !== "string") {
+            throw fail("INVALID_INPUT", "orderId is required");
+        }
+        try {
+            return await paymentsService.capturePayPalOrder(orderId);
+        }
+        catch (err) {
+            throw fail("PAYMENT_FAILED", err?.message ?? "Could not capture payment");
+        }
     }),
-    // REFUND
-    refund: wrap(async (req) => {
-        const order = await paymentsService.refund(req.params.id);
-        return order;
+    createGiftCardPayPalOrder: wrap(async (req) => {
+        const { purchaseId } = req.body;
+        if (!purchaseId || typeof purchaseId !== "string") {
+            throw fail("INVALID_INPUT", "purchaseId is required");
+        }
+        try {
+            return await paymentsService.createGiftCardPayPalOrder(purchaseId);
+        }
+        catch (err) {
+            throw fail("PAYMENT_FAILED", err?.message ?? "Could not start gift card payment");
+        }
+    }),
+    captureGiftCardPayPalOrder: wrap(async (req) => {
+        const { purchaseId } = req.body;
+        if (!purchaseId || typeof purchaseId !== "string") {
+            throw fail("INVALID_INPUT", "purchaseId is required");
+        }
+        try {
+            return await paymentsService.captureGiftCardPayPalOrder(purchaseId);
+        }
+        catch (err) {
+            throw fail("PAYMENT_FAILED", err?.message ?? "Could not capture gift card payment");
+        }
     })
 };

@@ -19,6 +19,8 @@ import { validateDiscountCode } from "../../services/customer/discountCode.servi
 import { createGiftCardPurchase } from "../../services/customer/giftCard.service.ts";
 import { getFreeDrinkOptions } from "../../services/customer/freeDrink.service.ts";
 import { getBranchGoogleReviews } from "../../services/customer/googleReviews.service.ts";
+import { submitContactForm } from "../../services/customer/contact.service.ts";
+import contactRateLimit from "../../middleware/contactRateLimit.ts";
 import { resolveMenuLanguage } from "../../services/customer/menuTranslation.service.ts";
 import { prisma } from "../../prisma/client.ts";
 import { wrap } from "../../contracts/api.ts";
@@ -199,6 +201,21 @@ router.get("/branches/:branchId/items/:itemId/also-popular", wrap(async (req) =>
     throw { code: "INVALID_INPUT", message: "Invalid item id" };
   }
   return getAlsoPopularItems(req.params.branchId, itemId, 4, menuLang(req));
+}));
+
+router.post("/contact", contactRateLimit, wrap(async (req) => {
+  const body = req.body ?? {};
+  if (String(body._hp ?? body.company ?? "").trim()) {
+    return { sent: true };
+  }
+  return submitContactForm({
+    name: String(body.name ?? ""),
+    email: String(body.email ?? ""),
+    message: String(body.message ?? ""),
+    branchId: body.branchId ? String(body.branchId) : undefined,
+    orderNumber: body.orderNumber ? String(body.orderNumber) : undefined,
+    phone: body.phone ? String(body.phone) : undefined
+  });
 }));
 
 router.get("/branches/:branchId/items/:itemId", wrap(async (req) => {

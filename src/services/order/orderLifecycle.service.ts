@@ -208,6 +208,14 @@ export class OrderLifecycleService {
       } catch (error) {
         console.error("Loyalty award failed for order", orderId, error);
       }
+
+      try {
+        const { sendOrderReviewInvitation } = await import("../customer/orderReviewNotification.service.ts");
+        await sendOrderReviewInvitation(orderId);
+      } catch (error) {
+        console.error("Review invitation failed for order", orderId, error);
+      }
+
       return result;
     });
   }

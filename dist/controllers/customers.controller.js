@@ -1,9 +1,16 @@
 import { customerService } from "../services/customers.service.js";
+import { ordersService } from "../services/orders.service.js";
 import { wrap, fail } from "../contracts/api.js";
 export const CustomersController = {
     register: wrap(async (req) => {
-        const customer = await customerService.register(req.body);
-        return customer;
+        const { name, email, password, phone } = req.body ?? {};
+        if (!name?.trim() || !email?.trim() || !password?.trim()) {
+            throw fail("INVALID_INPUT", "Name, email and password are required");
+        }
+        const result = await customerService.register({ name, email, password, phone });
+        if (!result)
+            throw fail("CONFLICT", "An account with this email already exists");
+        return result;
     }),
     login: wrap(async (req) => {
         const { email, password } = req.body;
@@ -24,6 +31,8 @@ export const CustomersController = {
         if (!customerId)
             throw fail('UNAUTHORIZED', 'Unauthorized');
         const profile = await customerService.getProfile(customerId);
+        if (!profile)
+            throw fail('NOT_FOUND', 'Customer not found');
         return profile;
     }),
     addAddress: wrap(async (req) => {
@@ -75,5 +84,27 @@ export const CustomersController = {
             throw fail('INVALID_INPUT', 'phoneNumber is required');
         const customer = await customerService.updatePhone(customerId, String(phoneNumber));
         return customer;
+    }),
+    myOrders: wrap(async (req) => {
+        const customerId = req.user?.id;
+        if (!customerId)
+            throw fail("UNAUTHORIZED", "Unauthorized");
+        const orders = await ordersService.listCustomerOrders(customerId);
+        return orders.map((order) => ({
+            id: order.id,
+            status: order.status,
+            branchId: order.branchId,
+            fulfillmentType: order.fulfillmentType,
+            createdAt: order.createdAt,
+            orderTotal: order.orderTotal,
+            items: order.items.map((item) => ({
+                itemId: item.itemId,
+                name: item.item?.name ?? "Item",
+                quantity: item.quantity,
+                price: item.price
+            })),
+            hasReview: !!order.review,
+            canReview: ["delivered", "completed", "picked_up"].includes(order.status) && !order.review
+        }));
     })
 };

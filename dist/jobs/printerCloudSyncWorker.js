@@ -6,7 +6,7 @@ export async function startPrinterSyncWorker() {
     logger.info("Printer sync worker starting");
     const timer = setInterval(async () => {
         try {
-            await syncPrintersToCloud(process.env.PRINTER_BRANCH_ID || "branch-001");
+            await syncPrintersToCloud(process.env.PRINTER_BRANCH_ID || "concordia-kempen");
         }
         catch (err) {
             logger.error({ err }, "Printer sync failed");

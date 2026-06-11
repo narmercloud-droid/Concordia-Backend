@@ -10,6 +10,7 @@ router.post("/refresh", CustomersController.refresh);
 // Profile
 router.get("/me", customerAuth, CustomersController.profile);
 router.get("/profile", customerAuth, CustomersController.profile);
+router.get("/orders", customerAuth, CustomersController.myOrders);
 router.put("/phone", customerAuth, CustomersController.updatePhone);
 // Addresses
 router.post("/addresses", customerAuth, CustomersController.addAddress);

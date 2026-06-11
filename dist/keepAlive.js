@@ -4,7 +4,7 @@ export function startNeonKeepAlive() {
     setInterval(async () => {
         try {
             await prisma.$queryRaw `SELECT 1`;
-            logger.info("Neon keep-alive ping sent");
+            logger.debug("Neon keep-alive ping sent");
         }
         catch (err) {
             logger.warn({ err }, "Neon keep-alive failed");

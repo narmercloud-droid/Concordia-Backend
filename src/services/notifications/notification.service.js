@@ -18,7 +18,7 @@ export async function sendPush(subscription, title, body, data = {}) {
     }
   }
 
-  const payload = JSON.stringify({ title, body, data });
+  const payload = JSON.stringify({ title, body, url: data.url, data });
 
   try {
     await webpush.sendNotification(sub, payload);
@@ -49,6 +49,10 @@ export async function notifyCustomer(order, payload) {
   // Backwards-compatible: support old pushToken or new pushSubscription
   const pushSub = order.pushSubscription || order.pushToken;
   if (pushSub) {
-    await sendPush(pushSub, 'Order Update', message, { orderId: order.id });
+    const trackingUrl = payload.reviewUrl || payload.trackingUrl;
+    await sendPush(pushSub, 'Order Update', message, {
+      orderId: order.id,
+      url: trackingUrl
+    });
   }
 }

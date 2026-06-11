@@ -54,17 +54,84 @@ function parseSuggestion(row) {
         lng
     };
 }
+function parsePhotonStreet(feature) {
+    const props = feature.properties;
+    const geometry = feature.geometry;
+    const coords = geometry?.coordinates ?? [];
+    const lng = Number(coords[0]);
+    const lat = Number(coords[1]);
+    const street = String(props?.name ?? props?.street ?? "").trim();
+    const postalCode = String(props?.postcode ?? "").trim();
+    const city = String(props?.city ?? props?.district ?? "").trim();
+    if (!street || !Number.isFinite(lat) || !Number.isFinite(lng)) {
+        return null;
+    }
+    const label = [street, `${postalCode} ${city}`.trim()].filter(Boolean).join(", ");
+    return {
+        label,
+        street,
+        postalCode,
+        city,
+        lat,
+        lng
+    };
+}
+async function suggestViaPhoton(query, options) {
+    const trimmed = query.trim();
+    const limit = options?.limit ?? 10;
+    const cityHint = options?.city ?? options?.nearCity ?? "";
+    const searchParts = [trimmed, options?.postalCode, cityHint, "Deutschland"].filter(Boolean);
+    const url = new URL("https://photon.komoot.io/api/");
+    url.searchParams.set("q", searchParts.join(" "));
+    url.searchParams.set("limit", String(limit));
+    url.searchParams.set("lang", "de");
+    url.searchParams.set("layer", "street");
+    if (Number.isFinite(options?.lat) && Number.isFinite(options?.lng)) {
+        url.searchParams.set("lat", String(options.lat));
+        url.searchParams.set("lon", String(options.lng));
+    }
+    const res = await fetch(url.toString());
+    if (!res.ok)
+        return [];
+    const payload = await res.json();
+    const features = Array.isArray(payload?.features) ? payload.features : [];
+    const seen = new Set();
+    const suggestions = [];
+    for (const feature of features) {
+        const parsed = parsePhotonStreet(feature);
+        if (!parsed)
+            continue;
+        if (options?.postalCode && parsed.postalCode && parsed.postalCode !== options.postalCode) {
+            continue;
+        }
+        const key = `${parsed.street}|${parsed.postalCode}|${parsed.city}`.toLowerCase();
+        if (seen.has(key))
+            continue;
+        seen.add(key);
+        suggestions.push(parsed);
+    }
+    return suggestions;
+}
 export async function suggestAddresses(query, options) {
     const trimmed = query?.trim();
-    if (!trimmed || trimmed.length < 3)
+    if (!trimmed || trimmed.length < 2)
         return [];
-    const limit = options?.limit ?? 6;
+    try {
+        const photon = await suggestViaPhoton(trimmed, options);
+        if (photon.length > 0)
+            return photon;
+    }
+    catch (err) {
+        logger.warn({ err, query }, "Photon address suggest failed");
+    }
+    const limit = options?.limit ?? 8;
+    const nearCity = options?.city ?? options?.nearCity ?? "Kempen";
     const hasPostcode = /\b\d{5}\b/.test(trimmed);
     const searchQuery = options?.postalCode
         ? `${trimmed}, ${options.postalCode}, Germany`
         : hasPostcode
             ? `${trimmed}, Germany`
-            : `${trimmed}, Kempen, Germany`;
+            : `${trimmed}, ${nearCity}, Germany`;
     try {
         const url = new URL("https://nominatim.openstreetmap.org/search");
         url.searchParams.set("q", searchQuery);

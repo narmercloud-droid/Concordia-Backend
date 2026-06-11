@@ -1,9 +1,16 @@
 import { reviewService } from "../services/review.service.js";
 import { wrap } from "../contracts/api.js";
 export const ReviewController = {
+    orderState: wrap(async (req) => {
+        return await reviewService.getOrderReviewState(req.params.orderId);
+    }),
     submit: wrap(async (req) => {
         const customerId = req.user.id;
         const review = await reviewService.submitReview(customerId, req.body);
+        return review;
+    }),
+    submitGuest: wrap(async (req) => {
+        const review = await reviewService.submitGuestReview(req.body);
         return review;
     }),
     update: wrap(async (req) => {

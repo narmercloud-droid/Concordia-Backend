@@ -17,6 +17,7 @@ import { validateDiscountCode } from "./customer/discountCode.service.js";
 import { redeemGiftCard } from "./customer/giftCard.service.js";
 import { findFreeDrinkOption, getFreeDrinkOptions } from "./customer/freeDrink.service.js";
 import { syncBranchCustomerFromOrder } from "./customer/branchCustomer.service.js";
+import { buildOrderReviewUrl, buildOrderTrackingUrl } from "../utils/customerOrderUrls.js";
 function buildOrderItems(items) {
     return items.map((i) => {
         const itemId = Number(i.itemId ?? i.product_id ?? i.item_id ?? i.item?.id ?? i.id);
@@ -363,13 +364,16 @@ export class OrdersService {
             }))
             : [{ status: order.status, timestamp: order.updatedAt }];
         const reviewableStatuses = new Set(["delivered", "completed", "picked_up"]);
+        const canReview = reviewableStatuses.has(order.status) && !order.review;
         return {
             id: order.id,
             status: order.status,
             courierStatus: order.courierStatus,
             fulfillmentType: order.fulfillmentType,
-            canReview: reviewableStatuses.has(order.status) && !order.review,
+            canReview,
             hasReview: !!order.review,
+            trackingUrl: buildOrderTrackingUrl(order.id),
+            reviewUrl: canReview ? buildOrderReviewUrl(order.id) : null,
             review: order.review
                 ? {
                     id: order.review.id,

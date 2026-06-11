@@ -1,4 +1,5 @@
 import * as managerService from "../../services/manager/manager.service.js";
+import { managerHasPermission } from "../../services/manager/managerPermissions.service.js";
 import { wrap, fail } from "../../contracts/api.js";
 function branchId(req) {
     return req.managerBranchId;
@@ -20,6 +21,22 @@ export const updateHours = wrap(async (req) => {
         throw fail("INVALID_INPUT", "hours array is required");
     }
     return managerService.updateBranchHours(branchId(req), hours);
+});
+export const updateBranchVisibility = wrap(async (req) => {
+    const user = req.user;
+    if (user?.role !== "admin") {
+        throw fail("FORBIDDEN", "Only super admin can change branch visibility");
+    }
+    const status = req.body?.status;
+    if (!["live", "coming_soon"].includes(status)) {
+        throw fail("INVALID_INPUT", "status must be live or coming_soon");
+    }
+    try {
+        return await managerService.updateBranchVisibility(branchId(req), status);
+    }
+    catch (err) {
+        throw fail("INVALID_INPUT", err?.message ?? "Could not update branch status");
+    }
 });
 export const getConfig = wrap(async (req) => {
     return managerService.getBranchConfig(branchId(req));
@@ -76,6 +93,17 @@ export const updateMenuItem = wrap(async (req) => {
     const id = Number(req.params.id);
     if (!Number.isFinite(id))
         throw fail("INVALID_INPUT", "Invalid item id");
+    const user = req.user;
+    if (req.body?.price != null) {
+        const allowed = await managerHasPermission(user?.role, "menu_edit_prices");
+        if (!allowed)
+            throw fail("FORBIDDEN", "Cannot edit menu prices");
+    }
+    if (req.body?.isAvailable != null) {
+        const allowed = await managerHasPermission(user?.role, "menu_edit_availability");
+        if (!allowed)
+            throw fail("FORBIDDEN", "Cannot edit item availability");
+    }
     try {
         const updated = await managerService.updateBranchMenuItem(branchId(req), id, {
             price: req.body?.price != null ? Number(req.body.price) : undefined,
@@ -117,4 +145,15 @@ export const getOrders = wrap(async (req) => {
 });
 export const getDashboard = wrap(async (req) => {
     return managerService.getBranchDashboard(branchId(req));
+});
+export const getPromotions = wrap(async (req) => {
+    return managerService.getBranchPromotions(branchId(req));
+});
+export const updatePromotions = wrap(async (req) => {
+    const { freeDrinkMinOrder, freeDrinkMessage, websiteDiscountEnabled } = req.body ?? {};
+    return managerService.updateBranchPromotions(branchId(req), {
+        freeDrinkMinOrder: freeDrinkMinOrder != null ? Number(freeDrinkMinOrder) : undefined,
+        freeDrinkMessage,
+        websiteDiscountEnabled
+    });
 });
