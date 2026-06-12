@@ -23,9 +23,10 @@ function mapOrderLine(line: any) {
     name: line.item?.name ?? line.name,
     variants: (line.variants ?? []).map((v: any) => ({
       name: v.name,
+      value: v.value ?? v.option ?? v.label ?? v.name,
       price: Number(v.price ?? 0)
     })),
-    extras: (line.extras ?? []).map((e: any) => ({
+    extras: (line.extras ?? line.addOns ?? []).map((e: any) => ({
       name: e.name,
       price: Number(e.price ?? 0)
     })),
@@ -67,8 +68,15 @@ export const getTerminalOrders = wrap(async (req) => {
     const { branchId } = req.query;
     if (!branchId) throw fail("INVALID_INPUT", "branchId is required");
 
+    const today = getBerlinTodayRange();
     const orders = await prisma.order.findMany({
-      where: { branchId: String(branchId) },
+      where: {
+        branchId: String(branchId),
+        createdAt: {
+          gte: today.start,
+          lt: today.end
+        }
+      },
       include: {
         items: {
           include: {

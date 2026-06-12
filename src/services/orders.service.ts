@@ -22,6 +22,12 @@ import {
 import { syncBranchCustomerFromOrder } from "./customer/branchCustomer.service.ts";
 import { buildOrderReviewUrl, buildOrderTrackingUrl } from "../utils/customerOrderUrls.ts";
 
+const ORDER_ITEMS_INCLUDE = {
+  item: true,
+  variants: true,
+  extras: true
+} as const;
+
 function buildOrderItems(items: any[]) {
   return items.map((i) => {
     const itemId = Number(i.itemId ?? i.product_id ?? i.item_id ?? i.item?.id ?? i.id);
@@ -227,7 +233,9 @@ export class OrdersService {
       courierTokenExpiresAt = new Date(Date.now() + COURIER_TOKEN_VALIDITY_MS);
       courierId = await getGuestCourierId(rest.branchId);
 
-      const geo = await geocodeAddress(deliveryAddress!);
+      const geo = await geocodeAddress(
+        postalCode ? `${deliveryAddress}, ${postalCode}, Deutschland` : deliveryAddress!
+      );
       if (geo) {
         deliveryLat = geo.lat;
         deliveryLng = geo.lng;
@@ -294,7 +302,7 @@ export class OrdersService {
       data: createPayload,
       include: {
         items: {
-          include: { item: true }
+          include: ORDER_ITEMS_INCLUDE
         }
       }
     });
@@ -339,7 +347,7 @@ export class OrdersService {
       where: { id: orderId },
       include: {
         items: {
-          include: { item: true }
+          include: ORDER_ITEMS_INCLUDE
         }
       }
     });
@@ -358,7 +366,7 @@ export class OrdersService {
     const order = await prisma.order.findUnique({
       where: { id: orderId },
       include: {
-        items: { include: { item: true } }
+        items: { include: ORDER_ITEMS_INCLUDE }
       }
     });
 
@@ -380,7 +388,7 @@ export class OrdersService {
 
     const fullOrder = await prisma.order.findUnique({
       where: { id: orderId },
-      include: { items: { include: { item: true } } }
+      include: { items: { include: ORDER_ITEMS_INCLUDE } }
     });
 
     const payload = enrichOrder(fullOrder);

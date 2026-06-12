@@ -6,13 +6,28 @@ import { broadcastToTerminal, broadcastToCustomer } from "../realtime/realtime.s
 import { getBranchCoords, getGuestCourierId } from "../branch/branchCoords.service.ts";
 import { OrderLifecycleService } from "../order/orderLifecycle.service.ts";
 
+function buildNavigationUrl(order: {
+  deliveryAddress?: string | null;
+  deliveryLat?: number | null;
+  deliveryLng?: number | null;
+  branch?: { name?: string | null } | null;
+}) {
+  const address = (order.deliveryAddress ?? "").trim();
+  if (!address) return null;
+
+  // Use the full street address — Google Maps geocodes it reliably for drivers.
+  // Stored lat/lng from backend geocoding can point to the wrong house or PLZ center.
+  const params = new URLSearchParams({
+    api: "1",
+    destination: address,
+    travelmode: "driving"
+  });
+  return `https://www.google.com/maps/dir/?${params.toString()}`;
+}
+
 export async function buildCourierOrderView(order: any) {
   const branchCoords = await getBranchCoords(order.branchId);
   const destination = order.deliveryAddress ?? "";
-  const destCoords =
-    order.deliveryLat != null && order.deliveryLng != null
-      ? `${order.deliveryLat},${order.deliveryLng}`
-      : encodeURIComponent(destination);
 
   return {
     orderId: order.id,
@@ -36,9 +51,7 @@ export async function buildCourierOrderView(order: any) {
       lat: branchCoords?.lat ?? null,
       lng: branchCoords?.lng ?? null
     },
-    navigationUrl: destination
-      ? `https://www.google.com/maps/dir/?api=1&destination=${destCoords}`
-      : null,
+    navigationUrl: buildNavigationUrl(order),
     driverAccepted: !!order.driverAcceptedAt
   };
 }

@@ -18,6 +18,11 @@ import { redeemGiftCard } from "./customer/giftCard.service.js";
 import { findFreeDrinkOption, getFreeDrinkOptions } from "./customer/freeDrink.service.js";
 import { syncBranchCustomerFromOrder } from "./customer/branchCustomer.service.js";
 import { buildOrderReviewUrl, buildOrderTrackingUrl } from "../utils/customerOrderUrls.js";
+const ORDER_ITEMS_INCLUDE = {
+    item: true,
+    variants: true,
+    extras: true
+};
 function buildOrderItems(items) {
     return items.map((i) => {
         const itemId = Number(i.itemId ?? i.product_id ?? i.item_id ?? i.item?.id ?? i.id);
@@ -190,7 +195,7 @@ export class OrdersService {
             courierToken = uuid();
             courierTokenExpiresAt = new Date(Date.now() + COURIER_TOKEN_VALIDITY_MS);
             courierId = await getGuestCourierId(rest.branchId);
-            const geo = await geocodeAddress(deliveryAddress);
+            const geo = await geocodeAddress(postalCode ? `${deliveryAddress}, ${postalCode}, Deutschland` : deliveryAddress);
             if (geo) {
                 deliveryLat = geo.lat;
                 deliveryLng = geo.lng;
@@ -251,7 +256,7 @@ export class OrdersService {
             data: createPayload,
             include: {
                 items: {
-                    include: { item: true }
+                    include: ORDER_ITEMS_INCLUDE
                 }
             }
         });
@@ -290,7 +295,7 @@ export class OrdersService {
             where: { id: orderId },
             include: {
                 items: {
-                    include: { item: true }
+                    include: ORDER_ITEMS_INCLUDE
                 }
             }
         });
@@ -307,7 +312,7 @@ export class OrdersService {
         const order = await prisma.order.findUnique({
             where: { id: orderId },
             include: {
-                items: { include: { item: true } }
+                items: { include: ORDER_ITEMS_INCLUDE }
             }
         });
         if (!order)
@@ -325,7 +330,7 @@ export class OrdersService {
         await routeOrderToKitchens(orderId);
         const fullOrder = await prisma.order.findUnique({
             where: { id: orderId },
-            include: { items: { include: { item: true } } }
+            include: { items: { include: ORDER_ITEMS_INCLUDE } }
         });
         const payload = enrichOrder(fullOrder);
         broadcastToTerminal(order.branchId, "order:confirmed", payload);

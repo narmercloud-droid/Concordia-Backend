@@ -8,7 +8,7 @@ import { advanceTerminalOrderStatus } from "../../services/terminal/terminalOrde
 import { ordersService } from "../../services/orders.service.js";
 import { env } from "../../config/env.js";
 import { wrap, fail } from "../../contracts/api.js";
-import { isWithinBerlinToday } from "../../utils/berlinTime.js";
+import { getBerlinTodayRange, isWithinBerlinToday } from "../../utils/berlinTime.js";
 function buildCourierUrl(token) {
     if (!token)
         return null;
@@ -22,9 +22,10 @@ function mapOrderLine(line) {
         name: line.item?.name ?? line.name,
         variants: (line.variants ?? []).map((v) => ({
             name: v.name,
+            value: v.value ?? v.option ?? v.label ?? v.name,
             price: Number(v.price ?? 0)
         })),
-        extras: (line.extras ?? []).map((e) => ({
+        extras: (line.extras ?? line.addOns ?? []).map((e) => ({
             name: e.name,
             price: Number(e.price ?? 0)
         })),
@@ -62,8 +63,15 @@ export const getTerminalOrders = wrap(async (req) => {
         const { branchId } = req.query;
         if (!branchId)
             throw fail("INVALID_INPUT", "branchId is required");
+        const today = getBerlinTodayRange();
         const orders = await prisma.order.findMany({
-            where: { branchId: String(branchId) },
+            where: {
+                branchId: String(branchId),
+                createdAt: {
+                    gte: today.start,
+                    lt: today.end
+                }
+            },
             include: {
                 items: {
                     include: {
