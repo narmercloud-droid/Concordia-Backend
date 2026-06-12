@@ -20,6 +20,11 @@ const STATUS_ALIASES: Record<string, string> = {
   ready: "ready_for_pickup"
 };
 
+function isPickupFulfillment(fulfillmentType?: string | null) {
+  const t = (fulfillmentType ?? "").toLowerCase();
+  return t.includes("pickup") || t.includes("abhol");
+}
+
 export class OrderLifecycleService {
   static normalizeStatus(status: string) {
     return STATUS_ALIASES[status] ?? status;
@@ -134,9 +139,24 @@ export class OrderLifecycleService {
       return result;
     });
   }
-  static isTransitionAllowed(currentStatus: string, nextStatus: string) {
+  static isTransitionAllowed(
+    currentStatus: string,
+    nextStatus: string,
+    fulfillmentType?: string | null
+  ) {
     const allowed = STATUS_TRANSITIONS[currentStatus] ?? [];
-    return allowed.includes(nextStatus);
+    if (allowed.includes(nextStatus)) return true;
+
+    // Delivery orders may be marked "ready" in kitchen; staff then sends them out.
+    if (
+      currentStatus === "ready_for_pickup" &&
+      nextStatus === "out_for_delivery" &&
+      !isPickupFulfillment(fulfillmentType)
+    ) {
+      return true;
+    }
+
+    return false;
   }
 
   static async updateStatus(
@@ -163,7 +183,12 @@ export class OrderLifecycleService {
       });
     }
 
-    if (!this.isTransitionAllowed(order.status, resolvedStatus)) {
+    const fulfillmentContext =
+      order.deliveryAddress?.trim() && !isPickupFulfillment(order.fulfillmentType)
+        ? "delivery"
+        : order.fulfillmentType;
+
+    if (!this.isTransitionAllowed(order.status, resolvedStatus, fulfillmentContext)) {
       throw new Error(`Invalid status transition from ${order.status} to ${resolvedStatus}`);
     }
 

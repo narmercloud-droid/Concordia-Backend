@@ -22,6 +22,11 @@ function isPickup(fulfillmentType) {
     const t = (fulfillmentType ?? "").toLowerCase();
     return t.includes("pickup") || t.includes("abhol");
 }
+function isPickupOrder(order) {
+    if (order.deliveryAddress?.trim())
+        return false;
+    return isPickup(order.fulfillmentType);
+}
 function findStatusPath(current, target, fulfillmentType) {
     const from = normalizeStatus(current);
     const to = normalizeStatus(target);
@@ -49,11 +54,23 @@ function findStatusPath(current, target, fulfillmentType) {
         if (from === "preparing" && to === "delivered") {
             return ["out_for_delivery", "delivered"];
         }
+        if (from === "ready_for_pickup" && to === "delivered") {
+            return ["out_for_delivery", "delivered"];
+        }
         if (from === "accepted" && to === "out_for_delivery") {
             return ["out_for_delivery"];
         }
         if (from === "preparing" && to === "out_for_delivery") {
             return ["out_for_delivery"];
+        }
+        if (from === "ready_for_pickup" && to === "out_for_delivery") {
+            return ["out_for_delivery"];
+        }
+        if (from === "preparing" && to === "ready_for_pickup") {
+            return ["out_for_delivery"];
+        }
+        if (from === "accepted" && to === "ready_for_pickup") {
+            return ["preparing", "out_for_delivery"];
         }
     }
     if (isPickup(fulfillmentType)) {
@@ -70,8 +87,12 @@ export async function advanceTerminalOrderStatus(orderId, targetStatus) {
     const order = await prisma.order.findUnique({ where: { id: orderId } });
     if (!order)
         throw new Error("Order not found");
-    const target = normalizeStatus(targetStatus);
-    const steps = findStatusPath(order.status, target, order.fulfillmentType);
+    let target = normalizeStatus(targetStatus);
+    if (!isPickupOrder(order) && target === "ready_for_pickup") {
+        target = "out_for_delivery";
+    }
+    const fulfillment = isPickupOrder(order) ? "pickup" : "delivery";
+    const steps = findStatusPath(order.status, target, fulfillment);
     let latest = order;
     for (const step of steps) {
         latest = await OrderLifecycleService.updateStatus(orderId, step);
