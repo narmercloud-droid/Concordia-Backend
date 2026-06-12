@@ -7,13 +7,14 @@ import {
 } from "../../services/customer/branchMenu.service.ts";
 import { generateTimeSlots } from "../../services/scheduling/scheduling.service.ts";
 import {
-  getBranchDeliveryAreas,
+  getDeliverySettings,
   quoteDelivery
 } from "../../services/customer/deliveryValidation.service.ts";
-import { suggestAddresses } from "../../services/geo/geocode.service.ts";
+import { reverseGeocode, suggestAddresses } from "../../services/geo/geocode.service.ts";
 import {
   getAlsoPopularItems,
-  getBranchBestsellers
+  getBranchBestsellers,
+  getCartSuggestions
 } from "../../services/customer/bestsellers.service.ts";
 import { validateDiscountCode } from "../../services/customer/discountCode.service.ts";
 import { createGiftCardPurchase } from "../../services/customer/giftCard.service.ts";
@@ -72,8 +73,27 @@ router.get("/branches/:branchId/time-slots", wrap(async (req) => {
 }));
 
 router.get("/branches/:branchId/delivery-areas", wrap(async (req) => {
-  const areas = await getBranchDeliveryAreas(req.params.branchId);
-  return { areas };
+  const settings = await getDeliverySettings(req.params.branchId);
+  return {
+    areas: settings.deliveryAreas,
+    deliveryMode: settings.deliveryMode
+  };
+}));
+
+router.get("/branches/:branchId/reverse-geocode", wrap(async (req) => {
+  const lat = Number(req.query.lat);
+  const lng = Number(req.query.lng);
+
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+    throw { code: "INVALID_INPUT", message: "lat and lng are required" };
+  }
+
+  const result = await reverseGeocode(lat, lng);
+  if (!result) {
+    throw { code: "NOT_FOUND", message: "Could not resolve address for this location" };
+  }
+
+  return result;
 }));
 
 router.get("/branches/:branchId/address-suggest", wrap(async (req) => {
@@ -91,15 +111,27 @@ router.get("/branches/:branchId/address-suggest", wrap(async (req) => {
   });
   const config = (branch?.BranchConfig?.configJson ?? {}) as Record<string, unknown>;
   const nearCity = city || String(config.city ?? "Kempen");
-  const lat = Number(config.lat ?? 0);
-  const lng = Number(config.lng ?? 0);
+  const queryLat = Number(req.query.lat ?? 0);
+  const queryLng = Number(req.query.lng ?? 0);
+  const configLat = Number(config.lat ?? 0);
+  const configLng = Number(config.lng ?? 0);
 
   const suggestions = await suggestAddresses(q, {
     postalCode,
     city: nearCity,
     nearCity,
-    lat: Number.isFinite(lat) && lat !== 0 ? lat : undefined,
-    lng: Number.isFinite(lng) && lng !== 0 ? lng : undefined
+    lat:
+      Number.isFinite(queryLat) && queryLat !== 0
+        ? queryLat
+        : Number.isFinite(configLat) && configLat !== 0
+          ? configLat
+          : undefined,
+    lng:
+      Number.isFinite(queryLng) && queryLng !== 0
+        ? queryLng
+        : Number.isFinite(configLng) && configLng !== 0
+          ? configLng
+          : undefined
   });
   return { suggestions };
 }));
@@ -193,6 +225,17 @@ router.get("/branches/:branchId/google-reviews", publicCache(3600, 7200), wrap(a
 router.get("/branches/:branchId/bestsellers", publicCache(600, 900), wrap(async (req) => {
   const limit = Math.min(Math.max(Number(req.query.limit ?? 6) || 6, 1), 12);
   return getBranchBestsellers(req.params.branchId, limit, menuLang(req));
+}));
+
+router.get("/branches/:branchId/cart-suggestions", wrap(async (req) => {
+  const excludeRaw = String(req.query.excludeIds ?? req.query.exclude ?? "").trim();
+  const excludeItemIds = excludeRaw
+    ? excludeRaw
+        .split(",")
+        .map((part) => Number(part.trim()))
+        .filter((id) => Number.isFinite(id) && id > 0)
+    : [];
+  return getCartSuggestions(req.params.branchId, excludeItemIds, menuLang(req));
 }));
 
 router.get("/branches/:branchId/items/:itemId/also-popular", wrap(async (req) => {

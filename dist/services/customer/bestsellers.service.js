@@ -4,6 +4,43 @@ import { getBranchMenuForCustomer } from "./branchMenu.service.js";
 import { resolveMenuLanguage } from "./menuTranslation.service.js";
 const PERIOD_DAYS = 30;
 const CACHE_TTL_SEC = 3600;
+function isDrinkCategory(categoryName) {
+    return /getränk|drink/i.test(categoryName);
+}
+function isSaladCategory(categoryName) {
+    return /salat|salad/i.test(categoryName);
+}
+function isSideItem(categoryName, itemName) {
+    const cat = categoryName.toLowerCase();
+    const name = itemName.toLowerCase();
+    if (isSaladCategory(categoryName))
+        return true;
+    if (/imbiss|beilage|snack|side/i.test(cat) && /pommes|frites|kroketten|salat|beilage|dip|sauce/i.test(name)) {
+        return true;
+    }
+    return /pommes|frites|kroketten/.test(name) && !/pizza|burger|calzone/.test(name);
+}
+function collectCartSuggestions(categories, excludeItemIds, drinkLimit, sideLimit) {
+    const exclude = new Set(excludeItemIds);
+    const drinks = [];
+    const sides = [];
+    for (const cat of categories) {
+        for (const item of cat.items) {
+            if (exclude.has(item.id))
+                continue;
+            const row = { ...item, categoryName: cat.name };
+            if (isDrinkCategory(cat.name)) {
+                if (drinks.length < drinkLimit)
+                    drinks.push(row);
+                continue;
+            }
+            if (isSideItem(cat.name, item.name) && sides.length < sideLimit) {
+                sides.push(row);
+            }
+        }
+    }
+    return { drinks, sides, items: [...drinks, ...sides] };
+}
 function flattenMenuItems(categories) {
     const items = [];
     for (const cat of categories) {
@@ -104,5 +141,21 @@ export async function getAlsoPopularItems(branchId, itemId, limit = 4, lang) {
     const items = mapMenuItems(categories, rankedIds);
     const payload = { items };
     await setCache(cacheKey, JSON.stringify(payload), CACHE_TTL_SEC);
+    return payload;
+}
+export async function getCartSuggestions(branchId, excludeItemIds = [], lang) {
+    const cacheKey = `cart-suggestions:${branchId}:${resolveMenuLanguage(lang)}:${excludeItemIds.sort((a, b) => a - b).join(",")}`;
+    const cached = await getCache(cacheKey);
+    if (cached) {
+        try {
+            return JSON.parse(cached);
+        }
+        catch {
+            // ignore bad cache
+        }
+    }
+    const categories = await getBranchMenuForCustomer(branchId, lang);
+    const payload = collectCartSuggestions(categories, excludeItemIds, 6, 6);
+    await setCache(cacheKey, JSON.stringify(payload), 300);
     return payload;
 }

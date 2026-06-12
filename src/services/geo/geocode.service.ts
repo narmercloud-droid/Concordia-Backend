@@ -153,6 +153,63 @@ async function suggestViaPhoton(
   return suggestions;
 }
 
+export type ReverseGeocodeResult = {
+  street: string;
+  houseNumber: string;
+  city: string;
+  postalCode: string;
+  lat: number;
+  lng: number;
+};
+
+export async function reverseGeocode(lat: number, lng: number): Promise<ReverseGeocodeResult | null> {
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+
+  try {
+    const url = new URL("https://nominatim.openstreetmap.org/reverse");
+    url.searchParams.set("lat", String(lat));
+    url.searchParams.set("lon", String(lng));
+    url.searchParams.set("format", "json");
+    url.searchParams.set("addressdetails", "1");
+    url.searchParams.set("zoom", "18");
+
+    const res = await fetch(url.toString(), {
+      headers: {
+        "User-Agent": "Concordia-Restaurant-Platform/1.0"
+      }
+    });
+
+    if (!res.ok) return null;
+
+    const row = (await res.json()) as Record<string, unknown>;
+    const address = row.address as Record<string, unknown> | undefined;
+    const postalCode = String(address?.postcode ?? "").trim();
+    const city = String(
+      address?.city ?? address?.town ?? address?.village ?? address?.municipality ?? ""
+    ).trim();
+    const road = String(address?.road ?? address?.pedestrian ?? "").trim();
+    const houseNumber = String(address?.house_number ?? "").trim();
+    const resultLat = Number(row.lat);
+    const resultLng = Number(row.lon);
+
+    if (!postalCode || !Number.isFinite(resultLat) || !Number.isFinite(resultLng)) {
+      return null;
+    }
+
+    return {
+      street: road,
+      houseNumber,
+      city: city || "Kempen",
+      postalCode,
+      lat: resultLat,
+      lng: resultLng
+    };
+  } catch (err) {
+    logger.warn({ err, lat, lng }, "Reverse geocoding failed");
+    return null;
+  }
+}
+
 export async function suggestAddresses(
   query: string,
   options?: {

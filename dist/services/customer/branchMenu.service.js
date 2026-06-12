@@ -3,6 +3,7 @@ import { deleteCache, getCache, setCache } from "../../lib/redis.js";
 import { deleteSimpleCache, getSimpleCache, setSimpleCache } from "../../lib/simpleCache.js";
 import { applyItemTranslations, applyMenuTranslations, resolveMenuLanguage } from "./menuTranslation.service.js";
 import { buildPricesBySize, itemUsesSizeBasedExtras, normalizeSizeKey, resolveExtraPrice } from "./extraPricing.service.js";
+import { getBerlinDayOfWeek, getBerlinTimeString, isWithinBranchHours } from "../../utils/berlinTime.js";
 const BRANCHES_CACHE_KEY = "customer:branches:v1";
 const BRANCHES_TTL_SEC = 600;
 const MENU_TTL_SEC = 600;
@@ -346,16 +347,15 @@ export async function listBranchesForCustomer() {
 const HIDDEN_BRANCH_IDS = new Set(["branch-001", "test-branch-1"]);
 function applyOpenStatus(rows) {
     const now = new Date();
-    const day = now.getDay();
-    const time = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+    const day = getBerlinDayOfWeek(now);
+    const time = getBerlinTimeString(now);
     return rows.map((branch) => {
         const todayHours = branch.hours.find((h) => h.dayOfWeek === day);
         const isClosedToday = !todayHours || (todayHours.openTime === "00:00" && todayHours.closeTime === "00:00");
         const isOpenNow = branch.status === "live" &&
             !isClosedToday &&
             !!todayHours &&
-            time >= todayHours.openTime &&
-            time <= todayHours.closeTime;
+            isWithinBranchHours(todayHours.openTime, todayHours.closeTime, time);
         const { hours: _hours, ...rest } = branch;
         return { ...rest, isOpen: isOpenNow };
     });

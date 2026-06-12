@@ -12,6 +12,7 @@ import {
   normalizeSizeKey,
   resolveExtraPrice
 } from "./extraPricing.service.ts";
+import { getBerlinDayOfWeek, getBerlinTimeString, isWithinBranchHours } from "../../utils/berlinTime.ts";
 
 const BRANCHES_CACHE_KEY = "customer:branches:v1";
 const BRANCHES_TTL_SEC = 600;
@@ -451,8 +452,8 @@ const HIDDEN_BRANCH_IDS = new Set(["branch-001", "test-branch-1"]);
 
 function applyOpenStatus(rows: CachedBranchRow[]) {
   const now = new Date();
-  const day = now.getDay();
-  const time = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+  const day = getBerlinDayOfWeek(now);
+  const time = getBerlinTimeString(now);
 
   return rows.map((branch) => {
     const todayHours = branch.hours.find((h) => h.dayOfWeek === day);
@@ -462,8 +463,7 @@ function applyOpenStatus(rows: CachedBranchRow[]) {
       branch.status === "live" &&
       !isClosedToday &&
       !!todayHours &&
-      time >= todayHours.openTime &&
-      time <= todayHours.closeTime;
+      isWithinBranchHours(todayHours.openTime, todayHours.closeTime, time);
 
     const { hours: _hours, ...rest } = branch;
     return { ...rest, isOpen: isOpenNow };

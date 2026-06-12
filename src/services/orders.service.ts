@@ -4,7 +4,7 @@ import { v4 as uuid } from "uuid";
 import { randomUUID } from "crypto";
 import { OrderLifecycleService } from "./order/orderLifecycle.service.ts";
 import { validateDeliveryOrder } from "./customer/deliveryValidation.service.ts";
-import { validateScheduledTime } from "./scheduling/scheduling.service.ts";
+import { validateScheduledTime, isBranchOpenNow } from "./scheduling/scheduling.service.ts";
 import { broadcastToTerminal } from "./realtime/realtime.service.ts";
 import { routeOrderToKitchens } from "./printer/kitchenRouting.service.ts";
 import { env } from "../config/env.ts";
@@ -149,6 +149,13 @@ export class OrdersService {
       const valid = await validateScheduledTime(rest.branchId, scheduledFor);
       if (!valid) {
         throw new Error("Scheduled time must be during opening hours and in the future");
+      }
+    } else {
+      const openNow = await isBranchOpenNow(rest.branchId);
+      if (!openNow) {
+        throw new Error(
+          "This branch is currently closed. Please schedule your order for an opening time."
+        );
       }
     }
 
@@ -441,6 +448,8 @@ export class OrdersService {
     return {
       id: order.id,
       status: order.status,
+      orderTotal: order.orderTotal,
+      deliveryFee: order.deliveryFee,
       courierStatus: order.courierStatus,
       fulfillmentType: order.fulfillmentType,
       canReview,

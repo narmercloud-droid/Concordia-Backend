@@ -1,4 +1,36 @@
 const BERLIN_TZ = "Europe/Berlin";
+const BERLIN_WEEKDAY = {
+    Sun: 0,
+    Mon: 1,
+    Tue: 2,
+    Wed: 3,
+    Thu: 4,
+    Fri: 5,
+    Sat: 6
+};
+export function getBerlinDayOfWeek(date = new Date()) {
+    const weekday = new Intl.DateTimeFormat("en-US", {
+        timeZone: BERLIN_TZ,
+        weekday: "short"
+    }).format(date);
+    return BERLIN_WEEKDAY[weekday] ?? date.getDay();
+}
+export function getBerlinTimeString(date = new Date()) {
+    return new Intl.DateTimeFormat("en-GB", {
+        timeZone: BERLIN_TZ,
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false
+    }).format(date);
+}
+export function isWithinBranchHours(openTime, closeTime, time) {
+    return time >= openTime && time <= closeTime;
+}
+/** UTC instant for a Berlin local date/time (HH:mm on ymd). */
+export function berlinLocalToUtc(ymd, hour, minute) {
+    const start = berlinDayStartUtc(ymd);
+    return new Date(start.getTime() + hour * 60 * 60 * 1000 + minute * 60 * 1000);
+}
 export function berlinYmd(date = new Date()) {
     return new Intl.DateTimeFormat("en-CA", { timeZone: BERLIN_TZ }).format(date);
 }

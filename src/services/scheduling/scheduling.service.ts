@@ -1,8 +1,37 @@
 import { prisma } from "../../prisma/client.ts";
+import {
+  berlinLocalToUtc,
+  berlinYmd,
+  getBerlinDayOfWeek,
+  getBerlinTimeString,
+  isWithinBranchHours
+} from "../../utils/berlinTime.ts";
 
 function toMinutes(timeStr: string) {
   const [h, m] = timeStr.split(":").map(Number);
   return h * 60 + m;
+}
+
+export async function isBranchOpenNow(branchId: string, now = new Date()): Promise<boolean> {
+  const branchConfig = await prisma.branchConfig.findUnique({
+    where: { branchId }
+  });
+  const config = (branchConfig?.configJson as Record<string, unknown> | null) ?? {};
+  const status = String(config.status ?? "live");
+  if (status !== "live") return false;
+  if (Boolean(config.ordersPaused)) return false;
+
+  const day = getBerlinDayOfWeek(now);
+  const hours = await prisma.branchHours.findUnique({
+    where: { branchId_dayOfWeek: { branchId, dayOfWeek: day } }
+  });
+
+  if (!hours || (hours.openTime === "00:00" && hours.closeTime === "00:00")) {
+    return false;
+  }
+
+  const time = getBerlinTimeString(now);
+  return isWithinBranchHours(hours.openTime, hours.closeTime, time);
 }
 
 export async function generateTimeSlots(branchId: string, daysAhead = 3) {
@@ -10,27 +39,27 @@ export async function generateTimeSlots(branchId: string, daysAhead = 3) {
   const now = new Date();
 
   for (let dayOffset = 0; dayOffset <= daysAhead; dayOffset++) {
-    const date = new Date(now);
-    date.setDate(date.getDate() + dayOffset);
-    const dayOfWeek = date.getDay();
+    const probe = new Date(now.getTime() + dayOffset * 24 * 60 * 60 * 1000);
+    const ymd = berlinYmd(probe);
+    const dayOfWeek = getBerlinDayOfWeek(probe);
 
     const hours = await prisma.branchHours.findUnique({
       where: { branchId_dayOfWeek: { branchId, dayOfWeek } }
     });
 
-    if (!hours || hours.openTime === "00:00" && hours.closeTime === "00:00") continue;
+    if (!hours || (hours.openTime === "00:00" && hours.closeTime === "00:00")) continue;
 
     const open = toMinutes(hours.openTime);
     const close = toMinutes(hours.closeTime);
 
     for (let t = open; t < close; t += 30) {
-      const slot = new Date(date);
-      slot.setHours(Math.floor(t / 60), t % 60, 0, 0);
+      const slot = berlinLocalToUtc(ymd, Math.floor(t / 60), t % 60);
 
       if (slot <= now) continue;
 
       slots.push({
         label: slot.toLocaleString("de-DE", {
+          timeZone: "Europe/Berlin",
           weekday: "short",
           day: "2-digit",
           month: "2-digit",
@@ -48,7 +77,7 @@ export async function generateTimeSlots(branchId: string, daysAhead = 3) {
 export async function validateScheduledTime(branchId: string, scheduledFor: Date) {
   if (scheduledFor <= new Date()) return false;
 
-  const day = scheduledFor.getDay();
+  const day = getBerlinDayOfWeek(scheduledFor);
   const hours = await prisma.branchHours.findUnique({
     where: { branchId_dayOfWeek: { branchId, dayOfWeek: day } }
   });
@@ -57,9 +86,6 @@ export async function validateScheduledTime(branchId: string, scheduledFor: Date
     return false;
   }
 
-  const minutes = scheduledFor.getHours() * 60 + scheduledFor.getMinutes();
-  const open = toMinutes(hours.openTime);
-  const close = toMinutes(hours.closeTime);
-
-  return minutes >= open && minutes <= close;
+  const time = getBerlinTimeString(scheduledFor);
+  return isWithinBranchHours(hours.openTime, hours.closeTime, time);
 }
