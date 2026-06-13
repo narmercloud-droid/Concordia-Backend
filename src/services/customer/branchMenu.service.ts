@@ -12,6 +12,7 @@ import {
   normalizeSizeKey,
   resolveExtraPrice
 } from "./extraPricing.service.ts";
+import { isFreeDrinkPromoActive } from "../../config/websitePromo.ts";
 import { getBerlinDayOfWeek, getBerlinTimeString, isWithinBranchHours } from "../../utils/berlinTime.ts";
 
 const BRANCHES_CACHE_KEY = "customer:branches:v1";
@@ -489,6 +490,7 @@ async function fetchBranchesList(): Promise<CachedBranchRow[]> {
     const config = (branch.BranchConfig?.configJson ?? {}) as Record<string, unknown>;
     const status = String(config.status ?? "live");
     const promotions = (config.promotions ?? {}) as Record<string, unknown>;
+    const promoActive = isFreeDrinkPromoActive(promotions);
 
     return {
       id: branch.id,
@@ -504,8 +506,10 @@ async function fetchBranchesList(): Promise<CachedBranchRow[]> {
       supportsPickup: config.supportsPickup !== false,
       supportsDelivery: config.supportsDelivery !== false,
       promotions: {
-        freeDrinkMinOrder: Number(promotions.freeDrinkMinOrder ?? 0) || null,
-        freeDrinkMessage: String(promotions.freeDrinkMessage ?? "")
+        freeDrinkMinOrder: promoActive
+          ? Number(promotions.freeDrinkMinOrder ?? 0) || null
+          : null,
+        freeDrinkMessage: promoActive ? String(promotions.freeDrinkMessage ?? "") : ""
       },
       hours: branch.branchHours
     };

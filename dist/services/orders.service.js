@@ -11,7 +11,7 @@ import { env } from "../config/env.js";
 import logger from "../logger.js";
 import { geocodeAddress } from "./geo/geocode.service.js";
 import { getGuestCourierId } from "./branch/branchCoords.service.js";
-import { calcWebsiteDiscount } from "../config/websitePromo.js";
+import { calcWebsiteDiscount, isFreeDrinkPromoActive } from "../config/websitePromo.js";
 import { redeemPromoCode } from "./customer/promoCode.service.js";
 import { validateDiscountCode } from "./customer/discountCode.service.js";
 import { redeemGiftCard } from "./customer/giftCard.service.js";
@@ -162,8 +162,7 @@ export class OrdersService {
         const discountedSubtotal = Math.max(0, subtotal - totalDiscount);
         const config = (branchConfig?.configJson ?? {});
         const promotions = (config.promotions ?? {});
-        const freeDrinkMin = Number(promotions.freeDrinkMinOrder ?? 0);
-        const qualifiesForFreeDrink = freeDrinkMin > 0 && subtotal >= freeDrinkMin;
+        const qualifiesForFreeDrink = isFreeDrinkPromoActive(promotions, subtotal);
         let freeDrinkChoice = null;
         if (qualifiesForFreeDrink) {
             const drinkOptions = await getFreeDrinkOptions(rest.branchId);

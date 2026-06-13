@@ -3,6 +3,7 @@ import { deleteCache, getCache, setCache } from "../../lib/redis.js";
 import { deleteSimpleCache, getSimpleCache, setSimpleCache } from "../../lib/simpleCache.js";
 import { applyItemTranslations, applyMenuTranslations, resolveMenuLanguage } from "./menuTranslation.service.js";
 import { buildPricesBySize, itemUsesSizeBasedExtras, normalizeSizeKey, resolveExtraPrice } from "./extraPricing.service.js";
+import { isFreeDrinkPromoActive } from "../../config/websitePromo.js";
 import { getBerlinDayOfWeek, getBerlinTimeString, isWithinBranchHours } from "../../utils/berlinTime.js";
 const BRANCHES_CACHE_KEY = "customer:branches:v1";
 const BRANCHES_TTL_SEC = 1800;
@@ -378,6 +379,7 @@ async function fetchBranchesList() {
         const config = (branch.BranchConfig?.configJson ?? {});
         const status = String(config.status ?? "live");
         const promotions = (config.promotions ?? {});
+        const promoActive = isFreeDrinkPromoActive(promotions);
         return {
             id: branch.id,
             name: branch.name,
@@ -392,8 +394,10 @@ async function fetchBranchesList() {
             supportsPickup: config.supportsPickup !== false,
             supportsDelivery: config.supportsDelivery !== false,
             promotions: {
-                freeDrinkMinOrder: Number(promotions.freeDrinkMinOrder ?? 0) || null,
-                freeDrinkMessage: String(promotions.freeDrinkMessage ?? "")
+                freeDrinkMinOrder: promoActive
+                    ? Number(promotions.freeDrinkMinOrder ?? 0) || null
+                    : null,
+                freeDrinkMessage: promoActive ? String(promotions.freeDrinkMessage ?? "") : ""
             },
             hours: branch.branchHours
         };

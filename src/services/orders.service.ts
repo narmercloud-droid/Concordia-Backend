@@ -11,7 +11,7 @@ import { env } from "../config/env.ts";
 import logger from "../logger.ts";
 import { geocodeAddress } from "./geo/geocode.service.ts";
 import { getGuestCourierId } from "./branch/branchCoords.service.ts";
-import { calcWebsiteDiscount } from "../config/websitePromo.ts";
+import { calcWebsiteDiscount, isFreeDrinkPromoActive } from "../config/websitePromo.ts";
 import { redeemPromoCode } from "./customer/promoCode.service.ts";
 import { validateDiscountCode } from "./customer/discountCode.service.ts";
 import { redeemGiftCard } from "./customer/giftCard.service.ts";
@@ -191,8 +191,7 @@ export class OrdersService {
 
     const config = (branchConfig?.configJson ?? {}) as Record<string, unknown>;
     const promotions = (config.promotions ?? {}) as Record<string, unknown>;
-    const freeDrinkMin = Number(promotions.freeDrinkMinOrder ?? 0);
-    const qualifiesForFreeDrink = freeDrinkMin > 0 && subtotal >= freeDrinkMin;
+    const qualifiesForFreeDrink = isFreeDrinkPromoActive(promotions, subtotal);
     let freeDrinkChoice: string | null = null;
 
     if (qualifiesForFreeDrink) {
