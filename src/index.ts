@@ -624,6 +624,8 @@ async function startServer() {
         try {
           startNeonKeepAlive();
           logger.info("Neon keep-alive started");
+          const { warmCustomerCaches } = await import("./jobs/cacheWarmup.ts");
+          void warmCustomerCaches();
         } catch (e) {
           logger.warn({ e }, "Failed to start Neon keep-alive");
         }

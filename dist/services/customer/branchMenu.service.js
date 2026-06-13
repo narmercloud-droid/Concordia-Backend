@@ -5,8 +5,8 @@ import { applyItemTranslations, applyMenuTranslations, resolveMenuLanguage } fro
 import { buildPricesBySize, itemUsesSizeBasedExtras, normalizeSizeKey, resolveExtraPrice } from "./extraPricing.service.js";
 import { getBerlinDayOfWeek, getBerlinTimeString, isWithinBranchHours } from "../../utils/berlinTime.js";
 const BRANCHES_CACHE_KEY = "customer:branches:v1";
-const BRANCHES_TTL_SEC = 600;
-const MENU_TTL_SEC = 600;
+const BRANCHES_TTL_SEC = 1800;
+const MENU_TTL_SEC = 1800;
 const MENU_LANGS = ["de", "en", "nl", "pl", "ru", "ro", "hi", "ar", "ku", "tr", "ckb"];
 export function invalidateBranchListCache() {
     deleteSimpleCache(BRANCHES_CACHE_KEY);

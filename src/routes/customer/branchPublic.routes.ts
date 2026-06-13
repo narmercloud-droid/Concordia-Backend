@@ -42,11 +42,11 @@ function publicCache(maxAgeSec: number, staleSec = 300) {
   };
 }
 
-router.get("/branches", publicCache(300, 600), wrap(async () => {
+router.get("/branches", publicCache(600, 1200), wrap(async () => {
   return await listBranchesForCustomer();
 }));
 
-router.get("/branches/:branchId/menu", publicCache(600, 900), wrap(async (req) => {
+router.get("/branches/:branchId/menu", publicCache(900, 1800), wrap(async (req) => {
   const branchId = req.params.branchId;
   const lang = menuLang(req);
   const cached = await peekBranchMenuCache(branchId, lang);

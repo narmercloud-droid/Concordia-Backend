@@ -15,8 +15,8 @@ import {
 import { getBerlinDayOfWeek, getBerlinTimeString, isWithinBranchHours } from "../../utils/berlinTime.ts";
 
 const BRANCHES_CACHE_KEY = "customer:branches:v1";
-const BRANCHES_TTL_SEC = 600;
-const MENU_TTL_SEC = 600;
+const BRANCHES_TTL_SEC = 1800;
+const MENU_TTL_SEC = 1800;
 const MENU_LANGS = ["de", "en", "nl", "pl", "ru", "ro", "hi", "ar", "ku", "tr", "ckb"] as const;
 
 type CachedBranchRow = {
