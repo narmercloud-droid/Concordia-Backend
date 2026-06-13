@@ -18,46 +18,34 @@ import { redeemGiftCard } from "./customer/giftCard.service.js";
 import { findFreeDrinkOption, getFreeDrinkOptions } from "./customer/freeDrink.service.js";
 import { syncBranchCustomerFromOrder } from "./customer/branchCustomer.service.js";
 import { buildOrderReviewUrl, buildOrderTrackingUrl } from "../utils/customerOrderUrls.js";
+import { validateAndPriceOrderLines } from "./customer/orderPricing.service.js";
 const ORDER_ITEMS_INCLUDE = {
     item: true,
     variants: true,
     extras: true
 };
-function buildOrderItems(items) {
-    return items.map((i) => {
-        const itemId = Number(i.itemId ?? i.product_id ?? i.item_id ?? i.item?.id ?? i.id);
+function buildOrderItems(pricedLines) {
+    return pricedLines.map((line) => {
         const orderItemId = randomUUID();
-        const variantSelections = i.variants ?? i.variantSelections ?? [];
-        const addOnSelections = i.addOns ?? i.extras ?? [];
-        const primaryVariantId = i.variantId ??
-            i.variant_id ??
-            (variantSelections[0]?.id ? String(variantSelections[0].id) : String(itemId));
-        const addOnIds = (i.addOnIds ??
-            i.add_on_ids ??
-            addOnSelections.map((a) => a.id).filter(Boolean));
-        const variantCreates = variantSelections
+        const variantCreates = line.variants
             .filter((v) => v?.name)
             .map((v) => ({
             name: v.name,
             price: Number(v.price ?? 0)
         }));
-        const extraCreates = addOnSelections
-            .filter((a) => a?.name)
-            .map((a) => ({
+        const extraCreates = line.addOns.map((a) => ({
             name: a.name,
             price: Number(a.price ?? 0)
         }));
         return {
             id: orderItemId,
-            quantity: i.quantity ?? i.qty ?? 1,
-            notes: i.notes ?? i.note ?? null,
-            price: i.price ?? i.unit_price ?? 0,
-            variantId: String(primaryVariantId),
-            addOnIds,
-            item: { connect: { id: itemId } },
-            ...(variantCreates.length
-                ? { variants: { create: variantCreates } }
-                : {}),
+            quantity: line.quantity,
+            notes: line.notes,
+            price: line.unitPrice,
+            variantId: line.variantId,
+            addOnIds: line.addOnIds,
+            item: { connect: { id: line.itemId } },
+            ...(variantCreates.length ? { variants: { create: variantCreates } } : {}),
             ...(extraCreates.length ? { extras: { create: extraCreates } } : {})
         };
     });
@@ -140,7 +128,7 @@ export class OrdersService {
                 throw new Error("This branch is currently closed. Please schedule your order for an opening time.");
             }
         }
-        const subtotal = items.reduce((sum, item) => sum + Number(item.price ?? item.unit_price ?? 0) * Number(item.quantity ?? item.qty ?? 1), 0);
+        const { pricedLines, subtotal } = await validateAndPriceOrderLines(rest.branchId, items);
         const websiteDiscount = calcWebsiteDiscount(subtotal);
         let promoDiscount = 0;
         let promoCodeId = null;
@@ -253,7 +241,7 @@ export class OrdersService {
             tracking_token: trackingToken,
             pushToken: rest.pushToken?.trim() || null,
             items: {
-                create: buildOrderItems(items)
+                create: buildOrderItems(pricedLines)
             }
         };
         logger.debug({ branchId: rest.branchId, fulfillmentType, scheduledFor }, "Creating order");

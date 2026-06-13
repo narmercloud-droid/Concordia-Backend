@@ -21,6 +21,10 @@ import {
 } from "./customer/freeDrink.service.ts";
 import { syncBranchCustomerFromOrder } from "./customer/branchCustomer.service.ts";
 import { buildOrderReviewUrl, buildOrderTrackingUrl } from "../utils/customerOrderUrls.ts";
+import {
+  validateAndPriceOrderLines,
+  type PricedOrderLine
+} from "./customer/orderPricing.service.ts";
 
 const ORDER_ITEMS_INCLUDE = {
   item: true,
@@ -28,49 +32,29 @@ const ORDER_ITEMS_INCLUDE = {
   extras: true
 } as const;
 
-function buildOrderItems(items: any[]) {
-  return items.map((i) => {
-    const itemId = Number(i.itemId ?? i.product_id ?? i.item_id ?? i.item?.id ?? i.id);
+function buildOrderItems(pricedLines: PricedOrderLine[]) {
+  return pricedLines.map((line) => {
     const orderItemId = randomUUID();
-    const variantSelections = i.variants ?? i.variantSelections ?? [];
-    const addOnSelections = i.addOns ?? i.extras ?? [];
-
-    const primaryVariantId =
-      i.variantId ??
-      i.variant_id ??
-      (variantSelections[0]?.id ? String(variantSelections[0].id) : String(itemId));
-
-    const addOnIds = (
-      i.addOnIds ??
-      i.add_on_ids ??
-      addOnSelections.map((a: { id?: string }) => a.id).filter(Boolean)
-    ) as string[];
-
-    const variantCreates = (variantSelections as Array<{ name: string; price: number }>)
+    const variantCreates = line.variants
       .filter((v) => v?.name)
       .map((v) => ({
         name: v.name,
         price: Number(v.price ?? 0)
       }));
-
-    const extraCreates = (addOnSelections as Array<{ name: string; price: number }>)
-      .filter((a) => a?.name)
-      .map((a) => ({
-        name: a.name,
-        price: Number(a.price ?? 0)
-      }));
+    const extraCreates = line.addOns.map((a) => ({
+      name: a.name,
+      price: Number(a.price ?? 0)
+    }));
 
     return {
       id: orderItemId,
-      quantity: i.quantity ?? i.qty ?? 1,
-      notes: i.notes ?? i.note ?? null,
-      price: i.price ?? i.unit_price ?? 0,
-      variantId: String(primaryVariantId),
-      addOnIds,
-      item: { connect: { id: itemId } },
-      ...(variantCreates.length
-        ? { variants: { create: variantCreates } }
-        : {}),
+      quantity: line.quantity,
+      notes: line.notes,
+      price: line.unitPrice,
+      variantId: line.variantId,
+      addOnIds: line.addOnIds,
+      item: { connect: { id: line.itemId } },
+      ...(variantCreates.length ? { variants: { create: variantCreates } } : {}),
       ...(extraCreates.length ? { extras: { create: extraCreates } } : {})
     };
   });
@@ -159,11 +143,7 @@ export class OrdersService {
       }
     }
 
-    const subtotal = items.reduce(
-      (sum: number, item: any) =>
-        sum + Number(item.price ?? item.unit_price ?? 0) * Number(item.quantity ?? item.qty ?? 1),
-      0
-    );
+    const { pricedLines, subtotal } = await validateAndPriceOrderLines(rest.branchId, items);
     const websiteDiscount = calcWebsiteDiscount(subtotal);
 
     let promoDiscount = 0;
@@ -298,7 +278,7 @@ export class OrdersService {
       tracking_token: trackingToken,
       pushToken: rest.pushToken?.trim() || null,
       items: {
-        create: buildOrderItems(items)
+        create: buildOrderItems(pricedLines)
       }
     } as any;
 
