@@ -8,60 +8,57 @@ export const EXTRA_CATEGORIES = {
     id: "gemuese",
     name: "Gemüse",
     options: [
-      { name: "Paprika", price: 1 },
-      { name: "Peperoni", price: 1 },
-      { name: "scharfe Peperoni", price: 1 },
-      { name: "Zwiebeln", price: 1 },
-      { name: "Spinat", price: 1 },
+      { name: "Ananas", price: 1 },
+      { name: "Artischocken", price: 1 },
       { name: "Broccoli", price: 1 },
       { name: "Champignons", price: 1 },
-      { name: "Oliven", price: 1 },
-      { name: "Mais", price: 1 },
-      { name: "Tomaten", price: 1 },
       { name: "Cherry Tomaten", price: 1 },
-      { name: "Ananas", price: 1 },
-      { name: "Spargel", price: 1 },
+      { name: "Knoblauch", price: 0 },
+      { name: "Mais", price: 1 },
+      { name: "Oliven", price: 1 },
+      { name: "Paprika", price: 1 },
+      { name: "Peperoni", price: 1 },
       { name: "Rucola", price: 1 },
-      { name: "Knoblauch", price: 1 },
-      { name: "Artischocken", price: 1 }
+      { name: "Spargel", price: 1 },
+      { name: "Spinat", price: 1 },
+      { name: "Tomaten", price: 1 },
+      { name: "Zwiebeln", price: 1 },
+      { name: "scharfe Peperoni", price: 1 }
     ]
   },
   fleisch: {
     id: "fleisch",
     name: "Fleisch & Wurst",
     options: [
+      { name: "Dönerfleisch", price: 1 },
+      { name: "Hackfleischsauce", price: 1 },
       { name: "Hinterschinken", price: 1 },
+      { name: "Hähnchenbruststreifen", price: 1.5 },
       { name: "Parmaschinken", price: 1 },
       { name: "Salami", price: 1 },
-      { name: "Sucuk", price: 1 },
-      { name: "Dönerfleisch", price: 1 },
-      { name: "Hähnchenbruststreifen", price: 1.5 },
-      { name: "Hackfleischsauce", price: 1 }
+      { name: "Sucuk", price: 1 }
     ]
   },
   meeresfruechte: {
     id: "meeresfruechte",
     name: "Meeresfrüchte",
     options: [
-      { name: "Thunfisch", price: 1 },
       { name: "Krabben", price: 1.5 },
+      { name: "Lachs", price: 1.5 },
       { name: "Meeresfrüchte", price: 1.5 },
-      { name: "Lachs", price: 1 }
+      { name: "Thunfisch", price: 1 }
     ]
   },
   saucen: {
     id: "saucen",
     name: "Saucen & Käse",
     options: [
-      { name: "Tomatensauce", price: 1 },
-      { name: "Sauce Hollandaise", price: 1 },
-      { name: "Käse", price: 1 },
-      { name: "Mozzarella", price: 1 },
       { name: "Fetakäse", price: 1 },
       { name: "Gorgonzola", price: 1 },
-      { name: "Parmesankäse", price: 1 },
       { name: "Gouda Käse", price: 1 },
-      { name: "Mit Käse überbacken", price: 1.5 }
+      { name: "Mozzarella", price: 1 },
+      { name: "Parmesankäse", price: 1 },
+      { name: "Sauce Hollandaise", price: 1 }
     ]
   },
   beilagen: {
@@ -76,16 +73,39 @@ export const EXTRA_CATEGORIES = {
   }
 };
 
+export const KRAEUTERBUTTER_PORTION_EXTRA = {
+  categoryId: "kraeuterbutter",
+  name: "Extras",
+  options: [{ name: "Kräuterbutter Portion", price: 1.5 }]
+};
+
+export const PIZZA_STYLE_EXTRA_PROFILE = ["gemuese", "fleisch", "meeresfruechte", "saucen"];
+
+const PREMIUM_EXTRA_NAMES = new Set([
+  "Krabben",
+  "Meeresfrüchte",
+  "Hähnchenbruststreifen"
+]);
+
+/** Calzones are one size (~30 cm) — extras use groß-tier prices. */
+export function priceCalzoneExtra(option) {
+  if (option.name === "Knoblauch") return 0;
+  if (option.name === "Lachs") return 1.5;
+  if (PREMIUM_EXTRA_NAMES.has(option.name) || option.price >= 1.5) return 2;
+  return 1.5;
+}
+
 /** Which extra categories apply per item type */
 export const EXTRA_PROFILES = {
+  calzone: ["gemuese", "fleisch", "meeresfruechte", "saucen"],
   pizza: ["gemuese", "fleisch", "meeresfruechte", "saucen"],
   "pizza-large": ["gemuese", "fleisch", "meeresfruechte", "saucen"],
-  "pizza-rolls": ["gemuese", "fleisch", "saucen"],
+  "pizza-rolls": ["gemuese", "fleisch", "meeresfruechte", "saucen"],
   pasta: ["gemuese", "fleisch", "meeresfruechte", "saucen"],
   salad: ["gemuese", "fleisch", "meeresfruechte"],
   baguette: ["gemuese", "fleisch", "saucen"],
-  burger: ["gemuese", "fleisch", "saucen"],
-  schnitzel: ["gemuese", "saucen"],
+  burger: [],
+  schnitzel: [],
   snacks: ["beilagen"],
   general: ["gemuese", "saucen"]
 };
@@ -118,7 +138,8 @@ export function detectItemType(name) {
   }
 
   if (n.includes("partyblech") || n.includes("familien")) return "pizza-large";
-  if (n.startsWith("pizza ") || n.startsWith("calzone")) return "pizza";
+  if (n.startsWith("calzone")) return "calzone";
+  if (n.startsWith("pizza ")) return "pizza";
   if (n.includes("pizzabrötchen") || n.includes("gefüllte")) return "pizza-rolls";
   if (n.startsWith("pasta ") || n.includes("auflauf")) return "pasta";
   if (n.startsWith("salat ")) return "salad";
@@ -158,14 +179,84 @@ export function buildCategorizedExtras(itemName) {
 
   return profile.map((categoryId) => {
     const category = EXTRA_CATEGORIES[categoryId];
-    const options = category.options.map((opt) => ({
-      ...opt,
-      price: largeBase != null ? largeBase : opt.price
-    }));
+    const options = category.options.map((opt) => {
+      let price = largeBase != null ? largeBase : opt.price;
+      if (type === "calzone") price = priceCalzoneExtra(opt);
+      return { ...opt, price };
+    });
     return {
       categoryId,
       name: category.name,
       options
     };
   });
+}
+
+export function buildPizzabroetchenExtras(itemName, itemNumber) {
+  const num = String(itemNumber ?? "")
+    .trim()
+    .toLowerCase();
+
+  // Standalone butter product — no add-ons
+  if (num === "45a") return [];
+
+  // Plain 10 Stück — extra butter portion only
+  if (num === "45") {
+    return [{ ...KRAEUTERBUTTER_PORTION_EXTRA, options: [...KRAEUTERBUTTER_PORTION_EXTRA.options] }];
+  }
+
+  const pizzaStyleGroups = PIZZA_STYLE_EXTRA_PROFILE.map((categoryId) => {
+    const category = EXTRA_CATEGORIES[categoryId];
+    return {
+      categoryId,
+      name: category.name,
+      options: category.options.map((opt) => ({ ...opt }))
+    };
+  });
+
+  return [
+    { ...KRAEUTERBUTTER_PORTION_EXTRA, options: [...KRAEUTERBUTTER_PORTION_EXTRA.options] },
+    ...pizzaStyleGroups
+  ];
+}
+
+export function isPizzabroetchenItem(itemName, itemNumber) {
+  const num = String(itemNumber ?? "")
+    .trim()
+    .toLowerCase();
+  if (num === "45" || num === "45a" || (num >= "46" && num <= "54")) return true;
+  const type = detectItemType(itemName);
+  return type === "pizza-rolls";
+}
+
+/** Paid add-ons for burger dishes. */
+export function buildBurgerExtras() {
+  return [
+    {
+      categoryId: "burger-extras",
+      name: "Extras",
+      options: [
+        { name: "Extra Burgerfleisch", price: 3 },
+        { name: "Extra Tomaten", price: 0.5 },
+        { name: "Extra Salat", price: 0.5 },
+        { name: "Extra Käse", price: 1 },
+        { name: "Extra Zwiebeln", price: 0.5 },
+        { name: "Extra Gewürzgurken", price: 0.5 }
+      ]
+    }
+  ];
+}
+
+/** Paid add-ons for schnitzel dishes (Mayo/Ketchup). Salad sauce is a free variant group. */
+export function buildSchnitzelExtras() {
+  return [
+    {
+      categoryId: "paid-sauces",
+      name: "Extras",
+      options: [
+        { name: "Mayonnaise", price: 1 },
+        { name: "Ketchup", price: 1 }
+      ]
+    }
+  ];
 }

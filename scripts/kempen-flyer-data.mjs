@@ -138,3 +138,11 @@ export const SCHNITZEL_MEAT_OPTIONS = [
   { name: "Hähnchen", price: 0 },
   { name: "Schwein", price: 0 }
 ];
+
+/** Free sauce choice for Beilagensalat on schnitzel dishes. */
+export const SCHNITZEL_SALAD_SAUCE_OPTIONS = [
+  { name: "Cocktail Sauce", price: 0 },
+  { name: "Tzatziki Sauce", price: 0 },
+  { name: "Joghurt Sauce", price: 0 },
+  { name: "Spezial Sauce", price: 0 }
+];

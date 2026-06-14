@@ -6,7 +6,7 @@ import { env } from "../../config/env.js";
 const WINBACK_CODE = process.env.WINBACK_PROMO_CODE || "WELCOME10";
 const BIRTHDAY_CODE = process.env.BIRTHDAY_PROMO_CODE || "BIRTHDAY";
 function orderUrl(branchId) {
-    const base = env.FRONTEND_URL ?? "https://concordia-frontend.vercel.app";
+    const base = env.FRONTEND_URL ?? "https://www.concordiapizza.de";
     return `${base}/customer/branch/${branchId}`;
 }
 export async function runWinBackForBranch(branchId) {

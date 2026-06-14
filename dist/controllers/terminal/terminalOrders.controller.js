@@ -6,15 +6,9 @@ import { resolveBranchByCode } from "../../services/terminal/branchCode.service.
 import { getTerminalDailyReport } from "../../services/terminal/terminalDailyReport.service.js";
 import { advanceTerminalOrderStatus } from "../../services/terminal/terminalOrderStatus.service.js";
 import { ordersService } from "../../services/orders.service.js";
-import { env } from "../../config/env.js";
+import { buildCourierUrl } from "../../utils/customerOrderUrls.js";
 import { wrap, fail } from "../../contracts/api.js";
 import { getBerlinTodayRange, isWithinBerlinToday } from "../../utils/berlinTime.js";
-function buildCourierUrl(token) {
-    if (!token)
-        return null;
-    const base = env.FRONTEND_URL ?? "http://localhost:5173";
-    return `${base}/courier/order?token=${token}`;
-}
 function mapOrderLine(line) {
     return {
         ...line,
@@ -35,7 +29,7 @@ function mapOrderLine(line) {
 function enrichOrder(order) {
     return {
         ...order,
-        courierUrl: buildCourierUrl(order.courierToken),
+        courierUrl: order.courierToken ? buildCourierUrl(order.courierToken) : null,
         items: order.items?.map(mapOrderLine)
     };
 }

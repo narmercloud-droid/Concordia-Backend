@@ -7,14 +7,9 @@ import { getTerminalDailyReport } from "../../services/terminal/terminalDailyRep
 import { advanceTerminalOrderStatus } from "../../services/terminal/terminalOrderStatus.service.ts";
 import { ordersService } from "../../services/orders.service.ts";
 import { env } from "../../config/env.ts";
+import { buildCourierUrl } from "../../utils/customerOrderUrls.ts";
 import { wrap, fail } from "../../contracts/api.js";
 import { getBerlinTodayRange, isWithinBerlinToday } from "../../utils/berlinTime.ts";
-
-function buildCourierUrl(token?: string | null) {
-  if (!token) return null;
-  const base = env.FRONTEND_URL ?? "http://localhost:5173";
-  return `${base}/courier/order?token=${token}`;
-}
 
 function mapOrderLine(line: any) {
   return {
@@ -37,7 +32,7 @@ function mapOrderLine(line: any) {
 function enrichOrder(order: any) {
   return {
     ...order,
-    courierUrl: buildCourierUrl(order.courierToken),
+    courierUrl: order.courierToken ? buildCourierUrl(order.courierToken) : null,
     items: order.items?.map(mapOrderLine)
   };
 }

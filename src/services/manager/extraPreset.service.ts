@@ -243,19 +243,21 @@ const KEMPEN_DEFAULT_PRESETS = [
   {
     name: "Gemüse",
     options: [
-      "Paprika", "Peperoni", "Zwiebeln", "Spinat", "Broccoli", "Champignons",
-      "Oliven", "Mais", "Tomaten", "Ananas", "Knoblauch"
-    ].map((name) => ({ name, price: 1 }))
+      "Ananas", "Artischocken", "Broccoli", "Champignons", "Cherry Tomaten",
+      "Knoblauch", "Mais", "Oliven", "Paprika", "Peperoni", "Rucola", "Spargel",
+      "Spinat", "Tomaten", "Zwiebeln", "scharfe Peperoni"
+    ].map((name) => ({ name, price: name === "Knoblauch" ? 0 : 1 }))
   },
   {
     name: "Fleisch & Wurst",
     options: [
-      "Hinterschinken", "Salami", "Sucuk", "Dönerfleisch", "Hähnchenbruststreifen"
+      "Dönerfleisch", "Hackfleischsauce", "Hinterschinken", "Hähnchenbruststreifen",
+      "Parmaschinken", "Salami", "Sucuk"
     ].map((name) => ({ name, price: name.includes("Hähnchen") ? 1.5 : 1 }))
   },
   {
     name: "Meeresfrüchte",
-    options: ["Thunfisch", "Krabben", "Lachs"].map((name) => ({
+    options: ["Krabben", "Lachs", "Meeresfrüchte", "Thunfisch"].map((name) => ({
       name,
       price: name === "Thunfisch" ? 1 : 1.5
     }))
@@ -263,11 +265,9 @@ const KEMPEN_DEFAULT_PRESETS = [
   {
     name: "Saucen & Käse",
     options: [
-      "Tomatensauce", "Käse", "Mozzarella", "Fetakäse", "Gorgonzola", "Mit Käse überbacken"
-    ].map((name) => ({
-      name,
-      price: name.includes("überbacken") ? 1.5 : 1
-    }))
+      "Fetakäse", "Gorgonzola", "Gouda Käse", "Mozzarella", "Parmesankäse",
+      "Sauce Hollandaise"
+    ].map((name) => ({ name, price: 1 }))
   }
 ];
 

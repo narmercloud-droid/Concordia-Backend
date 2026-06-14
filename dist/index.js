@@ -150,6 +150,10 @@ function isAllowedCorsOrigin(origin) {
         const { hostname, protocol } = new URL(origin);
         if (hostname.endsWith(".vercel.app"))
             return true;
+        if (hostname === "concordiapizza.de" || hostname.endsWith(".concordiapizza.de"))
+            return true;
+        if (hostname === "pizzeriaconcordia.de" || hostname.endsWith(".pizzeriaconcordia.de"))
+            return true;
         if (hostname === "localhost" || hostname === "127.0.0.1")
             return true;
         if (protocol === "capacitor:" || protocol === "ionic:")

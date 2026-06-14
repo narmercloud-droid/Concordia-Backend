@@ -13,9 +13,17 @@ import {
   FLYER_PROMOTIONS,
   PASTA_NOODLE_OPTIONS,
   SALAD_DRESSING_OPTIONS,
-  SCHNITZEL_MEAT_OPTIONS
+  SCHNITZEL_MEAT_OPTIONS,
+  SCHNITZEL_SALAD_SAUCE_OPTIONS
 } from "./kempen-flyer-data.mjs";
-import { buildCategorizedExtras, detectItemType } from "./kempen-extras-catalog.mjs";
+import {
+  buildCategorizedExtras,
+  buildPizzabroetchenExtras,
+  buildSchnitzelExtras,
+  buildBurgerExtras,
+  detectItemType,
+  isPizzabroetchenItem
+} from "./kempen-extras-catalog.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const BRANCH_ID = process.env.SYNC_BRANCH_ID || "concordia-kempen";
@@ -269,6 +277,8 @@ async function syncOptionsFromLieferando() {
     const flyer = findFlyerPrice(item.name);
     const name = normalizeName(item.name);
 
+    const isBurger = itemType === "burger";
+    const isCalzone = itemType === "calzone";
     const isPasta = name.startsWith("pasta ") || name.includes("auflauf");
     const isSalad = name.startsWith("salat ");
     const isSchnitzel = name.includes("schnitzel");
@@ -286,12 +296,14 @@ async function syncOptionsFromLieferando() {
         ? []
         : product?.sizes ?? [];
 
-    // Sizes / meat variants from flyer or lieferando (skip redundant single-size rows)
-    await upsertSizeGroup(
-      item.id,
-      useFlyerSingleOnly ? [] : lieferandoSizes,
-      useFlyerSingleOnly ? { ...flyer, single: undefined } : flyer
-    );
+    // Calzones: fixed flyer price, no size choice
+    if (!isCalzone) {
+      await upsertSizeGroup(
+        item.id,
+        useFlyerSingleOnly ? [] : lieferandoSizes,
+        useFlyerSingleOnly ? { ...flyer, single: undefined } : flyer
+      );
+    }
 
     // Required choice groups from lieferando (skip meat deltas when flyer has absolute meat prices)
     for (const [idx, group] of (product?.requiredGroups ?? []).entries()) {
@@ -350,8 +362,25 @@ async function syncOptionsFromLieferando() {
       );
     }
 
+    if (isSchnitzel) {
+      await upsertVariantChoiceGroup(
+        item.id,
+        "salat-sauce",
+        "Salatsoße",
+        SCHNITZEL_SALAD_SAUCE_OPTIONS,
+        true,
+        true
+      );
+    }
+
     // Categorized extras — every food item gets relevant groups (not identical lists)
-    const extraCategories = buildCategorizedExtras(item.name);
+    const extraCategories = isPizzabroetchenItem(item.name, item.itemNumber)
+      ? buildPizzabroetchenExtras(item.name, item.itemNumber)
+      : isSchnitzel
+        ? buildSchnitzelExtras()
+        : isBurger
+          ? buildBurgerExtras()
+          : buildCategorizedExtras(item.name);
     for (const cat of extraCategories) {
       await upsertAddOnGroup(item.id, cat.categoryId, cat.name, cat.options);
     }

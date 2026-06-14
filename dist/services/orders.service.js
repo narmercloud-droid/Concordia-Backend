@@ -7,7 +7,6 @@ import { validateDeliveryOrder } from "./customer/deliveryValidation.service.js"
 import { validateScheduledTime, isBranchOpenNow } from "./scheduling/scheduling.service.js";
 import { broadcastToTerminal } from "./realtime/realtime.service.js";
 import { routeOrderToKitchens } from "./printer/kitchenRouting.service.js";
-import { env } from "../config/env.js";
 import logger from "../logger.js";
 import { geocodeAddress } from "./geo/geocode.service.js";
 import { getGuestCourierId } from "./branch/branchCoords.service.js";
@@ -17,7 +16,7 @@ import { validateDiscountCode } from "./customer/discountCode.service.js";
 import { redeemGiftCard } from "./customer/giftCard.service.js";
 import { findFreeDrinkOption, getFreeDrinkOptions } from "./customer/freeDrink.service.js";
 import { syncBranchCustomerFromOrder } from "./customer/branchCustomer.service.js";
-import { buildOrderReviewUrl, buildOrderTrackingUrl } from "../utils/customerOrderUrls.js";
+import { buildCourierUrl, buildOrderReviewUrl, buildOrderTrackingUrl } from "../utils/customerOrderUrls.js";
 import { validateAndPriceOrderLines } from "./customer/orderPricing.service.js";
 const ORDER_ITEMS_INCLUDE = {
     item: true,
@@ -68,10 +67,6 @@ function normalizePaymentMethod(method) {
 function requiresOnlinePayment(method) {
     const normalized = normalizePaymentMethod(method);
     return ["CARD", "PAYPAL", "KLARNA", "SEPA"].includes(normalized);
-}
-function buildCourierUrl(token) {
-    const base = env.FRONTEND_URL ?? "http://localhost:5173";
-    return `${base}/courier/order?token=${token}`;
 }
 function enrichOrder(order) {
     return {

@@ -20,7 +20,7 @@ import {
   getFreeDrinkOptions
 } from "./customer/freeDrink.service.ts";
 import { syncBranchCustomerFromOrder } from "./customer/branchCustomer.service.ts";
-import { buildOrderReviewUrl, buildOrderTrackingUrl } from "../utils/customerOrderUrls.ts";
+import { buildCourierUrl, buildOrderReviewUrl, buildOrderTrackingUrl } from "../utils/customerOrderUrls.ts";
 import {
   validateAndPriceOrderLines,
   type PricedOrderLine
@@ -75,11 +75,6 @@ function normalizePaymentMethod(method?: string) {
 function requiresOnlinePayment(method?: string) {
   const normalized = normalizePaymentMethod(method);
   return ["CARD", "PAYPAL", "KLARNA", "SEPA"].includes(normalized);
-}
-
-function buildCourierUrl(token: string) {
-  const base = env.FRONTEND_URL ?? "http://localhost:5173";
-  return `${base}/courier/order?token=${token}`;
 }
 
 function enrichOrder(order: any) {
