@@ -1,10 +1,11 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { requireSeedPassword } from "./lib/require-seed-password.mjs";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  const defaultPassword = process.env.SEED_ADMIN_PASSWORD || "Kempen2026!";
+  const defaultPassword = requireSeedPassword();
   const hash = await bcrypt.hash(defaultPassword, 10);
 
   await prisma.admin.upsert({
@@ -60,7 +61,7 @@ async function main() {
   console.log("  owner@concordia.de   (super admin)");
   console.log("  kempen@concordia.de  (Kempen manager)");
   console.log("  straelen@concordia.de (Straelen manager)");
-  console.log(`  Password: ${defaultPassword}`);
+  console.log("  Password: set via SEED_ADMIN_PASSWORD (not logged)");
 }
 
 main()

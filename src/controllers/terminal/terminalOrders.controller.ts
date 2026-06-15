@@ -9,6 +9,7 @@ import { ordersService } from "../../services/orders.service.ts";
 import { env } from "../../config/env.ts";
 import { buildCourierUrl } from "../../utils/customerOrderUrls.ts";
 import { wrap, fail } from "../../contracts/api.js";
+import { isApiError } from "../../contracts/http.js";
 import { getBerlinTodayRange, isWithinBerlinToday } from "../../utils/berlinTime.ts";
 
 function mapOrderLine(line: any) {
@@ -59,41 +60,36 @@ export const activateTerminalByCode = wrap(async (req) => {
 });
 
 export const getTerminalOrders = wrap(async (req) => {
-  try {
-    const { branchId } = req.query;
-    if (!branchId) throw fail("INVALID_INPUT", "branchId is required");
+  const { branchId } = req.query;
+  if (!branchId) throw fail("INVALID_INPUT", "branchId is required");
 
-    const today = getBerlinTodayRange();
-    const orders = await prisma.order.findMany({
-      where: {
-        branchId: String(branchId),
-        createdAt: {
-          gte: today.start,
-          lt: today.end
+  const today = getBerlinTodayRange();
+  const orders = await prisma.order.findMany({
+    where: {
+      branchId: String(branchId),
+      createdAt: {
+        gte: today.start,
+        lt: today.end
+      }
+    },
+    include: {
+      items: {
+        include: {
+          item: true,
+          variants: true,
+          extras: true
         }
       },
-      include: {
-        items: {
-          include: {
-            item: true,
-            variants: true,
-            extras: true
-          }
-        },
-        trackingEvents: true,
-        courierLocations: {
-          orderBy: { createdAt: "desc" },
-          take: 1
-        }
-      },
-      orderBy: { createdAt: "desc" }
-    });
+      trackingEvents: true,
+      courierLocations: {
+        orderBy: { createdAt: "desc" },
+        take: 1
+      }
+    },
+    orderBy: { createdAt: "desc" }
+  });
 
-    return orders.map(enrichOrder);
-  } catch (err) {
-    console.error(err);
-    throw fail('INTERNAL_ERROR', 'Server error');
-  }
+  return orders.map(enrichOrder);
 });
 
 export const confirmTerminalOrder = wrap(async (req) => {
@@ -103,48 +99,45 @@ export const confirmTerminalOrder = wrap(async (req) => {
   try {
     const order = await ordersService.confirmOrderWithPrepTime(id, prepMinutes);
     return enrichOrder(order);
-  } catch (err: any) {
-    throw fail("INVALID_INPUT", err?.message ?? "Could not confirm order");
+  } catch (err: unknown) {
+    if (isApiError(err)) throw err;
+    const message = err instanceof Error ? err.message : "Could not confirm order";
+    throw fail("INVALID_INPUT", message);
   }
 });
 
 export const getTerminalOrderDetails = wrap(async (req) => {
-  try {
-    const { id } = req.params;
+  const { id } = req.params;
 
-    const order = await prisma.order.findUnique({
-      where: { id },
-      include: {
-        trackingEvents: true,
-        courierLocations: {
-          orderBy: { createdAt: "desc" },
-          take: 1
-        },
-        items: {
-          include: {
-            item: true,
-            variants: true,
-            extras: true
-          }
-        },
-        customer: {
-          include: { addresses: true }
+  const order = await prisma.order.findUnique({
+    where: { id },
+    include: {
+      trackingEvents: true,
+      courierLocations: {
+        orderBy: { createdAt: "desc" },
+        take: 1
+      },
+      items: {
+        include: {
+          item: true,
+          variants: true,
+          extras: true
         }
+      },
+      customer: {
+        include: { addresses: true }
       }
-    });
-
-    if (!order) throw fail('NOT_FOUND', 'Order not found');
-    if (!isWithinBerlinToday(order.createdAt)) {
-      throw fail('NOT_FOUND', 'Order not available');
     }
+  });
 
-    const response = enrichOrder(order);
-    broadcastToTerminal(order.branchId, "order_update", response);
-    return response;
-  } catch (err) {
-    console.error(err);
-    throw fail('INTERNAL_ERROR', 'Server error');
+  if (!order) throw fail("NOT_FOUND", "Order not found");
+  if (!isWithinBerlinToday(order.createdAt)) {
+    throw fail("NOT_FOUND", "Order not available");
   }
+
+  const response = enrichOrder(order);
+  broadcastToTerminal(order.branchId, "order_update", response);
+  return response;
 });
 
 export const acceptOrder = wrap(async (req) => {
@@ -241,8 +234,10 @@ export const updateTerminalOrderStatus = wrap(async (req) => {
   let updated;
   try {
     updated = await advanceTerminalOrderStatus(id, status);
-  } catch (err: any) {
-    throw fail("INVALID_INPUT", err?.message ?? "Could not update order status");
+  } catch (err: unknown) {
+    if (isApiError(err)) throw err;
+    const message = err instanceof Error ? err.message : "Could not update order status";
+    throw fail("INVALID_INPUT", message);
   }
 
   const fullOrder = await prisma.order.findUnique({

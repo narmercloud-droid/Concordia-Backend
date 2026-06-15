@@ -104,6 +104,14 @@ import inputValidation from "./middleware/inputValidation.js";
 import requireApiKey from "./middleware/apiKey.js";
 import { adminAuth as adminAuthMiddleware } from "./middleware/adminAuth.js";
 import logger from "./utils/logger.js";
+process.on("uncaughtException", (err) => {
+    logger.error({ err }, "Uncaught exception — shutting down");
+    process.exit(1);
+});
+process.on("unhandledRejection", (reason) => {
+    logger.error({ err: reason }, "Unhandled rejection — shutting down");
+    process.exit(1);
+});
 import { startNeonKeepAlive } from "./keepAlive.js";
 import rateLimitRedis from "./middleware/rateLimitRedis.js";
 import metricsRoutes from "./routes/metrics.js";

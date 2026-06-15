@@ -4,6 +4,7 @@
  */
 import { PrismaClient } from "@prisma/client";
 import { randomUUID } from "crypto";
+import { requireSeedPassword } from "./lib/require-seed-password.mjs";
 
 const prisma = new PrismaClient();
 
@@ -278,7 +279,7 @@ async function openStraelenBranch() {
 
 async function seedStraelenManager() {
   const bcrypt = await import("bcryptjs");
-  const defaultPassword = process.env.SEED_ADMIN_PASSWORD || "Kempen2026!";
+  const defaultPassword = requireSeedPassword();
   const hash = await bcrypt.hash(defaultPassword, 10);
 
   await prisma.admin.upsert({

@@ -4,6 +4,7 @@ import { fileURLToPath } from "url";
 import { PrismaClient } from "@prisma/client";
 import { randomUUID } from "crypto";
 import bcrypt from "bcryptjs";
+import { requireSeedPassword } from "./lib/require-seed-password.mjs";
 
 const prisma = new PrismaClient();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -354,7 +355,7 @@ async function importKempenMenu(branchId, menuData) {
 }
 
 async function seedAdminUsers() {
-  const defaultPassword = process.env.SEED_ADMIN_PASSWORD || "Kempen2026!";
+  const defaultPassword = requireSeedPassword();
   const hash = await bcrypt.hash(defaultPassword, 10);
 
   await prisma.admin.upsert({

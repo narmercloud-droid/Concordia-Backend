@@ -1,4 +1,5 @@
 import { DEFAULT_INTERNAL_ERROR_MESSAGE } from '../contracts/errors.js';
+import { httpStatusFromCode } from '../contracts/httpStatus.js';
 export function errorMiddleware(err, req, res, _next) {
     // If it's already an ApiError-like object, return normalized envelope
     const apiErr = err;
@@ -15,23 +16,5 @@ export function errorMiddleware(err, req, res, _next) {
         error: { code: 'INTERNAL_ERROR', message: DEFAULT_INTERNAL_ERROR_MESSAGE },
     };
     res.status(500).json(payload);
-}
-function httpStatusFromCode(code) {
-    switch (code) {
-        case 'NOT_FOUND':
-            return 404;
-        case 'UNAUTHORIZED':
-            return 401;
-        case 'FORBIDDEN':
-            return 403;
-        case 'CONFLICT':
-            return 409;
-        case 'INVALID_INPUT':
-        case 'VALIDATION_ERROR':
-            return 400;
-        case 'INTERNAL_ERROR':
-        default:
-            return 500;
-    }
 }
 export default errorMiddleware;

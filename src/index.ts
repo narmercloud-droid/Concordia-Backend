@@ -117,6 +117,16 @@ import inputValidation from "./middleware/inputValidation.ts";
 import requireApiKey from "./middleware/apiKey.ts";
 import { adminAuth as adminAuthMiddleware } from "./middleware/adminAuth.ts";
 import logger from "./utils/logger.ts";
+
+process.on("uncaughtException", (err) => {
+  logger.error({ err }, "Uncaught exception — shutting down");
+  process.exit(1);
+});
+
+process.on("unhandledRejection", (reason) => {
+  logger.error({ err: reason }, "Unhandled rejection — shutting down");
+  process.exit(1);
+});
 import { startNeonKeepAlive } from "./keepAlive.ts";
 import rateLimitRedis from "./middleware/rateLimitRedis.ts";
 import cacheMiddleware from "./middleware/cacheMiddleware.ts";
