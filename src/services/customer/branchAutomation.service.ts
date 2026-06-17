@@ -6,9 +6,10 @@ import {
 } from "./branchCustomer.service.ts";
 import { sendBranchMessage } from "./branchMessaging.service.ts";
 import { env } from "../../config/env.ts";
+import { getPlatformConfig } from "../platform/platformSettings.service.ts";
 
-const WINBACK_CODE = process.env.WINBACK_PROMO_CODE || "WELCOME10";
-const BIRTHDAY_CODE = process.env.BIRTHDAY_PROMO_CODE || "BIRTHDAY";
+const WINBACK_CODE = () => getPlatformConfig().winbackPromoCode || "WELCOME10";
+const BIRTHDAY_CODE = () => getPlatformConfig().birthdayPromoCode || "BIRTHDAY";
 
 function orderUrl(branchId: string) {
   const base = env.FRONTEND_URL ?? "https://www.concordiapizza.de";
@@ -23,7 +24,7 @@ export async function runWinBackForBranch(branchId: string) {
     const name = customer.name?.split(" ")[0] ?? "Freund";
     const text = [
       `Hallo ${name}! Wir vermissen Sie bei Concordia.`,
-      `Als Dankeschön: Code ${WINBACK_CODE} für 10% Rabatt auf Ihre nächste Bestellung.`,
+      `Als Dankeschön: Code ${WINBACK_CODE()} für 10% Rabatt auf Ihre nächste Bestellung.`,
       `Jetzt bestellen: ${orderUrl(branchId)}`
     ].join("\n");
 
@@ -54,7 +55,7 @@ export async function runBirthdayForBranch(branchId: string) {
     const name = customer.name?.split(" ")[0] ?? "Freund";
     const text = [
       `Alles Gute zum Geburtstag, ${name}! 🎂`,
-      `Concordia schenkt Ihnen einen Gratis-Nachtisch — Code ${BIRTHDAY_CODE} bei Ihrer Bestellung.`,
+      `Concordia schenkt Ihnen einen Gratis-Nachtisch — Code ${BIRTHDAY_CODE()} bei Ihrer Bestellung.`,
       `Bestellen: ${orderUrl(branchId)}`
     ].join("\n");
 

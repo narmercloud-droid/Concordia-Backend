@@ -3,6 +3,7 @@ import {
   getBranchMenuForCustomer,
   getBranchItemForCustomer,
   listBranchesForCustomer,
+  getPlatformPromoForCustomer,
   peekBranchMenuCache
 } from "../../services/customer/branchMenu.service.ts";
 import { generateTimeSlots } from "../../services/scheduling/scheduling.service.ts";
@@ -44,6 +45,10 @@ function publicCache(maxAgeSec: number, staleSec = 300) {
 
 router.get("/branches", publicCache(600, 1200), wrap(async () => {
   return await listBranchesForCustomer();
+}));
+
+router.get("/platform-promo", publicCache(300, 600), wrap(async () => {
+  return await getPlatformPromoForCustomer();
 }));
 
 router.get("/branches/:branchId/menu", publicCache(900, 1800), wrap(async (req) => {

@@ -936,6 +936,12 @@ model GlobalSettings {
   notifyDelivered      Boolean @default(true)
 }
 
+model PlatformConfig {
+  id         String   @id @default("default")
+  configJson Json
+  updatedAt  DateTime @updatedAt
+}
+
 model BranchItemAvailability {
   id          String   @id @default(uuid())
   branchId    String

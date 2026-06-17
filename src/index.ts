@@ -127,7 +127,7 @@ process.on("unhandledRejection", (reason) => {
   logger.error({ err: reason }, "Unhandled rejection — shutting down");
   process.exit(1);
 });
-import { startNeonKeepAlive } from "./keepAlive.ts";
+import { startNeonKeepAlive, startRenderKeepAlive } from "./keepAlive.ts";
 import rateLimitRedis from "./middleware/rateLimitRedis.ts";
 import cacheMiddleware from "./middleware/cacheMiddleware.ts";
 import metricsRoutes from "./routes/metrics.ts";
@@ -560,6 +560,16 @@ async function startServer() {
     logger.warn({ err: e }, "Startup: Prisma connection failed");
   }
 
+  try {
+    const { refreshPlatformConfigCache } = await import(
+      "./services/platform/platformSettings.service.ts"
+    );
+    await refreshPlatformConfigCache();
+    logger.info("Startup: Platform config loaded");
+  } catch (e) {
+    logger.warn({ err: e }, "Startup: Platform config not loaded");
+  }
+
   if (env.NODE_ENV === "production" && env.REDIS_URL) {
     try {
       if (redisClient && typeof (redisClient as any).ping === "function") {
@@ -635,6 +645,7 @@ async function startServer() {
       if (env.NODE_ENV === "production") {
         try {
           startNeonKeepAlive();
+          startRenderKeepAlive();
           logger.info("Neon keep-alive started");
           const { warmCustomerCaches } = await import("./jobs/cacheWarmup.ts");
           void warmCustomerCaches();

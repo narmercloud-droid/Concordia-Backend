@@ -13,6 +13,7 @@ import {
   resolveExtraPrice
 } from "./extraPricing.service.ts";
 import { isFreeDrinkPromoActive } from "../../config/websitePromo.ts";
+import { getPlatformConfig } from "../platform/platformSettings.service.ts";
 import { getBerlinDayOfWeek, getBerlinTimeString, isWithinBranchHours } from "../../utils/berlinTime.ts";
 
 const BRANCHES_CACHE_KEY = "customer:branches:v1";
@@ -36,6 +37,12 @@ type CachedBranchRow = {
   promotions: {
     freeDrinkMinOrder: number | null;
     freeDrinkMessage: string;
+    websiteDiscountEnabled: boolean;
+  };
+  platformPromo: {
+    websiteOrderDiscountPct: number;
+    showFreeDrinkCheckout: boolean;
+    showLoyaltyCheckout: boolean;
   };
   hours: Array<{ dayOfWeek: number; openTime: string; closeTime: string }>;
 };
@@ -449,6 +456,16 @@ export async function listBranchesForCustomer() {
   return applyOpenStatus(rows);
 }
 
+export async function getPlatformPromoForCustomer() {
+  const platform = getPlatformConfig();
+  return {
+    websiteOrderDiscountPct: platform.websiteOrderDiscountPct,
+    freeDrinkCheckoutEnabled: platform.freeDrinkCheckoutEnabled,
+    showFreeDrinkCheckout: platform.showFreeDrinkCheckout,
+    showLoyaltyCheckout: platform.showLoyaltyCheckout
+  };
+}
+
 const HIDDEN_BRANCH_IDS = new Set(["branch-001", "test-branch-1"]);
 
 function applyOpenStatus(rows: CachedBranchRow[]) {
@@ -472,6 +489,7 @@ function applyOpenStatus(rows: CachedBranchRow[]) {
 }
 
 async function fetchBranchesList(): Promise<CachedBranchRow[]> {
+  const platform = getPlatformConfig();
   const branches = await prisma.branch.findMany({
     where: { id: { notIn: [...HIDDEN_BRANCH_IDS] } },
     orderBy: { createdAt: "asc" },
@@ -509,7 +527,13 @@ async function fetchBranchesList(): Promise<CachedBranchRow[]> {
         freeDrinkMinOrder: promoActive
           ? Number(promotions.freeDrinkMinOrder ?? 0) || null
           : null,
-        freeDrinkMessage: promoActive ? String(promotions.freeDrinkMessage ?? "") : ""
+        freeDrinkMessage: promoActive ? String(promotions.freeDrinkMessage ?? "") : "",
+        websiteDiscountEnabled: promotions.websiteDiscountEnabled !== false
+      },
+      platformPromo: {
+        websiteOrderDiscountPct: platform.websiteOrderDiscountPct,
+        showFreeDrinkCheckout: platform.showFreeDrinkCheckout,
+        showLoyaltyCheckout: platform.showLoyaltyCheckout
       },
       hours: branch.branchHours
     };
