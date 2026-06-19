@@ -54,7 +54,7 @@ function normalizePaymentMethod(method) {
     const value = (method ?? "cash").toLowerCase();
     if (value === "cash" || value === "cod")
         return "COD";
-    if (value === "card")
+    if (value === "card" || value === "apple_pay" || value === "google_pay")
         return "CARD";
     if (value === "paypal")
         return "PAYPAL";
@@ -62,7 +62,7 @@ function normalizePaymentMethod(method) {
         return "KLARNA";
     if (value === "sepa")
         return "SEPA";
-    return method ?? "COD";
+    return "COD";
 }
 function requiresOnlinePayment(method) {
     const normalized = normalizePaymentMethod(method);

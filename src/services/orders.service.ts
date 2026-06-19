@@ -65,11 +65,11 @@ const COURIER_TOKEN_VALIDITY_MS = 24 * 60 * 60 * 1000;
 function normalizePaymentMethod(method?: string) {
   const value = (method ?? "cash").toLowerCase();
   if (value === "cash" || value === "cod") return "COD";
-  if (value === "card") return "CARD";
+  if (value === "card" || value === "apple_pay" || value === "google_pay") return "CARD";
   if (value === "paypal") return "PAYPAL";
   if (value === "klarna") return "KLARNA";
   if (value === "sepa") return "SEPA";
-  return method ?? "COD";
+  return "COD";
 }
 
 function requiresOnlinePayment(method?: string) {
