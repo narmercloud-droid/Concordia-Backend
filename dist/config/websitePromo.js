@@ -1,13 +1,26 @@
+import { getPlatformConfig } from "../services/platform/platformSettings.service.js";
+/** @deprecated Use getWebsiteOrderDiscountPct() — kept for backwards compatibility */
 export const WEBSITE_ORDER_DISCOUNT_PCT = 10;
-/** When false, checkout never requires or applies the free-drink promotion. */
+/** @deprecated Use isFreeDrinkCheckoutGloballyEnabled() */
 export const FREE_DRINK_CHECKOUT_ENABLED = false;
-export function calcWebsiteDiscount(subtotal) {
+export function getWebsiteOrderDiscountPct() {
+    return getPlatformConfig().websiteOrderDiscountPct;
+}
+export function isFreeDrinkCheckoutGloballyEnabled() {
+    return getPlatformConfig().freeDrinkCheckoutEnabled;
+}
+export function calcWebsiteDiscount(subtotal, branchPromotions) {
     if (subtotal <= 0)
         return 0;
-    return Math.round(subtotal * WEBSITE_ORDER_DISCOUNT_PCT) / 100;
+    if (branchPromotions?.websiteDiscountEnabled === false)
+        return 0;
+    const pct = getWebsiteOrderDiscountPct();
+    if (pct <= 0)
+        return 0;
+    return Math.round(subtotal * pct) / 100;
 }
 export function isFreeDrinkPromoActive(promotions, subtotal) {
-    if (!FREE_DRINK_CHECKOUT_ENABLED)
+    if (!isFreeDrinkCheckoutGloballyEnabled())
         return false;
     if (promotions?.freeDrinkEnabled === false)
         return false;

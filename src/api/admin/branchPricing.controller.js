@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { bumpBranchMenuCache } from './customerCacheBump.js';
 const prisma = new PrismaClient();
 
 export async function setBranchItemPrice(req, res) {
@@ -20,6 +21,7 @@ export async function setBranchItemPrice(req, res) {
     }
   });
 
+  await bumpBranchMenuCache(branchId);
   res.json(override);
 }
 
@@ -35,5 +37,6 @@ export async function clearBranchItemPrice(req, res) {
     }
   });
 
+  await bumpBranchMenuCache(branchId);
   res.json({ success: true });
 }

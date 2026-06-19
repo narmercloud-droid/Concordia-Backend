@@ -1,9 +1,10 @@
 import { prisma } from "../../prisma/client.js";
-import { deleteCache, getCache, setCache } from "../../lib/redis.js";
+import { clearCache, deleteCache, getCache, setCache } from "../../lib/redis.js";
 import { deleteSimpleCache, getSimpleCache, setSimpleCache } from "../../lib/simpleCache.js";
 import { applyItemTranslations, applyMenuTranslations, resolveMenuLanguage } from "./menuTranslation.service.js";
 import { buildPricesBySize, itemUsesSizeBasedExtras, normalizeSizeKey, resolveExtraPrice } from "./extraPricing.service.js";
 import { isFreeDrinkPromoActive } from "../../config/websitePromo.js";
+import { getPlatformConfig } from "../platform/platformSettings.service.js";
 import { getBerlinDayOfWeek, getBerlinTimeString, isWithinBranchHours } from "../../utils/berlinTime.js";
 const BRANCHES_CACHE_KEY = "customer:branches:v1";
 const BRANCHES_TTL_SEC = 1800;
@@ -13,6 +14,12 @@ export function invalidateBranchListCache() {
     deleteSimpleCache(BRANCHES_CACHE_KEY);
     void deleteCache(BRANCHES_CACHE_KEY);
 }
+/** Clears bestsellers, cart suggestions, and related Redis keys for a branch. */
+export function invalidateBranchDerivedCaches(branchId) {
+    void clearCache(`bestsellers:ids:${branchId}:*`);
+    void clearCache(`also-popular:${branchId}:*`);
+    void clearCache(`cart-suggestions:${branchId}:*`);
+}
 export function invalidateBranchMenuCache(branchId) {
     for (const lang of MENU_LANGS) {
         const key = `customer:menu:${branchId}:${lang}:v2`;
@@ -21,6 +28,7 @@ export function invalidateBranchMenuCache(branchId) {
     }
     deleteSimpleCache(`customer:menu:${branchId}:v1`);
     void deleteCache(`customer:menu:${branchId}:v1:json`);
+    invalidateBranchDerivedCaches(branchId);
 }
 export async function peekBranchMenuCache(branchId, lang) {
     const resolvedLang = resolveMenuLanguage(lang);
@@ -345,6 +353,15 @@ export async function listBranchesForCustomer() {
     }
     return applyOpenStatus(rows);
 }
+export async function getPlatformPromoForCustomer() {
+    const platform = getPlatformConfig();
+    return {
+        websiteOrderDiscountPct: platform.websiteOrderDiscountPct,
+        freeDrinkCheckoutEnabled: platform.freeDrinkCheckoutEnabled,
+        showFreeDrinkCheckout: platform.showFreeDrinkCheckout,
+        showLoyaltyCheckout: platform.showLoyaltyCheckout
+    };
+}
 const HIDDEN_BRANCH_IDS = new Set(["branch-001", "test-branch-1"]);
 function applyOpenStatus(rows) {
     const now = new Date();
@@ -362,6 +379,7 @@ function applyOpenStatus(rows) {
     });
 }
 async function fetchBranchesList() {
+    const platform = getPlatformConfig();
     const branches = await prisma.branch.findMany({
         where: { id: { notIn: [...HIDDEN_BRANCH_IDS] } },
         orderBy: { createdAt: "asc" },
@@ -397,7 +415,13 @@ async function fetchBranchesList() {
                 freeDrinkMinOrder: promoActive
                     ? Number(promotions.freeDrinkMinOrder ?? 0) || null
                     : null,
-                freeDrinkMessage: promoActive ? String(promotions.freeDrinkMessage ?? "") : ""
+                freeDrinkMessage: promoActive ? String(promotions.freeDrinkMessage ?? "") : "",
+                websiteDiscountEnabled: promotions.websiteDiscountEnabled !== false
+            },
+            platformPromo: {
+                websiteOrderDiscountPct: platform.websiteOrderDiscountPct,
+                showFreeDrinkCheckout: platform.showFreeDrinkCheckout,
+                showLoyaltyCheckout: platform.showLoyaltyCheckout
             },
             hours: branch.branchHours
         };

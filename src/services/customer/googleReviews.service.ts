@@ -2,8 +2,8 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { prisma } from "../../prisma/client.ts";
-import { getSimpleCache, setSimpleCache } from "../../lib/simpleCache.ts";
-import { getCache, setCache } from "../../lib/redis.ts";
+import { getSimpleCache, setSimpleCache, deleteSimpleCache } from "../../lib/simpleCache.ts";
+import { getCache, setCache, deleteCache } from "../../lib/redis.ts";
 import logger from "../../logger.ts";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -221,6 +221,12 @@ async function fetchFromGoogle(
     googleMapsUrl: data.result.url ?? googleMapsUrlFor("", data.result.place_id),
     reviews
   };
+}
+
+export function invalidateGoogleReviewsCache(branchId: string) {
+  const cacheKey = `google-reviews:${branchId}`;
+  deleteSimpleCache(cacheKey);
+  void deleteCache(cacheKey);
 }
 
 export async function getBranchGoogleReviews(branchId: string): Promise<BranchGoogleReviews> {

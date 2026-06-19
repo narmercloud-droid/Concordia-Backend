@@ -5,11 +5,11 @@ const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const FROM_EMAIL = process.env.CAMPAIGN_FROM_EMAIL || "marketing@concordia.de";
 
 const BRANCH_INBOX: Record<string, string> = {
-  "concordia-kempen": "kempen@concordia.de",
-  "concordia-straelen": "kempen@concordia.de"
+  "concordia-kempen": "kempen@concordiapizza.de",
+  "concordia-straelen": "straelen@concordiapizza.de"
 };
 
-const DEFAULT_INBOX = "kempen@concordia.de";
+const DEFAULT_INBOX = "info@concordiapizza.de";
 
 export type ContactFormInput = {
   name: string;

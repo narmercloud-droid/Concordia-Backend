@@ -20,6 +20,9 @@ const envSchema = z.object({
     PAYPAL_CLIENT_ID: z.string().min(8).optional(),
     PAYPAL_CLIENT_SECRET: z.string().min(8).optional(),
     PAYPAL_MODE: z.enum(["sandbox", "live"]).default("sandbox"),
+    STRIPE_SECRET_KEY: z.string().min(8).optional(),
+    STRIPE_PUBLISHABLE_KEY: z.string().min(8).optional(),
+    STRIPE_WEBHOOK_SECRET: z.string().min(8).optional(),
     SENTRY_DSN: z.string().url().optional(),
     SENTRY_TRACES_SAMPLE_RATE: z.preprocess((value) => (value ? Number(value) : undefined), z.number().min(0).max(1).optional()),
     GOOGLE_PLACES_API_KEY: z.string().min(8).optional()
@@ -35,10 +38,11 @@ if (data.NODE_ENV === "production" && process.env.CASH_ONLY_LAUNCH !== "true") {
     const missing = [];
     if (!data.REDIS_URL)
         missing.push("REDIS_URL");
-    if (!data.PAYPAL_CLIENT_ID)
-        missing.push("PAYPAL_CLIENT_ID");
-    if (!data.PAYPAL_CLIENT_SECRET)
-        missing.push("PAYPAL_CLIENT_SECRET");
+    const hasPayPal = Boolean(data.PAYPAL_CLIENT_ID && data.PAYPAL_CLIENT_SECRET);
+    const hasStripe = Boolean(data.STRIPE_SECRET_KEY && data.STRIPE_PUBLISHABLE_KEY);
+    if (!hasPayPal && !hasStripe) {
+        missing.push("PAYPAL_CLIENT_ID+PAYPAL_CLIENT_SECRET or STRIPE_SECRET_KEY+STRIPE_PUBLISHABLE_KEY");
+    }
     if (missing.length) {
         console.error(`❌ Missing required production env vars: ${missing.join(", ")}`);
         process.exit(1);

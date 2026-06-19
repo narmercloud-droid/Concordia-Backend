@@ -165,6 +165,9 @@ export async function updateDeliverySettings(
     }
   });
 
+  const { invalidateBranchListCache } = await import("../customer/branchMenu.service.ts");
+  invalidateBranchListCache();
+
   return configJson;
 }
 
@@ -228,6 +231,9 @@ export async function updateVariantGroupIncludedChoice(
   if (!group || !group.item.branchItems.length) {
     throw new Error("Variant group not found for this branch");
   }
+
+  const { invalidateBranchMenuCache } = await import("../customer/branchMenu.service.ts");
+  invalidateBranchMenuCache(branchId);
 
   return prisma.variantGroup.update({
     where: { id: groupId },
@@ -317,6 +323,9 @@ export async function updateBranchPromotions(
       configJson
     }
   });
+
+  const { invalidateBranchListCache } = await import("../customer/branchMenu.service.ts");
+  invalidateBranchListCache();
 
   return getBranchPromotions(branchId);
 }

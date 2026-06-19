@@ -80,6 +80,7 @@ import walletRoutes from "./routes/wallet.routes.ts";
 import voucherRoutes from "./routes/voucher.routes.ts";
 import paymentRoutes from "./routes/payment.routes.ts";
 import paymentsRoutes from "./routes/payments.routes.ts";
+import stripeWebhookRoutes from "./routes/stripe/stripeWebhook.routes.ts";
 import paypalWebhookRoutes from "./routes/paypal/paypalWebhook.routes.ts";
 import paypalAdminRoutes from "./routes/admin/paypalAdmin.routes.ts";
 import adminPrinterRoutes from "./routes/admin/adminPrinter.routes.ts";
@@ -259,6 +260,7 @@ if (env.NODE_ENV === "production") {
 }
 
 app.use("/api/paypal/webhook", express.raw({ type: "application/json" }));
+app.use("/api/stripe/webhook", express.raw({ type: "application/json" }));
 app.use(express.json());
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
@@ -467,6 +469,7 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/public", publicRoutes);
 app.use("/api", branchPublicRoutes);
 app.use("/api/paypal/webhook", paypalWebhookRoutes);
+app.use("/api/stripe/webhook", stripeWebhookRoutes);
 app.get("/chat", (_req, res) => {
   void _req;
   res.sendFile(path.join(process.cwd(), "public", "chat.html"));

@@ -1,5 +1,5 @@
 import { prisma } from "../../prisma/client.ts";
-import { deleteCache, getCache, setCache } from "../../lib/redis.ts";
+import { clearCache, deleteCache, getCache, setCache } from "../../lib/redis.ts";
 import { deleteSimpleCache, getSimpleCache, setSimpleCache } from "../../lib/simpleCache.ts";
 import {
   applyItemTranslations,
@@ -52,6 +52,13 @@ export function invalidateBranchListCache() {
   void deleteCache(BRANCHES_CACHE_KEY);
 }
 
+/** Clears bestsellers, cart suggestions, and related Redis keys for a branch. */
+export function invalidateBranchDerivedCaches(branchId: string) {
+  void clearCache(`bestsellers:ids:${branchId}:*`);
+  void clearCache(`also-popular:${branchId}:*`);
+  void clearCache(`cart-suggestions:${branchId}:*`);
+}
+
 export function invalidateBranchMenuCache(branchId: string) {
   for (const lang of MENU_LANGS) {
     const key = `customer:menu:${branchId}:${lang}:v2`;
@@ -60,6 +67,7 @@ export function invalidateBranchMenuCache(branchId: string) {
   }
   deleteSimpleCache(`customer:menu:${branchId}:v1`);
   void deleteCache(`customer:menu:${branchId}:v1:json`);
+  invalidateBranchDerivedCaches(branchId);
 }
 
 export async function peekBranchMenuCache(branchId: string, lang?: string | null) {

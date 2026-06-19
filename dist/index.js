@@ -69,6 +69,7 @@ import walletRoutes from "./routes/wallet.routes.js";
 import voucherRoutes from "./routes/voucher.routes.js";
 import paymentRoutes from "./routes/payment.routes.js";
 import paymentsRoutes from "./routes/payments.routes.js";
+import stripeWebhookRoutes from "./routes/stripe/stripeWebhook.routes.js";
 import paypalWebhookRoutes from "./routes/paypal/paypalWebhook.routes.js";
 import paypalAdminRoutes from "./routes/admin/paypalAdmin.routes.js";
 import adminPrinterRoutes from "./routes/admin/adminPrinter.routes.js";
@@ -112,7 +113,7 @@ process.on("unhandledRejection", (reason) => {
     logger.error({ err: reason }, "Unhandled rejection — shutting down");
     process.exit(1);
 });
-import { startNeonKeepAlive } from "./keepAlive.js";
+import { startNeonKeepAlive, startRenderKeepAlive } from "./keepAlive.js";
 import rateLimitRedis from "./middleware/rateLimitRedis.js";
 import metricsRoutes from "./routes/metrics.js";
 import { httpRequestsTotal, httpRequestDurationSeconds, errorsTotal } from "./metrics/metrics.js";
@@ -236,6 +237,7 @@ if (env.NODE_ENV === "production") {
     });
 }
 app.use("/api/paypal/webhook", express.raw({ type: "application/json" }));
+app.use("/api/stripe/webhook", express.raw({ type: "application/json" }));
 app.use(express.json());
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 app.use((req, res, next) => {
@@ -429,6 +431,7 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/public", publicRoutes);
 app.use("/api", branchPublicRoutes);
 app.use("/api/paypal/webhook", paypalWebhookRoutes);
+app.use("/api/stripe/webhook", stripeWebhookRoutes);
 app.get("/chat", (_req, res) => {
     void _req;
     res.sendFile(path.join(process.cwd(), "public", "chat.html"));
@@ -522,6 +525,14 @@ async function startServer() {
     catch (e) {
         logger.warn({ err: e }, "Startup: Prisma connection failed");
     }
+    try {
+        const { refreshPlatformConfigCache } = await import("./services/platform/platformSettings.service.js");
+        await refreshPlatformConfigCache();
+        logger.info("Startup: Platform config loaded");
+    }
+    catch (e) {
+        logger.warn({ err: e }, "Startup: Platform config not loaded");
+    }
     if (env.NODE_ENV === "production" && env.REDIS_URL) {
         try {
             if (redisClient && typeof redisClient.ping === "function") {
@@ -595,6 +606,7 @@ async function startServer() {
             if (env.NODE_ENV === "production") {
                 try {
                     startNeonKeepAlive();
+                    startRenderKeepAlive();
                     logger.info("Neon keep-alive started");
                     const { warmCustomerCaches } = await import("./jobs/cacheWarmup.js");
                     void warmCustomerCaches();

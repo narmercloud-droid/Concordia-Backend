@@ -7,17 +7,16 @@ import {
   activateGiftCardAfterPayment,
   getGiftCardPurchase
 } from "./customer/giftCard.service.ts";
+import {
+  confirmStripePaymentIntent,
+  createGiftCardStripePaymentIntent,
+  createOrderStripePaymentIntent,
+  getBranchPaymentPublic
+} from "./stripe/branchStripe.service.ts";
+import { getStripePublishableKey, isStripeConfigured } from "./stripe/stripeClient.ts";
 
 function isPayPalConfigured() {
   return Boolean(env.PAYPAL_CLIENT_ID && env.PAYPAL_CLIENT_SECRET);
-}
-
-function isKlarnaConfigured() {
-  return Boolean(process.env.KLARNA_USERNAME && process.env.KLARNA_PASSWORD);
-}
-
-function isSepaConfigured() {
-  return Boolean(process.env.STRIPE_SECRET_KEY);
 }
 
 function formatEur(amount: number) {
@@ -25,12 +24,115 @@ function formatEur(amount: number) {
 }
 
 export const paymentsService = {
-  getConfig() {
-    return {
-      cardPaymentsEnabled: isPayPalConfigured(),
-      paypalClientId: env.PAYPAL_CLIENT_ID ?? null,
-      currency: "EUR"
+  async getConfig(branchId?: string) {
+    const methods = {
+      cash: true,
+      card: false,
+      apple_pay: false,
+      google_pay: false,
+      paypal: false,
+      klarna: false,
+      sepa: false
     };
+
+    let stripeAccountId: string | null = null;
+    let stripeReady = false;
+
+    if (branchId) {
+      const branchPayment = await getBranchPaymentPublic(branchId);
+      stripeAccountId = branchPayment.stripeAccountId;
+      stripeReady = branchPayment.stripeReady;
+      methods.card = branchPayment.cardEnabled;
+      methods.apple_pay = branchPayment.applePayEnabled;
+      methods.google_pay = branchPayment.googlePayEnabled;
+    }
+
+    if (isPayPalConfigured()) {
+      methods.paypal = true;
+    }
+
+    const onlinePaymentsEnabled =
+      stripeReady || methods.paypal || methods.card || methods.apple_pay || methods.google_pay;
+
+    return {
+      cardPaymentsEnabled: methods.card || methods.apple_pay || methods.google_pay,
+      onlinePaymentsEnabled,
+      paypalClientId: env.PAYPAL_CLIENT_ID ?? null,
+      stripePublishableKey: getStripePublishableKey(),
+      stripeAccountId,
+      stripeReady,
+      currency: "EUR",
+      methods
+    };
+  },
+
+  async createStripePaymentIntent(orderId: string) {
+    return createOrderStripePaymentIntent(orderId);
+  },
+
+  async confirmStripePayment(orderId: string) {
+    const order = await prisma.order.findUnique({ where: { id: orderId } });
+    if (!order) throw new Error("Order not found");
+    if (order.paymentStatus === "paid") {
+      return { success: true, alreadyPaid: true };
+    }
+    if (!order.paymentIntentId) {
+      throw new Error("Missing payment session");
+    }
+
+    const payment = await getBranchPaymentPublic(order.branchId);
+    if (!payment.stripeAccountId) {
+      throw new Error("Branch payment account not configured");
+    }
+
+    const intent = await confirmStripePaymentIntent(
+      order.paymentIntentId,
+      payment.stripeAccountId
+    );
+
+    if (intent.status !== "succeeded") {
+      throw new Error("Payment is not complete yet");
+    }
+
+    await OrderLifecycleService.updatePaymentStatus(orderId, "paid", {
+      paidAt: new Date(),
+      transactionId: intent.id
+    });
+    await ordersService.notifyKitchenOrder(orderId);
+
+    return { success: true, paymentIntentId: intent.id };
+  },
+
+  async createGiftCardStripePaymentIntent(purchaseId: string) {
+    return createGiftCardStripePaymentIntent(purchaseId);
+  },
+
+  async confirmGiftCardStripePayment(purchaseId: string) {
+    const card = await getGiftCardPurchase(purchaseId);
+    if (!card) throw new Error("Gift card purchase not found");
+    if (card.paymentStatus === "paid") {
+      return { success: true, alreadyPaid: true, code: card.code };
+    }
+    if (!card.stripePaymentIntentId) {
+      throw new Error("Missing payment session");
+    }
+
+    const payment = await getBranchPaymentPublic(card.branchId);
+    if (!payment.stripeAccountId) {
+      throw new Error("Branch payment account not configured");
+    }
+
+    const intent = await confirmStripePaymentIntent(
+      card.stripePaymentIntentId,
+      payment.stripeAccountId
+    );
+
+    if (intent.status !== "succeeded") {
+      throw new Error("Payment is not complete yet");
+    }
+
+    const activation = await activateGiftCardAfterPayment(purchaseId, intent.id);
+    return { success: true, code: activation.code, paymentIntentId: intent.id };
   },
 
   async createPayPalOrder(orderId: string) {

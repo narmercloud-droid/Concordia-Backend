@@ -1,6 +1,11 @@
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
+async function bumpBranchHoursCache() {
+  const { invalidateBranchListCache } = await import('../../services/customer/branchMenu.service.ts');
+  invalidateBranchListCache();
+}
+
 export async function setBranchHours(req, res) {
   const { branchId } = req.params;
   const { dayOfWeek, openTime, closeTime } = req.body;
@@ -21,6 +26,7 @@ export async function setBranchHours(req, res) {
     }
   });
 
+  await bumpBranchHoursCache();
   res.json(hours);
 }
 

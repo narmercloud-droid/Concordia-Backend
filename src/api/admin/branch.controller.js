@@ -1,8 +1,10 @@
 import { PrismaClient } from '@prisma/client';
+import { bumpBranchListCache } from './customerCacheBump.js';
 const prisma = new PrismaClient();
 
 export async function createBranch(req, res) {
   const branch = await prisma.branch.create({ data: req.body });
+  await bumpBranchListCache();
   res.json(branch);
 }
 
@@ -12,12 +14,14 @@ export async function updateBranch(req, res) {
     where: { id: branchId },
     data: req.body
   });
+  await bumpBranchListCache();
   res.json(branch);
 }
 
 export async function deleteBranch(req, res) {
   const { branchId } = req.params;
   await prisma.branch.delete({ where: { id: branchId } });
+  await bumpBranchListCache();
   res.json({ success: true });
 }
 

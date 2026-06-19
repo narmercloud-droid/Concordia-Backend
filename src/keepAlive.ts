@@ -2,16 +2,19 @@ import { prisma } from "./prisma/client.ts";
 import logger from "./logger.ts";
 import { warmCustomerCaches } from "./jobs/cacheWarmup.ts";
 
-const PING_INTERVAL_MS = 1000 * 60 * 3; // Neon suspends after ~5 min idle
+/** Neon suspends compute after ~5 min idle — stay under that. */
+const NEON_PING_INTERVAL_MS = 2 * 60 * 1000;
+/** Render free tier spins down after ~15 min idle — self-ping before that. */
+const RENDER_PING_INTERVAL_MS = 10 * 60 * 1000;
 const CACHE_WARM_EVERY_N = 2;
-let pingCount = 0;
+let neonPingCount = 0;
 
 export function startNeonKeepAlive() {
   const run = async () => {
     try {
       await prisma.$queryRaw`SELECT 1`;
-      pingCount += 1;
-      if (pingCount % CACHE_WARM_EVERY_N === 0) {
+      neonPingCount += 1;
+      if (neonPingCount % CACHE_WARM_EVERY_N === 0) {
         await warmCustomerCaches();
       }
       logger.debug("Neon keep-alive ping sent");
@@ -21,5 +24,33 @@ export function startNeonKeepAlive() {
   };
 
   void run();
-  setInterval(run, PING_INTERVAL_MS);
+  setInterval(run, NEON_PING_INTERVAL_MS);
+}
+
+/** When deployed on Render, hit our own /health so the web service stays warm overnight. */
+export function startRenderKeepAlive() {
+  const base = process.env.RENDER_EXTERNAL_URL?.replace(/\/$/, "");
+  if (!base) {
+    return;
+  }
+
+  const ping = async () => {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10_000);
+      const res = await fetch(`${base}/health`, { signal: controller.signal });
+      clearTimeout(timeout);
+      if (!res.ok) {
+        logger.warn({ status: res.status }, "Render self-ping returned non-OK");
+      } else {
+        logger.debug("Render self-ping OK");
+      }
+    } catch (err: unknown) {
+      logger.warn({ err }, "Render self-ping failed");
+    }
+  };
+
+  void ping();
+  setInterval(ping, RENDER_PING_INTERVAL_MS);
+  logger.info({ intervalMin: RENDER_PING_INTERVAL_MS / 60_000 }, "Render self-ping started");
 }

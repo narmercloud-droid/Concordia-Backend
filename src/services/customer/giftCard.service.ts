@@ -48,7 +48,11 @@ export async function createGiftCardPurchase(input: GiftCardPurchaseInput) {
   if (!branch) throw new Error("Filiale nicht gefunden");
 
   const method = input.paymentMethod.toLowerCase();
-  const payOnline = method === "card" || method === "paypal";
+  const payOnline =
+    method === "card" ||
+    method === "paypal" ||
+    method === "apple_pay" ||
+    method === "google_pay";
   const code = generateGiftCardCode(input.branchId);
   const expiresAt = new Date();
   expiresAt.setFullYear(expiresAt.getFullYear() + DEFAULT_EXPIRY_YEARS);
@@ -140,21 +144,34 @@ export async function redeemGiftCard(giftCardId: string, amount: number) {
   });
 }
 
-export async function activateGiftCardAfterPayment(purchaseId: string, captureId?: string) {
+export async function activateGiftCardAfterPayment(purchaseId: string, transactionId?: string) {
   const card = await prisma.branchGiftCard.findUnique({ where: { id: purchaseId } });
   if (!card) throw new Error("Gutscheinkauf nicht gefunden");
   if (card.paymentStatus === "paid") {
     return { code: card.code, alreadyPaid: true };
   }
 
+  const paymentData: {
+    paymentStatus: string;
+    isActive: boolean;
+    balance: typeof card.initialAmount;
+    paypalCaptureId?: string | null;
+    stripePaymentIntentId?: string | null;
+  } = {
+    paymentStatus: "paid",
+    isActive: true,
+    balance: card.initialAmount
+  };
+
+  if (transactionId?.startsWith("pi_")) {
+    paymentData.stripePaymentIntentId = transactionId;
+  } else if (transactionId) {
+    paymentData.paypalCaptureId = transactionId;
+  }
+
   const updated = await prisma.branchGiftCard.update({
     where: { id: purchaseId },
-    data: {
-      paymentStatus: "paid",
-      isActive: true,
-      balance: card.initialAmount,
-      paypalCaptureId: captureId ?? card.paypalCaptureId
-    }
+    data: paymentData
   });
 
   return { code: updated.code, alreadyPaid: false };

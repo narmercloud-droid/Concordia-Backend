@@ -2,8 +2,8 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { prisma } from "../../prisma/client.js";
-import { getSimpleCache, setSimpleCache } from "../../lib/simpleCache.js";
-import { getCache, setCache } from "../../lib/redis.js";
+import { getSimpleCache, setSimpleCache, deleteSimpleCache } from "../../lib/simpleCache.js";
+import { getCache, setCache, deleteCache } from "../../lib/redis.js";
 import logger from "../../logger.js";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CONFIG_DIR = path.join(__dirname, "../../config");
@@ -155,6 +155,11 @@ async function fetchFromGoogle(apiKey, placeId) {
         googleMapsUrl: data.result.url ?? googleMapsUrlFor("", data.result.place_id),
         reviews
     };
+}
+export function invalidateGoogleReviewsCache(branchId) {
+    const cacheKey = `google-reviews:${branchId}`;
+    deleteSimpleCache(cacheKey);
+    void deleteCache(cacheKey);
 }
 export async function getBranchGoogleReviews(branchId) {
     const cacheKey = `google-reviews:${branchId}`;

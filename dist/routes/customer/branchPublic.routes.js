@@ -1,5 +1,5 @@
 import express from "express";
-import { getBranchMenuForCustomer, getBranchItemForCustomer, listBranchesForCustomer, peekBranchMenuCache } from "../../services/customer/branchMenu.service.js";
+import { getBranchMenuForCustomer, getBranchItemForCustomer, listBranchesForCustomer, getPlatformPromoForCustomer, peekBranchMenuCache } from "../../services/customer/branchMenu.service.js";
 import { generateTimeSlots } from "../../services/scheduling/scheduling.service.js";
 import { getDeliverySettings, quoteDelivery } from "../../services/customer/deliveryValidation.service.js";
 import { reverseGeocode, suggestAddresses } from "../../services/geo/geocode.service.js";
@@ -23,10 +23,18 @@ function publicCache(maxAgeSec, staleSec = 300) {
         next();
     };
 }
-router.get("/branches", publicCache(600, 1200), wrap(async () => {
+/** Customer config/menu must reflect admin changes immediately — server-side cache only. */
+function noBrowserCache(_req, res, next) {
+    res.setHeader("Cache-Control", "private, no-cache, must-revalidate");
+    next();
+}
+router.get("/branches", noBrowserCache, wrap(async () => {
     return await listBranchesForCustomer();
 }));
-router.get("/branches/:branchId/menu", publicCache(900, 1800), wrap(async (req) => {
+router.get("/platform-promo", noBrowserCache, wrap(async () => {
+    return await getPlatformPromoForCustomer();
+}));
+router.get("/branches/:branchId/menu", noBrowserCache, wrap(async (req) => {
     const branchId = req.params.branchId;
     const lang = menuLang(req);
     const cached = await peekBranchMenuCache(branchId, lang);
@@ -176,7 +184,7 @@ router.post("/branches/:branchId/delivery-quote", wrap(async (req) => {
 router.get("/branches/:branchId/google-reviews", publicCache(3600, 7200), wrap(async (req) => {
     return await getBranchGoogleReviews(req.params.branchId);
 }));
-router.get("/branches/:branchId/bestsellers", publicCache(600, 900), wrap(async (req) => {
+router.get("/branches/:branchId/bestsellers", noBrowserCache, wrap(async (req) => {
     const limit = Math.min(Math.max(Number(req.query.limit ?? 6) || 6, 1), 12);
     return getBranchBestsellers(req.params.branchId, limit, menuLang(req));
 }));

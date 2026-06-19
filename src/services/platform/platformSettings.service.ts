@@ -1,6 +1,9 @@
 import { randomUUID } from "crypto";
 import { prisma } from "../../prisma/client.ts";
 import { invalidateBranchListCache } from "../customer/branchMenu.service.ts";
+import { invalidateGoogleReviewsCache } from "../customer/googleReviews.service.ts";
+import { getBranchPaymentPublic } from "../stripe/branchStripe.service.ts";
+import { isStripeConfigured } from "../stripe/stripeClient.ts";
 
 export const DEFAULT_PLATFORM_CONFIG = {
   websiteOrderDiscountPct: 10,
@@ -70,6 +73,7 @@ export async function updatePlatformConfig(
   });
 
   cachedPlatformConfig = next;
+  invalidateBranchListCache();
   return next;
 }
 
@@ -220,6 +224,8 @@ export async function getBranchSettingsDetail(branchId: string) {
     });
   }
 
+  const payment = await getBranchPaymentPublic(branchId);
+
   return {
     id: branch.id,
     name: branch.name,
@@ -256,6 +262,14 @@ export async function getBranchSettingsDetail(branchId: string) {
       autoPrint: printing.autoPrint,
       printCopies: printing.printCopies,
       routingMode: printing.routingMode
+    },
+    payment: {
+      stripeConfigured: isStripeConfigured(),
+      stripeAccountId: payment.stripeAccountId,
+      stripeReady: payment.stripeReady,
+      cardEnabled: payment.cardEnabled,
+      applePayEnabled: payment.applePayEnabled,
+      googlePayEnabled: payment.googlePayEnabled
     },
     hours: branch.branchHours
   };
@@ -356,6 +370,7 @@ export async function updateBranchSettingsDetail(
   }
 
   invalidateBranchListCache();
+  invalidateGoogleReviewsCache(branchId);
   return getBranchSettingsDetail(branchId);
 }
 

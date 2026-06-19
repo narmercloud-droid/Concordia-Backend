@@ -3,6 +3,7 @@ import { getManagerPermissionPolicy, updateManagerPermissionPolicy, PERMISSION_K
 import { createStaff, deleteStaff, listStaff, updateStaff } from "../../services/manager/staff.service.js";
 import { prisma } from "../../prisma/client.js";
 import { updateBranchVisibility } from "../../services/manager/manager.service.js";
+import { getAggregatedPlatformSettings, getBranchSettingsDetail, updateBranchSettingsDetail, updateGlobalNotificationSettings, updateLoyaltySettings, updatePlatformConfig } from "../../services/platform/platformSettings.service.js";
 export const getPermissions = wrap(async () => {
     const permissions = await getManagerPermissionPolicy();
     return { permissions, keys: PERMISSION_KEYS };
@@ -93,5 +94,48 @@ export const updateBranchStatus = wrap(async (req) => {
     }
     catch (err) {
         throw fail("INVALID_INPUT", err?.message ?? "Could not update branch status");
+    }
+});
+export const getPlatformSettings = wrap(async () => {
+    return await getAggregatedPlatformSettings();
+});
+export const updatePlatformSettings = wrap(async (req) => {
+    const body = req.body ?? {};
+    const result = {};
+    if (body.platform) {
+        result.platform = await updatePlatformConfig(body.platform);
+    }
+    if (body.notifications) {
+        result.notifications = await updateGlobalNotificationSettings(body.notifications);
+    }
+    if (body.loyalty) {
+        result.loyalty = await updateLoyaltySettings(body.loyalty);
+    }
+    if (body.permissions) {
+        const permissions = await updateManagerPermissionPolicy(body.permissions, req.user?.id);
+        result.permissions = permissions;
+    }
+    return { ...result, ...(await getAggregatedPlatformSettings()) };
+});
+export const getBranchSettings = wrap(async (req) => {
+    const branchId = req.params.branchId;
+    if (!branchId)
+        throw fail("INVALID_INPUT", "branchId is required");
+    try {
+        return await getBranchSettingsDetail(branchId);
+    }
+    catch (err) {
+        throw fail("NOT_FOUND", err?.message ?? "Branch not found");
+    }
+});
+export const updateBranchSettings = wrap(async (req) => {
+    const branchId = req.params.branchId;
+    if (!branchId)
+        throw fail("INVALID_INPUT", "branchId is required");
+    try {
+        return await updateBranchSettingsDetail(branchId, req.body ?? {});
+    }
+    catch (err) {
+        throw fail("INVALID_INPUT", err?.message ?? "Could not update branch settings");
     }
 });

@@ -43,15 +43,21 @@ function publicCache(maxAgeSec: number, staleSec = 300) {
   };
 }
 
-router.get("/branches", publicCache(600, 1200), wrap(async () => {
+/** Customer config/menu must reflect admin changes immediately — server-side cache only. */
+function noBrowserCache(_req: express.Request, res: express.Response, next: express.NextFunction) {
+  res.setHeader("Cache-Control", "private, no-cache, must-revalidate");
+  next();
+}
+
+router.get("/branches", noBrowserCache, wrap(async () => {
   return await listBranchesForCustomer();
 }));
 
-router.get("/platform-promo", publicCache(300, 600), wrap(async () => {
+router.get("/platform-promo", noBrowserCache, wrap(async () => {
   return await getPlatformPromoForCustomer();
 }));
 
-router.get("/branches/:branchId/menu", publicCache(900, 1800), wrap(async (req) => {
+router.get("/branches/:branchId/menu", noBrowserCache, wrap(async (req) => {
   const branchId = req.params.branchId;
   const lang = menuLang(req);
   const cached = await peekBranchMenuCache(branchId, lang);
@@ -227,7 +233,7 @@ router.get("/branches/:branchId/google-reviews", publicCache(3600, 7200), wrap(a
   return await getBranchGoogleReviews(req.params.branchId);
 }));
 
-router.get("/branches/:branchId/bestsellers", publicCache(600, 900), wrap(async (req) => {
+router.get("/branches/:branchId/bestsellers", noBrowserCache, wrap(async (req) => {
   const limit = Math.min(Math.max(Number(req.query.limit ?? 6) || 6, 1), 12);
   return getBranchBestsellers(req.params.branchId, limit, menuLang(req));
 }));

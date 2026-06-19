@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { bumpAllBranchMenus, bumpBranchMenuCache } from './customerCacheBump.js';
 const prisma = new PrismaClient();
 
 // Toggle global item availability
@@ -11,6 +12,7 @@ export async function setItemAvailability(req, res) {
     data: { isAvailable }
   });
 
+  await bumpAllBranchMenus();
   res.json(item);
 }
 
@@ -34,5 +36,6 @@ export async function setBranchItemAvailability(req, res) {
     }
   });
 
+  await bumpBranchMenuCache(branchId);
   res.json(override);
 }

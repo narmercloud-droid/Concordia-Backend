@@ -10,7 +10,7 @@ import { routeOrderToKitchens } from "./printer/kitchenRouting.service.js";
 import logger from "../logger.js";
 import { geocodeAddress } from "./geo/geocode.service.js";
 import { getGuestCourierId } from "./branch/branchCoords.service.js";
-import { calcWebsiteDiscount, isFreeDrinkPromoActive } from "../config/websitePromo.js";
+import { calcWebsiteDiscount, getWebsiteOrderDiscountPct, isFreeDrinkPromoActive } from "../config/websitePromo.js";
 import { redeemPromoCode } from "./customer/promoCode.service.js";
 import { validateDiscountCode } from "./customer/discountCode.service.js";
 import { redeemGiftCard } from "./customer/giftCard.service.js";
@@ -124,7 +124,8 @@ export class OrdersService {
             }
         }
         const { pricedLines, subtotal } = await validateAndPriceOrderLines(rest.branchId, items);
-        const websiteDiscount = calcWebsiteDiscount(subtotal);
+        const promotions = (branchConfigJson.promotions ?? {});
+        const websiteDiscount = calcWebsiteDiscount(subtotal, promotions);
         let promoDiscount = 0;
         let promoCodeId = null;
         let giftCardId = null;
@@ -144,7 +145,6 @@ export class OrdersService {
         const totalDiscount = websiteDiscount + promoDiscount;
         const discountedSubtotal = Math.max(0, subtotal - totalDiscount);
         const config = (branchConfig?.configJson ?? {});
-        const promotions = (config.promotions ?? {});
         const qualifiesForFreeDrink = isFreeDrinkPromoActive(promotions, subtotal);
         let freeDrinkChoice = null;
         if (qualifiesForFreeDrink) {
@@ -158,7 +158,8 @@ export class OrdersService {
             notes = notes ? `${notes}\n${promoLine}` : promoLine;
         }
         if (websiteDiscount > 0) {
-            const discountLine = `[PROMO] 10% Online-Rabatt (-${websiteDiscount.toFixed(2)} €)`;
+            const pct = getWebsiteOrderDiscountPct();
+            const discountLine = `[PROMO] ${pct}% Online-Rabatt (-${websiteDiscount.toFixed(2)} €)`;
             notes = notes ? `${notes}\n${discountLine}` : discountLine;
         }
         if (promoDiscount > 0 && promoCodeInput) {
