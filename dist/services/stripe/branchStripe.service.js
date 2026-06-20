@@ -1,6 +1,7 @@
 import { prisma } from "../../prisma/client.js";
 import { env } from "../../config/env.js";
 import { getStripe, getStripePublishableKey, isStripeConfigured } from "./stripeClient.js";
+import { createCustomerSessionForPayment, getOrCreateBranchStripeCustomer } from "./customerStripePayment.service.js";
 export async function getOrCreateBranchPaymentSettings(branchId) {
     const existing = await prisma.branchPaymentSettings.findUnique({ where: { branchId } });
     if (existing)
@@ -121,7 +122,7 @@ function buildAutomaticPaymentMethods(settings) {
     }
     return { enabled: true, allow_redirects: "never" };
 }
-export async function createOrderStripePaymentIntent(orderId) {
+export async function createOrderStripePaymentIntent(orderId, options) {
     if (!isStripeConfigured()) {
         throw new Error("Stripe is not configured");
     }
@@ -140,7 +141,20 @@ export async function createOrderStripePaymentIntent(orderId) {
     }
     const stripe = getStripe();
     await registerApplePayDomainForAccount(payment.stripeAccountId);
-    const intent = await stripe.paymentIntents.create({
+    let stripeCustomerId;
+    let customerSessionClientSecret = null;
+    if (order.customerId &&
+        options?.authenticatedCustomerId &&
+        order.customerId === options.authenticatedCustomerId) {
+        stripeCustomerId = await getOrCreateBranchStripeCustomer(order.customerId, order.branchId, payment.stripeAccountId);
+        try {
+            customerSessionClientSecret = await createCustomerSessionForPayment(stripeCustomerId, payment.stripeAccountId);
+        }
+        catch (err) {
+            console.warn("[stripe] customer session unavailable", orderId, err);
+        }
+    }
+    const intentParams = {
         amount: amountToCents(amount),
         currency: "eur",
         automatic_payment_methods: buildAutomaticPaymentMethods(payment),
@@ -149,7 +163,14 @@ export async function createOrderStripePaymentIntent(orderId) {
             orderId,
             branchId: order.branchId
         }
-    }, { stripeAccount: payment.stripeAccountId });
+    };
+    if (stripeCustomerId) {
+        intentParams.customer = stripeCustomerId;
+        intentParams.setup_future_usage = "off_session";
+    }
+    const intent = await stripe.paymentIntents.create(intentParams, {
+        stripeAccount: payment.stripeAccountId
+    });
     if (!intent.client_secret) {
         throw new Error("Failed to create payment session");
     }
@@ -164,7 +185,9 @@ export async function createOrderStripePaymentIntent(orderId) {
         clientSecret: intent.client_secret,
         paymentIntentId: intent.id,
         stripeAccountId: payment.stripeAccountId,
-        publishableKey: getStripePublishableKey()
+        publishableKey: getStripePublishableKey(),
+        customerSessionClientSecret,
+        savePaymentMethodOffered: Boolean(stripeCustomerId)
     };
 }
 export async function createGiftCardStripePaymentIntent(purchaseId) {

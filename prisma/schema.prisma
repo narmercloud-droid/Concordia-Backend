@@ -226,6 +226,7 @@ model Customer {
   referral               Referral?
   Review                 Review[]
   userRewards            UserReward[]
+  branchStripeProfiles   CustomerBranchStripe[]
 }
 
 model Courier {
@@ -981,6 +982,8 @@ model BranchCustomer {
   marketingWhatsApp   Boolean   @default(false)
   consentAt           DateTime?
   orderCount          Int       @default(0)
+  totalSpent          Float     @default(0)
+  totalSaved          Float     @default(0)
   firstOrderAt        DateTime?
   lastOrderAt         DateTime?
   winBackOfferSentAt  DateTime?
@@ -1088,4 +1091,17 @@ enum TransactionType {
   VOUCHER
   PROMO
   TOPUP
+}
+
+model CustomerBranchStripe {
+  id               String   @id @default(uuid())
+  customerId       String
+  branchId         String
+  stripeCustomerId String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  customer         Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@unique([customerId, branchId])
+  @@index([branchId])
 }

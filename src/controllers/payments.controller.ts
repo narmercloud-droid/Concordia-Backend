@@ -24,8 +24,10 @@ export const PaymentsController = {
     if (!isStripeConfigured()) {
       throw fail("PAYMENT_FAILED", "Stripe is not configured");
     }
+    const authenticatedCustomerId =
+      (req as Request & { customer?: { id: string } }).customer?.id ?? null;
     try {
-      return await paymentsService.createStripePaymentIntent(orderId);
+      return await paymentsService.createStripePaymentIntent(orderId, authenticatedCustomerId);
     } catch (err: any) {
       throw fail("PAYMENT_FAILED", err?.message ?? "Could not start card payment");
     }

@@ -48,8 +48,8 @@ export const paymentsService = {
             methods
         };
     },
-    async createStripePaymentIntent(orderId) {
-        return createOrderStripePaymentIntent(orderId);
+    async createStripePaymentIntent(orderId, authenticatedCustomerId) {
+        return createOrderStripePaymentIntent(orderId, { authenticatedCustomerId });
     },
     async confirmStripePayment(orderId) {
         const order = await prisma.order.findUnique({ where: { id: orderId } });

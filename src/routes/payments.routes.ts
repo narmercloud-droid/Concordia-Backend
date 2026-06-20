@@ -4,12 +4,17 @@ import { PaymentsController } from "../controllers/payments.controller.ts";
 import { adminAuth } from "../middleware/adminAuth.ts";
 import { requireSuperAdmin } from "../middleware/requireSuperAdmin.ts";
 import { branchPaymentAccess } from "../middleware/branchPaymentAccess.ts";
+import { optionalCustomerAuth } from "../middleware/optionalCustomerAuth.ts";
 
 const router = Router();
 
 router.get("/config", PaymentsController.getConfig);
 
-router.post("/stripe/create-intent", PaymentsController.createStripePaymentIntent);
+router.post(
+  "/stripe/create-intent",
+  optionalCustomerAuth,
+  PaymentsController.createStripePaymentIntent
+);
 router.post("/stripe/confirm", PaymentsController.confirmStripePayment);
 router.post("/gift-card/stripe/create-intent", PaymentsController.createGiftCardStripePaymentIntent);
 router.post("/gift-card/stripe/confirm", PaymentsController.confirmGiftCardStripePayment);

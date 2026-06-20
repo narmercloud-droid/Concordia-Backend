@@ -66,8 +66,8 @@ export const paymentsService = {
     };
   },
 
-  async createStripePaymentIntent(orderId: string) {
-    return createOrderStripePaymentIntent(orderId);
+  async createStripePaymentIntent(orderId: string, authenticatedCustomerId?: string | null) {
+    return createOrderStripePaymentIntent(orderId, { authenticatedCustomerId });
   },
 
   async confirmStripePayment(orderId: string) {

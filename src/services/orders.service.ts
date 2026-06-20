@@ -304,7 +304,10 @@ export class OrdersService {
       birthday: rest.birthday ?? null,
       marketingEmail,
       marketingSMS,
-      marketingWhatsApp
+      marketingWhatsApp,
+      orderTotal: Number(order.orderTotal ?? 0),
+      savedAmount:
+        Number(order.discount ?? 0) + Number(order.giftCardAmount ?? 0)
     });
 
     await prisma.orderTrackingEvent.create({

@@ -12,6 +12,8 @@ export type BranchCustomerInput = {
   marketingEmail?: boolean;
   marketingSMS?: boolean;
   marketingWhatsApp?: boolean;
+  orderTotal?: number;
+  savedAmount?: number;
 };
 
 export function resolvePreferredChannel(input: {
@@ -46,6 +48,8 @@ export async function syncBranchCustomerFromOrder(input: BranchCustomerInput) {
     ? resolvePreferredChannel(input)
     : null;
   const birthday = parseBirthday(input.birthday);
+  const orderTotal = Math.max(0, Number(input.orderTotal ?? 0));
+  const savedAmount = Math.max(0, Number(input.savedAmount ?? 0));
 
   const existing = await prisma.branchCustomer.findUnique({
     where: { branchId_phone: { branchId, phone } }
@@ -65,6 +69,8 @@ export async function syncBranchCustomerFromOrder(input: BranchCustomerInput) {
         consentAt:
           hasMarketing && !existing.consentAt ? now : existing.consentAt,
         orderCount: { increment: 1 },
+        totalSpent: { increment: orderTotal },
+        totalSaved: { increment: savedAmount },
         firstOrderAt: existing.firstOrderAt ?? now,
         lastOrderAt: now
       }
@@ -85,6 +91,8 @@ export async function syncBranchCustomerFromOrder(input: BranchCustomerInput) {
       preferredChannel,
       consentAt: hasMarketing ? now : null,
       orderCount: 1,
+      totalSpent: orderTotal,
+      totalSaved: savedAmount,
       firstOrderAt: now,
       lastOrderAt: now
     }
@@ -123,7 +131,7 @@ export async function listBranchCustomers(
 }
 
 export async function getBranchCustomerStats(branchId: string) {
-  const [total, marketingOptIn, repeatCustomers] = await Promise.all([
+  const [total, marketingOptIn, repeatCustomers, aggregates] = await Promise.all([
     prisma.branchCustomer.count({ where: { branchId } }),
     prisma.branchCustomer.count({
       where: {
@@ -137,10 +145,21 @@ export async function getBranchCustomerStats(branchId: string) {
     }),
     prisma.branchCustomer.count({
       where: { branchId, orderCount: { gte: 3 } }
+    }),
+    prisma.branchCustomer.aggregate({
+      where: { branchId },
+      _sum: { totalSpent: true, totalSaved: true, orderCount: true }
     })
   ]);
 
-  return { total, marketingOptIn, repeatCustomers };
+  return {
+    total,
+    marketingOptIn,
+    repeatCustomers,
+    totalOrders: aggregates._sum.orderCount ?? 0,
+    totalSpent: aggregates._sum.totalSpent ?? 0,
+    totalSaved: aggregates._sum.totalSaved ?? 0
+  };
 }
 
 export async function getCustomerOrderHistory(branchId: string, phone: string) {
@@ -163,6 +182,8 @@ export function branchCustomersToCsv(
     "email",
     "birthday",
     "orderCount",
+    "totalSpent",
+    "totalSaved",
     "lastOrderAt",
     "preferredChannel",
     "marketingEmail",
@@ -177,6 +198,8 @@ export function branchCustomersToCsv(
       csvEscape(c.email ?? ""),
       c.birthday ? c.birthday.toISOString().slice(0, 10) : "",
       c.orderCount,
+      (c.totalSpent ?? 0).toFixed(2),
+      (c.totalSaved ?? 0).toFixed(2),
       c.lastOrderAt?.toISOString() ?? "",
       c.preferredChannel ?? "",
       c.marketingEmail,
