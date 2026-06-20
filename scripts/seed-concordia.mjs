@@ -36,18 +36,6 @@ const BRANCHES = [
     lng: 6.2684,
     lieferandoUrl: "https://www.lieferando.de/speisekarte/pizzeria-concordia-ll",
     websiteUrl: "https://www.pizzaconcordiall-straelen.de/"
-  },
-  {
-    id: "concordia-geldern",
-    name: "Concordia Geldern",
-    status: "coming_soon",
-    city: "Geldern"
-  },
-  {
-    id: "concordia-kamp-lintfort",
-    name: "Concordia Kamp-Lintfort",
-    status: "coming_soon",
-    city: "Kamp-Lintfort"
   }
 ];
 

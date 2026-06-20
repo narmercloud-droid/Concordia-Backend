@@ -474,7 +474,16 @@ export async function getPlatformPromoForCustomer() {
   };
 }
 
-const HIDDEN_BRANCH_IDS = new Set(["branch-001", "test-branch-1"]);
+const HIDDEN_BRANCH_IDS = new Set([
+  "branch-001",
+  "test-branch-1",
+  "concordia-geldern",
+  "concordia-kamp-lintfort"
+]);
+
+export function isCustomerBranchVisible(branchId: string) {
+  return !HIDDEN_BRANCH_IDS.has(branchId);
+}
 
 function applyOpenStatus(rows: CachedBranchRow[]) {
   const now = new Date();

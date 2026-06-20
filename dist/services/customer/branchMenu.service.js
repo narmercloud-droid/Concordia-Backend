@@ -362,7 +362,15 @@ export async function getPlatformPromoForCustomer() {
         showLoyaltyCheckout: platform.showLoyaltyCheckout
     };
 }
-const HIDDEN_BRANCH_IDS = new Set(["branch-001", "test-branch-1"]);
+const HIDDEN_BRANCH_IDS = new Set([
+    "branch-001",
+    "test-branch-1",
+    "concordia-geldern",
+    "concordia-kamp-lintfort"
+]);
+export function isCustomerBranchVisible(branchId) {
+    return !HIDDEN_BRANCH_IDS.has(branchId);
+}
 function applyOpenStatus(rows) {
     const now = new Date();
     const day = getBerlinDayOfWeek(now);

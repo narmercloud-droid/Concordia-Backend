@@ -1,5 +1,5 @@
 import express from "express";
-import { getBranchMenuForCustomer, getBranchItemForCustomer, listBranchesForCustomer, getPlatformPromoForCustomer, peekBranchMenuCache } from "../../services/customer/branchMenu.service.js";
+import { getBranchMenuForCustomer, getBranchItemForCustomer, listBranchesForCustomer, getPlatformPromoForCustomer, peekBranchMenuCache, isCustomerBranchVisible } from "../../services/customer/branchMenu.service.js";
 import { generateTimeSlots } from "../../services/scheduling/scheduling.service.js";
 import { getDeliverySettings, quoteDelivery } from "../../services/customer/deliveryValidation.service.js";
 import { reverseGeocode, suggestAddresses } from "../../services/geo/geocode.service.js";
@@ -31,6 +31,13 @@ function noBrowserCache(_req, res, next) {
 router.get("/branches", noBrowserCache, wrap(async () => {
     return await listBranchesForCustomer();
 }));
+router.use("/branches/:branchId", (req, _res, next) => {
+    if (!isCustomerBranchVisible(req.params.branchId)) {
+        next({ code: "NOT_FOUND", message: "Branch not found" });
+        return;
+    }
+    next();
+});
 router.get("/platform-promo", noBrowserCache, wrap(async () => {
     return await getPlatformPromoForCustomer();
 }));

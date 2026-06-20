@@ -4,7 +4,8 @@ import {
   getBranchItemForCustomer,
   listBranchesForCustomer,
   getPlatformPromoForCustomer,
-  peekBranchMenuCache
+  peekBranchMenuCache,
+  isCustomerBranchVisible
 } from "../../services/customer/branchMenu.service.ts";
 import { generateTimeSlots } from "../../services/scheduling/scheduling.service.ts";
 import {
@@ -52,6 +53,14 @@ function noBrowserCache(_req: express.Request, res: express.Response, next: expr
 router.get("/branches", noBrowserCache, wrap(async () => {
   return await listBranchesForCustomer();
 }));
+
+router.use("/branches/:branchId", (req, _res, next) => {
+  if (!isCustomerBranchVisible(req.params.branchId)) {
+    next({ code: "NOT_FOUND", message: "Branch not found" });
+    return;
+  }
+  next();
+});
 
 router.get("/platform-promo", noBrowserCache, wrap(async () => {
   return await getPlatformPromoForCustomer();
