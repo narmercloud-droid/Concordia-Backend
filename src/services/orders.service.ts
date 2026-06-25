@@ -20,6 +20,7 @@ import {
   getFreeDrinkOptions
 } from "./customer/freeDrink.service.ts";
 import { syncBranchCustomerFromOrder } from "./customer/branchCustomer.service.ts";
+import { persistPushSubscriptionFromOrder } from "./notifications/webPushSubscription.service.ts";
 import { buildCourierUrl, buildOrderReviewUrl, buildOrderTrackingUrl } from "../utils/customerOrderUrls.ts";
 import {
   validateAndPriceOrderLines,
@@ -309,6 +310,20 @@ export class OrdersService {
       savedAmount:
         Number(order.discount ?? 0) + Number(order.giftCardAmount ?? 0)
     });
+
+    if (rest.pushToken?.trim()) {
+      const offerConsent = marketingEmail || marketingSMS || marketingWhatsApp;
+      void persistPushSubscriptionFromOrder({
+        token: rest.pushToken.trim(),
+        customerId: rest.customerId ?? null,
+        branchId: rest.branchId,
+        // undefined preserves allowOffers from checkout subscribeToPush (e.g. push-only opt-in)
+        allowOffers: offerConsent ? true : undefined,
+        customerEmail
+      }).catch((err) => {
+        logger.warn({ err, orderId: order.id }, "Failed to persist push subscription");
+      });
+    }
 
     await prisma.orderTrackingEvent.create({
       data: {

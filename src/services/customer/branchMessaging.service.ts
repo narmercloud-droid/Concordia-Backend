@@ -1,5 +1,6 @@
 import logger from "../../logger.ts";
 import { smsService } from "../sms.service.ts";
+import { sendOfferPushToCustomerEmail } from "../notifications/webPushSubscription.service.ts";
 import type { BranchCustomer } from "@prisma/client";
 import type { PreferredChannel } from "./branchCustomer.service.ts";
 
@@ -62,26 +63,40 @@ async function sendWhatsApp(phone: string, message: string) {
 export async function sendBranchMessage(
   customer: BranchCustomer,
   subject: string,
-  text: string
+  text: string,
+  options?: { url?: string }
 ) {
   const channel = customer.preferredChannel as PreferredChannel | null;
-  if (!channel) return { sent: false, channel: null };
+  let sent = false;
+  let usedChannel: string | null = null;
 
   if (channel === "email" && customer.email) {
     const html = `<div style="font-family:Arial,sans-serif;line-height:1.5"><p>${text.replace(/\n/g, "<br/>")}</p></div>`;
-    const sent = await sendEmail(customer.email, subject, html);
-    return { sent, channel };
+    sent = await sendEmail(customer.email, subject, html);
+    usedChannel = "email";
+  } else if (channel === "whatsapp") {
+    sent = await sendWhatsApp(customer.phone, text);
+    usedChannel = "whatsapp";
+  } else if (channel === "sms") {
+    sent = await sendSms(customer.phone, text);
+    usedChannel = "sms";
   }
 
-  if (channel === "whatsapp") {
-    const sent = await sendWhatsApp(customer.phone, text);
-    return { sent, channel: "whatsapp" };
+  const offerUrl = options?.url ?? "/offers";
+  try {
+    const pushResult = await sendOfferPushToCustomerEmail(
+      customer.email,
+      subject,
+      text.replace(/\n/g, " "),
+      offerUrl
+    );
+    if (pushResult.sent > 0) {
+      sent = true;
+      usedChannel = usedChannel ?? "push";
+    }
+  } catch (err) {
+    logger.warn({ err, customerId: customer.id }, "Branch offer push failed");
   }
 
-  if (channel === "sms") {
-    const sent = await sendSms(customer.phone, text);
-    return { sent, channel: "sms" };
-  }
-
-  return { sent: false, channel };
+  return { sent, channel: usedChannel };
 }

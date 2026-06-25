@@ -24,6 +24,7 @@ export async function sendPush(subscription, title, body, data = {}) {
     await webpush.sendNotification(sub, payload);
   } catch (err) {
     console.error('Push send error:', err);
+    throw err;
   }
 }
 

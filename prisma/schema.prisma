@@ -221,6 +221,7 @@ model Customer {
   favorites              Favorite[]
   loyaltyPointsRecord    LoyaltyPoints?
   notificationPreference NotificationPreference?
+  webPushSubscriptions   WebPushSubscription[]
   orders                 Order[]
   orderIssues            OrderIssue[]
   referral               Referral?
@@ -633,11 +634,29 @@ model LoyaltyPoints {
 }
 
 model NotificationPreference {
-  id         String   @id @default(uuid())
-  customerId String   @unique
-  allowPush  Boolean  @default(true)
-  allowSMS   Boolean  @default(false)
-  customer   Customer @relation(fields: [customerId], references: [id])
+  id          String   @id @default(uuid())
+  customerId  String   @unique
+  allowPush   Boolean  @default(true)
+  allowOffers Boolean  @default(true)
+  allowSMS    Boolean  @default(false)
+  customer    Customer @relation(fields: [customerId], references: [id])
+}
+
+model WebPushSubscription {
+  id          String   @id @default(uuid())
+  endpoint    String   @unique
+  p256dh      String
+  auth        String
+  customerId  String?
+  allowOffers Boolean  @default(true)
+  allowOrders Boolean  @default(true)
+  branchId    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  customer    Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  @@index([customerId])
+  @@index([allowOffers])
 }
 
 model Referral {

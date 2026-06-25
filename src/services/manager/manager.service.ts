@@ -265,15 +265,153 @@ export async function updateBranchMenuItem(
   });
 }
 
-export async function getBranchOrders(branchId: string, limit = 50) {
-  return prisma.order.findMany({
-    where: { branchId },
-    orderBy: { createdAt: "desc" },
-    take: limit,
-    include: {
-      items: { include: { item: true } }
-    }
+export async function getBranchOrders(
+  branchId: string,
+  options: { search?: string; limit?: number; offset?: number } = {}
+) {
+  const limit = Math.min(Math.max(Number(options.limit ?? 50) || 50, 1), 100);
+  const offset = Math.max(Number(options.offset ?? 0) || 0, 0);
+  const where = buildBranchOrderSearchWhere(branchId, options.search);
+
+  const [orders, total] = await Promise.all([
+    prisma.order.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      take: limit,
+      skip: offset,
+      include: MANAGER_ORDER_INCLUDE
+    }),
+    prisma.order.count({ where })
+  ]);
+
+  return { orders, total, limit, offset };
+}
+
+export async function getBranchOrderById(branchId: string, orderId: string) {
+  return prisma.order.findFirst({
+    where: { id: orderId, branchId },
+    include: MANAGER_ORDER_INCLUDE
   });
+}
+
+const MANAGER_ORDER_INCLUDE = {
+  items: {
+    include: {
+      item: true,
+      variants: true,
+      extras: true
+    }
+  },
+  trackingEvents: { orderBy: { timestamp: "asc" as const } }
+};
+
+function buildBranchOrderSearchWhere(branchId: string, search?: string) {
+  const q = search?.trim();
+  if (!q) return { branchId };
+
+  return {
+    branchId,
+    OR: [
+      { id: { contains: q, mode: "insensitive" as const } },
+      { tracking_token: { contains: q, mode: "insensitive" as const } },
+      { customerName: { contains: q, mode: "insensitive" as const } },
+      { customerPhone: { contains: q, mode: "insensitive" as const } },
+      { customerEmail: { contains: q, mode: "insensitive" as const } },
+      { deliveryAddress: { contains: q, mode: "insensitive" as const } },
+      { postalCode: { contains: q, mode: "insensitive" as const } }
+    ]
+  };
+}
+
+export function formatManagerOrder(o: {
+  id: string;
+  tracking_token?: string | null;
+  status: string;
+  courierStatus?: string | null;
+  kitchenStatus?: string | null;
+  fulfillmentType?: string | null;
+  customerName?: string | null;
+  customerPhone?: string | null;
+  customerEmail?: string | null;
+  deliveryAddress?: string | null;
+  postalCode?: string | null;
+  orderTotal?: number | null;
+  deliveryFee?: number | null;
+  discount?: number | null;
+  giftCardAmount?: number | null;
+  paymentMethod?: string | null;
+  paymentStatus?: string | null;
+  notes?: string | null;
+  scheduledFor?: Date | null;
+  createdAt: Date;
+  confirmedAt?: Date | null;
+  preparingAt?: Date | null;
+  readyAt?: Date | null;
+  pickedUpAt?: Date | null;
+  deliveredAt?: Date | null;
+  estimatedPrepTime?: number | null;
+  estimatedTotalTime?: number | null;
+  isGuest?: boolean | null;
+  items?: Array<{
+    id: string;
+    quantity: number;
+    price: number;
+    notes?: string | null;
+    item?: { name?: string | null } | null;
+    variants?: Array<{ name: string; price: unknown }>;
+    extras?: Array<{ name: string; price: unknown }>;
+  }>;
+  trackingEvents?: Array<{ status: string; timestamp: Date }>;
+}) {
+  return {
+    id: o.id,
+    trackingToken: o.tracking_token ?? null,
+    status: o.status,
+    courierStatus: o.courierStatus,
+    kitchenStatus: o.kitchenStatus,
+    fulfillmentType: o.fulfillmentType,
+    customerName: o.customerName,
+    customerPhone: o.customerPhone,
+    customerEmail: o.customerEmail,
+    deliveryAddress: o.deliveryAddress,
+    postalCode: o.postalCode,
+    orderTotal: o.orderTotal,
+    deliveryFee: o.deliveryFee,
+    discount: o.discount,
+    giftCardAmount: o.giftCardAmount,
+    paymentMethod: o.paymentMethod,
+    paymentStatus: o.paymentStatus,
+    notes: o.notes,
+    scheduledFor: o.scheduledFor,
+    createdAt: o.createdAt,
+    confirmedAt: o.confirmedAt,
+    preparingAt: o.preparingAt,
+    readyAt: o.readyAt,
+    pickedUpAt: o.pickedUpAt,
+    deliveredAt: o.deliveredAt,
+    estimatedPrepTime: o.estimatedPrepTime,
+    estimatedTotalTime: o.estimatedTotalTime,
+    isGuest: o.isGuest,
+    items: (o.items ?? []).map((i) => ({
+      id: i.id,
+      name: i.item?.name ?? "Item",
+      quantity: i.quantity,
+      price: i.price,
+      notes: i.notes,
+      variants: (i.variants ?? []).map((v) => ({
+        name: v.name,
+        price: Number(v.price)
+      })),
+      extras: (i.extras ?? []).map((e) => ({
+        name: e.name,
+        price: Number(e.price)
+      }))
+    })),
+    timeline: (o.trackingEvents ?? []).map((e) => ({
+      status: e.status,
+      timestamp: e.timestamp
+    }))
+  };
 }
 
 export async function getBranchPromotions(branchId: string) {

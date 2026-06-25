@@ -15,6 +15,7 @@ import {
   updateMenuItem,
   updateVariantGroup,
   getOrders,
+  getOrderById,
   getDashboard,
   getPromotions,
   updatePromotions
@@ -205,6 +206,7 @@ router.delete(
   deletePresetOption
 );
 router.get("/orders", requireManagerPermission("orders"), getOrders);
+router.get("/orders/:id", requireManagerPermission("orders"), getOrderById);
 router.get("/promotions", requireManagerPermission("offers_view"), getPromotions);
 router.patch("/promotions", requireManagerPermission("offers_edit"), updatePromotions);
 router.get("/customers", requireManagerPermission("customers_view"), getCustomers);

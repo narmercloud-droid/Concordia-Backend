@@ -31,7 +31,8 @@ export async function runWinBackForBranch(branchId: string) {
     const result = await sendBranchMessage(
       customer,
       "Wir vermissen Sie bei Concordia",
-      text
+      text,
+      { url: orderUrl(branchId) }
     );
 
     if (result.sent) {
@@ -62,7 +63,8 @@ export async function runBirthdayForBranch(branchId: string) {
     const result = await sendBranchMessage(
       customer,
       "Happy Birthday von Concordia",
-      text
+      text,
+      { url: orderUrl(branchId) }
     );
 
     if (result.sent) {

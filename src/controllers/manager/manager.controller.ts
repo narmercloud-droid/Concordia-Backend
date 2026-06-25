@@ -146,26 +146,31 @@ export const updateMenuItem = wrap(async (req: Request) => {
 });
 
 export const getOrders = wrap(async (req: Request) => {
+  const search = String(req.query.search ?? "").trim() || undefined;
   const limit = Number(req.query.limit ?? 50);
-  const orders = await managerService.getBranchOrders(branchId(req), limit);
-  return orders.map((o) => ({
-    id: o.id,
-    status: o.status,
-    courierStatus: o.courierStatus,
-    fulfillmentType: o.fulfillmentType,
-    customerName: o.customerName,
-    customerPhone: o.customerPhone,
-    deliveryAddress: o.deliveryAddress,
-    orderTotal: o.orderTotal,
-    deliveryFee: o.deliveryFee,
-    scheduledFor: o.scheduledFor,
-    createdAt: o.createdAt,
-    items: o.items.map((i) => ({
-      name: i.item?.name,
-      quantity: i.quantity,
-      price: i.price
-    }))
-  }));
+  const offset = Number(req.query.offset ?? 0);
+  const result = await managerService.getBranchOrders(branchId(req), {
+    search,
+    limit,
+    offset
+  });
+
+  return {
+    orders: result.orders.map((o) => managerService.formatManagerOrder(o)),
+    total: result.total,
+    limit: result.limit,
+    offset: result.offset
+  };
+});
+
+export const getOrderById = wrap(async (req: Request) => {
+  const orderId = String(req.params.id ?? "").trim();
+  if (!orderId) throw fail("INVALID_INPUT", "order id is required");
+
+  const order = await managerService.getBranchOrderById(branchId(req), orderId);
+  if (!order) throw fail("NOT_FOUND", "Order not found");
+
+  return managerService.formatManagerOrder(order);
 });
 
 export const getDashboard = wrap(async (req: Request) => {
