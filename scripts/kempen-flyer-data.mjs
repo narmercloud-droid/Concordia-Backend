@@ -52,18 +52,21 @@ export const FLYER_PRICES = [
   // Party / family
   { match: "Partyblech", single: 26 },
   { match: "Familien-Pizza", single: 17 },
-  // Pizzabrötchen
-  { match: "Pizzabrötchen", single: 3.5 },
-  { match: "Kräuterbutter", single: 1.5 },
+  // Pizzabrötchen — specific names before generic (longest-match resolver)
+  { match: "Pizzabrötchen mit Thunfisch, Zwiebeln", single: 8 },
+  { match: "Pizzabrötchen mit Dönerfleisch, Paprika und Zwiebeln", single: 8.5 },
+  { match: "Pizzabrötchen mit Mozzarella und Tomaten", single: 8.5 },
+  { match: "Pizzabrötchen mit Dönerfleisch", single: 8 },
+  { match: "Pizzabrötchen mit Spinat", single: 7.5 },
   { match: "Pizzabrötchen mit Käse", single: 6 },
   { match: "Pizzabrötchen mit Thunfisch", single: 7 },
   { match: "Pizzabrötchen mit Salami", single: 7 },
   { match: "Pizzabrötchen mit Hinterschinken", single: 7 },
   { match: "Pizzabrötchen mit Bolognese", single: 7 },
   { match: "Pizzabrötchen mit Sucuk", single: 7 },
-  { match: "Pizzabrötchen mit Spinat", single: 7.5 },
-  { match: "Pizzabrötchen mit Thunfisch, Zwiebeln", single: 8 },
-  { match: "Pizzabrötchen mit Dönerfleisch", single: 8 },
+  { match: "Pizzabrötchen 10", single: 3.5 },
+  { match: "Pizzabrötchen", single: 3.5 },
+  { match: "Kräuterbutter", single: 1.5 },
   // Schnitzel (variants: Hähnchen / Schwein)
   { match: "Schnitzel Wiener Art", hähnchen: 10.5, schwein: 10 },
   { match: "Jägerschnitzel", hähnchen: 11, schwein: 10.5 },
@@ -119,6 +122,25 @@ export const FLYER_PRICES = [
   { match: "Baguette mit Thunfisch", single: 7 },
   { match: "Baguette mit Sucuk", single: 7 }
 ];
+
+export function normalizeFlyerName(name) {
+  return name.trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+/** Longest substring match so "Pizzabrötchen mit Käse" beats bare "Pizzabrötchen". */
+export function findFlyerPrice(name) {
+  const n = normalizeFlyerName(name);
+  let best = null;
+  let bestLen = 0;
+  for (const entry of FLYER_PRICES) {
+    const m = normalizeFlyerName(entry.match);
+    if (n.includes(m) && m.length > bestLen) {
+      best = entry;
+      bestLen = m.length;
+    }
+  }
+  return best;
+}
 
 export const PASTA_NOODLE_OPTIONS = [
   { name: "Spaghetti", price: 0 },

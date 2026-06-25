@@ -23,6 +23,8 @@
     "apply:kempen-pizza-extras": "node scripts/apply-kempen-pizza-extras.mjs",
     "apply:kempen-calzones": "node scripts/apply-kempen-calzones.mjs",
     "apply:kempen-pizzabroetchen-extras": "node scripts/apply-kempen-pizzabroetchen-extras.mjs",
+    "fix:pizzabroetchen-prices": "node scripts/fix-pizzabroetchen-prices.mjs",
+    "apply:flyer-prices": "node scripts/apply-flyer-variant-prices.mjs",
     "apply:kempen-schnitzel-options": "node scripts/apply-kempen-schnitzel-options.mjs",
     "apply:kempen-burger-extras": "node scripts/apply-kempen-burger-extras.mjs",
     "apply:kempen-all-extras": "npm run apply:kempen-pizza-extras && npm run apply:kempen-calzones && npm run apply:kempen-pizzabroetchen-extras && npm run apply:kempen-schnitzel-options && npm run apply:kempen-burger-extras",

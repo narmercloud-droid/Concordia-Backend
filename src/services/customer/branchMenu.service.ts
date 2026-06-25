@@ -61,7 +61,7 @@ export function invalidateBranchDerivedCaches(branchId: string) {
 
 export function invalidateBranchMenuCache(branchId: string) {
   for (const lang of MENU_LANGS) {
-    const key = `customer:menu:${branchId}:${lang}:v2`;
+    const key = `customer:menu:${branchId}:${lang}:v3`;
     deleteSimpleCache(key);
     void deleteCache(`${key}:json`);
   }
@@ -72,7 +72,7 @@ export function invalidateBranchMenuCache(branchId: string) {
 
 export async function peekBranchMenuCache(branchId: string, lang?: string | null) {
   const resolvedLang = resolveMenuLanguage(lang);
-  const memoryKey = `customer:menu:${branchId}:${resolvedLang}:v2`;
+  const memoryKey = `customer:menu:${branchId}:${resolvedLang}:v3`;
   const cachedMemory = getSimpleCache<Awaited<ReturnType<typeof buildBranchMenu>>>(memoryKey);
   if (cachedMemory) return cachedMemory;
 
@@ -103,7 +103,7 @@ function itemBelongsToBranch(branchId: string, itemId: number) {
 
 export async function getBranchMenuForCustomer(branchId: string, lang?: string | null) {
   const resolvedLang = resolveMenuLanguage(lang);
-  const memoryKey = `customer:menu:${branchId}:${resolvedLang}:v2`;
+  const memoryKey = `customer:menu:${branchId}:${resolvedLang}:v3`;
   const cachedMemory = getSimpleCache<Awaited<ReturnType<typeof buildBranchMenu>>>(memoryKey);
   if (cachedMemory) return cachedMemory;
 

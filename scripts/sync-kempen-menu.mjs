@@ -9,12 +9,12 @@ import { readFileSync } from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import {
-  FLYER_PRICES,
   FLYER_PROMOTIONS,
   PASTA_NOODLE_OPTIONS,
   SALAD_DRESSING_OPTIONS,
   SCHNITZEL_MEAT_OPTIONS,
-  SCHNITZEL_SALAD_SAUCE_OPTIONS
+  SCHNITZEL_SALAD_SAUCE_OPTIONS,
+  findFlyerPrice
 } from "./kempen-flyer-data.mjs";
 import {
   buildCategorizedExtras,
@@ -59,14 +59,6 @@ const lieferando = JSON.parse(
 
 function normalizeName(name) {
   return name.trim().toLowerCase().replace(/\s+/g, " ");
-}
-
-function findFlyerPrice(name) {
-  const n = normalizeName(name);
-  for (const entry of FLYER_PRICES) {
-    if (n.includes(normalizeName(entry.match))) return entry;
-  }
-  return null;
 }
 
 function allProducts() {
