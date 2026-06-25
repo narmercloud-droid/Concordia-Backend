@@ -14,7 +14,9 @@ COPY tsconfig*.json ./
 COPY src ./src
 RUN npm run build \
   && mkdir -p dist/config \
-  && cp src/config/branchGooglePlaces.json src/config/googleReviewsSnapshot.json dist/config/
+  && cp src/config/branchGooglePlaces.json src/config/googleReviewsSnapshot.json dist/config/ \
+  && mkdir -p dist/services/notifications \
+  && cp src/services/notifications/notification.service.js dist/services/notifications/
 
 FROM node:20-slim AS runtime
 
