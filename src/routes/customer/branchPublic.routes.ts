@@ -113,6 +113,21 @@ router.get("/branches/:branchId/reverse-geocode", wrap(async (req) => {
     throw { code: "NOT_FOUND", message: "Could not resolve address for this location" };
   }
 
+  const settings = await getDeliverySettings(req.params.branchId);
+  const allowedPostcodes = new Set(
+    settings.deliveryAreas.map((area) => area.postalCode).filter(Boolean)
+  );
+  if (
+    allowedPostcodes.size > 0 &&
+    (settings.deliveryMode === "postcodes" || settings.deliveryMode === "both") &&
+    !allowedPostcodes.has(result.postalCode)
+  ) {
+    throw {
+      code: "NOT_FOUND",
+      message: "This location is outside the delivery area for this branch"
+    };
+  }
+
   return result;
 }));
 
@@ -130,11 +145,16 @@ router.get("/branches/:branchId/address-suggest", wrap(async (req) => {
     select: { BranchConfig: { select: { configJson: true } } }
   });
   const config = (branch?.BranchConfig?.configJson ?? {}) as Record<string, unknown>;
-  const nearCity = city || String(config.city ?? "Kempen");
+  const nearCity = city || String(config.city ?? "");
   const queryLat = Number(req.query.lat ?? 0);
   const queryLng = Number(req.query.lng ?? 0);
   const configLat = Number(config.lat ?? 0);
   const configLng = Number(config.lng ?? 0);
+
+  const settings = await getDeliverySettings(req.params.branchId);
+  const allowedPostcodes = new Set(
+    settings.deliveryAreas.map((area) => area.postalCode).filter(Boolean)
+  );
 
   const suggestions = await suggestAddresses(q, {
     postalCode,
@@ -153,7 +173,14 @@ router.get("/branches/:branchId/address-suggest", wrap(async (req) => {
           ? configLng
           : undefined
   });
-  return { suggestions };
+
+  const filtered =
+    allowedPostcodes.size > 0 &&
+    (settings.deliveryMode === "postcodes" || settings.deliveryMode === "both")
+      ? suggestions.filter((s) => !s.postalCode || allowedPostcodes.has(s.postalCode))
+      : suggestions;
+
+  return { suggestions: filtered };
 }));
 
 router.get("/branches/:branchId/free-drink-options", publicCache(300), wrap(async (req) => {

@@ -69,7 +69,7 @@ function parseSuggestion(row: Record<string, unknown>): AddressSuggestion | null
     label,
     street: street || road || label.split(",")[0]?.trim() || label,
     postalCode,
-    city: city || "Kempen",
+    city,
     lat,
     lng
   };
@@ -199,7 +199,7 @@ export async function reverseGeocode(lat: number, lng: number): Promise<ReverseG
     return {
       street: road,
       houseNumber,
-      city: city || "Kempen",
+      city: city || "",
       postalCode,
       lat: resultLat,
       lng: resultLng
@@ -232,13 +232,15 @@ export async function suggestAddresses(
   }
 
   const limit = options?.limit ?? 8;
-  const nearCity = options?.city ?? options?.nearCity ?? "Kempen";
+  const nearCity = options?.city ?? options?.nearCity ?? "";
   const hasPostcode = /\b\d{5}\b/.test(trimmed);
   const searchQuery = options?.postalCode
     ? `${trimmed}, ${options.postalCode}, Germany`
     : hasPostcode
       ? `${trimmed}, Germany`
-      : `${trimmed}, ${nearCity}, Germany`;
+      : nearCity
+        ? `${trimmed}, ${nearCity}, Germany`
+        : `${trimmed}, Germany`;
 
   try {
     const url = new URL("https://nominatim.openstreetmap.org/search");

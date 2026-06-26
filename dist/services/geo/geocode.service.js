@@ -49,7 +49,7 @@ function parseSuggestion(row) {
         label,
         street: street || road || label.split(",")[0]?.trim() || label,
         postalCode,
-        city: city || "Kempen",
+        city,
         lat,
         lng
     };
@@ -143,7 +143,7 @@ export async function reverseGeocode(lat, lng) {
         return {
             street: road,
             houseNumber,
-            city: city || "Kempen",
+            city: city || "",
             postalCode,
             lat: resultLat,
             lng: resultLng
@@ -167,13 +167,15 @@ export async function suggestAddresses(query, options) {
         logger.warn({ err, query }, "Photon address suggest failed");
     }
     const limit = options?.limit ?? 8;
-    const nearCity = options?.city ?? options?.nearCity ?? "Kempen";
+    const nearCity = options?.city ?? options?.nearCity ?? "";
     const hasPostcode = /\b\d{5}\b/.test(trimmed);
     const searchQuery = options?.postalCode
         ? `${trimmed}, ${options.postalCode}, Germany`
         : hasPostcode
             ? `${trimmed}, Germany`
-            : `${trimmed}, ${nearCity}, Germany`;
+            : nearCity
+                ? `${trimmed}, ${nearCity}, Germany`
+                : `${trimmed}, Germany`;
     try {
         const url = new URL("https://nominatim.openstreetmap.org/search");
         url.searchParams.set("q", searchQuery);
