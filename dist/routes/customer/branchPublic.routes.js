@@ -1,7 +1,7 @@
 import express from "express";
 import { getBranchMenuForCustomer, getBranchItemForCustomer, listBranchesForCustomer, getPlatformPromoForCustomer, peekBranchMenuCache, isCustomerBranchVisible } from "../../services/customer/branchMenu.service.js";
 import { generateTimeSlots } from "../../services/scheduling/scheduling.service.js";
-import { getDeliverySettings, quoteDelivery } from "../../services/customer/deliveryValidation.service.js";
+import { getDeliverySettings, isDeliverableAtCoords, quoteDelivery } from "../../services/customer/deliveryValidation.service.js";
 import { reverseGeocode, suggestAddresses } from "../../services/geo/geocode.service.js";
 import { getAlsoPopularItems, getBranchBestsellers, getCartSuggestions } from "../../services/customer/bestsellers.service.js";
 import { validateDiscountCode } from "../../services/customer/discountCode.service.js";
@@ -79,11 +79,8 @@ router.get("/branches/:branchId/reverse-geocode", wrap(async (req) => {
     if (!result) {
         throw { code: "NOT_FOUND", message: "Could not resolve address for this location" };
     }
-    const settings = await getDeliverySettings(req.params.branchId);
-    const allowedPostcodes = new Set(settings.deliveryAreas.map((area) => area.postalCode).filter(Boolean));
-    if (allowedPostcodes.size > 0 &&
-        (settings.deliveryMode === "postcodes" || settings.deliveryMode === "both") &&
-        !allowedPostcodes.has(result.postalCode)) {
+    const deliverable = await isDeliverableAtCoords(req.params.branchId, lat, lng, result.postalCode);
+    if (!deliverable) {
         throw {
             code: "NOT_FOUND",
             message: "This location is outside the delivery area for this branch"

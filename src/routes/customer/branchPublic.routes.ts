@@ -10,6 +10,7 @@ import {
 import { generateTimeSlots } from "../../services/scheduling/scheduling.service.ts";
 import {
   getDeliverySettings,
+  isDeliverableAtCoords,
   quoteDelivery
 } from "../../services/customer/deliveryValidation.service.ts";
 import { reverseGeocode, suggestAddresses } from "../../services/geo/geocode.service.ts";
@@ -113,15 +114,13 @@ router.get("/branches/:branchId/reverse-geocode", wrap(async (req) => {
     throw { code: "NOT_FOUND", message: "Could not resolve address for this location" };
   }
 
-  const settings = await getDeliverySettings(req.params.branchId);
-  const allowedPostcodes = new Set(
-    settings.deliveryAreas.map((area) => area.postalCode).filter(Boolean)
+  const deliverable = await isDeliverableAtCoords(
+    req.params.branchId,
+    lat,
+    lng,
+    result.postalCode
   );
-  if (
-    allowedPostcodes.size > 0 &&
-    (settings.deliveryMode === "postcodes" || settings.deliveryMode === "both") &&
-    !allowedPostcodes.has(result.postalCode)
-  ) {
+  if (!deliverable) {
     throw {
       code: "NOT_FOUND",
       message: "This location is outside the delivery area for this branch"

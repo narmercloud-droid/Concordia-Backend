@@ -83,6 +83,40 @@ export async function getBranchDeliveryAreas(branchId: string): Promise<Delivery
   return settings.deliveryAreas;
 }
 
+/** True when GPS coords fall in a branch postcode list and/or radius zone. */
+export async function isDeliverableAtCoords(
+  branchId: string,
+  lat: number,
+  lng: number,
+  postalCode?: string | null
+): Promise<boolean> {
+  const settings = await getDeliverySettings(branchId);
+  const postcode = postalCode?.trim() || null;
+
+  if (postcode && settings.deliveryMode !== "radius") {
+    if (settings.deliveryAreas.some((area) => area.postalCode === postcode)) {
+      return true;
+    }
+  }
+
+  if (settings.deliveryMode === "postcodes") {
+    return false;
+  }
+
+  if (!settings.deliveryRadiusZones.length) {
+    return false;
+  }
+
+  const branchCoords = await getBranchCoords(branchId);
+  if (!branchCoords) {
+    return false;
+  }
+
+  const distanceKm =
+    haversineDistance(branchCoords.lat, branchCoords.lng, lat, lng) / 1000;
+  return matchRadiusZone(settings.deliveryRadiusZones, distanceKm) != null;
+}
+
 export function extractPostalCode(address: string): string | null {
   const match = address.match(/\b(\d{5})\b/);
   return match ? match[1] : null;
