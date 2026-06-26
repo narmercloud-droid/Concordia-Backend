@@ -195,15 +195,134 @@ export async function updateBranchMenuItem(branchId, branchMenuItemId, data) {
         include: { menuItem: true }
     });
 }
-export async function getBranchOrders(branchId, limit = 50) {
-    return prisma.order.findMany({
-        where: { branchId },
-        orderBy: { createdAt: "desc" },
-        take: limit,
-        include: {
-            items: { include: { item: true } }
-        }
+export async function getBranchOrders(branchId, options = {}) {
+    const limit = Math.min(Math.max(Number(options.limit ?? 50) || 50, 1), 100);
+    const offset = Math.max(Number(options.offset ?? 0) || 0, 0);
+    const where = buildBranchOrderWhere(branchId, options);
+    const [orders, total] = await Promise.all([
+        prisma.order.findMany({
+            where,
+            orderBy: { createdAt: "desc" },
+            take: limit,
+            skip: offset,
+            include: MANAGER_ORDER_INCLUDE
+        }),
+        prisma.order.count({ where })
+    ]);
+    return { orders, total, limit, offset };
+}
+export async function getBranchOrderById(branchId, orderId) {
+    return prisma.order.findFirst({
+        where: { id: orderId, branchId },
+        include: MANAGER_ORDER_INCLUDE
     });
+}
+const MANAGER_ORDER_INCLUDE = {
+    items: {
+        include: {
+            item: true,
+            variants: true,
+            extras: true
+        }
+    },
+    trackingEvents: { orderBy: { timestamp: "asc" } }
+};
+const PAYMENT_METHOD_FILTER_VALUES = {
+    cash: ["COD", "cod", "cash"],
+    card: ["CARD", "card"],
+    paypal: ["PAYPAL", "paypal"],
+    klarna: ["KLARNA", "klarna"],
+    sepa: ["SEPA", "sepa"],
+    stripe: ["stripe", "STRIPE"]
+};
+function paymentMethodFilterValues(filter) {
+    const key = filter.trim().toLowerCase();
+    if (!key || key === "all")
+        return null;
+    return PAYMENT_METHOD_FILTER_VALUES[key] ?? [filter.trim().toUpperCase(), filter.trim().toLowerCase()];
+}
+function buildBranchOrderWhere(branchId, filters = {}) {
+    const and = [{ branchId }];
+    const q = filters.search?.trim();
+    if (q) {
+        and.push({
+            OR: [
+                { id: { contains: q, mode: "insensitive" } },
+                { tracking_token: { contains: q, mode: "insensitive" } },
+                { customerName: { contains: q, mode: "insensitive" } },
+                { customerPhone: { contains: q, mode: "insensitive" } },
+                { customerEmail: { contains: q, mode: "insensitive" } },
+                { deliveryAddress: { contains: q, mode: "insensitive" } },
+                { postalCode: { contains: q, mode: "insensitive" } }
+            ]
+        });
+    }
+    if (filters.customerType === "guest") {
+        and.push({ OR: [{ isGuest: true }, { customerId: null }] });
+    }
+    else if (filters.customerType === "registered") {
+        and.push({ isGuest: false, customerId: { not: null } });
+    }
+    const paymentValues = paymentMethodFilterValues(filters.paymentMethod ?? "");
+    if (paymentValues?.length) {
+        and.push({
+            OR: paymentValues.map((value) => ({
+                paymentMethod: { equals: value, mode: "insensitive" }
+            }))
+        });
+    }
+    return and.length === 1 ? and[0] : { AND: and };
+}
+export function formatManagerOrder(o) {
+    return {
+        id: o.id,
+        trackingToken: o.tracking_token ?? null,
+        status: o.status,
+        courierStatus: o.courierStatus,
+        kitchenStatus: o.kitchenStatus,
+        fulfillmentType: o.fulfillmentType,
+        customerName: o.customerName,
+        customerPhone: o.customerPhone,
+        customerEmail: o.customerEmail,
+        deliveryAddress: o.deliveryAddress,
+        postalCode: o.postalCode,
+        orderTotal: o.orderTotal,
+        deliveryFee: o.deliveryFee,
+        discount: o.discount,
+        giftCardAmount: o.giftCardAmount,
+        paymentMethod: o.paymentMethod,
+        paymentStatus: o.paymentStatus,
+        notes: o.notes,
+        scheduledFor: o.scheduledFor,
+        createdAt: o.createdAt,
+        confirmedAt: o.confirmedAt,
+        preparingAt: o.preparingAt,
+        readyAt: o.readyAt,
+        pickedUpAt: o.pickedUpAt,
+        deliveredAt: o.deliveredAt,
+        estimatedPrepTime: o.estimatedPrepTime,
+        estimatedTotalTime: o.estimatedTotalTime,
+        isGuest: o.isGuest,
+        items: (o.items ?? []).map((i) => ({
+            id: i.id,
+            name: i.item?.name ?? "Item",
+            quantity: i.quantity,
+            price: i.price,
+            notes: i.notes,
+            variants: (i.variants ?? []).map((v) => ({
+                name: v.name,
+                price: Number(v.price)
+            })),
+            extras: (i.extras ?? []).map((e) => ({
+                name: e.name,
+                price: Number(e.price)
+            }))
+        })),
+        timeline: (o.trackingEvents ?? []).map((e) => ({
+            status: e.status,
+            timestamp: e.timestamp
+        }))
+    };
 }
 export async function getBranchPromotions(branchId) {
     const config = await getBranchConfig(branchId);

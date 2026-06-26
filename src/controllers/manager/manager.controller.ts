@@ -147,10 +147,18 @@ export const updateMenuItem = wrap(async (req: Request) => {
 
 export const getOrders = wrap(async (req: Request) => {
   const search = String(req.query.search ?? "").trim() || undefined;
+  const customerTypeRaw = String(req.query.customerType ?? "").trim().toLowerCase();
+  const customerType =
+    customerTypeRaw === "guest" || customerTypeRaw === "registered"
+      ? customerTypeRaw
+      : undefined;
+  const paymentMethod = String(req.query.paymentMethod ?? "").trim() || undefined;
   const limit = Number(req.query.limit ?? 50);
   const offset = Number(req.query.offset ?? 0);
   const result = await managerService.getBranchOrders(branchId(req), {
     search,
+    customerType,
+    paymentMethod,
     limit,
     offset
   });

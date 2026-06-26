@@ -267,11 +267,17 @@ export async function updateBranchMenuItem(
 
 export async function getBranchOrders(
   branchId: string,
-  options: { search?: string; limit?: number; offset?: number } = {}
+  options: {
+    search?: string;
+    customerType?: "guest" | "registered";
+    paymentMethod?: string;
+    limit?: number;
+    offset?: number;
+  } = {}
 ) {
   const limit = Math.min(Math.max(Number(options.limit ?? 50) || 50, 1), 100);
   const offset = Math.max(Number(options.offset ?? 0) || 0, 0);
-  const where = buildBranchOrderSearchWhere(branchId, options.search);
+  const where = buildBranchOrderWhere(branchId, options);
 
   const [orders, total] = await Promise.all([
     prisma.order.findMany({
@@ -305,22 +311,62 @@ const MANAGER_ORDER_INCLUDE = {
   trackingEvents: { orderBy: { timestamp: "asc" as const } }
 };
 
-function buildBranchOrderSearchWhere(branchId: string, search?: string) {
-  const q = search?.trim();
-  if (!q) return { branchId };
+const PAYMENT_METHOD_FILTER_VALUES: Record<string, string[]> = {
+  cash: ["COD", "cod", "cash"],
+  card: ["CARD", "card"],
+  paypal: ["PAYPAL", "paypal"],
+  klarna: ["KLARNA", "klarna"],
+  sepa: ["SEPA", "sepa"],
+  stripe: ["stripe", "STRIPE"]
+};
 
-  return {
-    branchId,
-    OR: [
-      { id: { contains: q, mode: "insensitive" as const } },
-      { tracking_token: { contains: q, mode: "insensitive" as const } },
-      { customerName: { contains: q, mode: "insensitive" as const } },
-      { customerPhone: { contains: q, mode: "insensitive" as const } },
-      { customerEmail: { contains: q, mode: "insensitive" as const } },
-      { deliveryAddress: { contains: q, mode: "insensitive" as const } },
-      { postalCode: { contains: q, mode: "insensitive" as const } }
-    ]
-  };
+function paymentMethodFilterValues(filter: string) {
+  const key = filter.trim().toLowerCase();
+  if (!key || key === "all") return null;
+  return PAYMENT_METHOD_FILTER_VALUES[key] ?? [filter.trim().toUpperCase(), filter.trim().toLowerCase()];
+}
+
+function buildBranchOrderWhere(
+  branchId: string,
+  filters: {
+    search?: string;
+    customerType?: "guest" | "registered";
+    paymentMethod?: string;
+  } = {}
+) {
+  const and: Array<Record<string, unknown>> = [{ branchId }];
+
+  const q = filters.search?.trim();
+  if (q) {
+    and.push({
+      OR: [
+        { id: { contains: q, mode: "insensitive" as const } },
+        { tracking_token: { contains: q, mode: "insensitive" as const } },
+        { customerName: { contains: q, mode: "insensitive" as const } },
+        { customerPhone: { contains: q, mode: "insensitive" as const } },
+        { customerEmail: { contains: q, mode: "insensitive" as const } },
+        { deliveryAddress: { contains: q, mode: "insensitive" as const } },
+        { postalCode: { contains: q, mode: "insensitive" as const } }
+      ]
+    });
+  }
+
+  if (filters.customerType === "guest") {
+    and.push({ OR: [{ isGuest: true }, { customerId: null }] });
+  } else if (filters.customerType === "registered") {
+    and.push({ isGuest: false, customerId: { not: null } });
+  }
+
+  const paymentValues = paymentMethodFilterValues(filters.paymentMethod ?? "");
+  if (paymentValues?.length) {
+    and.push({
+      OR: paymentValues.map((value) => ({
+        paymentMethod: { equals: value, mode: "insensitive" as const }
+      }))
+    });
+  }
+
+  return and.length === 1 ? and[0] : { AND: and };
 }
 
 export function formatManagerOrder(o: {
