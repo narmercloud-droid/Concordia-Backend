@@ -16,6 +16,7 @@ import { validateDiscountCode } from "./customer/discountCode.service.js";
 import { redeemGiftCard } from "./customer/giftCard.service.js";
 import { findFreeDrinkOption, getFreeDrinkOptions } from "./customer/freeDrink.service.js";
 import { syncBranchCustomerFromOrder } from "./customer/branchCustomer.service.js";
+import { persistPushSubscriptionFromOrder } from "./notifications/webPushSubscription.service.js";
 import { buildCourierUrl, buildOrderReviewUrl, buildOrderTrackingUrl } from "../utils/customerOrderUrls.js";
 import { validateAndPriceOrderLines } from "./customer/orderPricing.service.js";
 const ORDER_ITEMS_INCLUDE = {
@@ -267,6 +268,19 @@ export class OrdersService {
             orderTotal: Number(order.orderTotal ?? 0),
             savedAmount: Number(order.discount ?? 0) + Number(order.giftCardAmount ?? 0)
         });
+        if (rest.pushToken?.trim()) {
+            const offerConsent = marketingEmail || marketingSMS || marketingWhatsApp;
+            void persistPushSubscriptionFromOrder({
+                token: rest.pushToken.trim(),
+                customerId: rest.customerId ?? null,
+                branchId: rest.branchId,
+                // undefined preserves allowOffers from checkout subscribeToPush (e.g. push-only opt-in)
+                allowOffers: offerConsent ? true : undefined,
+                customerEmail
+            }).catch((err) => {
+                logger.warn({ err, orderId: order.id }, "Failed to persist push subscription");
+            });
+        }
         await prisma.orderTrackingEvent.create({
             data: {
                 id: randomUUID(),
@@ -311,11 +325,29 @@ export class OrdersService {
         if (order.status !== "pending") {
             throw new Error("Order has already been confirmed");
         }
-        const etaReadyAt = new Date(Date.now() + prepMinutes * 60000);
+        const scheduledFor = order.scheduledFor ? new Date(order.scheduledFor) : null;
+        const hasScheduled = scheduledFor != null &&
+            !Number.isNaN(scheduledFor.getTime()) &&
+            scheduledFor.getTime() > Date.now();
+        let etaReadyAt;
+        let etaDeliveredAt;
+        let estimatedTotalTime = prepMinutes;
+        if (hasScheduled && scheduledFor) {
+            etaReadyAt = scheduledFor;
+            etaDeliveredAt = scheduledFor;
+            estimatedTotalTime = Math.max(5, Math.ceil((scheduledFor.getTime() - Date.now()) / 60000));
+        }
+        else {
+            etaReadyAt = new Date(Date.now() + prepMinutes * 60000);
+            if (order.fulfillmentType === "delivery") {
+                etaDeliveredAt = etaReadyAt;
+            }
+        }
         const updated = await OrderLifecycleService.updateStatus(orderId, "accepted", undefined, {
             estimatedPrepTime: prepMinutes,
-            estimatedTotalTime: prepMinutes,
+            estimatedTotalTime,
             etaReadyAt,
+            etaDeliveredAt,
             confirmedAt: new Date()
         });
         await routeOrderToKitchens(orderId);

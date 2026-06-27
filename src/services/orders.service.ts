@@ -375,12 +375,35 @@ export class OrdersService {
       throw new Error("Order has already been confirmed");
     }
 
-    const etaReadyAt = new Date(Date.now() + prepMinutes * 60_000);
+    const scheduledFor = order.scheduledFor ? new Date(order.scheduledFor) : null;
+    const hasScheduled =
+      scheduledFor != null &&
+      !Number.isNaN(scheduledFor.getTime()) &&
+      scheduledFor.getTime() > Date.now();
+
+    let etaReadyAt: Date;
+    let etaDeliveredAt: Date | undefined;
+    let estimatedTotalTime = prepMinutes;
+
+    if (hasScheduled && scheduledFor) {
+      etaReadyAt = scheduledFor;
+      etaDeliveredAt = scheduledFor;
+      estimatedTotalTime = Math.max(
+        5,
+        Math.ceil((scheduledFor.getTime() - Date.now()) / 60_000)
+      );
+    } else {
+      etaReadyAt = new Date(Date.now() + prepMinutes * 60_000);
+      if (order.fulfillmentType === "delivery") {
+        etaDeliveredAt = etaReadyAt;
+      }
+    }
 
     const updated = await OrderLifecycleService.updateStatus(orderId, "accepted", undefined, {
       estimatedPrepTime: prepMinutes,
-      estimatedTotalTime: prepMinutes,
+      estimatedTotalTime,
       etaReadyAt,
+      etaDeliveredAt,
       confirmedAt: new Date()
     });
 

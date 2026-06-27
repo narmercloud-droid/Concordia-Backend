@@ -308,16 +308,61 @@ export const STRAELEN_PRODUCTS = [
   pizza("16", "Quattro Formaggi", "Gorgonzola, Gouda, Fetakäse, Mozzarella", 8.5, 10.5),
   pizza("17", "Quattro Stagioni", "Salami, Hinterschinken, Thunfisch, rote Zwiebeln", 8.5, 10.5),
   pizza("18", "Hähnchen", "Hähnchenbruststreifen, Broccoli, Sauce Hollandaise", 8.5, 10.5),
-  pizza("19", "Döner", "Hähnchen- oder Kalbfleisch und rote Zwiebeln", 8.5, 10.5),
-  pizza("20", "Concordia Döner", "Dönerfleisch, Zwiebeln, Paprika, Broccoli, Sauce Hollandaise", 8.5, 11),
-  pizza("21", "Botan Döner", "Dönerfleisch, Tomaten, Paprika, Sauce Hollandaise", 8.5, 11),
+  product({
+    itemNumber: "19",
+    categoryName: "Pizzen",
+    name: "Döner Pizza Kalbfleisch",
+    description: "Kalbfleisch und rote Zwiebeln",
+    price: 8.5,
+    sizes: sizes(8.5, 10.5)
+  }),
+  product({
+    itemNumber: "19A",
+    categoryName: "Pizzen",
+    name: "Döner Pizza Hähnchenfleisch",
+    description: "Hähnchenfleisch und rote Zwiebeln",
+    price: 8.5,
+    sizes: sizes(8.5, 10.5)
+  }),
+  product({
+    itemNumber: "20",
+    categoryName: "Pizzen",
+    name: "Pizza Concordia Döner Kalbfleisch",
+    description: "Kalbfleisch, rote Zwiebeln, Paprika, Broccoli, Sauce Hollandaise",
+    price: 8.5,
+    sizes: sizes(8.5, 11)
+  }),
+  product({
+    itemNumber: "20A",
+    categoryName: "Pizzen",
+    name: "Pizza Concordia Döner Hähnchen",
+    description: "Hähnchenfleisch, rote Zwiebeln, Paprika, Broccoli, Sauce Hollandaise",
+    price: 8.5,
+    sizes: sizes(8.5, 11)
+  }),
+  product({
+    itemNumber: "21",
+    categoryName: "Pizzen",
+    name: "Pizza Botan Döner Kalbfleisch",
+    description: "Kalbfleisch, frische Tomaten, Paprika, Sauce Hollandaise",
+    price: 8.5,
+    sizes: sizes(8.5, 11)
+  }),
+  product({
+    itemNumber: "21A",
+    categoryName: "Pizzen",
+    name: "Pizza Botan Döner Hähnchen",
+    description: "Hähnchenfleisch, frische Tomaten, Paprika, Sauce Hollandaise",
+    price: 8.5,
+    sizes: sizes(8.5, 11)
+  }),
   pizza("22", "Parma", "Rucola, Parmaschinken, Parmesankäse, Cherrytomaten", 8.5, 12),
-  pizza("23", "Diavolo", "Salami, Thunfisch, Paprika, Peperoni", 8, 10),
+  pizza("23", "Diavolo", "Salami, Thunfisch, Paprika, Peperoni", 8.5, 10),
   pizza("24", "Rustica", "Hinterschinken, Thunfisch, Zwiebeln, Paprika, scharfe Peperoni", 8.5, 10.5),
   pizza("25", "Roma", "Krabben, Spinat, Broccoli, Thunfisch, Knoblauch", 8.5, 11),
   simple(
     "Pizzen",
-    "200",
+    "26",
     "Partyblech 40 x 60 cm Margherita",
     "Jede weitere Zutat ab 5,00 €",
     26
@@ -556,34 +601,27 @@ export const STRAELEN_PRODUCTS = [
     11
   ),
 
-  // —— Getränke ——
-  simple(
-    "Getränke",
-    "190",
-    "Cola / Cola Zero / Fanta / Sprite / Apfelschorle",
-    "Flasche 0,33 l",
-    2.5
-  ),
-  simple("Getränke", "191", "Mineralwasser", "still oder medium, 0,25 l", 2),
-  simple("Getränke", "192", "Uludag oder Fanta Exotik", "Dose 0,33 l", 2),
-  simple("Getränke", "193", "Ayran", "Becher 0,25 l", 2),
-  simple("Getränke", "194", "Durstlöscher", "verschiedene Sorten, 0,5 l", 2),
-  simple(
-    "Getränke",
-    "195",
-    "Coca-Cola / Cola Zero / Fanta",
-    "nur außer Haus, Flasche 1,0 l",
-    3
-  ),
-  simple(
-    "Getränke",
-    "196",
-    "Sprite / Mezzo-Mix / Apfelschorle",
-    "nur außer Haus, Flasche 1,0 l",
-    3
-  ),
-  simple("Getränke", "197", "Krombacher Pils oder Radler", "Flasche 0,33 l", 3),
-  simple("Getränke", "198", "Weizenbier", "Flasche 0,5 l", 4)
+  // —— Getränke —— (Einzelartikel — Preise laut Pizzeria Concordia II Speisekarte)
+  simple("Getränke", "190", "Coca-Cola", "Flasche 0,33 l", 2),
+  simple("Getränke", "191", "Cola Zero", "Flasche 0,33 l", 2),
+  simple("Getränke", "192", "Fanta", "Flasche 0,33 l", 2),
+  simple("Getränke", "193", "Sprite", "Flasche 0,33 l", 2),
+  simple("Getränke", "194", "Apfelschorle", "Flasche 0,33 l", 2),
+  simple("Getränke", "195", "Uludag", "Dose 0,33 l", 2),
+  simple("Getränke", "196", "Fanta Exotik", "Dose 0,33 l", 2),
+  simple("Getränke", "197", "Mineralwasser still", "0,25 l", 2),
+  simple("Getränke", "198", "Mineralwasser medium", "0,25 l", 2),
+  simple("Getränke", "199", "Ayran", "Becher 0,25 l", 2),
+  simple("Getränke", "200", "Durstlöscher", "verschiedene Sorten, 0,5 l", 2),
+  simple("Getränke", "201", "Coca-Cola", "Flasche 1,0 l", 3),
+  simple("Getränke", "202", "Cola Zero", "Flasche 1,0 l", 3),
+  simple("Getränke", "203", "Fanta", "Flasche 1,0 l", 3),
+  simple("Getränke", "204", "Sprite", "Flasche 1,0 l", 3),
+  simple("Getränke", "205", "Mezzo-Mix", "Flasche 1,0 l", 3),
+  simple("Getränke", "206", "Apfelschorle", "Flasche 1,0 l", 3),
+  simple("Getränke", "207", "Krombacher Pils", "Flasche 0,33 l", 3),
+  simple("Getränke", "208", "Krombacher Radler", "Flasche 0,33 l", 3),
+  simple("Getränke", "209", "Weizenbier", "Flasche 0,5 l", 4)
 ];
 
 export const STRAELEN_MENU_STATS = {
