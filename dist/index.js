@@ -58,6 +58,7 @@ import terminalRoutes from "./routes/terminal/terminal.routes.js";
 import customerTrackingRoutes from "./routes/customer/customerTracking.routes.js";
 import branchPublicRoutes from "./routes/customer/branchPublic.routes.js";
 import reviewRoutes from "./routes/review.routes.js";
+import notificationsRoutes from "./routes/notifications.routes.js";
 import managerRoutes from "./routes/manager/manager.routes.js";
 import superAdminRoutes from "./routes/superAdmin/superAdmin.routes.js";
 import adminCourierRoutes from "./routes/admin/adminCourier.routes.js";
@@ -188,6 +189,7 @@ const corsOptions = {
         "X-Requested-With",
         "X-API-KEY",
         "X-Request-Id",
+        "X-Concordia-Channel",
         "x-terminal-token",
         "x-terminal-id"
     ],
@@ -425,6 +427,8 @@ app.use("/api/v1/print", printRoutes);
 app.use("/api/v1/courier", courierTrackingRoutes);
 app.use("/api/v1/dashboard", dashboardRoutes);
 app.use("/api/reviews", reviewRoutes);
+app.use("/api/notifications", notificationsRoutes);
+app.use("/notifications", notificationsRoutes);
 // ---------------------------------------------
 // Routes - Public
 // ---------------------------------------------

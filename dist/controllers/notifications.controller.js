@@ -1,16 +1,44 @@
 import { prisma } from "../prisma/client.js";
+import { fail } from "../contracts/api.js";
 import { notificationsService } from "../services/notifications.service.js";
 import { wrap } from "../contracts/api.js";
 export const NotificationsController = {
+    registerPush: wrap(async (req) => {
+        const { token, allowOffers, allowOrders, branchId } = req.body ?? {};
+        if (!token) {
+            return fail("VALIDATION_ERROR", "Push subscription token is required");
+        }
+        if (!notificationsService.isPushEnabled()) {
+            return fail("SERVICE_UNAVAILABLE", "Push notifications are not configured on the server");
+        }
+        const parsed = notificationsService.parsePushToken(token);
+        if (!parsed) {
+            return fail("VALIDATION_ERROR", "Invalid push subscription");
+        }
+        const row = await notificationsService.registerPushSubscription({
+            token,
+            customerId: req.user?.id ?? null,
+            allowOffers: allowOffers !== false,
+            allowOrders: allowOrders !== false,
+            branchId: typeof branchId === "string" ? branchId : null
+        });
+        return { registered: true, id: row.id };
+    }),
+    unregisterPush: wrap(async (req) => {
+        const { token } = req.body ?? {};
+        if (!token) {
+            return fail("VALIDATION_ERROR", "Push subscription token is required");
+        }
+        await notificationsService.unregisterPushSubscription(token);
+        return { removed: true };
+    }),
     updatePreferences: wrap(async (req) => {
         const customerId = req.user.id;
-        const prefs = await prisma.notificationPreference.upsert({
-            where: { customerId },
-            update: req.body,
-            create: {
-                customerId,
-                ...req.body
-            }
+        const { allowPush, allowOffers, allowSMS } = req.body ?? {};
+        const prefs = await notificationsService.updateCustomerPreferences(customerId, {
+            ...(typeof allowPush === "boolean" ? { allowPush } : {}),
+            ...(typeof allowOffers === "boolean" ? { allowOffers } : {}),
+            ...(typeof allowSMS === "boolean" ? { allowSMS } : {})
         });
         return prefs;
     }),
@@ -33,9 +61,7 @@ export const NotificationsController = {
                 }
             });
         }
-        const phones = customers
-            .filter(c => c.phone)
-            .map(c => c.phone);
+        const phones = customers.filter((c) => c.phone).map((c) => c.phone);
         await notificationsService.sendMarketingSMS(phones, message);
         return { success: true, sent: phones.length };
     })

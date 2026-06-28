@@ -20,7 +20,7 @@ export async function runWinBackForBranch(branchId) {
             `Als Dankeschön: Code ${WINBACK_CODE()} für 10% Rabatt auf Ihre nächste Bestellung.`,
             `Jetzt bestellen: ${orderUrl(branchId)}`
         ].join("\n");
-        const result = await sendBranchMessage(customer, "Wir vermissen Sie bei Concordia", text);
+        const result = await sendBranchMessage(customer, "Wir vermissen Sie bei Concordia", text, { url: orderUrl(branchId) });
         if (result.sent) {
             await prisma.branchCustomer.update({
                 where: { id: customer.id },
@@ -42,7 +42,7 @@ export async function runBirthdayForBranch(branchId) {
             `Concordia schenkt Ihnen einen Gratis-Nachtisch — Code ${BIRTHDAY_CODE()} bei Ihrer Bestellung.`,
             `Bestellen: ${orderUrl(branchId)}`
         ].join("\n");
-        const result = await sendBranchMessage(customer, "Happy Birthday von Concordia", text);
+        const result = await sendBranchMessage(customer, "Happy Birthday von Concordia", text, { url: orderUrl(branchId) });
         if (result.sent) {
             await prisma.branchCustomer.update({
                 where: { id: customer.id },

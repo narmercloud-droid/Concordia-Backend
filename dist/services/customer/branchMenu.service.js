@@ -22,7 +22,7 @@ export function invalidateBranchDerivedCaches(branchId) {
 }
 export function invalidateBranchMenuCache(branchId) {
     for (const lang of MENU_LANGS) {
-        const key = `customer:menu:${branchId}:${lang}:v2`;
+        const key = `customer:menu:${branchId}:${lang}:v3`;
         deleteSimpleCache(key);
         void deleteCache(`${key}:json`);
     }
@@ -32,7 +32,7 @@ export function invalidateBranchMenuCache(branchId) {
 }
 export async function peekBranchMenuCache(branchId, lang) {
     const resolvedLang = resolveMenuLanguage(lang);
-    const memoryKey = `customer:menu:${branchId}:${resolvedLang}:v2`;
+    const memoryKey = `customer:menu:${branchId}:${resolvedLang}:v3`;
     const cachedMemory = getSimpleCache(memoryKey);
     if (cachedMemory)
         return cachedMemory;
@@ -64,7 +64,7 @@ function itemBelongsToBranch(branchId, itemId) {
 }
 export async function getBranchMenuForCustomer(branchId, lang) {
     const resolvedLang = resolveMenuLanguage(lang);
-    const memoryKey = `customer:menu:${branchId}:${resolvedLang}:v2`;
+    const memoryKey = `customer:menu:${branchId}:${resolvedLang}:v3`;
     const cachedMemory = getSimpleCache(memoryKey);
     if (cachedMemory)
         return cachedMemory;

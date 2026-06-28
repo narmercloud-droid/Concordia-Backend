@@ -1,5 +1,6 @@
 import logger from "../../logger.js";
 import { smsService } from "../sms.service.js";
+import { sendOfferPushToCustomerEmail } from "../notifications/webPushSubscription.service.js";
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const CAMPAIGN_FROM_EMAIL = process.env.CAMPAIGN_FROM_EMAIL || "marketing@concordia.de";
 async function sendEmail(to, subject, html) {
@@ -51,22 +52,33 @@ async function sendWhatsApp(phone, message) {
         return sendSms(phone, message);
     }
 }
-export async function sendBranchMessage(customer, subject, text) {
+export async function sendBranchMessage(customer, subject, text, options) {
     const channel = customer.preferredChannel;
-    if (!channel)
-        return { sent: false, channel: null };
+    let sent = false;
+    let usedChannel = null;
     if (channel === "email" && customer.email) {
         const html = `<div style="font-family:Arial,sans-serif;line-height:1.5"><p>${text.replace(/\n/g, "<br/>")}</p></div>`;
-        const sent = await sendEmail(customer.email, subject, html);
-        return { sent, channel };
+        sent = await sendEmail(customer.email, subject, html);
+        usedChannel = "email";
     }
-    if (channel === "whatsapp") {
-        const sent = await sendWhatsApp(customer.phone, text);
-        return { sent, channel: "whatsapp" };
+    else if (channel === "whatsapp") {
+        sent = await sendWhatsApp(customer.phone, text);
+        usedChannel = "whatsapp";
     }
-    if (channel === "sms") {
-        const sent = await sendSms(customer.phone, text);
-        return { sent, channel: "sms" };
+    else if (channel === "sms") {
+        sent = await sendSms(customer.phone, text);
+        usedChannel = "sms";
     }
-    return { sent: false, channel };
+    const offerUrl = options?.url ?? "/offers";
+    try {
+        const pushResult = await sendOfferPushToCustomerEmail(customer.email, subject, text.replace(/\n/g, " "), offerUrl);
+        if (pushResult.sent > 0) {
+            sent = true;
+            usedChannel = usedChannel ?? "push";
+        }
+    }
+    catch (err) {
+        logger.warn({ err, customerId: customer.id }, "Branch offer push failed");
+    }
+    return { sent, channel: usedChannel };
 }
