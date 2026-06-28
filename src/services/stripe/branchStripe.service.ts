@@ -13,6 +13,7 @@ export type BranchPaymentPublic = {
   cardEnabled: boolean;
   applePayEnabled: boolean;
   googlePayEnabled: boolean;
+  paypalEnabled: boolean;
 };
 
 export async function getOrCreateBranchPaymentSettings(branchId: string) {
@@ -56,7 +57,8 @@ export async function getBranchPaymentPublic(branchId: string): Promise<BranchPa
     stripeReady,
     cardEnabled: stripeReady && synced.cardEnabled,
     applePayEnabled: stripeReady && synced.applePayEnabled,
-    googlePayEnabled: stripeReady && synced.googlePayEnabled
+    googlePayEnabled: stripeReady && synced.googlePayEnabled,
+    paypalEnabled: synced.paypalEnabled
   };
 }
 
@@ -120,6 +122,7 @@ export async function updateBranchPaymentFlags(
     cardEnabled: boolean;
     applePayEnabled: boolean;
     googlePayEnabled: boolean;
+    paypalEnabled: boolean;
   }>
 ) {
   await getOrCreateBranchPaymentSettings(branchId);
@@ -128,7 +131,8 @@ export async function updateBranchPaymentFlags(
     data: {
       ...(input.cardEnabled != null ? { cardEnabled: input.cardEnabled } : {}),
       ...(input.applePayEnabled != null ? { applePayEnabled: input.applePayEnabled } : {}),
-      ...(input.googlePayEnabled != null ? { googlePayEnabled: input.googlePayEnabled } : {})
+      ...(input.googlePayEnabled != null ? { googlePayEnabled: input.googlePayEnabled } : {}),
+      ...(input.paypalEnabled != null ? { paypalEnabled: input.paypalEnabled } : {})
     }
   });
 }

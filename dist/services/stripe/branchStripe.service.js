@@ -37,7 +37,8 @@ export async function getBranchPaymentPublic(branchId) {
         stripeReady,
         cardEnabled: stripeReady && synced.cardEnabled,
         applePayEnabled: stripeReady && synced.applePayEnabled,
-        googlePayEnabled: stripeReady && synced.googlePayEnabled
+        googlePayEnabled: stripeReady && synced.googlePayEnabled,
+        paypalEnabled: synced.paypalEnabled
     };
 }
 export async function createBranchConnectAccount(branchId) {
@@ -90,7 +91,8 @@ export async function updateBranchPaymentFlags(branchId, input) {
         data: {
             ...(input.cardEnabled != null ? { cardEnabled: input.cardEnabled } : {}),
             ...(input.applePayEnabled != null ? { applePayEnabled: input.applePayEnabled } : {}),
-            ...(input.googlePayEnabled != null ? { googlePayEnabled: input.googlePayEnabled } : {})
+            ...(input.googlePayEnabled != null ? { googlePayEnabled: input.googlePayEnabled } : {}),
+            ...(input.paypalEnabled != null ? { paypalEnabled: input.paypalEnabled } : {})
         }
     });
 }

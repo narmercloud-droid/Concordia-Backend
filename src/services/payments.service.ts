@@ -45,10 +45,7 @@ export const paymentsService = {
       methods.card = branchPayment.cardEnabled;
       methods.apple_pay = branchPayment.applePayEnabled;
       methods.google_pay = branchPayment.googlePayEnabled;
-    }
-
-    if (isPayPalConfigured()) {
-      methods.paypal = true;
+      methods.paypal = isPayPalConfigured() && branchPayment.paypalEnabled;
     }
 
     const onlinePaymentsEnabled =
@@ -147,6 +144,11 @@ export const paymentsService = {
     if (!order) throw new Error("Order not found");
     if (order.paymentStatus === "paid") throw new Error("Order is already paid");
 
+    const branchPayment = await getBranchPaymentPublic(order.branchId);
+    if (!branchPayment.paypalEnabled) {
+      throw new Error("PayPal is not enabled for this branch");
+    }
+
     const amount = Number(order.orderTotal ?? 0);
     if (!Number.isFinite(amount) || amount <= 0) {
       throw new Error("Invalid order amount");
@@ -222,6 +224,11 @@ export const paymentsService = {
     const card = await getGiftCardPurchase(purchaseId);
     if (!card) throw new Error("Gift card purchase not found");
     if (card.paymentStatus === "paid") throw new Error("Gift card is already paid");
+
+    const branchPayment = await getBranchPaymentPublic(card.branchId);
+    if (!branchPayment.paypalEnabled) {
+      throw new Error("PayPal is not enabled for this branch");
+    }
 
     const amount = Number(card.initialAmount);
     if (!Number.isFinite(amount) || amount <= 0) {

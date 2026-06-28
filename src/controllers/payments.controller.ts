@@ -131,6 +131,7 @@ export const PaymentsController = {
       cardEnabled: settings.cardEnabled,
       applePayEnabled: settings.applePayEnabled,
       googlePayEnabled: settings.googlePayEnabled,
+      paypalEnabled: settings.paypalEnabled,
       stripeReady: publicView.stripeReady,
       stripeConfigured: isStripeConfigured()
     };
@@ -156,7 +157,8 @@ export const PaymentsController = {
     await updateBranchPaymentFlags(branchId, {
       cardEnabled: body.cardEnabled,
       applePayEnabled: body.applePayEnabled,
-      googlePayEnabled: body.googlePayEnabled
+      googlePayEnabled: body.googlePayEnabled,
+      paypalEnabled: body.paypalEnabled
     });
     const settings = await syncBranchStripeAccount(branchId);
     const publicView = await getBranchPaymentPublic(branchId);
@@ -169,6 +171,7 @@ export const PaymentsController = {
       cardEnabled: settings.cardEnabled,
       applePayEnabled: settings.applePayEnabled,
       googlePayEnabled: settings.googlePayEnabled,
+      paypalEnabled: settings.paypalEnabled,
       stripeReady: publicView.stripeReady,
       stripeConfigured: isStripeConfigured()
     };
