@@ -5,11 +5,18 @@ import { wrap, fail } from "../contracts/api.js";
 
 export const CustomersController = {
   register: wrap(async (req: Request) => {
-    const { name, email, password, phone } = req.body ?? {};
+    const { name, email, password, phone, branchId, campaignId } = req.body ?? {};
     if (!name?.trim() || !email?.trim() || !password?.trim()) {
       throw fail("INVALID_INPUT", "Name, email and password are required");
     }
-    const result = await customerService.register({ name, email, password, phone });
+    const result = await customerService.register({
+      name,
+      email,
+      password,
+      phone,
+      branchId,
+      campaignId
+    });
     if (!result) throw fail("CONFLICT", "An account with this email already exists");
     return result;
   }),

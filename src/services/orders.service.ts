@@ -14,6 +14,7 @@ import { getGuestCourierId } from "./branch/branchCoords.service.ts";
 import { calcWebsiteDiscount, getWebsiteOrderDiscountPct, isFreeDrinkPromoActive } from "../config/websitePromo.ts";
 import { redeemPromoCode } from "./customer/promoCode.service.ts";
 import { validateDiscountCode } from "./customer/discountCode.service.ts";
+import { redeemCustomerCoupon } from "./customer/customerCoupon.service.ts";
 import { redeemGiftCard } from "./customer/giftCard.service.ts";
 import {
   findFreeDrinkOption,
@@ -147,18 +148,37 @@ export class OrdersService {
     let promoCodeId: string | null = null;
     let giftCardId: string | null = null;
     let giftCardAmount = 0;
+    let customerCouponId: string | null = null;
+    let couponFreeDelivery = false;
+    let couponTitle: string | null = null;
+    const customerId = rest.customerId?.trim() || null;
     const promoCodeInput = String(rest.promoCode ?? "").trim();
-    if (promoCodeInput) {
-      const discount = await validateDiscountCode(
-        rest.branchId,
-        promoCodeInput,
-        subtotal
-      );
+    const customerCouponIdInput = String(rest.customerCouponId ?? "").trim();
+
+    if (customerCouponIdInput && customerId) {
+      const discount = await validateDiscountCode(rest.branchId, "", subtotal, {
+        customerId,
+        customerCouponId: customerCouponIdInput
+      });
+      if (discount.kind === "customer_coupon") {
+        promoDiscount = discount.discountAmount;
+        customerCouponId = discount.customerCouponId ?? customerCouponIdInput;
+        couponFreeDelivery = Boolean(discount.freeDelivery);
+        couponTitle = discount.title ?? null;
+      }
+    } else if (promoCodeInput) {
+      const discount = await validateDiscountCode(rest.branchId, promoCodeInput, subtotal, {
+        customerId
+      });
       promoDiscount = discount.discountAmount;
       if (discount.kind === "promo") {
-        promoCodeId = discount.promoCodeId;
+        promoCodeId = discount.promoCodeId ?? null;
+      } else if (discount.kind === "customer_coupon") {
+        customerCouponId = discount.customerCouponId ?? null;
+        couponFreeDelivery = Boolean(discount.freeDelivery);
+        couponTitle = discount.title ?? null;
       } else {
-        giftCardId = discount.giftCardId;
+        giftCardId = discount.giftCardId ?? null;
         giftCardAmount = discount.discountAmount;
       }
     }
@@ -187,8 +207,9 @@ export class OrdersService {
       notes = notes ? `${notes}\n${discountLine}` : discountLine;
     }
 
-    if (promoDiscount > 0 && promoCodeInput) {
-      const voucherLine = `[GUTSCHEIN] ${promoCodeInput.toUpperCase()} (-${promoDiscount.toFixed(2)} €)`;
+    if (promoDiscount > 0 && (promoCodeInput || couponTitle)) {
+      const label = couponTitle ?? promoCodeInput.toUpperCase();
+      const voucherLine = `[GUTSCHEIN] ${label} (-${promoDiscount.toFixed(2)} €)`;
       notes = notes ? `${notes}\n${voucherLine}` : voucherLine;
     }
 
@@ -199,6 +220,10 @@ export class OrdersService {
       const validation = await validateDeliveryOrder(rest.branchId, deliveryAddress, subtotal);
       deliveryFee = validation.deliveryFee;
       postalCode = validation.postalCode;
+    }
+
+    if (couponFreeDelivery && fulfillmentType === "delivery") {
+      deliveryFee = 0;
     }
 
     const trackingToken = rest.tracking_token ?? crypto.randomUUID();
@@ -295,6 +320,9 @@ export class OrdersService {
     }
     if (giftCardId && giftCardAmount > 0) {
       await redeemGiftCard(giftCardId, giftCardAmount);
+    }
+    if (customerCouponId) {
+      await redeemCustomerCoupon(customerCouponId, order.id);
     }
 
     await syncBranchCustomerFromOrder({

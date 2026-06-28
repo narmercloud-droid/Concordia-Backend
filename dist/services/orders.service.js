@@ -13,6 +13,7 @@ import { getGuestCourierId } from "./branch/branchCoords.service.js";
 import { calcWebsiteDiscount, getWebsiteOrderDiscountPct, isFreeDrinkPromoActive } from "../config/websitePromo.js";
 import { redeemPromoCode } from "./customer/promoCode.service.js";
 import { validateDiscountCode } from "./customer/discountCode.service.js";
+import { redeemCustomerCoupon } from "./customer/customerCoupon.service.js";
 import { redeemGiftCard } from "./customer/giftCard.service.js";
 import { findFreeDrinkOption, getFreeDrinkOptions } from "./customer/freeDrink.service.js";
 import { syncBranchCustomerFromOrder } from "./customer/branchCustomer.service.js";
@@ -131,15 +132,39 @@ export class OrdersService {
         let promoCodeId = null;
         let giftCardId = null;
         let giftCardAmount = 0;
+        let customerCouponId = null;
+        let couponFreeDelivery = false;
+        let couponTitle = null;
+        const customerId = rest.customerId?.trim() || null;
         const promoCodeInput = String(rest.promoCode ?? "").trim();
-        if (promoCodeInput) {
-            const discount = await validateDiscountCode(rest.branchId, promoCodeInput, subtotal);
+        const customerCouponIdInput = String(rest.customerCouponId ?? "").trim();
+        if (customerCouponIdInput && customerId) {
+            const discount = await validateDiscountCode(rest.branchId, "", subtotal, {
+                customerId,
+                customerCouponId: customerCouponIdInput
+            });
+            if (discount.kind === "customer_coupon") {
+                promoDiscount = discount.discountAmount;
+                customerCouponId = discount.customerCouponId ?? customerCouponIdInput;
+                couponFreeDelivery = Boolean(discount.freeDelivery);
+                couponTitle = discount.title ?? null;
+            }
+        }
+        else if (promoCodeInput) {
+            const discount = await validateDiscountCode(rest.branchId, promoCodeInput, subtotal, {
+                customerId
+            });
             promoDiscount = discount.discountAmount;
             if (discount.kind === "promo") {
-                promoCodeId = discount.promoCodeId;
+                promoCodeId = discount.promoCodeId ?? null;
+            }
+            else if (discount.kind === "customer_coupon") {
+                customerCouponId = discount.customerCouponId ?? null;
+                couponFreeDelivery = Boolean(discount.freeDelivery);
+                couponTitle = discount.title ?? null;
             }
             else {
-                giftCardId = discount.giftCardId;
+                giftCardId = discount.giftCardId ?? null;
                 giftCardAmount = discount.discountAmount;
             }
         }
@@ -163,8 +188,9 @@ export class OrdersService {
             const discountLine = `[PROMO] ${pct}% Online-Rabatt (-${websiteDiscount.toFixed(2)} €)`;
             notes = notes ? `${notes}\n${discountLine}` : discountLine;
         }
-        if (promoDiscount > 0 && promoCodeInput) {
-            const voucherLine = `[GUTSCHEIN] ${promoCodeInput.toUpperCase()} (-${promoDiscount.toFixed(2)} €)`;
+        if (promoDiscount > 0 && (promoCodeInput || couponTitle)) {
+            const label = couponTitle ?? promoCodeInput.toUpperCase();
+            const voucherLine = `[GUTSCHEIN] ${label} (-${promoDiscount.toFixed(2)} €)`;
             notes = notes ? `${notes}\n${voucherLine}` : voucherLine;
         }
         let deliveryFee = 0;
@@ -173,6 +199,9 @@ export class OrdersService {
             const validation = await validateDeliveryOrder(rest.branchId, deliveryAddress, subtotal);
             deliveryFee = validation.deliveryFee;
             postalCode = validation.postalCode;
+        }
+        if (couponFreeDelivery && fulfillmentType === "delivery") {
+            deliveryFee = 0;
         }
         const trackingToken = rest.tracking_token ?? crypto.randomUUID();
         const isDelivery = fulfillmentType === "delivery";
@@ -255,6 +284,9 @@ export class OrdersService {
         }
         if (giftCardId && giftCardAmount > 0) {
             await redeemGiftCard(giftCardId, giftCardAmount);
+        }
+        if (customerCouponId) {
+            await redeemCustomerCoupon(customerCouponId, order.id);
         }
         await syncBranchCustomerFromOrder({
             branchId: rest.branchId,

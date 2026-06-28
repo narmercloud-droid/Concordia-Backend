@@ -5,6 +5,8 @@ import { getDeliverySettings, isDeliverableAtCoords, quoteDelivery } from "../..
 import { reverseGeocode, suggestAddresses } from "../../services/geo/geocode.service.js";
 import { getAlsoPopularItems, getBranchBestsellers, getCartSuggestions } from "../../services/customer/bestsellers.service.js";
 import { validateDiscountCode } from "../../services/customer/discountCode.service.js";
+import { listActiveCampaignsForBranch } from "../../services/customer/couponCampaign.service.js";
+import { optionalCustomerAuth } from "../../middleware/customerAuth.js";
 import { createGiftCardPurchase } from "../../services/customer/giftCard.service.js";
 import { getFreeDrinkOptions } from "../../services/customer/freeDrink.service.js";
 import { getBranchGoogleReviews } from "../../services/customer/googleReviews.service.js";
@@ -132,10 +134,16 @@ router.get("/branches/:branchId/free-drink-options", publicCache(300), wrap(asyn
     const options = await getFreeDrinkOptions(req.params.branchId);
     return { options };
 }));
-router.post("/promo/validate", wrap(async (req) => {
+router.get("/branches/:branchId/coupon-campaigns", optionalCustomerAuth, publicCache(60), wrap(async (req) => {
+    const customerId = req.customer?.id ?? null;
+    const campaigns = await listActiveCampaignsForBranch(req.params.branchId, customerId);
+    return { campaigns };
+}));
+router.post("/promo/validate", optionalCustomerAuth, wrap(async (req) => {
     const code = String(req.body?.code ?? "").trim();
     const orderTotal = Number(req.body?.orderTotal ?? 0);
     const branchId = String(req.body?.branchId ?? "").trim();
+    const customerId = req.customer?.id ?? null;
     if (!code) {
         throw { code: "INVALID_INPUT", message: "Gutscheincode fehlt" };
     }
@@ -143,7 +151,7 @@ router.post("/promo/validate", wrap(async (req) => {
         throw { code: "INVALID_INPUT", message: "branchId fehlt" };
     }
     try {
-        return await validateDiscountCode(branchId, code, orderTotal);
+        return await validateDiscountCode(branchId, code, orderTotal, { customerId });
     }
     catch (err) {
         throw { code: "INVALID_INPUT", message: err?.message ?? "Gutscheincode ungültig" };

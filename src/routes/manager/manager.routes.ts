@@ -62,6 +62,7 @@ import {
   runBranchAutomation
 } from "../../controllers/manager/branchCustomers.controller.ts";
 import { getBranchReviews } from "../../controllers/manager/managerReviews.controller.ts";
+import { ManagerCouponsController } from "../../controllers/manager/managerCoupons.controller.ts";
 
 const router = Router();
 
@@ -209,6 +210,21 @@ router.get("/orders", requireManagerPermission("orders"), getOrders);
 router.get("/orders/:id", requireManagerPermission("orders"), getOrderById);
 router.get("/promotions", requireManagerPermission("offers_view"), getPromotions);
 router.patch("/promotions", requireManagerPermission("offers_edit"), updatePromotions);
+router.get(
+  "/coupon-campaigns",
+  requireManagerPermission("offers_view"),
+  ManagerCouponsController.list
+);
+router.post(
+  "/coupon-campaigns",
+  requireManagerPermission("offers_edit"),
+  ManagerCouponsController.create
+);
+router.patch(
+  "/coupon-campaigns/:id",
+  requireManagerPermission("offers_edit"),
+  ManagerCouponsController.update
+);
 router.get("/customers", requireManagerPermission("customers_view"), getCustomers);
 router.get(
   "/customers/export",

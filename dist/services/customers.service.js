@@ -3,6 +3,7 @@ import { prisma } from "../prisma/client.js";
 import pool from "../db.js";
 import * as bcrypt from "bcrypt";
 import { signToken } from "../utils/jwt.js";
+import { claimCampaignCoupon, activateCustomerCoupon, grantWelcomeCoupons } from "./customer/customerCoupon.service.js";
 const SALT_ROUNDS = 10;
 function toPublicCustomer(customer) {
     return {
@@ -45,6 +46,22 @@ export class CustomerService {
             }
         });
         const tokens = await this.generateTokens(customer);
+        const branchId = data.branchId?.trim() || null;
+        const campaignId = data.campaignId?.trim() || null;
+        if (campaignId) {
+            try {
+                const claimed = await claimCampaignCoupon(customer.id, campaignId, branchId);
+                if (!claimed.alreadyClaimed) {
+                    await activateCustomerCoupon(customer.id, claimed.id);
+                }
+            }
+            catch {
+                // campaign may be unavailable — registration still succeeds
+            }
+        }
+        else if (branchId) {
+            await grantWelcomeCoupons(customer.id, branchId);
+        }
         return { ...tokens, user: toPublicCustomer(customer) };
     }
     async validatePassword(password, hashed) {

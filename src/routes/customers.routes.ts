@@ -1,6 +1,7 @@
 import express from "express";
 const { Router } = express;
 import { CustomersController } from "../controllers/customers.controller.ts";
+import { CustomerCouponsController } from "../controllers/customerCoupons.controller.ts";
 import { customerAuth } from "../middleware/customerAuth.ts";
 
 const router = Router();
@@ -22,6 +23,13 @@ router.get("/addresses", customerAuth, CustomersController.listAddresses);
 router.get("/addresses/:id", customerAuth, CustomersController.getAddress);
 router.put("/addresses/:id", customerAuth, CustomersController.updateAddress);
 router.delete("/addresses/:id", customerAuth, CustomersController.deleteAddress);
+
+// Clickable coupons (wallet)
+router.get("/coupons", customerAuth, CustomerCouponsController.listMine);
+router.get("/coupons/available", customerAuth, CustomerCouponsController.listAvailable);
+router.post("/coupons/claim/:campaignId", customerAuth, CustomerCouponsController.claim);
+router.post("/coupons/:id/activate", customerAuth, CustomerCouponsController.activate);
+router.post("/coupons/validate", customerAuth, CustomerCouponsController.validateForCheckout);
 
 export default router;
 

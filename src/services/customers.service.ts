@@ -3,6 +3,11 @@ import { prisma } from "../prisma/client.ts";
 import pool from "../db.ts";
 import * as bcrypt from "bcrypt";
 import { signToken } from "../utils/jwt.ts";
+import {
+  claimCampaignCoupon,
+  activateCustomerCoupon,
+  grantWelcomeCoupons
+} from "./customer/customerCoupon.service.ts";
 
 const SALT_ROUNDS = 10;
 
@@ -41,6 +46,8 @@ export class CustomerService {
     email: string;
     phone?: string;
     password?: string;
+    branchId?: string;
+    campaignId?: string;
   }): Promise<any> {
     const email = data.email.trim().toLowerCase();
     const existing = await prisma.customer.findUnique({ where: { email } });
@@ -68,6 +75,22 @@ export class CustomerService {
     });
 
     const tokens = await this.generateTokens(customer);
+
+    const branchId = data.branchId?.trim() || null;
+    const campaignId = data.campaignId?.trim() || null;
+    if (campaignId) {
+      try {
+        const claimed = await claimCampaignCoupon(customer.id, campaignId, branchId);
+        if (!claimed.alreadyClaimed) {
+          await activateCustomerCoupon(customer.id, claimed.id);
+        }
+      } catch {
+        // campaign may be unavailable — registration still succeeds
+      }
+    } else if (branchId) {
+      await grantWelcomeCoupons(customer.id, branchId);
+    }
+
     return { ...tokens, user: toPublicCustomer(customer) };
   }
 
