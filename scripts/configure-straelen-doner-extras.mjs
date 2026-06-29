@@ -3,7 +3,7 @@
  *
  * Items 80, 81, 87, 89, 90: meat + sauce (free), Extra Fleisch + Weißkäse (paid)
  * Items 82, 83, 84: meat + Beilage Reis/Pommes + Salatsoße (free), paid extras
- * Item 94: Beilage + Salatsoße only (no meat, no paid extras)
+ * Item 94: Salatsoße only (Pommes included, no meat, no paid extras)
  *
  * Run: node scripts/configure-straelen-doner-extras.mjs
  */
@@ -124,9 +124,8 @@ async function configurePlateItem(itemId, itemNumber, name) {
 
 async function configureFalafelPlate(itemId, itemNumber, name) {
   await clearItemOptions(itemId);
-  await upsertVariantChoiceGroup(itemId, "beilage", "Beilage", SIDE_OPTIONS);
   await upsertVariantChoiceGroup(itemId, "salat-sauce", "Salatsoße", SAUCE_OPTIONS);
-  console.log(`  ✓ #${itemNumber} ${name} (falafel plate)`);
+  console.log(`  ✓ #${itemNumber} ${name} (falafel plate, Pommes included)`);
 }
 
 async function main() {
