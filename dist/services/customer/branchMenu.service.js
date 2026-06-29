@@ -6,9 +6,11 @@ import { buildPricesBySize, itemUsesSizeBasedExtras, normalizeSizeKey, resolveEx
 import { isFreeDrinkPromoActive } from "../../config/websitePromo.js";
 import { getPlatformConfig } from "../platform/platformSettings.service.js";
 import { getBerlinDayOfWeek, getBerlinTimeString, isWithinBranchHours } from "../../utils/berlinTime.js";
+import { getPresetAddOnGroupsForItem } from "../manager/extraPreset.service.js";
 const BRANCHES_CACHE_KEY = "customer:branches:v1";
 const BRANCHES_TTL_SEC = 1800;
 const MENU_TTL_SEC = 1800;
+const ITEM_TTL_SEC = 1800;
 const MENU_LANGS = ["de", "en", "nl", "pl", "ru", "ro", "hi", "ar", "ku", "tr", "ckb"];
 export function invalidateBranchListCache() {
     deleteSimpleCache(BRANCHES_CACHE_KEY);
@@ -20,6 +22,12 @@ export function invalidateBranchDerivedCaches(branchId) {
     void clearCache(`also-popular:${branchId}:*`);
     void clearCache(`cart-suggestions:${branchId}:*`);
 }
+function itemCacheKey(branchId, itemId, lang) {
+    return `customer:item:${branchId}:${itemId}:${lang}:v1`;
+}
+export function invalidateBranchItemCache(branchId) {
+    void clearCache(`customer:item:${branchId}:*`);
+}
 export function invalidateBranchMenuCache(branchId) {
     for (const lang of MENU_LANGS) {
         const key = `customer:menu:${branchId}:${lang}:v3`;
@@ -29,6 +37,7 @@ export function invalidateBranchMenuCache(branchId) {
     deleteSimpleCache(`customer:menu:${branchId}:v1`);
     void deleteCache(`customer:menu:${branchId}:v1:json`);
     invalidateBranchDerivedCaches(branchId);
+    invalidateBranchItemCache(branchId);
 }
 export async function peekBranchMenuCache(branchId, lang) {
     const resolvedLang = resolveMenuLanguage(lang);
@@ -243,8 +252,30 @@ export function priceForAddOn(option, sizeVariantName, itemName) {
     }
     return resolveExtraPrice(option.name, option.price, sizeVariantName, itemName);
 }
-export async function getBranchItemForCustomer(branchId, itemId, lang) {
-    const resolvedLang = resolveMenuLanguage(lang);
+async function readCachedBranchItem(branchId, itemId, lang) {
+    const memoryKey = itemCacheKey(branchId, itemId, lang);
+    const cachedMemory = getSimpleCache(memoryKey);
+    if (cachedMemory)
+        return cachedMemory;
+    const redisKey = `${memoryKey}:json`;
+    const cachedRedis = await getCache(redisKey);
+    if (!cachedRedis)
+        return null;
+    try {
+        const parsed = JSON.parse(cachedRedis);
+        setSimpleCache(memoryKey, parsed, ITEM_TTL_SEC * 1000);
+        return parsed;
+    }
+    catch {
+        return null;
+    }
+}
+async function writeCachedBranchItem(branchId, itemId, lang, item) {
+    const memoryKey = itemCacheKey(branchId, itemId, lang);
+    setSimpleCache(memoryKey, item, ITEM_TTL_SEC * 1000);
+    await setCache(`${memoryKey}:json`, JSON.stringify(item), ITEM_TTL_SEC);
+}
+async function buildBranchItemForCustomer(branchId, itemId, resolvedLang) {
     const optionInclude = {
         variantGroups: {
             orderBy: { id: "asc" },
@@ -265,7 +296,6 @@ export async function getBranchItemForCustomer(branchId, itemId, lang) {
         const mapped = mapOptionGroups(branchItem.menuItem);
         let presetGroups = [];
         try {
-            const { getPresetAddOnGroupsForItem } = await import("../manager/extraPreset.service.js");
             presetGroups = await getPresetAddOnGroupsForItem(branchId, branchItem.categoryId);
         }
         catch (err) {
@@ -308,7 +338,6 @@ export async function getBranchItemForCustomer(branchId, itemId, lang) {
     });
     let presetGroups = [];
     try {
-        const { getPresetAddOnGroupsForItem } = await import("../manager/extraPreset.service.js");
         presetGroups = await getPresetAddOnGroupsForItem(branchId, branchMenuItem?.categoryId);
     }
     catch (err) {
@@ -331,6 +360,17 @@ export async function getBranchItemForCustomer(branchId, itemId, lang) {
         ...mapped,
         addOnGroups: [...mapped.addOnGroups, ...presetAddOnGroups]
     }, resolvedLang);
+}
+export async function getBranchItemForCustomer(branchId, itemId, lang) {
+    const resolvedLang = resolveMenuLanguage(lang);
+    const cached = await readCachedBranchItem(branchId, itemId, resolvedLang);
+    if (cached)
+        return cached;
+    const item = await buildBranchItemForCustomer(branchId, itemId, resolvedLang);
+    if (item) {
+        await writeCachedBranchItem(branchId, itemId, resolvedLang, item);
+    }
+    return item;
 }
 export async function listBranchesForCustomer() {
     let rows = getSimpleCache(BRANCHES_CACHE_KEY);

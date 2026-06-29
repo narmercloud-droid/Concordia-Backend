@@ -19,8 +19,8 @@ import {
 const prisma = new PrismaClient();
 const BRANCH_ID = "concordia-straelen";
 
-/** Döner items with custom options — see configure-straelen-doner-extras.mjs */
-const DONER_CUSTOM_ITEM_NUMBERS = new Set([
+/** Items with custom options — see configure-straelen-*-extras.mjs */
+const CUSTOM_ITEM_NUMBERS = new Set([
   "80",
   "81",
   "82",
@@ -29,7 +29,12 @@ const DONER_CUSTOM_ITEM_NUMBERS = new Set([
   "87",
   "89",
   "90",
-  "94"
+  "94",
+  "160",
+  "161",
+  "162",
+  "163",
+  "164"
 ]);
 
 async function clearItemAddOns(itemId) {
@@ -165,7 +170,7 @@ async function main() {
       continue;
     }
 
-    if (DONER_CUSTOM_ITEM_NUMBERS.has(String(item.itemNumber ?? ""))) {
+    if (CUSTOM_ITEM_NUMBERS.has(String(item.itemNumber ?? ""))) {
       skipped++;
       continue;
     }

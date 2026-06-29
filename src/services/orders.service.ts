@@ -240,14 +240,7 @@ export class OrdersService {
       courierToken = uuid();
       courierTokenExpiresAt = new Date(Date.now() + COURIER_TOKEN_VALIDITY_MS);
       courierId = await getGuestCourierId(rest.branchId);
-
-      const geo = await geocodeAddress(
-        postalCode ? `${deliveryAddress}, ${postalCode}, Deutschland` : deliveryAddress!
-      );
-      if (geo) {
-        deliveryLat = geo.lat;
-        deliveryLng = geo.lng;
-      }
+      // Geocoding runs after kitchen notification — avoids blocking terminal alert
     }
 
     const paymentMethod = normalizePaymentMethod(rest.paymentMethod);
@@ -315,6 +308,28 @@ export class OrdersService {
       }
     });
 
+    const payload = enrichOrder(order);
+    if (!requiresOnlinePayment(paymentMethod)) {
+      broadcastToTerminal(order.branchId, "order:new", payload);
+    }
+
+    if (isDelivery && deliveryAddress) {
+      const geoQuery = postalCode
+        ? `${deliveryAddress}, ${postalCode}, Deutschland`
+        : deliveryAddress;
+      void geocodeAddress(geoQuery).then((geo) => {
+        if (!geo) return;
+        void prisma.order
+          .update({
+            where: { id: order.id },
+            data: { deliveryLat: geo.lat, deliveryLng: geo.lng }
+          })
+          .catch((err) => {
+            logger.warn({ err, orderId: order.id }, "Async geocode update failed");
+          });
+      });
+    }
+
     if (promoCodeId) {
       await redeemPromoCode(promoCodeId);
     }
@@ -337,6 +352,8 @@ export class OrdersService {
       orderTotal: Number(order.orderTotal ?? 0),
       savedAmount:
         Number(order.discount ?? 0) + Number(order.giftCardAmount ?? 0)
+    }).catch((err) => {
+      logger.warn({ err, orderId: order.id }, "Branch customer sync failed");
     });
 
     if (rest.pushToken?.trim()) {
@@ -353,19 +370,18 @@ export class OrdersService {
       });
     }
 
-    await prisma.orderTrackingEvent.create({
-      data: {
-        id: randomUUID(),
-        orderId: order.id,
-        status: "pending",
-        timestamp: new Date()
-      }
-    });
-
-    const payload = enrichOrder(order);
-    if (!requiresOnlinePayment(paymentMethod)) {
-      broadcastToTerminal(order.branchId, "order:new", payload);
-    }
+    void prisma.orderTrackingEvent
+      .create({
+        data: {
+          id: randomUUID(),
+          orderId: order.id,
+          status: "pending",
+          timestamp: new Date()
+        }
+      })
+      .catch((err) => {
+        logger.warn({ err, orderId: order.id }, "Order tracking event failed");
+      });
 
     return payload;
   }

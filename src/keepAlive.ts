@@ -5,7 +5,7 @@ import { warmCustomerCaches } from "./jobs/cacheWarmup.ts";
 /** Neon suspends compute after ~5 min idle — stay under that. */
 const NEON_PING_INTERVAL_MS = 2 * 60 * 1000;
 /** Render free tier spins down after ~15 min idle — self-ping before that. */
-const RENDER_PING_INTERVAL_MS = 10 * 60 * 1000;
+const RENDER_PING_INTERVAL_MS = 5 * 60 * 1000;
 const CACHE_WARM_EVERY_N = 2;
 let neonPingCount = 0;
 

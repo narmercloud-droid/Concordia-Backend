@@ -15,10 +15,12 @@ import {
 import { isFreeDrinkPromoActive } from "../../config/websitePromo.ts";
 import { getPlatformConfig } from "../platform/platformSettings.service.ts";
 import { getBerlinDayOfWeek, getBerlinTimeString, isWithinBranchHours } from "../../utils/berlinTime.ts";
+import { getPresetAddOnGroupsForItem } from "../manager/extraPreset.service.ts";
 
 const BRANCHES_CACHE_KEY = "customer:branches:v1";
 const BRANCHES_TTL_SEC = 1800;
 const MENU_TTL_SEC = 1800;
+const ITEM_TTL_SEC = 1800;
 const MENU_LANGS = ["de", "en", "nl", "pl", "ru", "ro", "hi", "ar", "ku", "tr", "ckb"] as const;
 
 type CachedBranchRow = {
@@ -59,6 +61,14 @@ export function invalidateBranchDerivedCaches(branchId: string) {
   void clearCache(`cart-suggestions:${branchId}:*`);
 }
 
+function itemCacheKey(branchId: string, itemId: number, lang: string) {
+  return `customer:item:${branchId}:${itemId}:${lang}:v1`;
+}
+
+export function invalidateBranchItemCache(branchId: string) {
+  void clearCache(`customer:item:${branchId}:*`);
+}
+
 export function invalidateBranchMenuCache(branchId: string) {
   for (const lang of MENU_LANGS) {
     const key = `customer:menu:${branchId}:${lang}:v3`;
@@ -68,6 +78,7 @@ export function invalidateBranchMenuCache(branchId: string) {
   deleteSimpleCache(`customer:menu:${branchId}:v1`);
   void deleteCache(`customer:menu:${branchId}:v1:json`);
   invalidateBranchDerivedCaches(branchId);
+  invalidateBranchItemCache(branchId);
 }
 
 export async function peekBranchMenuCache(branchId: string, lang?: string | null) {
@@ -324,12 +335,46 @@ export function priceForAddOn(
   return resolveExtraPrice(option.name, option.price, sizeVariantName, itemName);
 }
 
-export async function getBranchItemForCustomer(
+type CustomerMenuItem = NonNullable<Awaited<ReturnType<typeof buildBranchItemForCustomer>>>;
+
+async function readCachedBranchItem(
   branchId: string,
   itemId: number,
-  lang?: string | null
+  lang: string
+): Promise<CustomerMenuItem | null> {
+  const memoryKey = itemCacheKey(branchId, itemId, lang);
+  const cachedMemory = getSimpleCache<CustomerMenuItem>(memoryKey);
+  if (cachedMemory) return cachedMemory;
+
+  const redisKey = `${memoryKey}:json`;
+  const cachedRedis = await getCache(redisKey);
+  if (!cachedRedis) return null;
+
+  try {
+    const parsed = JSON.parse(cachedRedis) as CustomerMenuItem;
+    setSimpleCache(memoryKey, parsed, ITEM_TTL_SEC * 1000);
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+async function writeCachedBranchItem(
+  branchId: string,
+  itemId: number,
+  lang: string,
+  item: CustomerMenuItem
 ) {
-  const resolvedLang = resolveMenuLanguage(lang);
+  const memoryKey = itemCacheKey(branchId, itemId, lang);
+  setSimpleCache(memoryKey, item, ITEM_TTL_SEC * 1000);
+  await setCache(`${memoryKey}:json`, JSON.stringify(item), ITEM_TTL_SEC);
+}
+
+async function buildBranchItemForCustomer(
+  branchId: string,
+  itemId: number,
+  resolvedLang: ReturnType<typeof resolveMenuLanguage>
+) {
   const optionInclude = {
     variantGroups: {
       orderBy: { id: "asc" as const },
@@ -350,15 +395,8 @@ export async function getBranchItemForCustomer(
 
   if (branchItem) {
     const mapped = mapOptionGroups(branchItem.menuItem);
-    let presetGroups: Awaited<
-      ReturnType<
-        typeof import("../manager/extraPreset.service.ts").getPresetAddOnGroupsForItem
-      >
-    > = [];
+    let presetGroups: Awaited<ReturnType<typeof getPresetAddOnGroupsForItem>> = [];
     try {
-      const { getPresetAddOnGroupsForItem } = await import(
-        "../manager/extraPreset.service.ts"
-      );
       presetGroups = await getPresetAddOnGroupsForItem(branchId, branchItem.categoryId);
     } catch (err) {
       console.warn("[menu] preset extras unavailable", branchId, itemId, err);
@@ -406,13 +444,8 @@ export async function getBranchItemForCustomer(
     select: { categoryId: true }
   });
 
-  let presetGroups: Awaited<
-    ReturnType<
-      typeof import("../manager/extraPreset.service.ts").getPresetAddOnGroupsForItem
-    >
-  > = [];
+  let presetGroups: Awaited<ReturnType<typeof getPresetAddOnGroupsForItem>> = [];
   try {
-    const { getPresetAddOnGroupsForItem } = await import("../manager/extraPreset.service.ts");
     presetGroups = await getPresetAddOnGroupsForItem(branchId, branchMenuItem?.categoryId);
   } catch (err) {
     console.warn("[menu] preset extras unavailable", branchId, itemId, err);
@@ -439,6 +472,22 @@ export async function getBranchItemForCustomer(
     },
     resolvedLang
   );
+}
+
+export async function getBranchItemForCustomer(
+  branchId: string,
+  itemId: number,
+  lang?: string | null
+) {
+  const resolvedLang = resolveMenuLanguage(lang);
+  const cached = await readCachedBranchItem(branchId, itemId, resolvedLang);
+  if (cached) return cached;
+
+  const item = await buildBranchItemForCustomer(branchId, itemId, resolvedLang);
+  if (item) {
+    await writeCachedBranchItem(branchId, itemId, resolvedLang, item);
+  }
+  return item;
 }
 
 export async function listBranchesForCustomer() {
