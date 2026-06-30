@@ -126,7 +126,6 @@ export const getTerminalOrderDetails = wrap(async (req) => {
         throw fail("NOT_FOUND", "Order not available");
     }
     const response = enrichOrder(order);
-    broadcastToTerminal(order.branchId, "order_update", response);
     return response;
 });
 export const acceptOrder = wrap(async (req) => {

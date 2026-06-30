@@ -136,7 +136,6 @@ export const getTerminalOrderDetails = wrap(async (req) => {
   }
 
   const response = enrichOrder(order);
-  broadcastToTerminal(order.branchId, "order_update", response);
   return response;
 });
 
