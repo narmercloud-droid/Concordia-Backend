@@ -9,11 +9,11 @@ async function main() {
   const hash = await bcrypt.hash(defaultPassword, 10);
 
   await prisma.admin.upsert({
-    where: { email: "owner@concordia.de" },
-    update: { password: hash, name: "Owner", role: "admin", branchId: null },
+    where: { id: "admin-owner" },
+    update: { password: hash, name: "Owner", role: "admin", branchId: null, email: "info@concordiapizza.de" },
     create: {
       id: "admin-owner",
-      email: "owner@concordia.de",
+      email: "info@concordiapizza.de",
       password: hash,
       name: "Owner",
       role: "admin",
@@ -22,16 +22,17 @@ async function main() {
   });
 
   await prisma.admin.upsert({
-    where: { email: "kempen@concordia.de" },
+    where: { id: "admin-kempen" },
     update: {
       password: hash,
       name: "Kempen Manager",
       role: "manager",
-      branchId: "concordia-kempen"
+      branchId: "concordia-kempen",
+      email: "kempen@concordiapizza.de"
     },
     create: {
       id: "admin-kempen",
-      email: "kempen@concordia.de",
+      email: "kempen@concordiapizza.de",
       password: hash,
       name: "Kempen Manager",
       role: "manager",
@@ -40,16 +41,17 @@ async function main() {
   });
 
   await prisma.admin.upsert({
-    where: { email: "straelen@concordia.de" },
+    where: { id: "admin-straelen" },
     update: {
       password: hash,
       name: "Straelen Manager",
       role: "manager",
-      branchId: "concordia-straelen"
+      branchId: "concordia-straelen",
+      email: "straelen@concordiapizza.de"
     },
     create: {
       id: "admin-straelen",
-      email: "straelen@concordia.de",
+      email: "straelen@concordiapizza.de",
       password: hash,
       name: "Straelen Manager",
       role: "manager",
@@ -58,9 +60,9 @@ async function main() {
   });
 
   console.log("Admin users ready:");
-  console.log("  owner@concordia.de   (super admin)");
-  console.log("  kempen@concordia.de  (Kempen manager)");
-  console.log("  straelen@concordia.de (Straelen manager)");
+  console.log("  info@concordiapizza.de    (super admin)");
+  console.log("  kempen@concordiapizza.de  (Kempen manager)");
+  console.log("  straelen@concordiapizza.de (Straelen manager)");
   console.log("  Password: set via SEED_ADMIN_PASSWORD (not logged)");
 }
 
