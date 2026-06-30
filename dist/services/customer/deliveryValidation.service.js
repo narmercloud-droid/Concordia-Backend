@@ -180,13 +180,23 @@ export async function quoteDelivery(branchId, address, orderTotal, options) {
             message: `Minimum order is €${match.minimumOrder.toFixed(2)}.`
         };
     }
+    const freeDeliveryThreshold = match.freeDeliveryMinimum != null && Number.isFinite(match.freeDeliveryMinimum)
+        ? match.freeDeliveryMinimum
+        : settings.freeDeliveryAtMinimum
+            ? match.minimumOrder
+            : null;
     const deliveryFee = finalFee(match.deliveryFee, orderTotal, match.minimumOrder, settings.freeDeliveryAtMinimum, match.freeDeliveryMinimum);
+    const amountToFreeDelivery = freeDeliveryThreshold != null && orderTotal < freeDeliveryThreshold
+        ? Math.round((freeDeliveryThreshold - orderTotal) * 100) / 100
+        : 0;
     return {
         allowed: true,
         deliveryFee,
         postalCode: match.postalCode ?? postalCode,
         method: match.method,
         minimumOrder: match.minimumOrder,
+        freeDeliveryMinimum: freeDeliveryThreshold ?? undefined,
+        amountToFreeDelivery,
         freeDelivery: deliveryFee === 0,
         distanceKm: match.distanceKm,
         radiusLabel: match.radiusLabel

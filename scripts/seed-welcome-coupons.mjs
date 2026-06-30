@@ -59,39 +59,21 @@ async function upsertBranchWelcomeCoupon(branch) {
   return row;
 }
 
-async function upsertPlatformCoupon() {
-  const title = "Concordia App-Gutschein";
-  const existing = await prisma.couponCampaign.findFirst({
-    where: { branchId: null, title }
+async function deactivatePlatformCoupons() {
+  const result = await prisma.couponCampaign.updateMany({
+    where: { branchId: null, isActive: true },
+    data: { isActive: false }
   });
-  if (existing) {
-    console.log(`Platform coupon already exists: ${existing.id}`);
-    return existing;
+  if (result.count > 0) {
+    console.log(`Deactivated ${result.count} platform-wide coupon(s)`);
   }
-
-  const row = await prisma.couponCampaign.create({
-    data: {
-      id: randomUUID(),
-      branchId: null,
-      title,
-      description: "5 € Rabatt bei Registrierung — gültig in allen Filialen.",
-      discountType: "fixed",
-      discountValue: 5,
-      minOrder: 20,
-      newCustomersOnly: true,
-      isActive: true,
-      sortOrder: 1
-    }
-  });
-  console.log(`Created platform coupon: ${row.id}`);
-  return row;
 }
 
 async function main() {
   for (const branch of BRANCHES) {
     await upsertBranchWelcomeCoupon(branch);
   }
-  await upsertPlatformCoupon();
+  await deactivatePlatformCoupons();
 }
 
 main()

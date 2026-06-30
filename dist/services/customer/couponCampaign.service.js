@@ -44,7 +44,7 @@ export async function listActiveCampaignsForBranch(branchId, customerId) {
     const rows = await prisma.couponCampaign.findMany({
         where: {
             isActive: true,
-            OR: [{ branchId }, { branchId: null }]
+            branchId
         },
         orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }]
     });
@@ -54,9 +54,9 @@ export async function listActiveCampaignsForBranch(branchId, customerId) {
     if (customerId) {
         const claimed = await prisma.customerCoupon.findMany({
             where: { customerId, campaignId: { in: visible.map((c) => c.id) } },
-            select: { id: true, campaignId: true, status: true }
+            select: { id: true, campaignId: true, status: true, claimCode: true }
         });
-        claimedByCampaign = new Map(claimed.map((c) => [c.campaignId, { id: c.id, status: c.status }]));
+        claimedByCampaign = new Map(claimed.map((c) => [c.campaignId, { id: c.id, status: c.status, claimCode: c.claimCode }]));
     }
     return visible.map((row) => {
         const claim = claimedByCampaign.get(row.id);
@@ -64,13 +64,14 @@ export async function listActiveCampaignsForBranch(branchId, customerId) {
             ...mapCampaign(row),
             claimed: Boolean(claim),
             customerCouponId: claim?.id ?? null,
+            claimCode: claim?.claimCode ?? null,
             status: claim?.status ?? null
         };
     });
 }
 export async function listManagerCampaigns(branchId) {
     const rows = await prisma.couponCampaign.findMany({
-        where: { OR: [{ branchId }, { branchId: null }] },
+        where: { branchId },
         orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }]
     });
     return rows.map(mapCampaign);
@@ -98,7 +99,7 @@ export async function updateCampaign(campaignId, branchId, input) {
     const existing = await prisma.couponCampaign.findUnique({ where: { id: campaignId } });
     if (!existing)
         throw new Error("Coupon not found");
-    if (existing.branchId && existing.branchId !== branchId) {
+    if (existing.branchId !== branchId) {
         throw new Error("Coupon belongs to another branch");
     }
     const row = await prisma.couponCampaign.update({

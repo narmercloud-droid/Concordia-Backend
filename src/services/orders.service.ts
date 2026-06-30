@@ -451,14 +451,15 @@ export class OrdersService {
       confirmedAt: new Date()
     });
 
-    await routeOrderToKitchens(orderId);
-
-    const fullOrder = await prisma.order.findUnique({
-      where: { id: orderId },
-      include: { items: { include: ORDER_ITEMS_INCLUDE } }
+    void routeOrderToKitchens(orderId).catch((err) => {
+      logger.warn({ err, orderId }, "Kitchen routing failed after confirm");
     });
 
-    const payload = enrichOrder(fullOrder);
+    const payload = enrichOrder({
+      ...order,
+      ...updated,
+      items: order.items
+    });
     broadcastToTerminal(order.branchId, "order:confirmed", payload);
 
     return payload;

@@ -16,6 +16,7 @@ export type CouponCampaignDto = {
   sortOrder: number;
   claimed?: boolean;
   customerCouponId?: string | null;
+  claimCode?: string | null;
   status?: string | null;
 };
 
@@ -86,7 +87,7 @@ export async function listActiveCampaignsForBranch(
   const rows = await prisma.couponCampaign.findMany({
     where: {
       isActive: true,
-      OR: [{ branchId }, { branchId: null }]
+      branchId
     },
     orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }]
   });
@@ -97,14 +98,17 @@ export async function listActiveCampaignsForBranch(
       (row.maxRedemptions == null || row.redemptionCount < row.maxRedemptions)
   );
 
-  let claimedByCampaign = new Map<string, { id: string; status: string }>();
+  let claimedByCampaign = new Map<
+    string,
+    { id: string; status: string; claimCode: string }
+  >();
   if (customerId) {
     const claimed = await prisma.customerCoupon.findMany({
       where: { customerId, campaignId: { in: visible.map((c) => c.id) } },
-      select: { id: true, campaignId: true, status: true }
+      select: { id: true, campaignId: true, status: true, claimCode: true }
     });
     claimedByCampaign = new Map(
-      claimed.map((c) => [c.campaignId, { id: c.id, status: c.status }])
+      claimed.map((c) => [c.campaignId, { id: c.id, status: c.status, claimCode: c.claimCode }])
     );
   }
 
@@ -114,6 +118,7 @@ export async function listActiveCampaignsForBranch(
       ...mapCampaign(row),
       claimed: Boolean(claim),
       customerCouponId: claim?.id ?? null,
+      claimCode: claim?.claimCode ?? null,
       status: claim?.status ?? null
     };
   });
@@ -121,14 +126,14 @@ export async function listActiveCampaignsForBranch(
 
 export async function listManagerCampaigns(branchId: string) {
   const rows = await prisma.couponCampaign.findMany({
-    where: { OR: [{ branchId }, { branchId: null }] },
+    where: { branchId },
     orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }]
   });
   return rows.map(mapCampaign);
 }
 
 export async function createCampaign(
-  branchId: string | null,
+  branchId: string,
   input: {
     title: string;
     description?: string;
@@ -180,7 +185,7 @@ export async function updateCampaign(
 ) {
   const existing = await prisma.couponCampaign.findUnique({ where: { id: campaignId } });
   if (!existing) throw new Error("Coupon not found");
-  if (existing.branchId && existing.branchId !== branchId) {
+  if (existing.branchId !== branchId) {
     throw new Error("Coupon belongs to another branch");
   }
 

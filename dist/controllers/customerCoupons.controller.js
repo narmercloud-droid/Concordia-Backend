@@ -6,9 +6,12 @@ export const CustomerCouponsController = {
         const customerId = req.customer?.id;
         if (!customerId)
             throw fail("UNAUTHORIZED", "Login required");
-        const coupons = await listCustomerCoupons(customerId);
-        const activated = await getActivatedCoupon(customerId);
-        return { coupons, activatedCouponId: activated?.id ?? null };
+        const branchId = String(req.query.branchId ?? "").trim();
+        if (!branchId)
+            throw fail("INVALID_INPUT", "branchId is required");
+        const coupons = await listCustomerCoupons(customerId, branchId);
+        const activated = await getActivatedCoupon(customerId, branchId);
+        return { coupons, activatedCouponId: activated?.id ?? null, branchId };
     }),
     listAvailable: wrap(async (req) => {
         const branchId = String(req.query.branchId ?? "").trim();
@@ -23,14 +26,13 @@ export const CustomerCouponsController = {
         if (!customerId)
             throw fail("UNAUTHORIZED", "Login required");
         const campaignId = String(req.params.campaignId ?? "").trim();
-        const branchId = String(req.body?.branchId ?? req.query.branchId ?? "").trim() || null;
+        const branchId = String(req.body?.branchId ?? req.query.branchId ?? "").trim();
         if (!campaignId)
             throw fail("INVALID_INPUT", "campaignId is required");
+        if (!branchId)
+            throw fail("INVALID_INPUT", "branchId is required");
         try {
             const result = await claimCampaignCoupon(customerId, campaignId, branchId);
-            if (!result.alreadyClaimed) {
-                await activateCustomerCoupon(customerId, result.id);
-            }
             return result;
         }
         catch (err) {

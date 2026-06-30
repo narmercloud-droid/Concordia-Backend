@@ -9,9 +9,13 @@ function makeClaimCode() {
   return `CC-${randomBytes(4).toString("hex").toUpperCase()}`;
 }
 
-export async function listCustomerCoupons(customerId: string) {
+export async function listCustomerCoupons(customerId: string, branchId?: string | null) {
   const rows = await prisma.customerCoupon.findMany({
-    where: { customerId, status: { not: "redeemed" } },
+    where: {
+      customerId,
+      status: { not: "redeemed" },
+      ...(branchId ? { campaign: { branchId } } : {})
+    },
     include: { campaign: true },
     orderBy: { createdAt: "desc" }
   });
@@ -40,9 +44,19 @@ export async function claimCampaignCoupon(
   campaignId: string,
   branchId?: string | null
 ) {
+  if (!branchId) {
+    throw new Error("branchId is required");
+  }
+
   const campaign = await prisma.couponCampaign.findUnique({ where: { id: campaignId } });
   if (!campaign || !campaign.isActive) {
     throw new Error("Coupon is not available");
+  }
+  if (!campaign.branchId) {
+    throw new Error("Coupon is not available for this branch");
+  }
+  if (campaign.branchId !== branchId) {
+    throw new Error("This coupon is for a different branch");
   }
 
   const now = Date.now();
@@ -55,13 +69,10 @@ export async function claimCampaignCoupon(
   if (campaign.maxRedemptions != null && campaign.redemptionCount >= campaign.maxRedemptions) {
     throw new Error("Coupon has reached its redemption limit");
   }
-  if (campaign.branchId && branchId && campaign.branchId !== branchId) {
-    throw new Error("This coupon is for a different branch");
-  }
 
   if (campaign.newCustomersOnly) {
     const priorOrders = await prisma.order.count({
-      where: { customerId, branchId: campaign.branchId ?? branchId ?? undefined }
+      where: { customerId, branchId: campaign.branchId }
     });
     if (priorOrders > 0) {
       throw new Error("This coupon is for new customers only");
@@ -106,9 +117,19 @@ export async function activateCustomerCoupon(customerId: string, customerCouponI
   if (!row) throw new Error("Coupon not found");
   if (row.status === "redeemed") throw new Error("Coupon already used");
   if (row.status === "expired") throw new Error("Coupon expired");
+  if (!row.campaign.branchId) {
+    throw new Error("Coupon is not valid for this branch");
+  }
+
+  const campaignBranchId = row.campaign.branchId;
 
   await prisma.customerCoupon.updateMany({
-    where: { customerId, status: "activated", id: { not: customerCouponId } },
+    where: {
+      customerId,
+      status: "activated",
+      id: { not: customerCouponId },
+      campaign: { branchId: campaignBranchId }
+    },
     data: { status: "available", activatedAt: null }
   });
 
@@ -130,9 +151,13 @@ export async function activateCustomerCoupon(customerId: string, customerCouponI
   };
 }
 
-export async function getActivatedCoupon(customerId: string) {
+export async function getActivatedCoupon(customerId: string, branchId?: string | null) {
   return prisma.customerCoupon.findFirst({
-    where: { customerId, status: "activated" },
+    where: {
+      customerId,
+      status: "activated",
+      ...(branchId ? { campaign: { branchId } } : {})
+    },
     include: { campaign: true }
   });
 }
@@ -154,7 +179,7 @@ export async function validateCustomerCouponForOrder(
 
   const campaign = row.campaign;
   if (!campaign.isActive) throw new Error("Coupon is no longer active");
-  if (campaign.branchId && campaign.branchId !== branchId) {
+  if (!campaign.branchId || campaign.branchId !== branchId) {
     throw new Error("Coupon is not valid for this branch");
   }
   const now = Date.now();

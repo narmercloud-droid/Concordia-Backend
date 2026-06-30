@@ -24,10 +24,8 @@ export const ManagerCouponsController = {
         if (!Number.isFinite(discountValue) || discountValue <= 0) {
             throw fail("INVALID_INPUT", "discountValue must be positive");
         }
-        const scope = String(body.scope ?? "branch");
-        const campaignBranchId = scope === "platform" ? null : branchId;
         try {
-            const campaign = await createCampaign(campaignBranchId, {
+            const campaign = await createCampaign(branchId, {
                 title,
                 description: body.description,
                 discountType,

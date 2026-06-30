@@ -99,7 +99,15 @@ router.get("/branches/:branchId/delivery-areas", wrap(async (req) => {
   const settings = await getDeliverySettings(req.params.branchId);
   return {
     areas: settings.deliveryAreas,
-    deliveryMode: settings.deliveryMode
+    deliveryMode: settings.deliveryMode,
+    freeDeliveryAtMinimum: settings.freeDeliveryAtMinimum,
+    radiusZones: settings.deliveryRadiusZones.map((zone) => ({
+      maxDistanceKm: zone.maxDistanceKm,
+      minimumOrder: zone.minimumOrder,
+      deliveryFee: zone.deliveryFee,
+      freeDeliveryMinimum: zone.freeDeliveryMinimum,
+      label: zone.label
+    }))
   };
 }));
 
