@@ -3,6 +3,7 @@
  * Run: node scripts/configure-straelen-delivery-radius.mjs
  */
 import { PrismaClient } from "@prisma/client";
+import { invalidateBranchListCache } from "../dist/services/customer/branchMenu.service.js";
 
 const prisma = new PrismaClient();
 
@@ -74,7 +75,8 @@ async function configureStraelenDelivery() {
 async function main() {
   await setBranchStatus("concordia-kempen", "live");
   await configureStraelenDelivery();
-  console.log("\nDone. Bust branch list cache on Render for Kempen to show as available.");
+  invalidateBranchListCache();
+  console.log("\nBranch list cache invalidated (local memory; bust Redis on Render for production API).");
 }
 
 main()

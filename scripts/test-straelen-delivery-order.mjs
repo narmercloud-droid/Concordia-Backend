@@ -14,6 +14,7 @@ const payload = {
   customerEmail: "test@example.com",
   fulfillmentType: "delivery",
   deliveryAddress: "Markt 5, 47638 Straelen",
+  scheduledFor: "2026-06-30T12:30:00+02:00",
   paymentMethod: "cash",
   notes: "TEST ORDER — bitte stornieren",
   items: [
@@ -22,7 +23,7 @@ const payload = {
       quantity: 2,
       unitPrice: 5,
       name: "Pizza Margherita",
-      variants: [],
+      variants: [{ id: "size-concordia-straelen-20131-klein", name: "klein 24 cm", price: 5 }],
       addOns: []
     }
   ]
