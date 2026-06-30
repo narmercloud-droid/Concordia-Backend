@@ -14,6 +14,8 @@ export type DeliveryRadiusZone = {
   maxDistanceKm: number;
   minimumOrder: number;
   deliveryFee: number;
+  /** Order subtotal for free delivery; defaults to minimumOrder when freeDeliveryAtMinimum is true */
+  freeDeliveryMinimum?: number;
   label?: string;
 };
 
@@ -37,6 +39,10 @@ function normalizeRadiusZones(json: Record<string, unknown>): DeliveryRadiusZone
         maxDistanceKm: Number(zone.maxDistanceKm ?? 0),
         minimumOrder: Number(zone.minimumOrder ?? 0),
         deliveryFee: Number(zone.deliveryFee ?? 0),
+        freeDeliveryMinimum:
+          zone.freeDeliveryMinimum != null
+            ? Number(zone.freeDeliveryMinimum)
+            : undefined,
         label: zone.label
       }))
       .filter((z) => z.maxDistanceKm > 0)
@@ -126,9 +132,16 @@ function finalFee(
   baseFee: number,
   orderTotal: number,
   minimumOrder: number,
-  freeDeliveryAtMinimum: boolean
+  freeDeliveryAtMinimum: boolean,
+  freeDeliveryMinimum?: number
 ) {
-  if (freeDeliveryAtMinimum && orderTotal >= minimumOrder) {
+  const threshold =
+    freeDeliveryMinimum != null && Number.isFinite(freeDeliveryMinimum)
+      ? freeDeliveryMinimum
+      : freeDeliveryAtMinimum
+        ? minimumOrder
+        : null;
+  if (threshold != null && orderTotal >= threshold) {
     return 0;
   }
   return baseFee;
@@ -151,6 +164,7 @@ type MatchResult = {
   method: "postcode" | "radius";
   minimumOrder: number;
   deliveryFee: number;
+  freeDeliveryMinimum?: number;
   postalCode?: string;
   distanceKm?: number;
   radiusLabel?: string;
@@ -201,6 +215,7 @@ async function matchRadiusForBranch(
     method: "radius",
     minimumOrder: zone.minimumOrder,
     deliveryFee: zone.deliveryFee,
+    freeDeliveryMinimum: zone.freeDeliveryMinimum,
     distanceKm: Math.round(distanceKm * 10) / 10,
     radiusLabel: zone.label ?? `up to ${zone.maxDistanceKm} km`
   };
@@ -277,7 +292,8 @@ export async function quoteDelivery(
     match.deliveryFee,
     orderTotal,
     match.minimumOrder,
-    settings.freeDeliveryAtMinimum
+    settings.freeDeliveryAtMinimum,
+    match.freeDeliveryMinimum
   );
 
   return {

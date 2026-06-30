@@ -12,6 +12,9 @@ function normalizeRadiusZones(json) {
             maxDistanceKm: Number(zone.maxDistanceKm ?? 0),
             minimumOrder: Number(zone.minimumOrder ?? 0),
             deliveryFee: Number(zone.deliveryFee ?? 0),
+            freeDeliveryMinimum: zone.freeDeliveryMinimum != null
+                ? Number(zone.freeDeliveryMinimum)
+                : undefined,
             label: zone.label
         }))
             .filter((z) => z.maxDistanceKm > 0)
@@ -77,8 +80,13 @@ export function extractPostalCode(address) {
     const match = address.match(/\b(\d{5})\b/);
     return match ? match[1] : null;
 }
-function finalFee(baseFee, orderTotal, minimumOrder, freeDeliveryAtMinimum) {
-    if (freeDeliveryAtMinimum && orderTotal >= minimumOrder) {
+function finalFee(baseFee, orderTotal, minimumOrder, freeDeliveryAtMinimum, freeDeliveryMinimum) {
+    const threshold = freeDeliveryMinimum != null && Number.isFinite(freeDeliveryMinimum)
+        ? freeDeliveryMinimum
+        : freeDeliveryAtMinimum
+            ? minimumOrder
+            : null;
+    if (threshold != null && orderTotal >= threshold) {
         return 0;
     }
     return baseFee;
@@ -125,6 +133,7 @@ async function matchRadiusForBranch(settings, branchId, address) {
         method: "radius",
         minimumOrder: zone.minimumOrder,
         deliveryFee: zone.deliveryFee,
+        freeDeliveryMinimum: zone.freeDeliveryMinimum,
         distanceKm: Math.round(distanceKm * 10) / 10,
         radiusLabel: zone.label ?? `up to ${zone.maxDistanceKm} km`
     };
@@ -171,7 +180,7 @@ export async function quoteDelivery(branchId, address, orderTotal, options) {
             message: `Minimum order is €${match.minimumOrder.toFixed(2)}.`
         };
     }
-    const deliveryFee = finalFee(match.deliveryFee, orderTotal, match.minimumOrder, settings.freeDeliveryAtMinimum);
+    const deliveryFee = finalFee(match.deliveryFee, orderTotal, match.minimumOrder, settings.freeDeliveryAtMinimum, match.freeDeliveryMinimum);
     return {
         allowed: true,
         deliveryFee,
