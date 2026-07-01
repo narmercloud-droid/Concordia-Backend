@@ -1,7 +1,37 @@
 ﻿import express from "express";
 import { prisma } from "../prisma/client.ts";
+import {
+  getCrawlMenuSitemapUrls,
+  renderCrawlMenuHtml,
+  resolveCrawlMenuSlug
+} from "../services/customer/crawlMenuHtml.service.ts";
 
 const router = express.Router();
+
+router.get("/crawl-menu/:slug", async (req, res) => {
+  const slug = resolveCrawlMenuSlug(String(req.params.slug ?? "").toLowerCase());
+  if (!slug) {
+    return res.status(404).type("text/plain").send("Not found");
+  }
+
+  try {
+    const html = await renderCrawlMenuHtml(slug);
+    if (!html) {
+      return res.status(404).type("text/plain").send("Not found");
+    }
+
+    res.setHeader("Cache-Control", "public, max-age=3600, stale-while-revalidate=86400");
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    return res.status(200).send(html);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Failed to render menu";
+    return res.status(500).type("text/plain").send(message);
+  }
+});
+
+router.get("/sitemap-urls", (_req, res) => {
+  res.json({ urls: getCrawlMenuSitemapUrls() });
+});
 
 // Public tracking endpoint
 router.get("/order/:tracking_token", async (req, res) => {
