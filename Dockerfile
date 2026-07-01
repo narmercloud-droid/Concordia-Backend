@@ -11,6 +11,7 @@ RUN npm ci
 RUN npx prisma generate
 
 COPY tsconfig*.json ./
+COPY scripts ./scripts
 COPY src ./src
 RUN npm run build \
   && mkdir -p dist/config \
