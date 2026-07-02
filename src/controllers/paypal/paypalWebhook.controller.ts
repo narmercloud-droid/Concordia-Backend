@@ -1,11 +1,6 @@
-﻿import { prisma } from "../prisma/client.ts";
-import { OrderLifecycleService } from "./order/orderLifecycle.service.ts";
-import {
-  getBranchPayPalCredentials,
-  isBranchPayPalConfigured,
-  listBranchPayPalWebhookIds
-} from "./paypal/branchPayPal.service.ts";
-import { verifyPayPalWebhookWithAnyId } from "../utils/paypalVerify.ts";
+﻿import { OrderLifecycleService } from "../../services/order/orderLifecycle.service.ts";
+import { listBranchPayPalWebhookIds } from "../../services/paypal/branchPayPal.service.ts";
+import { verifyPayPalWebhookWithAnyId } from "../../utils/paypalVerify.ts";
 
 export const paypalWebhookHandler = async (req, res) => {
   try {
@@ -46,4 +41,3 @@ export const paypalWebhookHandler = async (req, res) => {
     return res.sendStatus(200); // PayPal requires 2xx even on internal errors
   }
 };
-

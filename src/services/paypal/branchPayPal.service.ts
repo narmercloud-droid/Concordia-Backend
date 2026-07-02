@@ -1,5 +1,5 @@
 import { env } from "../../config/env.ts";
-import { getOrCreateBranchPaymentSettings } from "./branchStripe.service.ts";
+import { getOrCreateBranchPaymentSettings } from "../stripe/branchStripe.service.ts";
 
 export type BranchPayPalCredentials = {
   clientId: string;
@@ -45,7 +45,7 @@ export function isBranchPayPalConfigured(credentials: BranchPayPalCredentials | 
   return Boolean(credentials?.clientId && credentials?.clientSecret);
 }
 
-export async function listBranchPayPalWebhookIds() {
+export async function listBranchPayPalWebhookIds(): Promise<string[]> {
   const { prisma } = await import("../../prisma/client.ts");
   const rows = await prisma.branchPaymentSettings.findMany({
     where: { paypalWebhookId: { not: null } },
@@ -55,7 +55,7 @@ export async function listBranchPayPalWebhookIds() {
     .map((row) => row.paypalWebhookId)
     .filter((id): id is string => Boolean(id));
   if (env.PAYPAL_WEBHOOK_ID) ids.push(env.PAYPAL_WEBHOOK_ID);
-  return [...new Set(ids)];
+  return Array.from(new Set<string>(ids));
 }
 
 export async function updateBranchPayPalSettings(

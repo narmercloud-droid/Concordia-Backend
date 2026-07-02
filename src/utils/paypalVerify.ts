@@ -23,7 +23,7 @@ export async function verifyPayPalWebhook(req: { headers: Record<string, string 
   }
 
   const body = req.body;
-  const expected = `${transmissionId}|${timestamp}|${webhookId}|${(crc32 as { (buf: Buffer): Buffer })(body).toString("hex")}`;
+  const expected = `${transmissionId}|${timestamp}|${webhookId}|${(crc32 as any)(body).toString("hex")}`;
 
   const cert = await fetch(certUrl).then((r) => r.text());
   const verifier = crypto.createVerify(authAlgo);
