@@ -47,7 +47,6 @@ const data = parsed.data;
 
 if (data.NODE_ENV === "production" && process.env.CASH_ONLY_LAUNCH !== "true") {
   const missing: string[] = [];
-  if (!data.REDIS_URL) missing.push("REDIS_URL");
   const hasPayPal = Boolean(data.PAYPAL_CLIENT_ID && data.PAYPAL_CLIENT_SECRET);
   const hasStripe = Boolean(data.STRIPE_SECRET_KEY && data.STRIPE_PUBLISHABLE_KEY);
   if (!hasPayPal && !hasStripe) {
@@ -56,6 +55,9 @@ if (data.NODE_ENV === "production" && process.env.CASH_ONLY_LAUNCH !== "true") {
   if (missing.length) {
     console.error(`❌ Missing required production env vars: ${missing.join(", ")}`);
     process.exit(1);
+  }
+  if (!data.REDIS_URL) {
+    console.warn("⚠️ REDIS_URL not set — rate limiting and cache will use in-memory fallbacks");
   }
 }
 
