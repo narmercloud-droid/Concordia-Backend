@@ -156,6 +156,9 @@ model BranchPaymentSettings {
   applePayEnabled        Boolean  @default(true)
   googlePayEnabled       Boolean  @default(true)
   paypalEnabled          Boolean  @default(false)
+  paypalClientId         String?
+  paypalClientSecret     String?
+  paypalWebhookId        String?
   createdAt              DateTime @default(now())
   updatedAt              DateTime @updatedAt
   branch                 Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)

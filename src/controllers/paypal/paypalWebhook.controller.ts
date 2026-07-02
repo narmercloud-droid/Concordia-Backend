@@ -1,9 +1,16 @@
-﻿import { verifyPayPalWebhook } from "../../utils/paypalVerify.ts";
-import { OrderLifecycleService } from "../../services/order/orderLifecycle.service.ts";
+﻿import { prisma } from "../prisma/client.ts";
+import { OrderLifecycleService } from "./order/orderLifecycle.service.ts";
+import {
+  getBranchPayPalCredentials,
+  isBranchPayPalConfigured,
+  listBranchPayPalWebhookIds
+} from "./paypal/branchPayPal.service.ts";
+import { verifyPayPalWebhookWithAnyId } from "../utils/paypalVerify.ts";
 
 export const paypalWebhookHandler = async (req, res) => {
   try {
-    const isValid = await verifyPayPalWebhook(req);
+    const webhookIds = await listBranchPayPalWebhookIds();
+    const isValid = await verifyPayPalWebhookWithAnyId(req, webhookIds);
     if (!isValid) return res.status(400).send("Invalid signature");
 
     const event = JSON.parse(req.body.toString());
@@ -13,7 +20,7 @@ export const paypalWebhookHandler = async (req, res) => {
     // PayPal sends custom_id = our internal orderId
     const orderId = resource.custom_id;
 
-    if (!orderId) {
+    if (!orderId || String(orderId).startsWith("gift:")) {
       return res.sendStatus(200);
     }
 

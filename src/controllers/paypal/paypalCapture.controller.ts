@@ -1,5 +1,6 @@
 ﻿import { prisma } from "../../prisma/client.ts";
 import { paypalRequest } from "../../services/paypal/paypalClient.ts";
+import { getBranchPayPalCredentials } from "../../services/paypal/branchPayPal.service.ts";
 import { OrderLifecycleService } from "../../services/order/orderLifecycle.service.ts";
 import { wrap, fail } from "../../contracts/api.js";
 
@@ -14,9 +15,14 @@ export const capturePayPalPayment = wrap(async (req) => {
       throw fail('INVALID_INPUT', 'Missing PayPal order ID');
     }
 
+    const credentials = await getBranchPayPalCredentials(order.branchId);
+    if (!credentials) throw fail('PAYMENT_FAILED', 'PayPal is not configured for this branch');
+
     const result = await paypalRequest(
       `/v2/checkout/orders/${order.paypalOrderId}/capture`,
-      "POST"
+      "POST",
+      null,
+      credentials
     );
 
     const capture = result?.purchase_units?.[0]?.payments?.captures?.[0];

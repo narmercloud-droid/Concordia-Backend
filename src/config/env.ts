@@ -23,6 +23,7 @@ const envSchema = z.object({
   PAYPAL_CLIENT_ID: z.string().min(8).optional(),
   PAYPAL_CLIENT_SECRET: z.string().min(8).optional(),
   PAYPAL_MODE: z.enum(["sandbox", "live"]).default("sandbox"),
+  PAYPAL_WEBHOOK_ID: z.string().min(8).optional(),
   STRIPE_SECRET_KEY: z.string().min(8).optional(),
   STRIPE_PUBLISHABLE_KEY: z.string().min(8).optional(),
   STRIPE_WEBHOOK_SECRET: z.string().min(8).optional(),

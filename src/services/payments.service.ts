@@ -1,6 +1,9 @@
 import { prisma } from "../prisma/client.ts";
-import { env } from "../config/env.ts";
 import { paypalRequest } from "./paypal/paypalClient.ts";
+import {
+  getBranchPayPalCredentials,
+  isBranchPayPalConfigured
+} from "./paypal/branchPayPal.service.ts";
 import { OrderLifecycleService } from "./order/orderLifecycle.service.ts";
 import { ordersService } from "./orders.service.ts";
 import {
@@ -15,12 +18,16 @@ import {
 } from "./stripe/branchStripe.service.ts";
 import { getStripePublishableKey, isStripeConfigured } from "./stripe/stripeClient.ts";
 
-function isPayPalConfigured() {
-  return Boolean(env.PAYPAL_CLIENT_ID && env.PAYPAL_CLIENT_SECRET);
-}
-
 function formatEur(amount: number) {
   return amount.toFixed(2);
+}
+
+async function requireBranchPayPal(branchId: string) {
+  const credentials = await getBranchPayPalCredentials(branchId);
+  if (!isBranchPayPalConfigured(credentials)) {
+    throw new Error("PayPal is not configured for this branch");
+  }
+  return credentials!;
 }
 
 export const paymentsService = {
@@ -40,21 +47,26 @@ export const paymentsService = {
 
     if (branchId) {
       const branchPayment = await getBranchPaymentPublic(branchId);
+      const paypalCredentials = await getBranchPayPalCredentials(branchId);
       stripeAccountId = branchPayment.stripeAccountId;
       stripeReady = branchPayment.stripeReady;
       methods.card = branchPayment.cardEnabled;
       methods.apple_pay = branchPayment.applePayEnabled;
       methods.google_pay = branchPayment.googlePayEnabled;
-      methods.paypal = isPayPalConfigured() && branchPayment.paypalEnabled;
+      methods.paypal =
+        branchPayment.paypalEnabled && isBranchPayPalConfigured(paypalCredentials);
     }
 
     const onlinePaymentsEnabled =
       stripeReady || methods.paypal || methods.card || methods.apple_pay || methods.google_pay;
 
+    const paypalCredentials = branchId ? await getBranchPayPalCredentials(branchId) : null;
+
     return {
       cardPaymentsEnabled: methods.card || methods.apple_pay || methods.google_pay,
       onlinePaymentsEnabled,
-      paypalClientId: env.PAYPAL_CLIENT_ID ?? null,
+      paypalClientId:
+        methods.paypal && paypalCredentials ? paypalCredentials.clientId : null,
       stripePublishableKey: getStripePublishableKey(),
       stripeAccountId,
       stripeReady,
@@ -133,10 +145,6 @@ export const paymentsService = {
   },
 
   async createPayPalOrder(orderId: string) {
-    if (!isPayPalConfigured()) {
-      throw new Error("Card payments are not configured");
-    }
-
     const order = await prisma.order.findUnique({
       where: { id: orderId },
       include: { items: { include: { item: true } } }
@@ -149,24 +157,31 @@ export const paymentsService = {
       throw new Error("PayPal is not enabled for this branch");
     }
 
+    const credentials = await requireBranchPayPal(order.branchId);
+
     const amount = Number(order.orderTotal ?? 0);
     if (!Number.isFinite(amount) || amount <= 0) {
       throw new Error("Invalid order amount");
     }
 
-    const result = await paypalRequest("/v2/checkout/orders", "POST", {
-      intent: "CAPTURE",
-      purchase_units: [
-        {
-          custom_id: orderId,
-          description: `Concordia order ${orderId.slice(0, 8)}`,
-          amount: {
-            currency_code: "EUR",
-            value: formatEur(amount)
+    const result = await paypalRequest(
+      "/v2/checkout/orders",
+      "POST",
+      {
+        intent: "CAPTURE",
+        purchase_units: [
+          {
+            custom_id: orderId,
+            description: `Concordia order ${orderId.slice(0, 8)}`,
+            amount: {
+              currency_code: "EUR",
+              value: formatEur(amount)
+            }
           }
-        }
-      ]
-    });
+        ]
+      },
+      credentials
+    );
 
     if (!result?.id) {
       const detail = result?.details?.[0]?.description ?? result?.message;
@@ -194,9 +209,13 @@ export const paymentsService = {
       throw new Error("Missing PayPal order ID");
     }
 
+    const credentials = await requireBranchPayPal(order.branchId);
+
     const result = await paypalRequest(
       `/v2/checkout/orders/${order.paypalOrderId}/capture`,
-      "POST"
+      "POST",
+      null,
+      credentials
     );
 
     const capture = result?.purchase_units?.[0]?.payments?.captures?.[0];
@@ -217,10 +236,6 @@ export const paymentsService = {
   },
 
   async createGiftCardPayPalOrder(purchaseId: string) {
-    if (!isPayPalConfigured()) {
-      throw new Error("Online payments are not configured");
-    }
-
     const card = await getGiftCardPurchase(purchaseId);
     if (!card) throw new Error("Gift card purchase not found");
     if (card.paymentStatus === "paid") throw new Error("Gift card is already paid");
@@ -230,24 +245,31 @@ export const paymentsService = {
       throw new Error("PayPal is not enabled for this branch");
     }
 
+    const credentials = await requireBranchPayPal(card.branchId);
+
     const amount = Number(card.initialAmount);
     if (!Number.isFinite(amount) || amount <= 0) {
       throw new Error("Invalid gift card amount");
     }
 
-    const result = await paypalRequest("/v2/checkout/orders", "POST", {
-      intent: "CAPTURE",
-      purchase_units: [
-        {
-          custom_id: `gift:${purchaseId}`,
-          description: `Concordia Gutschein ${purchaseId.slice(0, 8)}`,
-          amount: {
-            currency_code: "EUR",
-            value: formatEur(amount)
+    const result = await paypalRequest(
+      "/v2/checkout/orders",
+      "POST",
+      {
+        intent: "CAPTURE",
+        purchase_units: [
+          {
+            custom_id: `gift:${purchaseId}`,
+            description: `Concordia Gutschein ${purchaseId.slice(0, 8)}`,
+            amount: {
+              currency_code: "EUR",
+              value: formatEur(amount)
+            }
           }
-        }
-      ]
-    });
+        ]
+      },
+      credentials
+    );
 
     if (!result?.id) {
       const detail = result?.details?.[0]?.description ?? result?.message;
@@ -272,9 +294,13 @@ export const paymentsService = {
       throw new Error("Missing PayPal order ID");
     }
 
+    const credentials = await requireBranchPayPal(card.branchId);
+
     const result = await paypalRequest(
       `/v2/checkout/orders/${card.paypalOrderId}/capture`,
-      "POST"
+      "POST",
+      null,
+      credentials
     );
 
     const capture = result?.purchase_units?.[0]?.payments?.captures?.[0];

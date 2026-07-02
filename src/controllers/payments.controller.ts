@@ -6,6 +6,10 @@ import {
   syncBranchStripeAccount,
   updateBranchPaymentFlags
 } from "../services/stripe/branchStripe.service.ts";
+import {
+  getBranchPayPalAdminView,
+  updateBranchPayPalSettings
+} from "../services/paypal/branchPayPal.service.ts";
 import { isStripeConfigured } from "../services/stripe/stripeClient.ts";
 import { wrap, fail } from "../contracts/api.js";
 
@@ -122,6 +126,7 @@ export const PaymentsController = {
     if (!branchId) throw fail("INVALID_INPUT", "branchId is required");
     const settings = await syncBranchStripeAccount(branchId);
     const publicView = await getBranchPaymentPublic(branchId);
+    const paypalView = await getBranchPayPalAdminView(branchId);
     return {
       branchId,
       stripeAccountId: settings.stripeAccountId,
@@ -132,6 +137,10 @@ export const PaymentsController = {
       applePayEnabled: settings.applePayEnabled,
       googlePayEnabled: settings.googlePayEnabled,
       paypalEnabled: settings.paypalEnabled,
+      paypalClientId: paypalView.paypalClientId,
+      paypalWebhookId: paypalView.paypalWebhookId,
+      paypalConfigured: paypalView.paypalConfigured,
+      paypalSecretSet: paypalView.paypalSecretSet,
       stripeReady: publicView.stripeReady,
       stripeConfigured: isStripeConfigured()
     };
@@ -160,8 +169,15 @@ export const PaymentsController = {
       googlePayEnabled: body.googlePayEnabled,
       paypalEnabled: body.paypalEnabled
     });
+    await updateBranchPayPalSettings(branchId, {
+      paypalClientId: body.paypalClientId,
+      paypalClientSecret: body.paypalClientSecret,
+      paypalWebhookId: body.paypalWebhookId,
+      paypalEnabled: body.paypalEnabled
+    });
     const settings = await syncBranchStripeAccount(branchId);
     const publicView = await getBranchPaymentPublic(branchId);
+    const paypalView = await getBranchPayPalAdminView(branchId);
     return {
       branchId,
       stripeAccountId: settings.stripeAccountId,
@@ -172,6 +188,10 @@ export const PaymentsController = {
       applePayEnabled: settings.applePayEnabled,
       googlePayEnabled: settings.googlePayEnabled,
       paypalEnabled: settings.paypalEnabled,
+      paypalClientId: paypalView.paypalClientId,
+      paypalWebhookId: paypalView.paypalWebhookId,
+      paypalConfigured: paypalView.paypalConfigured,
+      paypalSecretSet: paypalView.paypalSecretSet,
       stripeReady: publicView.stripeReady,
       stripeConfigured: isStripeConfigured()
     };
