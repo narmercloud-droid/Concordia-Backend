@@ -54,16 +54,34 @@ async function upsertBranch(branch, menuData) {
       ? {
           lieferandoRestaurantId: menuData.source.restaurantId,
           terminalCode: "KEMPEN",
-          deliveryMode: "postcodes",
-          freeDeliveryAtMinimum: true,
+          deliveryMode: "radius",
+          freeDeliveryAtMinimum: false,
           deliveryAreas: (menuData.deliveryAreas ?? []).map((area) => ({
             ...area,
             postalCode: String(area.postalCode ?? area.deliveryAreaId ?? "")
           })),
           deliveryRadiusZones: [
-            { maxDistanceKm: 5, minimumOrder: 15, deliveryFee: 2, label: "0–5 km" },
-            { maxDistanceKm: 10, minimumOrder: 20, deliveryFee: 3, label: "5–10 km" },
-            { maxDistanceKm: 15, minimumOrder: 30, deliveryFee: 4, label: "10–15 km" }
+            {
+              maxDistanceKm: 5,
+              minimumOrder: 9.99,
+              deliveryFee: 2,
+              freeDeliveryMinimum: 15,
+              label: "0–5 km"
+            },
+            {
+              maxDistanceKm: 7,
+              minimumOrder: 9.99,
+              deliveryFee: 3,
+              freeDeliveryMinimum: 18,
+              label: "5–7 km"
+            },
+            {
+              maxDistanceKm: 10,
+              minimumOrder: 9.99,
+              deliveryFee: 3,
+              freeDeliveryMinimum: 20,
+              label: "7–10 km"
+            }
           ],
           openingHours: menuData.openingHours,
           promotions: {

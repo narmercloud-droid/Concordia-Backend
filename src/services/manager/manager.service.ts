@@ -134,6 +134,7 @@ export async function updateDeliverySettings(
       maxDistanceKm: number;
       minimumOrder: number;
       deliveryFee: number;
+      freeDeliveryMinimum?: number;
       label?: string;
     }>;
   }
