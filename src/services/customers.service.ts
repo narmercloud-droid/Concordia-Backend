@@ -8,6 +8,7 @@ import {
   activateCustomerCoupon,
   grantWelcomeCoupons
 } from "./customer/customerCoupon.service.ts";
+import { upsertRegisteredBranchCustomer } from "./customer/branchCustomer.service.ts";
 
 const SALT_ROUNDS = 10;
 
@@ -89,6 +90,18 @@ export class CustomerService {
       }
     } else if (branchId) {
       await grantWelcomeCoupons(customer.id, branchId);
+    }
+
+    const phone = data.phone?.trim();
+    if (branchId && phone) {
+      await upsertRegisteredBranchCustomer({
+        branchId,
+        phone,
+        name: customer.name,
+        email: customer.email
+      }).catch(() => {
+        // branch customer sync is best-effort during registration
+      });
     }
 
     return { ...tokens, user: toPublicCustomer(customer) };

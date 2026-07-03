@@ -8,23 +8,26 @@ import {
   getSalesSeries,
   getTopItemsSeries
 } from "../../services/admin/adminAnalytics.service.ts";
+import { resolveManagerBranchId } from "../../middleware/managerAccess.ts";
+
+function branchIdFromRequest(req: Request) {
+  return resolveManagerBranchId(req) ?? undefined;
+}
 
 export const AdminAnalyticsController = {
-  sales: wrap(async () => ({ ...(await getSalesSeries()) })),
+  sales: wrap(async (req: Request) => getSalesSeries(7, branchIdFromRequest(req))),
 
-  orderVolume: wrap(async () => ({ ...(await getOrderVolumeSeries()) })),
+  orderVolume: wrap(async (req: Request) => getOrderVolumeSeries(7, branchIdFromRequest(req))),
 
-  categoryPerformance: wrap(async () => ({ ...(await getCategoryPerformanceSeries()) })),
+  categoryPerformance: wrap(async (req: Request) =>
+    getCategoryPerformanceSeries(branchIdFromRequest(req))
+  ),
 
-  branchPerformance: wrap(async () => ({ ...(await getBranchPerformanceSeries()) })),
+  branchPerformance: wrap(async (req: Request) =>
+    getBranchPerformanceSeries(branchIdFromRequest(req))
+  ),
 
-  peakHours: wrap(async (req: Request) => {
-    const branchId = String(req.query.branchId ?? "").trim() || undefined;
-    return { ...(await getPeakHoursSeries(branchId)) };
-  }),
+  peakHours: wrap(async (req: Request) => getPeakHoursSeries(branchIdFromRequest(req))),
 
-  topItems: wrap(async (req: Request) => {
-    const branchId = String(req.query.branchId ?? "").trim() || undefined;
-    return { ...(await getTopItemsSeries(branchId)) };
-  })
+  topItems: wrap(async (req: Request) => getTopItemsSeries(branchIdFromRequest(req)))
 };

@@ -14,5 +14,5 @@ const branchId = process.argv[2]?.trim() || undefined;
 
 const result = await reconcileAllBranchCustomers(branchId);
 console.log(
-  `Reconciled ${result.updated} branch customer record(s)${branchId ? ` for ${branchId}` : ""}.`
+  `Rebuilt ${result.updated} order profile(s), linked ${result.registered} registered customer(s), removed ${result.removed} orphan record(s)${branchId ? ` for ${branchId}` : ""}.`
 );

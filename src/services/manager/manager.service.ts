@@ -2,6 +2,7 @@ import { randomUUID } from "crypto";
 import { prisma } from "../../prisma/client.ts";
 import { getBerlinTodayRange } from "../../utils/berlinTime.ts";
 import { IN_PROGRESS_ORDER_STATUSES } from "../order/orderStatus.constants.ts";
+import { isCountableRevenueOrder } from "../admin/revenueReport.service.ts";
 
 export async function getManagerBranch(branchId: string) {
   const branch = await prisma.branch.findUnique({
@@ -288,7 +289,7 @@ export async function getBranchOrders(
       orderBy: { createdAt: "desc" },
       take: limit,
       skip: offset,
-      include: MANAGER_ORDER_INCLUDE
+      include: MANAGER_ORDER_LIST_INCLUDE
     }),
     prisma.order.count({ where })
   ]);
@@ -299,11 +300,25 @@ export async function getBranchOrders(
 export async function getBranchOrderById(branchId: string, orderId: string) {
   return prisma.order.findFirst({
     where: { id: orderId, branchId },
-    include: MANAGER_ORDER_INCLUDE
+    include: MANAGER_ORDER_DETAIL_INCLUDE
   });
 }
 
-const MANAGER_ORDER_INCLUDE = {
+const MANAGER_ORDER_LIST_INCLUDE = {
+  items: {
+    select: {
+      id: true,
+      quantity: true,
+      price: true,
+      notes: true,
+      item: { select: { name: true } },
+      variants: { select: { name: true, price: true } },
+      extras: { select: { name: true, price: true } }
+    }
+  }
+};
+
+const MANAGER_ORDER_DETAIL_INCLUDE = {
   items: {
     include: {
       item: true,
@@ -520,7 +535,7 @@ export async function updateBranchPromotions(
 export async function getBranchDashboard(branchId: string) {
   const { start, end } = getBerlinTodayRange();
 
-  const [activeOrders, todayOrders, totalRevenue] = await Promise.all([
+  const [activeOrders, todayOrders, todayOrderRows] = await Promise.all([
     prisma.order.count({
       where: {
         branchId,
@@ -532,20 +547,29 @@ export async function getBranchDashboard(branchId: string) {
     prisma.order.count({
       where: { branchId, createdAt: { gte: start, lt: end } }
     }),
-    prisma.order.aggregate({
+    prisma.order.findMany({
       where: {
         branchId,
         createdAt: { gte: start, lt: end },
-        paymentStatus: "paid",
         status: { notIn: ["cancelled", "rejected"] }
       },
-      _sum: { orderTotal: true }
+      select: {
+        orderTotal: true,
+        paymentMethod: true,
+        paymentStatus: true,
+        paidAt: true,
+        status: true
+      }
     })
   ]);
+
+  const todayRevenue = todayOrderRows
+    .filter((order) => isCountableRevenueOrder(order))
+    .reduce((sum, order) => sum + Number(order.orderTotal ?? 0), 0);
 
   return {
     pendingOrders: activeOrders,
     todayOrders,
-    todayRevenue: totalRevenue._sum.orderTotal ?? 0
+    todayRevenue
   };
 }
