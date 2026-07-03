@@ -1,5 +1,6 @@
 import { prisma } from "../../prisma/client.ts";
 import { getBerlinDateRange } from "../../utils/berlinTime.ts";
+import { resolveOrderPaymentMethod } from "../../utils/orderPaymentMethod.ts";
 
 const CANCELLED_STATUSES = ["cancelled", "rejected"];
 
@@ -92,7 +93,10 @@ export async function getRevenueReport(params: RevenueReportParams) {
       customerId: true,
       customerPhone: true,
       isGuest: true,
-      createdAt: true
+      createdAt: true,
+      paypalOrderId: true,
+      paypalCaptureId: true,
+      paymentIntentId: true
     },
     orderBy: { createdAt: "asc" }
   });
@@ -144,7 +148,7 @@ export async function getRevenueReport(params: RevenueReportParams) {
   );
 
   for (const order of completed) {
-    const label = paymentLabel(order.paymentMethod);
+    const label = paymentLabel(resolveOrderPaymentMethod(order));
     if (!paymentBreakdown[label]) paymentBreakdown[label] = { count: 0, total: 0 };
     paymentBreakdown[label].count += 1;
     paymentBreakdown[label].total += money(order.orderTotal);

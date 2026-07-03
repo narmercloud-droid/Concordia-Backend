@@ -96,7 +96,8 @@ async function markOrderPaidFromPayPalCapture(
   await OrderLifecycleService.updatePaymentStatus(orderId, "paid", {
     paidAt: new Date(),
     paypalCaptureId: captureId,
-    transactionId: captureId
+    transactionId: captureId,
+    paymentMethod: "PAYPAL"
   });
 
   if (notifyKitchen) {

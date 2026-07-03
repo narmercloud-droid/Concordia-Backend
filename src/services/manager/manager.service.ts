@@ -3,6 +3,7 @@ import { prisma } from "../../prisma/client.ts";
 import { getBerlinTodayRange } from "../../utils/berlinTime.ts";
 import { IN_PROGRESS_ORDER_STATUSES } from "../order/orderStatus.constants.ts";
 import { isCountableRevenueOrder } from "../admin/revenueReport.service.ts";
+import { resolveOrderPaymentMethod } from "../../utils/orderPaymentMethod.ts";
 
 export async function getManagerBranch(branchId: string) {
   const branch = await prisma.branch.findUnique({
@@ -376,7 +377,27 @@ function buildBranchOrderWhere(
   }
 
   const paymentValues = paymentMethodFilterValues(filters.paymentMethod ?? "");
-  if (paymentValues?.length) {
+  const filterKey = (filters.paymentMethod ?? "").trim().toLowerCase();
+
+  if (filterKey === "paypal") {
+    and.push({
+      OR: [
+        { paypalOrderId: { not: null } },
+        { paypalCaptureId: { not: null } },
+        { paymentMethod: { equals: "PAYPAL", mode: "insensitive" as const } }
+      ]
+    });
+  } else if (filterKey === "card") {
+    and.push({
+      paypalOrderId: null,
+      paypalCaptureId: null,
+      OR: [
+        { paymentMethod: { equals: "CARD", mode: "insensitive" as const } },
+        { paymentMethod: { equals: "STRIPE", mode: "insensitive" as const } },
+        { paymentIntentId: { not: null } }
+      ]
+    });
+  } else if (paymentValues?.length) {
     and.push({
       OR: paymentValues.map((value) => ({
         paymentMethod: { equals: value, mode: "insensitive" as const }
@@ -405,6 +426,9 @@ export function formatManagerOrder(o: {
   giftCardAmount?: number | null;
   paymentMethod?: string | null;
   paymentStatus?: string | null;
+  paypalOrderId?: string | null;
+  paypalCaptureId?: string | null;
+  paymentIntentId?: string | null;
   notes?: string | null;
   scheduledFor?: Date | null;
   createdAt: Date;
@@ -443,8 +467,9 @@ export function formatManagerOrder(o: {
     deliveryFee: o.deliveryFee,
     discount: o.discount,
     giftCardAmount: o.giftCardAmount,
-    paymentMethod: o.paymentMethod,
+    paymentMethod: resolveOrderPaymentMethod(o),
     paymentStatus: o.paymentStatus,
+    paypalOrderId: o.paypalOrderId ?? null,
     notes: o.notes,
     scheduledFor: o.scheduledFor,
     createdAt: o.createdAt,
