@@ -1,10 +1,8 @@
 import fetch from "node-fetch";
-const PAYPAL_BASE = process.env.PAYPAL_MODE === "live"
-    ? "https://api-m.paypal.com"
-    : "https://api-m.sandbox.paypal.com";
-async function getAccessToken() {
-    const auth = Buffer.from(process.env.PAYPAL_CLIENT_ID + ":" + process.env.PAYPAL_CLIENT_SECRET).toString("base64");
-    const res = await fetch(`${PAYPAL_BASE}/v1/oauth2/token`, {
+import { getPayPalApiBase } from "./branchPayPal.service.js";
+async function getAccessToken(credentials) {
+    const auth = Buffer.from(`${credentials.clientId}:${credentials.clientSecret}`).toString("base64");
+    const res = await fetch(`${getPayPalApiBase()}/v1/oauth2/token`, {
         method: "POST",
         headers: {
             Authorization: `Basic ${auth}`,
@@ -12,12 +10,15 @@ async function getAccessToken() {
         },
         body: "grant_type=client_credentials"
     });
-    const data = await res.json();
+    const data = (await res.json());
+    if (!data.access_token) {
+        throw new Error(data.error_description ?? "PayPal authentication failed");
+    }
     return data.access_token;
 }
-export async function paypalRequest(path, method = "GET", body = null) {
-    const token = await getAccessToken();
-    const res = await fetch(`${PAYPAL_BASE}${path}`, {
+export async function paypalRequest(path, method = "GET", body = null, credentials) {
+    const token = await getAccessToken(credentials);
+    const res = await fetch(`${getPayPalApiBase()}${path}`, {
         method,
         headers: {
             Authorization: `Bearer ${token}`,

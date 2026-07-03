@@ -61,6 +61,8 @@ model Order {
   marketingSMS          Boolean              @default(false)
   marketingWhatsApp     Boolean              @default(false)
   marketingConsentAt    DateTime?
+  termsAcceptedAt       DateTime?
+  confirmationEmailSentAt DateTime?
   estimatedDriverTime   Int?
   estimatedPrepTime     Int?
   estimatedTotalTime    Int?
@@ -1088,6 +1090,7 @@ model BranchGiftCard {
   stripePaymentIntentId   String?
   isActive                Boolean   @default(true)
   expiresAt       DateTime?
+  termsAcceptedAt DateTime?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 

@@ -16,6 +16,7 @@ import {
   updateVariantGroup,
   getOrders,
   getOrderById,
+  deleteOrder,
   getDashboard,
   getPromotions,
   updatePromotions
@@ -59,6 +60,7 @@ import {
   exportCustomers,
   getCustomerOrders,
   getCustomers,
+  reconcileCustomerStats,
   runBranchAutomation
 } from "../../controllers/manager/branchCustomers.controller.ts";
 import { getBranchReviews } from "../../controllers/manager/managerReviews.controller.ts";
@@ -208,6 +210,7 @@ router.delete(
 );
 router.get("/orders", requireManagerPermission("orders"), getOrders);
 router.get("/orders/:id", requireManagerPermission("orders"), getOrderById);
+router.delete("/orders/:id", requireManagerPermission("orders"), deleteOrder);
 router.get("/promotions", requireManagerPermission("offers_view"), getPromotions);
 router.patch("/promotions", requireManagerPermission("offers_edit"), updatePromotions);
 router.get(
@@ -240,6 +243,11 @@ router.post(
   "/customers/automation/run",
   requireManagerPermission("customers_automation"),
   runBranchAutomation
+);
+router.post(
+  "/customers/reconcile-stats",
+  requireManagerPermission("customers_view"),
+  reconcileCustomerStats
 );
 router.get("/reviews", requireManagerPermission("reviews_view"), getBranchReviews);
 

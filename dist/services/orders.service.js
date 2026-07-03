@@ -20,6 +20,7 @@ import { syncBranchCustomerFromOrder } from "./customer/branchCustomer.service.j
 import { persistPushSubscriptionFromOrder } from "./notifications/webPushSubscription.service.js";
 import { buildCourierUrl, buildOrderReviewUrl, buildOrderTrackingUrl } from "../utils/customerOrderUrls.js";
 import { validateAndPriceOrderLines } from "./customer/orderPricing.service.js";
+import { sendOrderConfirmationEmail } from "./customer/orderConfirmationEmail.service.js";
 const ORDER_ITEMS_INCLUDE = {
     item: true,
     variants: true,
@@ -105,6 +106,9 @@ export class OrdersService {
             throw new Error("Customer name is required");
         if (!customerPhone)
             throw new Error("Phone number is required");
+        if (!rest.termsAccepted) {
+            throw new Error("Bitte AGB und Widerrufsbelehrung akzeptieren");
+        }
         if (fulfillmentType === "delivery" && !deliveryAddress) {
             throw new Error("Delivery address is required");
         }
@@ -138,7 +142,8 @@ export class OrdersService {
         const customerId = rest.customerId?.trim() || null;
         const promoCodeInput = String(rest.promoCode ?? "").trim();
         const customerCouponIdInput = String(rest.customerCouponId ?? "").trim();
-        if (customerCouponIdInput && customerId) {
+        const allowAdditionalDiscounts = websiteDiscount <= 0;
+        if (allowAdditionalDiscounts && customerCouponIdInput && customerId) {
             const discount = await validateDiscountCode(rest.branchId, "", subtotal, {
                 customerId,
                 customerCouponId: customerCouponIdInput
@@ -150,7 +155,7 @@ export class OrdersService {
                 couponTitle = discount.title ?? null;
             }
         }
-        else if (promoCodeInput) {
+        else if (allowAdditionalDiscounts && promoCodeInput) {
             const discount = await validateDiscountCode(rest.branchId, promoCodeInput, subtotal, {
                 customerId
             });
@@ -237,6 +242,7 @@ export class OrdersService {
             marketingSMS,
             marketingWhatsApp,
             marketingConsentAt: hasMarketingConsent ? new Date() : null,
+            termsAcceptedAt: new Date(),
             deliveryAddress: isDelivery ? deliveryAddress : null,
             fulfillmentType,
             postalCode,
@@ -344,6 +350,11 @@ export class OrdersService {
             .catch((err) => {
             logger.warn({ err, orderId: order.id }, "Order tracking event failed");
         });
+        if (!requiresOnlinePayment(paymentMethod)) {
+            void sendOrderConfirmationEmail(order.id).catch((err) => {
+                logger.warn({ err, orderId: order.id }, "Order confirmation email failed");
+            });
+        }
         return payload;
     }
     async notifyKitchenOrder(orderId) {

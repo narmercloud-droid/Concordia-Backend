@@ -19,6 +19,8 @@ import {
   getBranchPaymentPublic
 } from "./stripe/branchStripe.service.ts";
 import { getStripePublishableKey, isStripeConfigured } from "./stripe/stripeClient.ts";
+import { sendGiftCardConfirmationEmail, sendOrderConfirmationEmail } from "./customer/orderConfirmationEmail.service.ts";
+import logger from "../logger.ts";
 
 function formatEur(amount: number) {
   return amount.toFixed(2);
@@ -100,6 +102,10 @@ async function markOrderPaidFromPayPalCapture(
   if (notifyKitchen) {
     await ordersService.notifyKitchenOrder(orderId);
   }
+
+  void sendOrderConfirmationEmail(orderId).catch((err) => {
+    logger.warn({ err, orderId }, "Order confirmation email after PayPal failed");
+  });
 
   return { newlyPaid: true as const };
 }
@@ -191,6 +197,10 @@ export const paymentsService = {
       transactionId: intent.id
     });
     await ordersService.notifyKitchenOrder(orderId);
+
+    void sendOrderConfirmationEmail(orderId).catch((err) => {
+      logger.warn({ err, orderId }, "Order confirmation email after Stripe failed");
+    });
 
     return { success: true, paymentIntentId: intent.id };
   },

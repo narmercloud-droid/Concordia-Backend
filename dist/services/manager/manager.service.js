@@ -1,5 +1,7 @@
 import { randomUUID } from "crypto";
 import { prisma } from "../../prisma/client.js";
+import { getBerlinTodayRange } from "../../utils/berlinTime.js";
+import { IN_PROGRESS_ORDER_STATUSES } from "../order/orderStatus.constants.js";
 export async function getManagerBranch(branchId) {
     const branch = await prisma.branch.findUnique({
         where: { id: branchId },
@@ -366,22 +368,31 @@ export async function updateBranchPromotions(branchId, input) {
     return getBranchPromotions(branchId);
 }
 export async function getBranchDashboard(branchId) {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const [pending, todayOrders, totalRevenue] = await Promise.all([
+    const { start, end } = getBerlinTodayRange();
+    const [activeOrders, todayOrders, totalRevenue] = await Promise.all([
         prisma.order.count({
-            where: { branchId, status: { in: ["pending", "accepted", "preparing"] } }
+            where: {
+                branchId,
+                createdAt: { gte: start, lt: end },
+                status: { in: IN_PROGRESS_ORDER_STATUSES },
+                paymentStatus: { notIn: ["awaiting_payment", "AWAITING_EXTERNAL_PAYMENT"] }
+            }
         }),
         prisma.order.count({
-            where: { branchId, createdAt: { gte: today } }
+            where: { branchId, createdAt: { gte: start, lt: end } }
         }),
         prisma.order.aggregate({
-            where: { branchId, createdAt: { gte: today }, status: { not: "cancelled" } },
+            where: {
+                branchId,
+                createdAt: { gte: start, lt: end },
+                paymentStatus: "paid",
+                status: { notIn: ["cancelled", "rejected"] }
+            },
             _sum: { orderTotal: true }
         })
     ]);
     return {
-        pendingOrders: pending,
+        pendingOrders: activeOrders,
         todayOrders,
         todayRevenue: totalRevenue._sum.orderTotal ?? 0
     };

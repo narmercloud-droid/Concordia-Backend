@@ -1,9 +1,29 @@
 import { prisma } from "../prisma/client.js";
 import { OrderLifecycleService } from "../services/order/orderLifecycle.service.js";
+import { autoCompleteStaleOrders } from "../services/order/endOfDayOrderCleanup.service.js";
+import { berlinYmd, getBerlinTimeString } from "../utils/berlinTime.js";
 import logger from "../logger.js";
 const POLL_INTERVAL_MS = Number(process.env.LIFECYCLE_POLL_MS || 60000); // default 1 minute
+let lastEndOfDayCleanupYmd = null;
+async function maybeRunEndOfDayOrderCleanup() {
+    const ymd = berlinYmd();
+    if (lastEndOfDayCleanupYmd === ymd)
+        return;
+    const berlinTime = getBerlinTimeString();
+    if (berlinTime < "00:05")
+        return;
+    lastEndOfDayCleanupYmd = ymd;
+    try {
+        await autoCompleteStaleOrders();
+    }
+    catch (err) {
+        lastEndOfDayCleanupYmd = null;
+        logger.error({ err }, "End-of-day order cleanup failed");
+    }
+}
 export async function runLifecycleChecks() {
     try {
+        await maybeRunEndOfDayOrderCleanup();
         // Advance accepted -> preparing if accepted more than X minutes ago
         const acceptedCutoff = new Date(Date.now() - (Number(process.env.LIFECYCLE_ACCEPTED_TO_PREPARING_MIN || 2) * 60000));
         const acceptedOrders = await prisma.order.findMany({ where: { status: "accepted", updatedAt: { lt: acceptedCutoff } } });

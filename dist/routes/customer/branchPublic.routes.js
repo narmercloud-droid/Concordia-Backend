@@ -181,7 +181,8 @@ router.post("/branches/:branchId/gift-cards", wrap(async (req) => {
             purchaserPhone: req.body?.purchaserPhone,
             recipientName: req.body?.recipientName,
             message: req.body?.message,
-            paymentMethod
+            paymentMethod,
+            termsAccepted: Boolean(req.body?.termsAccepted)
         });
     }
     catch (err) {

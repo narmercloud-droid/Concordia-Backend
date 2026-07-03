@@ -1,5 +1,7 @@
 import { randomBytes, randomUUID } from "crypto";
 import { prisma } from "../../prisma/client.ts";
+import logger from "../../logger.ts";
+import { sendGiftCardConfirmationEmail } from "./orderConfirmationEmail.service.ts";
 
 const MIN_AMOUNT = 5;
 const MAX_AMOUNT = 500;
@@ -14,6 +16,7 @@ export type GiftCardPurchaseInput = {
   recipientName?: string;
   message?: string;
   paymentMethod: string;
+  termsAccepted?: boolean;
 };
 
 export type GiftCardValidation = {
@@ -44,6 +47,9 @@ function normalizeAmount(amount: number) {
 
 export async function createGiftCardPurchase(input: GiftCardPurchaseInput) {
   const amount = normalizeAmount(input.amount);
+  if (!input.termsAccepted) {
+    throw new Error("Bitte AGB und Widerrufsbelehrung akzeptieren");
+  }
   const branch = await prisma.branch.findUnique({ where: { id: input.branchId } });
   if (!branch) throw new Error("Filiale nicht gefunden");
 
@@ -72,6 +78,7 @@ export async function createGiftCardPurchase(input: GiftCardPurchaseInput) {
       paymentMethod: method,
       paymentStatus: payOnline ? "pending" : "pending_cash",
       isActive: false,
+      termsAcceptedAt: new Date(),
       expiresAt
     }
   });
@@ -173,6 +180,12 @@ export async function activateGiftCardAfterPayment(purchaseId: string, transacti
     where: { id: purchaseId },
     data: paymentData
   });
+
+  if (!card.paymentStatus || card.paymentStatus !== "paid") {
+    void sendGiftCardConfirmationEmail(purchaseId).catch((err) => {
+      logger.warn({ err, purchaseId }, "Gift card confirmation email failed");
+    });
+  }
 
   return { code: updated.code, alreadyPaid: false };
 }

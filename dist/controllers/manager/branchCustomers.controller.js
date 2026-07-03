@@ -1,5 +1,5 @@
 import { wrap, fail } from "../../contracts/api.js";
-import { branchCustomersToCsv, getBranchCustomerStats, getCustomerOrderHistory, listBranchCustomers } from "../../services/customer/branchCustomer.service.js";
+import { branchCustomersToCsv, getBranchCustomerStats, getCustomerOrderHistory, listBranchCustomers, reconcileAllBranchCustomers } from "../../services/customer/branchCustomer.service.js";
 import { runBirthdayForBranch, runWinBackForBranch } from "../../services/customer/branchAutomation.service.js";
 function branchId(req) {
     return req.managerBranchId;
@@ -32,4 +32,13 @@ export const runBranchAutomation = wrap(async (req) => {
     const winBack = await runWinBackForBranch(id);
     const birthday = await runBirthdayForBranch(id);
     return { winBack, birthday };
+});
+export const reconcileCustomerStats = wrap(async (req) => {
+    const user = req.user;
+    if (user?.role !== "admin") {
+        throw fail("FORBIDDEN", "Only super admin can reconcile customer stats");
+    }
+    const result = await reconcileAllBranchCustomers(branchId(req));
+    const stats = await getBranchCustomerStats(branchId(req));
+    return { ...result, stats };
 });

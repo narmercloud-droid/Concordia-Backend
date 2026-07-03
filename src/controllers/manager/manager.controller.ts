@@ -1,6 +1,7 @@
 import type { Request } from "express";
 import * as managerService from "../../services/manager/manager.service.ts";
 import { managerHasPermission } from "../../services/manager/managerPermissions.service.ts";
+import { deleteOrderCompletely } from "../../services/order/orderDeletion.service.ts";
 import { wrap, fail } from "../../contracts/api.js";
 
 function branchId(req: Request) {
@@ -179,6 +180,24 @@ export const getOrderById = wrap(async (req: Request) => {
   if (!order) throw fail("NOT_FOUND", "Order not found");
 
   return managerService.formatManagerOrder(order);
+});
+
+export const deleteOrder = wrap(async (req: Request) => {
+  const user = (req as any).user;
+  if (user?.role !== "admin") {
+    throw fail("FORBIDDEN", "Only super admin can delete orders");
+  }
+
+  const orderId = String(req.params.id ?? "").trim();
+  if (!orderId) throw fail("INVALID_INPUT", "order id is required");
+
+  try {
+    const result = await deleteOrderCompletely(orderId, { branchId: branchId(req) });
+    if (!result.deleted) throw fail("NOT_FOUND", "Order not found");
+    return result;
+  } catch (err: any) {
+    throw fail("INVALID_INPUT", err?.message ?? "Could not delete order");
+  }
 });
 
 export const getDashboard = wrap(async (req: Request) => {

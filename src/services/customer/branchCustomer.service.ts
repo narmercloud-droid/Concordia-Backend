@@ -162,6 +162,88 @@ export async function getBranchCustomerStats(branchId: string) {
   };
 }
 
+export async function recalculateBranchCustomerStats(branchId: string, phone: string) {
+  const normalizedPhone = phone.trim();
+  if (!normalizedPhone) return null;
+
+  const orders = await prisma.order.findMany({
+    where: { branchId, customerPhone: normalizedPhone },
+    select: {
+      orderTotal: true,
+      discount: true,
+      giftCardAmount: true,
+      createdAt: true
+    },
+    orderBy: { createdAt: "asc" }
+  });
+
+  const existing = await prisma.branchCustomer.findUnique({
+    where: { branchId_phone: { branchId, phone: normalizedPhone } }
+  });
+
+  if (!orders.length) {
+    if (!existing) return null;
+    return prisma.branchCustomer.update({
+      where: { branchId_phone: { branchId, phone: normalizedPhone } },
+      data: {
+        orderCount: 0,
+        totalSpent: 0,
+        totalSaved: 0,
+        firstOrderAt: null,
+        lastOrderAt: null
+      }
+    });
+  }
+
+  const orderCount = orders.length;
+  const totalSpent = orders.reduce((sum, o) => sum + Number(o.orderTotal ?? 0), 0);
+  const totalSaved = orders.reduce(
+    (sum, o) => sum + Number(o.discount ?? 0) + Number(o.giftCardAmount ?? 0),
+    0
+  );
+  const firstOrderAt = orders[0]!.createdAt;
+  const lastOrderAt = orders[orders.length - 1]!.createdAt;
+
+  if (!existing) {
+    return prisma.branchCustomer.create({
+      data: {
+        id: randomUUID(),
+        branchId,
+        phone: normalizedPhone,
+        orderCount,
+        totalSpent,
+        totalSaved,
+        firstOrderAt,
+        lastOrderAt
+      }
+    });
+  }
+
+  return prisma.branchCustomer.update({
+    where: { branchId_phone: { branchId, phone: normalizedPhone } },
+    data: {
+      orderCount,
+      totalSpent,
+      totalSaved,
+      firstOrderAt,
+      lastOrderAt
+    }
+  });
+}
+
+export async function reconcileAllBranchCustomers(branchId?: string) {
+  const customers = await prisma.branchCustomer.findMany({
+    where: branchId ? { branchId } : {},
+    select: { branchId: true, phone: true }
+  });
+
+  for (const customer of customers) {
+    await recalculateBranchCustomerStats(customer.branchId, customer.phone);
+  }
+
+  return { updated: customers.length };
+}
+
 export async function getCustomerOrderHistory(branchId: string, phone: string) {
   return prisma.order.findMany({
     where: { branchId, customerPhone: phone },

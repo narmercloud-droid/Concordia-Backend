@@ -27,6 +27,7 @@ import {
   validateAndPriceOrderLines,
   type PricedOrderLine
 } from "./customer/orderPricing.service.ts";
+import { sendOrderConfirmationEmail } from "./customer/orderConfirmationEmail.service.ts";
 
 const ORDER_ITEMS_INCLUDE = {
   item: true,
@@ -116,6 +117,9 @@ export class OrdersService {
 
     if (!customerName) throw new Error("Customer name is required");
     if (!customerPhone) throw new Error("Phone number is required");
+    if (!rest.termsAccepted) {
+      throw new Error("Bitte AGB und Widerrufsbelehrung akzeptieren");
+    }
 
     if (fulfillmentType === "delivery" && !deliveryAddress) {
       throw new Error("Delivery address is required");
@@ -268,6 +272,7 @@ export class OrdersService {
       marketingSMS,
       marketingWhatsApp,
       marketingConsentAt: hasMarketingConsent ? new Date() : null,
+      termsAcceptedAt: new Date(),
       deliveryAddress: isDelivery ? deliveryAddress : null,
       fulfillmentType,
       postalCode,
@@ -383,6 +388,12 @@ export class OrdersService {
       .catch((err) => {
         logger.warn({ err, orderId: order.id }, "Order tracking event failed");
       });
+
+    if (!requiresOnlinePayment(paymentMethod)) {
+      void sendOrderConfirmationEmail(order.id).catch((err) => {
+        logger.warn({ err, orderId: order.id }, "Order confirmation email failed");
+      });
+    }
 
     return payload;
   }

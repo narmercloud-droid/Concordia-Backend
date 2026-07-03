@@ -4,7 +4,8 @@ import {
   branchCustomersToCsv,
   getBranchCustomerStats,
   getCustomerOrderHistory,
-  listBranchCustomers
+  listBranchCustomers,
+  reconcileAllBranchCustomers
 } from "../../services/customer/branchCustomer.service.ts";
 import {
   runBirthdayForBranch,
@@ -46,4 +47,15 @@ export const runBranchAutomation = wrap(async (req: Request) => {
   const winBack = await runWinBackForBranch(id);
   const birthday = await runBirthdayForBranch(id);
   return { winBack, birthday };
+});
+
+export const reconcileCustomerStats = wrap(async (req: Request) => {
+  const user = (req as any).user;
+  if (user?.role !== "admin") {
+    throw fail("FORBIDDEN", "Only super admin can reconcile customer stats");
+  }
+
+  const result = await reconcileAllBranchCustomers(branchId(req));
+  const stats = await getBranchCustomerStats(branchId(req));
+  return { ...result, stats };
 });

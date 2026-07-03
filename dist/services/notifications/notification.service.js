@@ -1,4 +1,4 @@
-import { getIO } from '../../ws/ws.js';
+import { getIO } from '../../websocket/socketServer.js';
 import webpush from 'web-push';
 
 export function sendWS(event, payload) {

@@ -52,7 +52,7 @@ export async function generateTimeSlots(branchId: string, daysAhead = 3) {
     const open = toMinutes(hours.openTime);
     const close = toMinutes(hours.closeTime);
 
-    for (let t = open; t < close; t += 30) {
+    for (let t = open; t < close; t += 15) {
       const slot = berlinLocalToUtc(ymd, Math.floor(t / 60), t % 60);
 
       if (slot <= now) continue;
