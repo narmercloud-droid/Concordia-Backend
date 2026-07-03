@@ -154,8 +154,9 @@ export class OrdersService {
     const customerId = rest.customerId?.trim() || null;
     const promoCodeInput = String(rest.promoCode ?? "").trim();
     const customerCouponIdInput = String(rest.customerCouponId ?? "").trim();
+    const allowAdditionalDiscounts = websiteDiscount <= 0;
 
-    if (customerCouponIdInput && customerId) {
+    if (allowAdditionalDiscounts && customerCouponIdInput && customerId) {
       const discount = await validateDiscountCode(rest.branchId, "", subtotal, {
         customerId,
         customerCouponId: customerCouponIdInput
@@ -166,7 +167,7 @@ export class OrdersService {
         couponFreeDelivery = Boolean(discount.freeDelivery);
         couponTitle = discount.title ?? null;
       }
-    } else if (promoCodeInput) {
+    } else if (allowAdditionalDiscounts && promoCodeInput) {
       const discount = await validateDiscountCode(rest.branchId, promoCodeInput, subtotal, {
         customerId
       });
