@@ -97,6 +97,7 @@ import adminPrinterObservabilityRoutes from "./routes/admin/adminPrinterObservab
 import adminTerminalRoutes from "./routes/admin/adminTerminal.routes.ts";
 import adminToolsRoutes from "./routes/admin/adminTools.routes.ts";
 import adminAnalyticsRoutes from "./routes/admin/adminAnalytics.routes.ts";
+import adminReportsRoutes from "./routes/admin/adminReports.routes.ts";
 import { startPrinterDiscoveryWorker } from "./jobs/printerDiscoveryWorker.ts";
 import { startPrinterSyncWorker } from "./jobs/printerCloudSyncWorker.ts";
 
@@ -423,6 +424,8 @@ app.use("/api/admin", adminAuth, adminRouter);
 app.use("/api/admin", adminRoutes);
 app.use("/api/admin/analytics", adminAuth, adminAnalyticsRoutes);
 app.use("/admin/analytics", adminAuth, adminAnalyticsRoutes);
+app.use("/api/admin/reports", adminAuth, adminReportsRoutes);
+app.use("/admin/reports", adminAuth, adminReportsRoutes);
 app.use("/api/admin", adminTerminalRoutes);
 app.use("/api/admin/tools", adminToolsRoutes);
 app.use("/api/admin/paypal", paypalAdminRoutes);

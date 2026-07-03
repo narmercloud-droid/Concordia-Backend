@@ -111,6 +111,22 @@ export const CustomersController = {
       hasReview: !!order.review,
       canReview: ["delivered", "completed", "picked_up"].includes(order.status) && !order.review
     }));
+  }),
+
+  exportData: wrap(async (req: Request) => {
+    const customerId = req.user?.id;
+    if (!customerId) throw fail("UNAUTHORIZED", "Unauthorized");
+    const data = await customerService.exportPersonalData(customerId);
+    if (!data) throw fail("NOT_FOUND", "Customer not found");
+    return data;
+  }),
+
+  deleteAccount: wrap(async (req: Request) => {
+    const customerId = req.user?.id;
+    if (!customerId) throw fail("UNAUTHORIZED", "Unauthorized");
+    const ok = await customerService.deleteAccount(customerId);
+    if (!ok) throw fail("NOT_FOUND", "Customer not found");
+    return { success: true };
   })
 };
 

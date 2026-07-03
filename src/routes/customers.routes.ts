@@ -16,6 +16,8 @@ router.get("/me", customerAuth, CustomersController.profile);
 router.get("/profile", customerAuth, CustomersController.profile);
 router.get("/orders", customerAuth, CustomersController.myOrders);
 router.put("/phone", customerAuth, CustomersController.updatePhone);
+router.get("/me/export", customerAuth, CustomersController.exportData);
+router.delete("/me", customerAuth, CustomersController.deleteAccount);
 
 // Addresses
 router.post("/addresses", customerAuth, CustomersController.addAddress);

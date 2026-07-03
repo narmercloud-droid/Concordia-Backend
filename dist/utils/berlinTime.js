@@ -67,6 +67,30 @@ export function getBerlinTodayRange(now = new Date()) {
     const end = berlinDayStartUtc(new Intl.DateTimeFormat("en-CA", { timeZone: BERLIN_TZ }).format(new Date(start.getTime() + 26 * 60 * 60 * 1000)));
     return { start, end, ymd, dateLabel: berlinDateLabel(now) };
 }
+/** Inclusive Berlin calendar range [fromYmd, toYmd]. `end` is exclusive UTC instant after last day. */
+export function getBerlinDateRange(fromYmd, toYmd) {
+    const start = berlinDayStartUtc(fromYmd);
+    const end = berlinDayStartUtc(new Intl.DateTimeFormat("en-CA", { timeZone: BERLIN_TZ }).format(new Date(berlinDayStartUtc(toYmd).getTime() + 26 * 60 * 60 * 1000)));
+    const fromLabel = new Intl.DateTimeFormat("de-DE", {
+        timeZone: BERLIN_TZ,
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric"
+    }).format(berlinDayStartUtc(fromYmd));
+    const toLabel = new Intl.DateTimeFormat("de-DE", {
+        timeZone: BERLIN_TZ,
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric"
+    }).format(berlinDayStartUtc(toYmd));
+    return {
+        start,
+        end,
+        fromYmd,
+        toYmd,
+        periodLabel: fromYmd === toYmd ? fromLabel : `${fromLabel} – ${toLabel}`
+    };
+}
 export function isWithinBerlinToday(createdAt, now = new Date()) {
     const { start, end } = getBerlinTodayRange(now);
     const ts = new Date(createdAt).getTime();

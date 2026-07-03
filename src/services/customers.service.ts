@@ -181,6 +181,80 @@ export class CustomerService {
       preferences: preferencesResult.rows || []
     };
   }
+
+  async exportPersonalData(customerId: string) {
+    const profile = await this.getProfile(customerId);
+    if (!profile) return null;
+
+    const orders = await prisma.order.findMany({
+      where: { customerId },
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        branchId: true,
+        status: true,
+        orderTotal: true,
+        paymentMethod: true,
+        fulfillmentType: true,
+        createdAt: true,
+        deliveryAddress: true
+      },
+      take: 500
+    });
+
+    return {
+      exportedAt: new Date().toISOString(),
+      profile: {
+        id: profile.id,
+        name: profile.name,
+        email: profile.email,
+        phone: profile.phone ?? profile.phoneNumber,
+        marketingConsent: profile.marketingConsent,
+        marketingEmail: profile.marketingEmail,
+        marketingSMS: profile.marketingSMS,
+        marketingWhatsApp: profile.marketingWhatsApp,
+        marketingConsentAt: profile.marketingConsentAt,
+        loyaltyPoints: profile.loyaltyPoints,
+        loyaltyTier: profile.loyaltyTier,
+        addresses: profile.addresses,
+        preferences: profile.preferences
+      },
+      orders
+    };
+  }
+
+  async deleteAccount(customerId: string) {
+    const customer = await prisma.customer.findUnique({ where: { id: customerId } });
+    if (!customer) return false;
+
+    const tombstoneEmail = `deleted+${customerId}@invalid.concordiapizza.de`;
+
+    await prisma.$transaction([
+      prisma.customerSession.deleteMany({ where: { customerId } }),
+      prisma.address.deleteMany({ where: { customerId } }),
+      prisma.webPushSubscription.deleteMany({ where: { customerId } }),
+      prisma.customer.update({
+        where: { id: customerId },
+        data: {
+          name: "Gelöschter Nutzer",
+          email: tombstoneEmail,
+          phone: null,
+          phoneNumber: null,
+          passwordHash: null,
+          loginToken: null,
+          loginTokenExpires: null,
+          marketingConsent: false,
+          marketingEmail: false,
+          marketingSMS: false,
+          marketingWhatsApp: false,
+          marketingConsentAt: null,
+          loyaltyPoints: 0
+        }
+      })
+    ]);
+
+    return true;
+  }
 }
 
 export const customerService = new CustomerService();
