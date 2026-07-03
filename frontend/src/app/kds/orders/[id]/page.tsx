@@ -20,7 +20,8 @@ function getCookie(name: string) {
 
 export default function KDSOrderDetailPage() {
   const params = useParams();
-  const orderId = params?.id;
+  const rawOrderId = params?.id;
+  const orderId = Array.isArray(rawOrderId) ? rawOrderId[0] : rawOrderId;
   const router = useRouter();
   const [branchId, setBranchId] = useState<string | null>(null);
   const [order, setOrder] = useState<Order | null>(null);

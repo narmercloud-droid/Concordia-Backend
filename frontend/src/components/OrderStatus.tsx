@@ -6,21 +6,31 @@ import { formatCurrency } from "../lib/format.js";
 
 type OrderDetails = {
   id?: string;
+  orderId?: string;
   status?: string;
   items?: Array<{ id: string; name: string; quantity: number; price: number }>;
   total?: number;
   customer?: { name?: string; phone?: string; address?: string };
   notes?: string;
   placedAt?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
-export default function OrderStatus({ orderId }: { orderId: string }) {
-  const [order, setOrder] = useState<OrderDetails | null>(null);
-  const [loading, setLoading] = useState(true);
+type OrderStatusProps = {
+  orderId: string;
+  initialOrder?: OrderDetails | null;
+};
+
+export default function OrderStatus({ orderId, initialOrder }: OrderStatusProps) {
+  const [order, setOrder] = useState<OrderDetails | null>(initialOrder ?? null);
+  const [loading, setLoading] = useState(!initialOrder);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (initialOrder) {
+      return;
+    }
+
     api.getOrder(orderId)
       .then(data => {
         const resolved = data.order || data;
@@ -28,7 +38,7 @@ export default function OrderStatus({ orderId }: { orderId: string }) {
       })
       .catch(() => setError("Unable to load order status."))
       .finally(() => setLoading(false));
-  }, [orderId]);
+  }, [orderId, initialOrder]);
 
   if (loading) {
     return <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">Loading order status…</div>;

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { api } from "../../../lib/api.js";
+import { api } from "@/lib/api.js";
 
 export default function MarketingSegmentsPage() {
   const [segments, setSegments] = useState<any[]>([]);

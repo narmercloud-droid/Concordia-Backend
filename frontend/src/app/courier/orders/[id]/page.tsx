@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import MapView from "../../../../components/MapView.js";
+import LazyMapView from "../../../../components/LazyMapView.js";
 
 type Order = {
   id: string;
@@ -193,7 +193,7 @@ export default function CourierOrderDetailPage() {
         </div>
       </div>
 
-      {location ? <MapView latitude={location.latitude} longitude={location.longitude} /> : null}
+      {location ? <LazyMapView latitude={location.latitude} longitude={location.longitude} /> : null}
     </div>
   );
 }

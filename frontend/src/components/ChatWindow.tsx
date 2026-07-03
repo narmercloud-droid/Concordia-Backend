@@ -33,7 +33,7 @@ export default function ChatWindow() {
     appendMessage({ id, sender: "ai", text: "" });
 
     const interval = window.setInterval(() => {
-      index += 1;
+      index = Math.min(index + 4, text.length);
       setMessages(current =>
         current.map(msg =>
           msg.id === id ? { ...msg, text: text.slice(0, index) } : msg
@@ -44,7 +44,7 @@ export default function ChatWindow() {
         window.clearInterval(interval);
         setTyping(false);
       }
-    }, 25);
+    }, 50);
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { api } from "../../../../../lib/api.js";
+import { api } from "@/lib/api.js";
 
 export default function EditCampaignPage() {
   const params = useParams();

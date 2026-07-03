@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import MapView from "../../../components/MapView.js";
+import LazyMapView from "../../../components/LazyMapView.js";
 
 type TrackingEvent = {
   id: string;
@@ -94,7 +94,7 @@ export default function TrackPage({ params }: { params: { token: string } }) {
           </div>
 
           {data.latestLocation ? (
-            <MapView latitude={data.latestLocation.latitude} longitude={data.latestLocation.longitude} />
+            <LazyMapView latitude={data.latestLocation.latitude} longitude={data.latestLocation.longitude} />
           ) : (
             <div className="rounded-3xl border border-slate-200 bg-white p-6 text-slate-600 shadow-sm">The courier has not shared a location yet.</div>
           )}
