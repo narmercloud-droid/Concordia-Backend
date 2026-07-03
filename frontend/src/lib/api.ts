@@ -1,7 +1,14 @@
-const BACKEND_BASE = "http://localhost:3001";
+import { getBackendUrl } from "./config.js";
+import { clientBackendJson } from "./clientBackend.js";
+
+const isBrowser = typeof window !== "undefined";
 
 async function backendRequest(path: string, options: RequestInit = {}) {
-  const response = await fetch(`${BACKEND_BASE}${path}`, {
+  if (isBrowser) {
+    return clientBackendJson(path, options);
+  }
+
+  const response = await fetch(`${getBackendUrl()}${path}`, {
     headers: {
       "Content-Type": "application/json",
       ...(options.headers || {})

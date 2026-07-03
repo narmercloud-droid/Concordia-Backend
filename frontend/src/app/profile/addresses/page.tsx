@@ -1,19 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-
-async function fetchAddresses(token: string) {
-  const response = await fetch("http://localhost:3001/customer/addresses", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json"
-    },
-    cache: "no-store"
-  });
-
-  if (!response.ok) throw new Error("Unable to load addresses");
-  return response.json();
-}
+import { fetchAddresses } from "../../../lib/serverApi.js";
 
 export default async function AddressesPage() {
   const session = cookies().get("session")?.value;

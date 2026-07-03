@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import LazyMapView from "../../../components/LazyMapView.js";
+import { useTrackingSocket } from "../../../hooks/useTrackingSocket.js";
+import { clientBackendJson } from "../../../lib/clientBackend.js";
 
 type TrackingEvent = {
   id: string;
@@ -34,27 +36,25 @@ export default function TrackPage({ params }: { params: { token: string } }) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchTracking = async () => {
+  const fetchTracking = useCallback(async () => {
     try {
-      const response = await fetch(`http://localhost:3001/track/${encodeURIComponent(params.token)}`);
-      const payload = await response.json();
-      if (!response.ok) {
-        throw new Error(payload.error || "Unable to load tracking data");
-      }
+      const payload = await clientBackendJson<TrackingData>(`/track/${encodeURIComponent(params.token)}`);
       setData(payload);
       setError(null);
-    } catch (err: any) {
-      setError(err.message || "Unable to load tracking data");
+    } catch (err: unknown) {
+      setError((err as Error).message || "Unable to load tracking data");
     } finally {
       setLoading(false);
     }
-  };
+  }, [params.token]);
+
+  useTrackingSocket(params.token, fetchTracking);
 
   useEffect(() => {
     fetchTracking();
-    const interval = window.setInterval(fetchTracking, 5000);
+    const interval = window.setInterval(fetchTracking, 30000);
     return () => window.clearInterval(interval);
-  }, [params.token]);
+  }, [fetchTracking]);
 
   const estimateEta = () => {
     if (!data) return "Calculating...";

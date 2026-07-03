@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { clientBackendJson } from "../../../lib/clientBackend.js";
 
 type Order = {
   id: string;
@@ -24,8 +25,7 @@ export default function CourierOrdersPage() {
       return;
     }
 
-    fetch(`http://localhost:3001/courier/orders/${encodeURIComponent(courierId)}`)
-      .then(res => res.json())
+    clientBackendJson<{ orders?: Order[]; error?: string }>(`/courier/orders/${encodeURIComponent(courierId)}`)
       .then(data => {
         if (data.error) {
           throw new Error(data.error);
