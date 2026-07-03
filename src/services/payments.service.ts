@@ -2,7 +2,9 @@ import { prisma } from "../prisma/client.ts";
 import { paypalRequest } from "./paypal/paypalClient.ts";
 import {
   getBranchPayPalCredentials,
-  isBranchPayPalConfigured
+  isBranchPayPalConfigured,
+  isPayPalModeLive,
+  type BranchPayPalCredentials
 } from "./paypal/branchPayPal.service.ts";
 import { OrderLifecycleService } from "./order/orderLifecycle.service.ts";
 import { ordersService } from "./orders.service.ts";
@@ -20,6 +22,86 @@ import { getStripePublishableKey, isStripeConfigured } from "./stripe/stripeClie
 
 function formatEur(amount: number) {
   return amount.toFixed(2);
+}
+
+function buildPayPalOrderBody(
+  orderId: string,
+  description: string,
+  amount: number,
+  fulfillmentType?: string | null
+) {
+  const isPickup = fulfillmentType === "pickup";
+  return {
+    intent: "CAPTURE",
+    application_context: {
+      brand_name: "Concordia Restaurant",
+      locale: "de-DE",
+      landing_page: "LOGIN",
+      shipping_preference: isPickup ? "NO_SHIPPING" : "GET_FROM_FILE",
+      user_action: "PAY_NOW"
+    },
+    purchase_units: [
+      {
+        custom_id: orderId,
+        description,
+        amount: {
+          currency_code: "EUR",
+          value: formatEur(amount)
+        }
+      }
+    ]
+  };
+}
+
+type PayPalOrderResource = {
+  id?: string;
+  status?: string;
+  purchase_units?: Array<{
+    payments?: { captures?: Array<{ id?: string; status?: string }> };
+  }>;
+};
+
+function getPayPalCapture(resource: PayPalOrderResource) {
+  return resource.purchase_units?.[0]?.payments?.captures?.[0] ?? null;
+}
+
+async function fetchPayPalOrder(
+  paypalOrderId: string,
+  credentials: BranchPayPalCredentials
+) {
+  return paypalRequest(
+    `/v2/checkout/orders/${paypalOrderId}`,
+    "GET",
+    null,
+    credentials
+  ) as Promise<PayPalOrderResource>;
+}
+
+async function markOrderPaidFromPayPalCapture(
+  orderId: string,
+  captureId: string,
+  notifyKitchen: boolean
+) {
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    select: { paymentStatus: true }
+  });
+  if (!order) throw new Error("Order not found");
+  if (order.paymentStatus === "paid") {
+    return { newlyPaid: false as const };
+  }
+
+  await OrderLifecycleService.updatePaymentStatus(orderId, "paid", {
+    paidAt: new Date(),
+    paypalCaptureId: captureId,
+    transactionId: captureId
+  });
+
+  if (notifyKitchen) {
+    await ordersService.notifyKitchenOrder(orderId);
+  }
+
+  return { newlyPaid: true as const };
 }
 
 async function requireBranchPayPal(branchId: string) {
@@ -67,6 +149,7 @@ export const paymentsService = {
       onlinePaymentsEnabled,
       paypalClientId:
         methods.paypal && paypalCredentials ? paypalCredentials.clientId : null,
+      paypalMode: isPayPalModeLive() ? ("live" as const) : ("sandbox" as const),
       stripePublishableKey: getStripePublishableKey(),
       stripeAccountId,
       stripeReady,
@@ -164,22 +247,25 @@ export const paymentsService = {
       throw new Error("Invalid order amount");
     }
 
+    if (order.paypalOrderId) {
+      const existing = await fetchPayPalOrder(order.paypalOrderId, credentials);
+      if (existing.status === "COMPLETED") {
+        throw new Error("Order is already paid");
+      }
+      if (existing.status === "CREATED" || existing.status === "APPROVED") {
+        return { paypalOrderId: order.paypalOrderId, orderId };
+      }
+    }
+
     const result = await paypalRequest(
       "/v2/checkout/orders",
       "POST",
-      {
-        intent: "CAPTURE",
-        purchase_units: [
-          {
-            custom_id: orderId,
-            description: `Concordia order ${orderId.slice(0, 8)}`,
-            amount: {
-              currency_code: "EUR",
-              value: formatEur(amount)
-            }
-          }
-        ]
-      },
+      buildPayPalOrderBody(
+        orderId,
+        `Concordia order ${orderId.slice(0, 8)}`,
+        amount,
+        order.fulfillmentType
+      ),
       credentials
     );
 
@@ -192,7 +278,7 @@ export const paymentsService = {
       where: { id: orderId },
       data: {
         paypalOrderId: result.id,
-        paymentMethod: "CARD"
+        paymentMethod: "PAYPAL"
       }
     });
 
@@ -211,6 +297,27 @@ export const paymentsService = {
 
     const credentials = await requireBranchPayPal(order.branchId);
 
+    const existingPayPalOrder = await fetchPayPalOrder(order.paypalOrderId, credentials);
+    if (existingPayPalOrder.status === "COMPLETED") {
+      const existingCapture = getPayPalCapture(existingPayPalOrder);
+      if (existingCapture?.id) {
+        const { newlyPaid } = await markOrderPaidFromPayPalCapture(
+          orderId,
+          existingCapture.id,
+          true
+        );
+        return {
+          success: true,
+          captureId: existingCapture.id,
+          alreadyPaid: !newlyPaid
+        };
+      }
+    }
+
+    if (existingPayPalOrder.status !== "APPROVED") {
+      throw new Error("PayPal payment is not approved yet");
+    }
+
     const result = await paypalRequest(
       `/v2/checkout/orders/${order.paypalOrderId}/capture`,
       "POST",
@@ -224,15 +331,9 @@ export const paymentsService = {
       throw new Error(detail ?? "Payment capture failed");
     }
 
-    await OrderLifecycleService.updatePaymentStatus(orderId, "paid", {
-      paidAt: new Date(),
-      paypalCaptureId: capture.id,
-      transactionId: capture.id
-    });
+    const { newlyPaid } = await markOrderPaidFromPayPalCapture(orderId, capture.id, true);
 
-    await ordersService.notifyKitchenOrder(orderId);
-
-    return { success: true, captureId: capture.id };
+    return { success: true, captureId: capture.id, alreadyPaid: !newlyPaid };
   },
 
   async createGiftCardPayPalOrder(purchaseId: string) {
@@ -252,22 +353,25 @@ export const paymentsService = {
       throw new Error("Invalid gift card amount");
     }
 
+    if (card.paypalOrderId) {
+      const existing = await fetchPayPalOrder(card.paypalOrderId, credentials);
+      if (existing.status === "COMPLETED") {
+        throw new Error("Gift card is already paid");
+      }
+      if (existing.status === "CREATED" || existing.status === "APPROVED") {
+        return { paypalOrderId: card.paypalOrderId, purchaseId };
+      }
+    }
+
     const result = await paypalRequest(
       "/v2/checkout/orders",
       "POST",
-      {
-        intent: "CAPTURE",
-        purchase_units: [
-          {
-            custom_id: `gift:${purchaseId}`,
-            description: `Concordia Gutschein ${purchaseId.slice(0, 8)}`,
-            amount: {
-              currency_code: "EUR",
-              value: formatEur(amount)
-            }
-          }
-        ]
-      },
+      buildPayPalOrderBody(
+        `gift:${purchaseId}`,
+        `Concordia Gutschein ${purchaseId.slice(0, 8)}`,
+        amount,
+        "pickup"
+      ),
       credentials
     );
 
@@ -295,6 +399,24 @@ export const paymentsService = {
     }
 
     const credentials = await requireBranchPayPal(card.branchId);
+
+    const existingPayPalOrder = await fetchPayPalOrder(card.paypalOrderId, credentials);
+    if (existingPayPalOrder.status === "COMPLETED") {
+      const existingCapture = getPayPalCapture(existingPayPalOrder);
+      if (existingCapture?.id) {
+        const activation = await activateGiftCardAfterPayment(purchaseId, existingCapture.id);
+        return {
+          success: true,
+          code: activation.code,
+          captureId: existingCapture.id,
+          alreadyPaid: activation.alreadyPaid
+        };
+      }
+    }
+
+    if (existingPayPalOrder.status !== "APPROVED") {
+      throw new Error("PayPal payment is not approved yet");
+    }
 
     const result = await paypalRequest(
       `/v2/checkout/orders/${card.paypalOrderId}/capture`,
