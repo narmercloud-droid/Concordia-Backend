@@ -43,26 +43,38 @@ export const NotificationsController = {
         return prefs;
     }),
     sendMarketingSMS: wrap(async (req) => {
-        const { message, segment } = req.body;
-        let customers = [];
-        if (segment === "all") {
-            customers = await prisma.customer.findMany();
+        const { message, segment, branchId: bodyBranchId } = req.body ?? {};
+        const text = String(message ?? "").trim();
+        const user = req.user;
+        const managerBranchId = req
+            .managerBranchId;
+        const branchId = String(bodyBranchId ?? managerBranchId ?? user.branchId ?? "").trim();
+        if (text.length < 5) {
+            return fail("VALIDATION_ERROR", "Message must be at least 5 characters");
         }
-        else if (segment === "recent") {
-            customers = await prisma.customer.findMany({
-                where: {
-                    orders: {
-                        some: {
-                            createdAt: {
-                                gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
-                            }
-                        }
-                    }
-                }
-            });
+        if (!branchId) {
+            return fail("VALIDATION_ERROR", "branchId is required");
         }
-        const phones = customers.filter((c) => c.phone).map((c) => c.phone);
-        await notificationsService.sendMarketingSMS(phones, message);
-        return { success: true, sent: phones.length };
+        if (user.role === "manager" && user.branchId && user.branchId !== branchId) {
+            return fail("FORBIDDEN", "Managers can only send SMS for their own branch");
+        }
+        const since = segment === "recent"
+            ? new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+            : null;
+        const customers = await prisma.branchCustomer.findMany({
+            where: {
+                branchId,
+                marketingSMS: true,
+                phone: { not: "" },
+                ...(since ? { lastOrderAt: { gte: since } } : {})
+            },
+            select: { phone: true }
+        });
+        const phones = [...new Set(customers.map((c) => c.phone.trim()).filter(Boolean))];
+        if (!phones.length) {
+            return fail("NOT_FOUND", "No customers with SMS marketing consent for this branch");
+        }
+        const result = await notificationsService.sendMarketingSMS(phones, text);
+        return { success: true, sent: result.sent, total: phones.length, branchId };
     })
 };

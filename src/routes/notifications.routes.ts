@@ -4,7 +4,8 @@ import { NotificationsController } from "../controllers/notifications.controller
 import { customerAuth } from "../middleware/customerAuth.ts";
 import { optionalCustomerAuth } from "../middleware/optionalCustomerAuth.ts";
 import { adminAuth } from "../middleware/adminAuth.ts";
-import { adminRole } from "../middleware/adminRole.ts";
+import { managerAccess } from "../middleware/managerAccess.ts";
+import { requireManagerPermission } from "../middleware/requireManagerPermission.ts";
 
 const router = Router();
 
@@ -17,7 +18,8 @@ router.put("/preferences", customerAuth, NotificationsController.updatePreferenc
 router.post(
   "/marketing/sms",
   adminAuth,
-  adminRole("manager"),
+  managerAccess,
+  requireManagerPermission("customers_automation"),
   NotificationsController.sendMarketingSMS
 );
 

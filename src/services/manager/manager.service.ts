@@ -156,7 +156,11 @@ export async function updateDeliverySettings(
     ...(settings.freeDeliveryAtMinimum != null
       ? { freeDeliveryAtMinimum: settings.freeDeliveryAtMinimum }
       : {}),
-    ...(settings.deliveryAreas != null ? { deliveryAreas: settings.deliveryAreas } : {}),
+    ...(settings.deliveryMode === "radius"
+      ? { deliveryAreas: [] }
+      : settings.deliveryAreas != null
+        ? { deliveryAreas: settings.deliveryAreas }
+        : {}),
     ...(sortedZones != null ? { deliveryRadiusZones: sortedZones } : {})
   };
 

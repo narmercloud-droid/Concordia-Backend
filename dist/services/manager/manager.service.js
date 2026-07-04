@@ -2,6 +2,8 @@ import { randomUUID } from "crypto";
 import { prisma } from "../../prisma/client.js";
 import { getBerlinTodayRange } from "../../utils/berlinTime.js";
 import { IN_PROGRESS_ORDER_STATUSES } from "../order/orderStatus.constants.js";
+import { isCountableRevenueOrder } from "../admin/revenueReport.service.js";
+import { resolveOrderPaymentMethod } from "../../utils/orderPaymentMethod.js";
 export async function getManagerBranch(branchId) {
     const branch = await prisma.branch.findUnique({
         where: { id: branchId },
@@ -104,7 +106,11 @@ export async function updateDeliverySettings(branchId, settings) {
         ...(settings.freeDeliveryAtMinimum != null
             ? { freeDeliveryAtMinimum: settings.freeDeliveryAtMinimum }
             : {}),
-        ...(settings.deliveryAreas != null ? { deliveryAreas: settings.deliveryAreas } : {}),
+        ...(settings.deliveryMode === "radius"
+            ? { deliveryAreas: [] }
+            : settings.deliveryAreas != null
+                ? { deliveryAreas: settings.deliveryAreas }
+                : {}),
         ...(sortedZones != null ? { deliveryRadiusZones: sortedZones } : {})
     };
     await prisma.branchConfig.upsert({
@@ -207,7 +213,7 @@ export async function getBranchOrders(branchId, options = {}) {
             orderBy: { createdAt: "desc" },
             take: limit,
             skip: offset,
-            include: MANAGER_ORDER_INCLUDE
+            include: MANAGER_ORDER_LIST_INCLUDE
         }),
         prisma.order.count({ where })
     ]);
@@ -216,10 +222,23 @@ export async function getBranchOrders(branchId, options = {}) {
 export async function getBranchOrderById(branchId, orderId) {
     return prisma.order.findFirst({
         where: { id: orderId, branchId },
-        include: MANAGER_ORDER_INCLUDE
+        include: MANAGER_ORDER_DETAIL_INCLUDE
     });
 }
-const MANAGER_ORDER_INCLUDE = {
+const MANAGER_ORDER_LIST_INCLUDE = {
+    items: {
+        select: {
+            id: true,
+            quantity: true,
+            price: true,
+            notes: true,
+            item: { select: { name: true } },
+            variants: { select: { name: true, price: true } },
+            extras: { select: { name: true, price: true } }
+        }
+    }
+};
+const MANAGER_ORDER_DETAIL_INCLUDE = {
     items: {
         include: {
             item: true,
@@ -266,7 +285,28 @@ function buildBranchOrderWhere(branchId, filters = {}) {
         and.push({ isGuest: false, customerId: { not: null } });
     }
     const paymentValues = paymentMethodFilterValues(filters.paymentMethod ?? "");
-    if (paymentValues?.length) {
+    const filterKey = (filters.paymentMethod ?? "").trim().toLowerCase();
+    if (filterKey === "paypal") {
+        and.push({
+            OR: [
+                { paypalOrderId: { not: null } },
+                { paypalCaptureId: { not: null } },
+                { paymentMethod: { equals: "PAYPAL", mode: "insensitive" } }
+            ]
+        });
+    }
+    else if (filterKey === "card") {
+        and.push({
+            paypalOrderId: null,
+            paypalCaptureId: null,
+            OR: [
+                { paymentMethod: { equals: "CARD", mode: "insensitive" } },
+                { paymentMethod: { equals: "STRIPE", mode: "insensitive" } },
+                { paymentIntentId: { not: null } }
+            ]
+        });
+    }
+    else if (paymentValues?.length) {
         and.push({
             OR: paymentValues.map((value) => ({
                 paymentMethod: { equals: value, mode: "insensitive" }
@@ -292,8 +332,9 @@ export function formatManagerOrder(o) {
         deliveryFee: o.deliveryFee,
         discount: o.discount,
         giftCardAmount: o.giftCardAmount,
-        paymentMethod: o.paymentMethod,
+        paymentMethod: resolveOrderPaymentMethod(o),
         paymentStatus: o.paymentStatus,
+        paypalOrderId: o.paypalOrderId ?? null,
         notes: o.notes,
         scheduledFor: o.scheduledFor,
         createdAt: o.createdAt,
@@ -369,7 +410,7 @@ export async function updateBranchPromotions(branchId, input) {
 }
 export async function getBranchDashboard(branchId) {
     const { start, end } = getBerlinTodayRange();
-    const [activeOrders, todayOrders, totalRevenue] = await Promise.all([
+    const [activeOrders, todayOrders, todayOrderRows] = await Promise.all([
         prisma.order.count({
             where: {
                 branchId,
@@ -381,19 +422,27 @@ export async function getBranchDashboard(branchId) {
         prisma.order.count({
             where: { branchId, createdAt: { gte: start, lt: end } }
         }),
-        prisma.order.aggregate({
+        prisma.order.findMany({
             where: {
                 branchId,
                 createdAt: { gte: start, lt: end },
-                paymentStatus: "paid",
                 status: { notIn: ["cancelled", "rejected"] }
             },
-            _sum: { orderTotal: true }
+            select: {
+                orderTotal: true,
+                paymentMethod: true,
+                paymentStatus: true,
+                paidAt: true,
+                status: true
+            }
         })
     ]);
+    const todayRevenue = todayOrderRows
+        .filter((order) => isCountableRevenueOrder(order))
+        .reduce((sum, order) => sum + Number(order.orderTotal ?? 0), 0);
     return {
         pendingOrders: activeOrders,
         todayOrders,
-        todayRevenue: totalRevenue._sum.orderTotal ?? 0
+        todayRevenue
     };
 }

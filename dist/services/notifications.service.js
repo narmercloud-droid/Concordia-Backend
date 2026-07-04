@@ -1,5 +1,6 @@
 import { sendPush } from "./notifications/notification.service.js";
 import { broadcastOfferPush, parsePushToken, removeWebPushSubscription, sendOfferPushToCustomerEmail, upsertWebPushSubscription } from "./notifications/webPushSubscription.service.js";
+import { smsService } from "./sms.service.js";
 import { prisma } from "../prisma/client.js";
 export const notificationsService = {
     isPushEnabled() {
@@ -33,9 +34,15 @@ export const notificationsService = {
             update: prefs
         });
     },
-    async sendMarketingSMS(_phones, _message) {
-        // SMS marketing handled via branch messaging / Twilio elsewhere.
-        return { sent: 0 };
+    async sendMarketingSMS(phones, message) {
+        const unique = [...new Set(phones.map((p) => p.trim()).filter(Boolean))];
+        if (!unique.length)
+            return { sent: 0 };
+        if (!process.env.MESSAGEBIRD_API_KEY && !process.env.TWILIO_ACCOUNT_SID) {
+            throw new Error("SMS provider is not configured on the server");
+        }
+        await smsService.sendBulkSMS(unique, message);
+        return { sent: unique.length };
     },
     async sendOfferNotification(input) {
         if (input.customerEmail) {
