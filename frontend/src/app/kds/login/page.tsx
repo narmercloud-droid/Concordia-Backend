@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { clientBackendJson } from "../../../lib/clientBackend.js";
 
 type Branch = {
   id: string;
@@ -27,8 +28,7 @@ export default function KDSLoginPage() {
       return;
     }
 
-    fetch("http://localhost:3001/search/branches")
-      .then(res => res.json())
+    clientBackendJson<Branch[]>("/search/branches")
       .then(data => {
         if (Array.isArray(data)) {
           setBranches(data);

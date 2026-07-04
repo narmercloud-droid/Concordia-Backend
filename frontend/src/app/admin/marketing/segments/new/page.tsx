@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { api } from "../../../../lib/api.js";
+import { api } from "@/lib/api.js";
 
 export default function NewSegmentPage() {
   const [name, setName] = useState("");

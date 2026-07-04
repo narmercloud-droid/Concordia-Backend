@@ -1,37 +1,15 @@
 import OrderStatus from "../../../components/OrderStatus.js";
+import { fetchOrder, fetchTrackDetails } from "../../../lib/serverApi.js";
 
 type OrderPageProps = {
   params: { id: string };
 };
 
-type TrackDetails = {
-  order: {
-    status: string;
-    tracking_token: string;
-  };
-  timeline: Array<{ id: string; status: string; timestamp: string }>;
-};
-
-async function fetchOrderTrackingLink(orderId: string) {
-  const response = await fetch(`http://localhost:3001/track/order/${orderId}`, { cache: "no-store" });
-  if (!response.ok) {
-    return null;
-  }
-  return response.json();
-}
-
-async function fetchTrackDetails(token: string) {
-  const response = await fetch(`http://localhost:3001/track/${encodeURIComponent(token)}`, { cache: "no-store" });
-  if (!response.ok) {
-    return null;
-  }
-  return response.json() as Promise<TrackDetails>;
-}
-
 export default async function OrderPage({ params }: OrderPageProps) {
-  const orderData = await fetchOrderTrackingLink(params.id);
+  const orderData = await fetchOrder(params.id);
   const trackingToken = orderData?.tracking_token;
   const trackData = trackingToken ? await fetchTrackDetails(trackingToken) : null;
+  const initialOrder = orderData?.order || orderData;
 
   return (
     <div className="space-y-6">
@@ -54,7 +32,7 @@ export default async function OrderPage({ params }: OrderPageProps) {
         <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
           <h2 className="text-xl font-semibold text-slate-900">Status timeline</h2>
           <div className="mt-4 space-y-3">
-            {trackData.timeline.map(event => (
+            {trackData.timeline.map((event: { id: string; status: string; timestamp: string }) => (
               <div key={event.id} className="rounded-3xl bg-slate-50 p-4">
                 <div className="flex items-center justify-between gap-4">
                   <div>
@@ -68,7 +46,7 @@ export default async function OrderPage({ params }: OrderPageProps) {
         </div>
       ) : null}
 
-      <OrderStatus orderId={params.id} />
+      <OrderStatus orderId={params.id} initialOrder={initialOrder} />
     </div>
   );
 }

@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import MapView from "../../../../components/MapView.js";
+import LazyMapView from "../../../../components/LazyMapView.js";
+import { clientBackendJson } from "../../../../lib/clientBackend.js";
 
 type Order = {
   id: string;
@@ -13,8 +14,9 @@ type Order = {
 
 export default function CourierOrderDetailPage() {
   const params = useParams();
+  const rawOrderId = params?.id;
+  const orderId = Array.isArray(rawOrderId) ? rawOrderId[0] : rawOrderId;
   const router = useRouter();
-  const orderId = params?.id;
   const [order, setOrder] = useState<Order | null>(null);
   const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const [trackingActive, setTrackingActive] = useState(false);
@@ -35,8 +37,7 @@ export default function CourierOrderDetailPage() {
       return;
     }
 
-    fetch(`http://localhost:3001/courier/orders/${encodeURIComponent(courierId)}`)
-      .then(res => res.json())
+    clientBackendJson<{ orders?: Order[]; error?: string }>(`/courier/orders/${encodeURIComponent(courierId)}`)
       .then(data => {
         if (data.error) throw new Error(data.error);
         const found = (data.orders || []).find((item: Order) => item.id === orderId);
@@ -71,9 +72,8 @@ export default function CourierOrderDetailPage() {
     intervalRef.current = window.setInterval(() => {
       if (!latestPositionRef.current || !orderId) return;
       const coords = latestPositionRef.current.coords;
-      fetch("http://localhost:3001/courier/location", {
+      clientBackendJson("/courier/location", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           courierId: localStorage.getItem("courierId"),
           orderId,
@@ -105,15 +105,10 @@ export default function CourierOrderDetailPage() {
   const sendStatus = async (status: string) => {
     if (!orderId) return;
     try {
-      const response = await fetch("http://localhost:3001/courier/status", {
+      await clientBackendJson("/courier/status", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ orderId, status })
       });
-      const data = await response.json();
-      if (data.error) {
-        throw new Error(data.error);
-      }
       setStatusMessage(`Status updated to ${status}.`);
       if (status === "delivered") {
         setTrackingActive(false);
@@ -193,7 +188,7 @@ export default function CourierOrderDetailPage() {
         </div>
       </div>
 
-      {location ? <MapView latitude={location.latitude} longitude={location.longitude} /> : null}
+      {location ? <LazyMapView latitude={location.latitude} longitude={location.longitude} /> : null}
     </div>
   );
 }

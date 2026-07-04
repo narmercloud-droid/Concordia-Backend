@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import KDSOrderDetail from "../../../../components/KDSOrderDetail.js";
+import { clientBackendJson } from "../../../../lib/clientBackend.js";
 
 type Order = {
   id: string;
@@ -20,7 +21,8 @@ function getCookie(name: string) {
 
 export default function KDSOrderDetailPage() {
   const params = useParams();
-  const orderId = params?.id;
+  const rawOrderId = params?.id;
+  const orderId = Array.isArray(rawOrderId) ? rawOrderId[0] : rawOrderId;
   const router = useRouter();
   const [branchId, setBranchId] = useState<string | null>(null);
   const [order, setOrder] = useState<Order | null>(null);
@@ -32,11 +34,7 @@ export default function KDSOrderDetailPage() {
   const fetchOrder = async (branch: string) => {
     if (!orderId) return;
     try {
-      const response = await fetch(`http://localhost:3001/kds/orders/${encodeURIComponent(branch)}`, { cache: "no-store" });
-      const payload = await response.json();
-      if (!response.ok) {
-        throw new Error(payload.error || "Unable to load order");
-      }
+      const payload = await clientBackendJson<{ orders?: Order[]; error?: string }>(`/kds/orders/${encodeURIComponent(branch)}`, { cache: "no-store" });
       const found = (payload.orders || []).find((item: Order) => item.id === orderId);
       if (!found) {
         throw new Error("Order not found for this branch.");
@@ -62,22 +60,17 @@ export default function KDSOrderDetailPage() {
   useEffect(() => {
     if (!branchId) return;
     fetchOrder(branchId);
-    const interval = window.setInterval(() => fetchOrder(branchId), 3000);
+    const interval = window.setInterval(() => fetchOrder(branchId), 10000);
     return () => window.clearInterval(interval);
   }, [branchId, orderId]);
 
   const updateStatus = async (status: string) => {
     if (!orderId) return;
     try {
-      const response = await fetch(`http://localhost:3001/kds/orders/${encodeURIComponent(orderId)}/status`, {
+      await clientBackendJson(`/kds/orders/${encodeURIComponent(orderId!)}/status`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status })
       });
-      const payload = await response.json();
-      if (!response.ok) {
-        throw new Error(payload.error || "Unable to update status");
-      }
       setStatusMessage(`Order updated to ${status.replace(/_/g, " ")}.`);
       fetchOrder(branchId!);
     } catch (err: any) {
@@ -92,15 +85,10 @@ export default function KDSOrderDetailPage() {
     }
 
     try {
-      const response = await fetch(`http://localhost:3001/kds/orders/${encodeURIComponent(orderId)}/assign-courier`, {
+      await clientBackendJson(`/kds/orders/${encodeURIComponent(orderId!)}/assign-courier`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ courierId: courierId.trim() })
       });
-      const payload = await response.json();
-      if (!response.ok) {
-        throw new Error(payload.error || "Unable to assign courier");
-      }
       setStatusMessage("Courier assigned successfully.");
       fetchOrder(branchId!);
     } catch (err: any) {

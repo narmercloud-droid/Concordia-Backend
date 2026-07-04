@@ -1,4 +1,6 @@
 import { getIO } from './socket.js';
+import { prisma } from '../prisma/client.js';
+import { notifyCustomer } from '../services/notifications/notification.service.js';
 
 export function emitOrderUpdate(orderId, payload) {
   getIO().to(`order:${orderId}`).emit('order-update', payload);
@@ -23,11 +25,6 @@ export function emitCustomerUpdate(orderId, payload) {
 export function emitManagerUpdate(branchId, payload) {
   getIO().to('manager_branch_' + branchId).emit('manager-update', payload);
 }
-
-import { PrismaClient } from '@prisma/client';
-import { notifyCustomer } from '../services/notifications/notification.service.js';
-
-const prisma = new PrismaClient();
 
 export async function emitAndNotifyCustomer(orderId, payload) {
   emitCustomerUpdate(orderId, payload);

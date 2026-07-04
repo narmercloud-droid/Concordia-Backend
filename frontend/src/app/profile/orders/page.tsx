@@ -1,38 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-
-async function fetchProfile(token: string) {
-  const response = await fetch("http://localhost:3001/api/v1/customers/profile", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json"
-    },
-    cache: "no-store"
-  });
-
-  if (!response.ok) {
-    throw new Error("Unable to fetch profile");
-  }
-
-  return response.json();
-}
-
-async function fetchOrders(customerId: string, token: string) {
-  const response = await fetch(`http://localhost:3001/orders/customer/${customerId}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json"
-    },
-    cache: "no-store"
-  });
-
-  if (!response.ok) {
-    throw new Error("Unable to fetch orders");
-  }
-
-  return response.json();
-}
+import { fetchCustomerOrders, fetchProfile } from "../../../lib/serverApi.js";
 
 export default async function OrdersPage() {
   const session = cookies().get("session")?.value;
@@ -41,7 +10,7 @@ export default async function OrdersPage() {
   }
 
   const profile = await fetchProfile(session);
-  const ordersData = await fetchOrders(profile.id, session);
+  const ordersData = await fetchCustomerOrders(profile.id, session);
   const orders = ordersData.orders || [];
 
   return (

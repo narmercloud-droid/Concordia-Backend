@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import KDSOrderCard from "../../../components/KDSOrderCard.js";
+import { clientBackendJson } from "../../../lib/clientBackend.js";
 
 type Order = {
   id: string;
@@ -25,11 +26,7 @@ export default function KDSOrdersPage() {
 
   const fetchOrders = async (branch: string) => {
     try {
-      const response = await fetch(`http://localhost:3001/kds/orders/${encodeURIComponent(branch)}`);
-      const payload = await response.json();
-      if (!response.ok) {
-        throw new Error(payload.error || "Unable to load orders");
-      }
+      const payload = await clientBackendJson<{ orders?: Order[]; error?: string }>(`/kds/orders/${encodeURIComponent(branch)}`);
       setOrders(payload.orders || []);
       setError(null);
     } catch (err: any) {
@@ -47,7 +44,7 @@ export default function KDSOrdersPage() {
     }
     setBranchId(branch);
     fetchOrders(branch);
-    const interval = window.setInterval(() => fetchOrders(branch), 3000);
+    const interval = window.setInterval(() => fetchOrders(branch), 10000);
     return () => window.clearInterval(interval);
   }, [router]);
 

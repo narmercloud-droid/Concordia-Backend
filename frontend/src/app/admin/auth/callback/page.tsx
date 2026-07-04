@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { clientBackendJson } from "../../../../lib/clientBackend.js";
 
 export default function AdminAuthCallbackPage() {
   const [message, setMessage] = useState("Verifying admin magic link...");
@@ -19,12 +20,7 @@ export default function AdminAuthCallbackPage() {
       }
 
       try {
-        const verifyResponse = await fetch(`http://localhost:3001/api/auth/admin/verify?token=${encodeURIComponent(token)}`);
-        if (!verifyResponse.ok) {
-          throw new Error("Magic link verification failed");
-        }
-
-        const data = await verifyResponse.json();
+        const data = await clientBackendJson<{ token: string }>(`/api/auth/admin/verify?token=${encodeURIComponent(token)}`);
         const sessionResponse = await fetch("/api/auth/session", {
           method: "POST",
           headers: { "Content-Type": "application/json" },

@@ -1,22 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import ProfileDetails from "../../components/ProfileDetails.js";
-
-async function fetchProfile(token: string) {
-  const response = await fetch("http://localhost:3001/api/v1/customers/profile", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json"
-    },
-    cache: "no-store"
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch profile");
-  }
-
-  return response.json();
-}
+import { fetchProfile } from "../../lib/serverApi.js";
 
 export default async function ProfilePage() {
   const session = cookies().get("session")?.value;
@@ -26,7 +11,7 @@ export default async function ProfilePage() {
 
   let profile;
   try {
-    profile = await fetchProfile(session!);
+    profile = await fetchProfile(session);
   } catch {
     redirect("/login");
   }

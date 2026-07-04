@@ -1,6 +1,16 @@
+import dynamic from "next/dynamic";
 import "./globals.css";
-import CartSidebar from "../components/CartSidebar.js";
 import Link from "next/link";
+
+const CartSidebar = dynamic(() => import("../components/CartSidebar.js"), {
+  ssr: false,
+  loading: () => (
+    <div className="sticky top-6 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="text-lg font-semibold text-slate-900">Your cart</div>
+      <p className="mt-3 text-sm text-slate-500">Loading cart…</p>
+    </div>
+  )
+});
 
 export const metadata = {
   title: "Concordia",
