@@ -28,7 +28,15 @@ function collectCartSuggestions(categories, excludeItemIds, drinkLimit, sideLimi
         for (const item of cat.items) {
             if (exclude.has(item.id))
                 continue;
-            const row = { ...item, categoryName: cat.name };
+            const row = {
+                id: item.id,
+                itemNumber: item.itemNumber ?? null,
+                name: item.name,
+                description: item.description ?? null,
+                price: Number(item.price ?? 0),
+                imageUrl: item.imageUrl ?? null,
+                categoryName: cat.name
+            };
             if (isDrinkCategory(cat.name)) {
                 if (drinks.length < drinkLimit)
                     drinks.push(row);
@@ -45,7 +53,14 @@ function flattenMenuItems(categories) {
     const items = [];
     for (const cat of categories) {
         for (const item of cat.items) {
-            items.push(item);
+            items.push({
+                id: item.id,
+                itemNumber: item.itemNumber ?? null,
+                name: item.name,
+                description: item.description ?? null,
+                price: Number(item.price ?? 0),
+                imageUrl: item.imageUrl ?? null
+            });
         }
     }
     return items;

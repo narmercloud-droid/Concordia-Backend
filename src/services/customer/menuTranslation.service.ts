@@ -109,7 +109,15 @@ export function applyMenuTranslations(categories: MenuCategory[], lang: MenuLang
       description: catText.description,
       items: cat.items.map((item) => {
         const itemText = tItem(locale, item.id, item.name, item.description ?? null);
-        return { ...item, name: itemText.name, description: itemText.description };
+        const withNames = {
+          ...item,
+          name: itemText.name,
+          description: itemText.description
+        };
+        if (item.variantGroups || item.addOnGroups) {
+          return applyItemTranslations(withNames as ItemDetail, lang);
+        }
+        return withNames;
       })
     };
   });

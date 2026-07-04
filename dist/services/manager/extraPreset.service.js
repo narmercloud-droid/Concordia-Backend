@@ -163,6 +163,36 @@ export async function getPresetAddOnGroupsForItem(branchId, categoryId) {
     });
     return presets.map((preset) => formatPresetAsAddOnGroup(preset));
 }
+/** Batch-load preset add-on groups for many categories (fat menu). */
+export async function getPresetAddOnGroupsForCategories(branchId, categoryIds) {
+    const uniqueIds = [...new Set(categoryIds.filter((id) => Number.isFinite(id) && id > 0))];
+    const result = new Map();
+    if (!uniqueIds.length)
+        return result;
+    const presets = await prisma.branchExtraPreset.findMany({
+        where: {
+            branchId,
+            categories: { some: { categoryId: { in: uniqueIds } } }
+        },
+        include: {
+            options: { orderBy: [{ sortOrder: "asc" }, { name: "asc" }] },
+            categories: { select: { categoryId: true } }
+        },
+        orderBy: [{ sortOrder: "asc" }, { name: "asc" }]
+    });
+    for (const categoryId of uniqueIds) {
+        result.set(categoryId, []);
+    }
+    for (const preset of presets) {
+        const group = formatPresetAsAddOnGroup(preset);
+        for (const link of preset.categories) {
+            const list = result.get(link.categoryId);
+            if (list)
+                list.push(group);
+        }
+    }
+    return result;
+}
 function formatPresetAsAddOnGroup(preset) {
     return {
         id: `preset-${preset.id}`,

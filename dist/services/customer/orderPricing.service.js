@@ -158,10 +158,17 @@ export async function validateAndPriceOrderLines(branchId, lines) {
     if (!lines.length) {
         throw new Error("Order must include at least one item");
     }
+    const uniqueItemIds = [...new Set(lines.map((line) => resolveItemId(line)))];
+    const menuItemsById = new Map();
+    await Promise.all(uniqueItemIds.map(async (itemId) => {
+        const menuItem = await getBranchItemForCustomer(branchId, itemId, "de");
+        if (menuItem)
+            menuItemsById.set(itemId, menuItem);
+    }));
     const pricedLines = [];
     for (const line of lines) {
         const itemId = resolveItemId(line);
-        const menuItem = await getBranchItemForCustomer(branchId, itemId, "de");
+        const menuItem = menuItemsById.get(itemId);
         if (!menuItem) {
             throw new Error(`Menu item ${itemId} is not available at this branch`);
         }

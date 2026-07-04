@@ -13,3 +13,9 @@ export function setSimpleCache(key, value, ttlMs) {
 export function deleteSimpleCache(key) {
     store.delete(key);
 }
+export function deleteSimpleCacheByPrefix(prefix) {
+    for (const key of store.keys()) {
+        if (key.startsWith(prefix))
+            store.delete(key);
+    }
+}

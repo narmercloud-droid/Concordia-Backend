@@ -47,7 +47,15 @@ function collectCartSuggestions(
   for (const cat of categories) {
     for (const item of cat.items) {
       if (exclude.has(item.id)) continue;
-      const row = { ...item, categoryName: cat.name };
+      const row: MenuItemRow = {
+        id: item.id,
+        itemNumber: (item as MenuItemRow).itemNumber ?? null,
+        name: item.name,
+        description: item.description ?? null,
+        price: Number((item as MenuItemRow).price ?? 0),
+        imageUrl: (item as MenuItemRow).imageUrl ?? null,
+        categoryName: cat.name
+      };
       if (isDrinkCategory(cat.name)) {
         if (drinks.length < drinkLimit) drinks.push(row);
         continue;
@@ -67,7 +75,14 @@ function flattenMenuItems(
   const items: MenuItemRow[] = [];
   for (const cat of categories) {
     for (const item of cat.items) {
-      items.push(item);
+      items.push({
+        id: item.id,
+        itemNumber: (item as MenuItemRow).itemNumber ?? null,
+        name: item.name,
+        description: item.description ?? null,
+        price: Number((item as MenuItemRow).price ?? 0),
+        imageUrl: (item as MenuItemRow).imageUrl ?? null
+      });
     }
   }
   return items;

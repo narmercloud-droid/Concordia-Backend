@@ -260,7 +260,7 @@ router.post("/contact", contactRateLimit, wrap(async (req) => {
         phone: body.phone ? String(body.phone) : undefined
     });
 }));
-router.get("/branches/:branchId/items/:itemId", wrap(async (req) => {
+router.get("/branches/:branchId/items/:itemId", publicCache(300), wrap(async (req) => {
     const itemId = Number(req.params.itemId);
     if (Number.isNaN(itemId)) {
         throw { code: "INVALID_INPUT", message: "Invalid item id" };

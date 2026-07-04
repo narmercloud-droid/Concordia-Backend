@@ -262,16 +262,26 @@ export async function validateAndPriceOrderLines(
     throw new Error("Order must include at least one item");
   }
 
+  const uniqueItemIds = [...new Set(lines.map((line) => resolveItemId(line)))];
+  const menuItemsById = new Map<number, MenuItemDetails>();
+
+  await Promise.all(
+    uniqueItemIds.map(async (itemId) => {
+      const menuItem = await getBranchItemForCustomer(branchId, itemId, "de");
+      if (menuItem) menuItemsById.set(itemId, menuItem as MenuItemDetails);
+    })
+  );
+
   const pricedLines: PricedOrderLine[] = [];
 
   for (const line of lines) {
     const itemId = resolveItemId(line);
-    const menuItem = await getBranchItemForCustomer(branchId, itemId, "de");
+    const menuItem = menuItemsById.get(itemId);
     if (!menuItem) {
       throw new Error(`Menu item ${itemId} is not available at this branch`);
     }
 
-    pricedLines.push(priceOrderLineFromMenu(menuItem as MenuItemDetails, line));
+    pricedLines.push(priceOrderLineFromMenu(menuItem, line));
   }
 
   const subtotal = roundMoney(pricedLines.reduce((sum, line) => sum + line.lineTotal, 0));

@@ -1,17 +1,21 @@
 import { prisma } from "../../prisma/client.js";
 import { clearCache, deleteCache, getCache, setCache } from "../../lib/redis.js";
-import { deleteSimpleCache, getSimpleCache, setSimpleCache } from "../../lib/simpleCache.js";
+import { deleteSimpleCache, deleteSimpleCacheByPrefix, getSimpleCache, setSimpleCache } from "../../lib/simpleCache.js";
 import { applyItemTranslations, applyMenuTranslations, resolveMenuLanguage } from "./menuTranslation.service.js";
 import { buildPricesBySize, itemUsesSizeBasedExtras, normalizeSizeKey, resolveExtraPrice } from "./extraPricing.service.js";
 import { isFreeDrinkPromoActive } from "../../config/websitePromo.js";
 import { getPlatformConfig } from "../platform/platformSettings.service.js";
 import { getBerlinDayOfWeek, getBerlinTimeString, isWithinBranchHours } from "../../utils/berlinTime.js";
-import { getPresetAddOnGroupsForItem } from "../manager/extraPreset.service.js";
+import { getPresetAddOnGroupsForItem, getPresetAddOnGroupsForCategories } from "../manager/extraPreset.service.js";
 const BRANCHES_CACHE_KEY = "customer:branches:v1";
 const BRANCHES_TTL_SEC = 1800;
+const MENU_CACHE_VERSION = "v4";
 const MENU_TTL_SEC = 1800;
 const ITEM_TTL_SEC = 1800;
 const MENU_LANGS = ["de", "en", "nl", "pl", "ru", "ro", "hi", "ar", "ku", "tr", "ckb"];
+function menuMemoryKey(branchId, lang) {
+    return `customer:menu:${branchId}:${lang}:${MENU_CACHE_VERSION}`;
+}
 export function invalidateBranchListCache() {
     deleteSimpleCache(BRANCHES_CACHE_KEY);
     void deleteCache(BRANCHES_CACHE_KEY);
@@ -26,13 +30,17 @@ function itemCacheKey(branchId, itemId, lang) {
     return `customer:item:${branchId}:${itemId}:${lang}:v1`;
 }
 export function invalidateBranchItemCache(branchId) {
+    deleteSimpleCacheByPrefix(`customer:item:${branchId}:`);
     void clearCache(`customer:item:${branchId}:*`);
 }
 export function invalidateBranchMenuCache(branchId) {
     for (const lang of MENU_LANGS) {
-        const key = `customer:menu:${branchId}:${lang}:v3`;
+        const key = menuMemoryKey(branchId, lang);
         deleteSimpleCache(key);
         void deleteCache(`${key}:json`);
+        // legacy keys
+        deleteSimpleCache(`customer:menu:${branchId}:${lang}:v3`);
+        void deleteCache(`customer:menu:${branchId}:${lang}:v3:json`);
     }
     deleteSimpleCache(`customer:menu:${branchId}:v1`);
     void deleteCache(`customer:menu:${branchId}:v1:json`);
@@ -41,7 +49,7 @@ export function invalidateBranchMenuCache(branchId) {
 }
 export async function peekBranchMenuCache(branchId, lang) {
     const resolvedLang = resolveMenuLanguage(lang);
-    const memoryKey = `customer:menu:${branchId}:${resolvedLang}:v3`;
+    const memoryKey = menuMemoryKey(branchId, resolvedLang);
     const cachedMemory = getSimpleCache(memoryKey);
     if (cachedMemory)
         return cachedMemory;
@@ -73,7 +81,7 @@ function itemBelongsToBranch(branchId, itemId) {
 }
 export async function getBranchMenuForCustomer(branchId, lang) {
     const resolvedLang = resolveMenuLanguage(lang);
-    const memoryKey = `customer:menu:${branchId}:${resolvedLang}:v3`;
+    const memoryKey = menuMemoryKey(branchId, resolvedLang);
     const cachedMemory = getSimpleCache(memoryKey);
     if (cachedMemory)
         return cachedMemory;
@@ -95,6 +103,91 @@ export async function getBranchMenuForCustomer(branchId, lang) {
     return menu;
 }
 async function buildBranchMenu(branchId) {
+    const basic = await buildBranchMenuBasic(branchId);
+    return enrichCategoriesWithItemOptions(branchId, basic);
+}
+const MENU_OPTION_INCLUDE = {
+    variantGroups: {
+        orderBy: { id: "asc" },
+        include: { variants: { orderBy: { price: "asc" } } }
+    },
+    addOnGroups: {
+        orderBy: { id: "asc" },
+        include: { addOns: { orderBy: { name: "asc" } } }
+    }
+};
+async function enrichCategoriesWithItemOptions(branchId, categories) {
+    const itemIds = [...new Set(categories.flatMap((cat) => cat.items.map((item) => item.id)))];
+    if (!itemIds.length)
+        return categories;
+    const itemCategoryId = new Map();
+    for (const cat of categories) {
+        const catId = Number(cat.id);
+        if (Number.isFinite(catId) && catId > 0) {
+            for (const item of cat.items) {
+                itemCategoryId.set(item.id, catId);
+            }
+        }
+    }
+    const branchMenuItems = await prisma.branchMenuItem.findMany({
+        where: { branchId, menuItemId: { in: itemIds }, isAvailable: true },
+        include: { menuItem: { include: MENU_OPTION_INCLUDE } }
+    });
+    const branchItemByMenuId = new Map(branchMenuItems.map((row) => [row.menuItemId, row]));
+    for (const row of branchMenuItems) {
+        if (row.categoryId != null)
+            itemCategoryId.set(row.menuItemId, row.categoryId);
+    }
+    const loadedIds = new Set(branchMenuItems.map((row) => row.menuItemId));
+    const missingIds = itemIds.filter((id) => !loadedIds.has(id) && itemBelongsToBranch(branchId, id));
+    const standaloneItems = missingIds.length > 0
+        ? await prisma.menuItem.findMany({
+            where: { id: { in: missingIds }, isAvailable: true },
+            include: MENU_OPTION_INCLUDE
+        })
+        : [];
+    const standaloneById = new Map(standaloneItems.map((item) => [item.id, item]));
+    const presetsByCategory = await getPresetAddOnGroupsForCategories(branchId, [...itemCategoryId.values()]);
+    function presetAddOnGroupsForItem(menuItemName, categoryId) {
+        if (!categoryId)
+            return [];
+        const presets = presetsByCategory.get(categoryId) ?? [];
+        return presets.map((group) => ({
+            id: group.id,
+            name: group.name,
+            required: group.required,
+            minSelect: group.minSelect,
+            maxSelect: group.maxSelect,
+            options: group.options.map((option) => ({
+                id: option.id,
+                name: option.name,
+                price: option.price,
+                pricesBySize: buildPricesBySize(option.name, option.price, menuItemName)
+            }))
+        }));
+    }
+    return categories.map((cat) => ({
+        ...cat,
+        items: cat.items.map((basic) => {
+            const branchItem = branchItemByMenuId.get(basic.id);
+            const menuItem = branchItem?.menuItem ?? standaloneById.get(basic.id);
+            if (!menuItem)
+                return basic;
+            const mapped = mapOptionGroups(menuItem);
+            const categoryId = branchItem?.categoryId ?? itemCategoryId.get(basic.id);
+            const presetAddOnGroups = presetAddOnGroupsForItem(menuItem.name, categoryId);
+            return {
+                ...mapped,
+                sortOrder: basic.sortOrder ?? 0,
+                description: branchItem?.description ?? basic.description ?? mapped.description,
+                price: branchItem?.price ?? basic.price ?? mapped.price,
+                imageUrl: branchItem?.imageUrl ?? basic.imageUrl ?? mapped.imageUrl,
+                addOnGroups: [...mapped.addOnGroups, ...presetAddOnGroups]
+            };
+        })
+    }));
+}
+async function buildBranchMenuBasic(branchId) {
     const categories = await prisma.branchCategory.findMany({
         where: { branchId },
         orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
@@ -276,16 +369,7 @@ async function writeCachedBranchItem(branchId, itemId, lang, item) {
     await setCache(`${memoryKey}:json`, JSON.stringify(item), ITEM_TTL_SEC);
 }
 async function buildBranchItemForCustomer(branchId, itemId, resolvedLang) {
-    const optionInclude = {
-        variantGroups: {
-            orderBy: { id: "asc" },
-            include: { variants: { orderBy: { price: "asc" } } }
-        },
-        addOnGroups: {
-            orderBy: { id: "asc" },
-            include: { addOns: { orderBy: { name: "asc" } } }
-        }
-    };
+    const optionInclude = MENU_OPTION_INCLUDE;
     const branchItem = await prisma.branchMenuItem.findFirst({
         where: { branchId, menuItemId: itemId, isAvailable: true },
         include: {
