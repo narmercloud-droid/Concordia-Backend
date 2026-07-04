@@ -60,11 +60,11 @@ router.get("/branches/:branchId/menu", noBrowserCache, wrap(async (req) => {
     const categories = await getBranchMenuForCustomer(branchId, lang);
     return { categories };
 }));
-router.get("/branches/:branchId/time-slots", wrap(async (req) => {
+router.get("/branches/:branchId/time-slots", noBrowserCache, wrap(async (req) => {
     const slots = await generateTimeSlots(req.params.branchId);
     return { slots };
 }));
-router.get("/branches/:branchId/delivery-areas", wrap(async (req) => {
+router.get("/branches/:branchId/delivery-areas", noBrowserCache, wrap(async (req) => {
     const settings = await getDeliverySettings(req.params.branchId);
     return {
         areas: settings.deliveryAreas,
