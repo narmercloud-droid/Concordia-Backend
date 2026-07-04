@@ -16,17 +16,21 @@ function formatDayLabel(date) {
     return date.toLocaleDateString("de-DE", { weekday: "short", day: "2-digit", month: "2-digit" });
 }
 const activeOrderFilter = {
-    status: { notIn: ["cancelled"] }
+    status: { notIn: ["cancelled", "rejected"] }
 };
-export async function getSalesSeries(days = 7) {
+function branchFilter(branchId) {
+    return branchId ? { branchId } : {};
+}
+export async function getSalesSeries(days = 7, branchId) {
     const range = lastNDays(days);
     const start = range[0];
     const orders = await prisma.order.findMany({
         where: {
             createdAt: { gte: start },
+            ...branchFilter(branchId),
             ...activeOrderFilter
         },
-        include: { items: true }
+        select: { createdAt: true, orderTotal: true }
     });
     const totals = new Map();
     for (const day of range)
@@ -35,20 +39,20 @@ export async function getSalesSeries(days = 7) {
         const key = dayKey(order.createdAt);
         if (!totals.has(key))
             continue;
-        const revenue = order.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-        totals.set(key, (totals.get(key) ?? 0) + revenue);
+        totals.set(key, (totals.get(key) ?? 0) + Number(order.orderTotal ?? 0));
     }
     return {
         labels: range.map(formatDayLabel),
         values: range.map((day) => Math.round((totals.get(dayKey(day)) ?? 0) * 100) / 100)
     };
 }
-export async function getOrderVolumeSeries(days = 7) {
+export async function getOrderVolumeSeries(days = 7, branchId) {
     const range = lastNDays(days);
     const start = range[0];
     const orders = await prisma.order.findMany({
         where: {
             createdAt: { gte: start },
+            ...branchFilter(branchId),
             ...activeOrderFilter
         },
         select: { createdAt: true }
@@ -67,7 +71,7 @@ export async function getOrderVolumeSeries(days = 7) {
         values: range.map((day) => counts.get(dayKey(day)) ?? 0)
     };
 }
-export async function getCategoryPerformanceSeries() {
+export async function getCategoryPerformanceSeries(branchId) {
     const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     const grouped = await prisma.orderItem.groupBy({
         by: ["itemId"],
@@ -75,13 +79,20 @@ export async function getCategoryPerformanceSeries() {
         where: {
             order: {
                 createdAt: { gte: since },
+                ...branchFilter(branchId),
                 ...activeOrderFilter
             }
         }
     });
+    if (!grouped.length) {
+        return { labels: [], values: [] };
+    }
     const itemIds = grouped.map((row) => row.itemId);
     const branchItems = await prisma.branchMenuItem.findMany({
-        where: { menuItemId: { in: itemIds } },
+        where: {
+            menuItemId: { in: itemIds },
+            ...(branchId ? { branchId } : {})
+        },
         include: { category: true }
     });
     const categoryByItem = new Map();
@@ -99,23 +110,23 @@ export async function getCategoryPerformanceSeries() {
         values: sorted.map(([, qty]) => qty)
     };
 }
-export async function getBranchPerformanceSeries() {
+export async function getBranchPerformanceSeries(branchId) {
     const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     const orders = await prisma.order.findMany({
         where: {
             createdAt: { gte: since },
+            ...branchFilter(branchId),
             ...activeOrderFilter
         },
-        include: {
-            items: true,
+        select: {
+            orderTotal: true,
             branch: { select: { name: true } }
         }
     });
     const totals = new Map();
     for (const order of orders) {
         const name = order.branch?.name ?? "Unknown";
-        const revenue = order.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-        totals.set(name, (totals.get(name) ?? 0) + revenue);
+        totals.set(name, (totals.get(name) ?? 0) + Number(order.orderTotal ?? 0));
     }
     const sorted = [...totals.entries()].sort((a, b) => b[1] - a[1]);
     return {
@@ -125,34 +136,28 @@ export async function getBranchPerformanceSeries() {
 }
 export async function getPeakHoursSeries(branchId) {
     const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    if (branchId) {
-        const rows = (await prisma.$queryRaw `
-      SELECT
-        CAST(EXTRACT(HOUR FROM "createdAt") AS INT) AS hour,
-        COUNT(*)::INT AS count
-      FROM "Order"
-      WHERE "createdAt" >= ${since}
-        AND "branchId" = ${branchId}
-        AND "status" <> 'cancelled'
-      GROUP BY hour
-      ORDER BY hour
-    `);
-        const byHour = new Map(rows.map((r) => [Number(r.hour), Number(r.count)]));
-        return {
-            labels: Array.from({ length: 24 }, (_, h) => `${String(h).padStart(2, "0")}:00`),
-            values: Array.from({ length: 24 }, (_, h) => byHour.get(h) ?? 0)
-        };
-    }
-    const rows = (await prisma.$queryRaw `
-    SELECT
-      CAST(EXTRACT(HOUR FROM "createdAt") AS INT) AS hour,
-      COUNT(*)::INT AS count
-    FROM "Order"
-    WHERE "createdAt" >= ${since}
-      AND "status" <> 'cancelled'
-    GROUP BY hour
-    ORDER BY hour
-  `);
+    const rows = branchId
+        ? (await prisma.$queryRaw `
+        SELECT
+          CAST(EXTRACT(HOUR FROM "createdAt") AS INT) AS hour,
+          COUNT(*)::INT AS count
+        FROM "Order"
+        WHERE "createdAt" >= ${since}
+          AND "branchId" = ${branchId}
+          AND "status" NOT IN ('cancelled', 'rejected')
+        GROUP BY hour
+        ORDER BY hour
+      `)
+        : (await prisma.$queryRaw `
+        SELECT
+          CAST(EXTRACT(HOUR FROM "createdAt") AS INT) AS hour,
+          COUNT(*)::INT AS count
+        FROM "Order"
+        WHERE "createdAt" >= ${since}
+          AND "status" NOT IN ('cancelled', 'rejected')
+        GROUP BY hour
+        ORDER BY hour
+      `);
     const byHour = new Map(rows.map((r) => [Number(r.hour), Number(r.count)]));
     return {
         labels: Array.from({ length: 24 }, (_, h) => `${String(h).padStart(2, "0")}:00`),
@@ -167,13 +172,16 @@ export async function getTopItemsSeries(branchId, limit = 10) {
         where: {
             order: {
                 createdAt: { gte: since },
-                ...(branchId ? { branchId } : {}),
+                ...branchFilter(branchId),
                 ...activeOrderFilter
             }
         },
         orderBy: { _sum: { quantity: "desc" } },
         take: limit
     });
+    if (!grouped.length) {
+        return { labels: [], values: [] };
+    }
     const itemIds = grouped.map((row) => row.itemId);
     const items = await prisma.menuItem.findMany({
         where: { id: { in: itemIds } },

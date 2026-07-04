@@ -1,5 +1,6 @@
 import { prisma } from "../../prisma/client.js";
 import { getBerlinDateRange } from "../../utils/berlinTime.js";
+import { resolveOrderPaymentMethod } from "../../utils/orderPaymentMethod.js";
 const CANCELLED_STATUSES = ["cancelled", "rejected"];
 const COMPANY = {
     name: "Pizzeria Concordia",
@@ -82,7 +83,10 @@ export async function getRevenueReport(params) {
             customerId: true,
             customerPhone: true,
             isGuest: true,
-            createdAt: true
+            createdAt: true,
+            paypalOrderId: true,
+            paypalCaptureId: true,
+            paymentIntentId: true
         },
         orderBy: { createdAt: "asc" }
     });
@@ -121,7 +125,7 @@ export async function getRevenueReport(params) {
     const deliveryOrders = completed.filter((o) => fulfillmentLabel(o.fulfillmentType) === "Lieferung");
     const pickupOrders = completed.filter((o) => fulfillmentLabel(o.fulfillmentType) === "Abholung");
     for (const order of completed) {
-        const label = paymentLabel(order.paymentMethod);
+        const label = paymentLabel(resolveOrderPaymentMethod(order));
         if (!paymentBreakdown[label])
             paymentBreakdown[label] = { count: 0, total: 0 };
         paymentBreakdown[label].count += 1;

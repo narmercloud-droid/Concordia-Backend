@@ -4,6 +4,7 @@ import pool from "../db.js";
 import * as bcrypt from "bcrypt";
 import { signToken } from "../utils/jwt.js";
 import { claimCampaignCoupon, activateCustomerCoupon, grantWelcomeCoupons } from "./customer/customerCoupon.service.js";
+import { upsertRegisteredBranchCustomer } from "./customer/branchCustomer.service.js";
 const SALT_ROUNDS = 10;
 function toPublicCustomer(customer) {
     return {
@@ -61,6 +62,17 @@ export class CustomerService {
         }
         else if (branchId) {
             await grantWelcomeCoupons(customer.id, branchId);
+        }
+        const phone = data.phone?.trim();
+        if (branchId && phone) {
+            await upsertRegisteredBranchCustomer({
+                branchId,
+                phone,
+                name: customer.name,
+                email: customer.email
+            }).catch(() => {
+                // branch customer sync is best-effort during registration
+            });
         }
         return { ...tokens, user: toPublicCustomer(customer) };
     }

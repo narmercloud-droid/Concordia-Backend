@@ -17,8 +17,65 @@ function parseBirthday(value) {
         return null;
     return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
 }
+/** Canonical phone key for branch customer records (digits only). */
+export function normalizeBranchPhone(phone) {
+    const digits = (phone ?? "").replace(/\D/g, "");
+    if (!digits)
+        return "";
+    if (digits.startsWith("49") && digits.length >= 11)
+        return `0${digits.slice(2)}`;
+    if (digits.startsWith("0049") && digits.length >= 13)
+        return `0${digits.slice(4)}`;
+    return digits;
+}
+export async function upsertRegisteredBranchCustomer(input) {
+    const branchId = input.branchId.trim();
+    const phone = normalizeBranchPhone(input.phone);
+    if (!branchId || !phone)
+        return null;
+    const hasMarketing = Boolean(input.marketingEmail) ||
+        Boolean(input.marketingSMS) ||
+        Boolean(input.marketingWhatsApp);
+    const preferredChannel = hasMarketing
+        ? resolvePreferredChannel(input)
+        : null;
+    const existing = await prisma.branchCustomer.findUnique({
+        where: { branchId_phone: { branchId, phone } }
+    });
+    if (existing) {
+        return prisma.branchCustomer.update({
+            where: { branchId_phone: { branchId, phone } },
+            data: {
+                name: input.name?.trim() || existing.name,
+                email: input.email?.trim() || existing.email,
+                marketingEmail: input.marketingEmail || existing.marketingEmail,
+                marketingSMS: input.marketingSMS || existing.marketingSMS,
+                marketingWhatsApp: input.marketingWhatsApp || existing.marketingWhatsApp,
+                preferredChannel: preferredChannel ?? existing.preferredChannel,
+                consentAt: hasMarketing && !existing.consentAt ? new Date() : existing.consentAt
+            }
+        });
+    }
+    return prisma.branchCustomer.create({
+        data: {
+            id: randomUUID(),
+            branchId,
+            phone,
+            name: input.name?.trim() || null,
+            email: input.email?.trim() || null,
+            marketingEmail: Boolean(input.marketingEmail),
+            marketingSMS: Boolean(input.marketingSMS),
+            marketingWhatsApp: Boolean(input.marketingWhatsApp),
+            preferredChannel,
+            consentAt: hasMarketing ? new Date() : null,
+            orderCount: 0,
+            totalSpent: 0,
+            totalSaved: 0
+        }
+    });
+}
 export async function syncBranchCustomerFromOrder(input) {
-    const phone = input.phone.trim();
+    const phone = normalizeBranchPhone(input.phone);
     const branchId = input.branchId;
     if (!phone || !branchId)
         return null;
@@ -134,25 +191,43 @@ export async function getBranchCustomerStats(branchId) {
     };
 }
 export async function recalculateBranchCustomerStats(branchId, phone) {
-    const normalizedPhone = phone.trim();
+    const normalizedPhone = normalizeBranchPhone(phone);
     if (!normalizedPhone)
         return null;
     const orders = await prisma.order.findMany({
-        where: { branchId, customerPhone: normalizedPhone },
+        where: {
+            branchId,
+            status: { notIn: ["cancelled", "rejected"] },
+            OR: [
+                { customerPhone: normalizedPhone },
+                { customerPhone: { contains: normalizedPhone.replace(/^0/, ""), mode: "insensitive" } }
+            ]
+        },
         select: {
+            customerPhone: true,
             orderTotal: true,
             discount: true,
             giftCardAmount: true,
-            createdAt: true
+            createdAt: true,
+            customerName: true,
+            customerEmail: true
         },
         orderBy: { createdAt: "asc" }
     });
+    const matchingOrders = orders.filter((order) => normalizeBranchPhone(order.customerPhone) === normalizedPhone);
     const existing = await prisma.branchCustomer.findUnique({
         where: { branchId_phone: { branchId, phone: normalizedPhone } }
     });
-    if (!orders.length) {
+    if (!matchingOrders.length) {
         if (!existing)
             return null;
+        const keepForMarketing = existing.marketingEmail || existing.marketingSMS || existing.marketingWhatsApp;
+        if (!keepForMarketing) {
+            await prisma.branchCustomer.delete({
+                where: { branchId_phone: { branchId, phone: normalizedPhone } }
+            });
+            return { deleted: true, phone: normalizedPhone };
+        }
         return prisma.branchCustomer.update({
             where: { branchId_phone: { branchId, phone: normalizedPhone } },
             data: {
@@ -164,17 +239,20 @@ export async function recalculateBranchCustomerStats(branchId, phone) {
             }
         });
     }
-    const orderCount = orders.length;
-    const totalSpent = orders.reduce((sum, o) => sum + Number(o.orderTotal ?? 0), 0);
-    const totalSaved = orders.reduce((sum, o) => sum + Number(o.discount ?? 0) + Number(o.giftCardAmount ?? 0), 0);
-    const firstOrderAt = orders[0].createdAt;
-    const lastOrderAt = orders[orders.length - 1].createdAt;
+    const orderCount = matchingOrders.length;
+    const totalSpent = matchingOrders.reduce((sum, o) => sum + Number(o.orderTotal ?? 0), 0);
+    const totalSaved = matchingOrders.reduce((sum, o) => sum + Number(o.discount ?? 0) + Number(o.giftCardAmount ?? 0), 0);
+    const firstOrderAt = matchingOrders[0].createdAt;
+    const lastOrderAt = matchingOrders[matchingOrders.length - 1].createdAt;
+    const latest = matchingOrders[matchingOrders.length - 1];
     if (!existing) {
         return prisma.branchCustomer.create({
             data: {
                 id: randomUUID(),
                 branchId,
                 phone: normalizedPhone,
+                name: latest.customerName?.trim() || null,
+                email: latest.customerEmail?.trim() || null,
                 orderCount,
                 totalSpent,
                 totalSaved,
@@ -186,6 +264,8 @@ export async function recalculateBranchCustomerStats(branchId, phone) {
     return prisma.branchCustomer.update({
         where: { branchId_phone: { branchId, phone: normalizedPhone } },
         data: {
+            name: latest.customerName?.trim() || existing.name,
+            email: latest.customerEmail?.trim() || existing.email,
             orderCount,
             totalSpent,
             totalSaved,
@@ -194,15 +274,98 @@ export async function recalculateBranchCustomerStats(branchId, phone) {
         }
     });
 }
-export async function reconcileAllBranchCustomers(branchId) {
-    const customers = await prisma.branchCustomer.findMany({
-        where: branchId ? { branchId } : {},
-        select: { branchId: true, phone: true }
+async function syncRegisteredCustomersForBranch(branchId) {
+    const orders = await prisma.order.findMany({
+        where: {
+            branchId,
+            customerId: { not: null },
+            status: { notIn: ["cancelled", "rejected"] }
+        },
+        select: { customerId: true },
+        distinct: ["customerId"]
     });
+    const customerIds = orders.map((o) => o.customerId).filter(Boolean);
+    if (!customerIds.length)
+        return 0;
+    const customers = await prisma.customer.findMany({
+        where: { id: { in: customerIds } },
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+            phoneNumber: true,
+            marketingEmail: true,
+            marketingSMS: true,
+            marketingWhatsApp: true
+        }
+    });
+    let synced = 0;
     for (const customer of customers) {
-        await recalculateBranchCustomerStats(customer.branchId, customer.phone);
+        const phone = normalizeBranchPhone(customer.phone ?? customer.phoneNumber);
+        if (!phone)
+            continue;
+        await upsertRegisteredBranchCustomer({
+            branchId,
+            phone,
+            name: customer.name,
+            email: customer.email,
+            marketingEmail: customer.marketingEmail,
+            marketingSMS: customer.marketingSMS,
+            marketingWhatsApp: customer.marketingWhatsApp
+        });
+        synced += 1;
     }
-    return { updated: customers.length };
+    return synced;
+}
+async function rebuildBranchCustomersFromOrders(branchId) {
+    const orders = await prisma.order.findMany({
+        where: {
+            branchId,
+            status: { notIn: ["cancelled", "rejected"] },
+            customerPhone: { not: null }
+        },
+        select: { customerPhone: true },
+        distinct: ["customerPhone"]
+    });
+    let updated = 0;
+    for (const order of orders) {
+        const phone = normalizeBranchPhone(order.customerPhone);
+        if (!phone)
+            continue;
+        await recalculateBranchCustomerStats(branchId, phone);
+        updated += 1;
+    }
+    return updated;
+}
+export async function reconcileAllBranchCustomers(branchId) {
+    const branches = branchId
+        ? [{ id: branchId }]
+        : await prisma.branch.findMany({ select: { id: true } });
+    let updated = 0;
+    let registered = 0;
+    let removed = 0;
+    for (const branch of branches) {
+        updated += await rebuildBranchCustomersFromOrders(branch.id);
+        registered += await syncRegisteredCustomersForBranch(branch.id);
+        const stale = await prisma.branchCustomer.findMany({
+            where: {
+                branchId: branch.id,
+                orderCount: 0,
+                marketingEmail: false,
+                marketingSMS: false,
+                marketingWhatsApp: false
+            },
+            select: { branchId: true, phone: true }
+        });
+        for (const customer of stale) {
+            await prisma.branchCustomer.delete({
+                where: { branchId_phone: { branchId: customer.branchId, phone: customer.phone } }
+            });
+            removed += 1;
+        }
+    }
+    return { updated, registered, removed };
 }
 export async function getCustomerOrderHistory(branchId, phone) {
     return prisma.order.findMany({
