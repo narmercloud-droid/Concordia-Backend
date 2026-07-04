@@ -1,4 +1,4 @@
-import { prisma } from "../prisma/client.js";
+﻿import { prisma } from "../prisma/client.js";
 import { paypalRequest } from "./paypal/paypalClient.js";
 import { getBranchPayPalCredentials, isBranchPayPalConfigured, isPayPalModeLive } from "./paypal/branchPayPal.service.js";
 import { OrderLifecycleService } from "./order/orderLifecycle.service.js";
@@ -16,7 +16,7 @@ function buildPayPalOrderBody(orderId, description, amount, fulfillmentType) {
     return {
         intent: "CAPTURE",
         application_context: {
-            brand_name: "Concordia Restaurant",
+            brand_name: "Pizzeria Concordia",
             locale: "de-DE",
             landing_page: "LOGIN",
             shipping_preference: isPickup ? "NO_SHIPPING" : "GET_FROM_FILE",
@@ -53,7 +53,8 @@ async function markOrderPaidFromPayPalCapture(orderId, captureId, notifyKitchen)
     await OrderLifecycleService.updatePaymentStatus(orderId, "paid", {
         paidAt: new Date(),
         paypalCaptureId: captureId,
-        transactionId: captureId
+        transactionId: captureId,
+        paymentMethod: "PAYPAL"
     });
     if (notifyKitchen) {
         await ordersService.notifyKitchenOrder(orderId);

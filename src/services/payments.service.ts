@@ -1,4 +1,4 @@
-import { prisma } from "../prisma/client.ts";
+﻿import { prisma } from "../prisma/client.ts";
 import { paypalRequest } from "./paypal/paypalClient.ts";
 import {
   getBranchPayPalCredentials,
@@ -36,7 +36,7 @@ function buildPayPalOrderBody(
   return {
     intent: "CAPTURE",
     application_context: {
-      brand_name: "Concordia Restaurant",
+      brand_name: "Pizzeria Concordia",
       locale: "de-DE",
       landing_page: "LOGIN",
       shipping_preference: isPickup ? "NO_SHIPPING" : "GET_FROM_FILE",
