@@ -19,3 +19,8 @@ export function buildOrderTrackingUrl(orderId: string) {
 export function buildOrderReviewUrl(orderId: string) {
   return `${buildOrderTrackingUrl(orderId)}#review`;
 }
+
+/** Customer ordering page for a branch (flyer QR codes, SMS links, etc.). */
+export function buildBranchOrderUrl(branchId: string) {
+  return `${getFrontendBaseUrl()}/branch/${branchId}`;
+}

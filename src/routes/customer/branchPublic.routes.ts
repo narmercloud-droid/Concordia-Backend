@@ -30,6 +30,8 @@ import contactRateLimit from "../../middleware/contactRateLimit.ts";
 import { resolveMenuLanguage } from "../../services/customer/menuTranslation.service.ts";
 import { prisma } from "../../prisma/client.ts";
 import { wrap } from "../../contracts/api.ts";
+import { generateBranchOrderQrPng } from "../../utils/qrGenerator.ts";
+import { buildBranchOrderUrl } from "../../utils/customerOrderUrls.ts";
 
 function menuLang(req: express.Request) {
   return resolveMenuLanguage(String(req.query.lang ?? ""));
@@ -63,6 +65,20 @@ router.use("/branches/:branchId", (req, _res, next) => {
     return;
   }
   next();
+});
+
+router.get("/branches/:branchId/order-qr.png", publicCache(86400), async (req, res, next) => {
+  try {
+    const branchId = req.params.branchId;
+    const size = Math.min(Math.max(Number(req.query.size) || 512, 128), 2048);
+    const png = await generateBranchOrderQrPng(branchId, size);
+    res.setHeader("Content-Type", "image/png");
+    res.setHeader("Content-Disposition", `inline; filename="${branchId}-order-qr.png"`);
+    res.setHeader("Link", `<${buildBranchOrderUrl(branchId)}>; rel="canonical"`);
+    res.send(png);
+  } catch (err) {
+    next(err);
+  }
 });
 
 router.get("/platform-promo", noBrowserCache, wrap(async () => {

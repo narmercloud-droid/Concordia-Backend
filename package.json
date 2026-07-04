@@ -40,7 +40,7 @@
     "clean:straelen-data": "node scripts/clean-straelen-branch-data.mjs",
     "seed:promo": "node scripts/seed-promo-codes.mjs",
     "import:kempen-menu": "node scripts/parse-kempen-menu.mjs",
-    "extract:lieferando": "node scripts/extract-lieferando-complete.mjs",
+    "generate:branch-qr": "node scripts/generate-branch-qr.mjs",
     "delete:test-branch": "node scripts/delete-test-branch.mjs",
     "menu:export": "node scripts/export-menu-catalog.mjs",
     "menu:locales": "node scripts/generate-menu-locales.mjs",
