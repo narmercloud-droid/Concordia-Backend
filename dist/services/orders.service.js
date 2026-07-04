@@ -21,6 +21,7 @@ import { persistPushSubscriptionFromOrder } from "./notifications/webPushSubscri
 import { buildCourierUrl, buildOrderReviewUrl, buildOrderTrackingUrl } from "../utils/customerOrderUrls.js";
 import { validateAndPriceOrderLines } from "./customer/orderPricing.service.js";
 import { sendOrderConfirmationEmail } from "./customer/orderConfirmationEmail.service.js";
+import { isKitchenReadyOrder, isUnpaidOnlineOrder, normalizePaymentMethod, requiresOnlinePayment } from "../utils/orderPayment.js";
 const ORDER_ITEMS_INCLUDE = {
     item: true,
     variants: true,
@@ -53,24 +54,6 @@ function buildOrderItems(pricedLines) {
     });
 }
 const COURIER_TOKEN_VALIDITY_MS = 24 * 60 * 60 * 1000;
-function normalizePaymentMethod(method) {
-    const value = (method ?? "cash").toLowerCase();
-    if (value === "cash" || value === "cod")
-        return "COD";
-    if (value === "card" || value === "apple_pay" || value === "google_pay")
-        return "CARD";
-    if (value === "paypal")
-        return "PAYPAL";
-    if (value === "klarna")
-        return "KLARNA";
-    if (value === "sepa")
-        return "SEPA";
-    return "COD";
-}
-function requiresOnlinePayment(method) {
-    const normalized = normalizePaymentMethod(method);
-    return ["CARD", "PAYPAL", "KLARNA", "SEPA"].includes(normalized);
-}
 function enrichOrder(order) {
     return {
         ...order,
@@ -397,6 +380,9 @@ export class OrdersService {
         if (order.status !== "pending") {
             throw new Error("Order has already been confirmed");
         }
+        if (!isKitchenReadyOrder(order)) {
+            throw new Error("Payment has not been completed for this order");
+        }
         const scheduledFor = order.scheduledFor ? new Date(order.scheduledFor) : null;
         const hasScheduled = scheduledFor != null &&
             !Number.isNaN(scheduledFor.getTime()) &&
@@ -432,6 +418,26 @@ export class OrdersService {
         });
         broadcastToTerminal(order.branchId, "order:confirmed", payload);
         return payload;
+    }
+    async cancelUnpaidOnlineOrder(orderId) {
+        const order = await prisma.order.findUnique({ where: { id: orderId } });
+        if (!order)
+            throw new Error("Order not found");
+        if (!isUnpaidOnlineOrder(order)) {
+            return { cancelled: false, reason: "not_unpaid_online" };
+        }
+        if (order.status !== "pending") {
+            return { cancelled: false, reason: "not_pending" };
+        }
+        await OrderLifecycleService.updateStatus(orderId, "cancelled", undefined, {
+            paymentStatus: "cancelled"
+        });
+        broadcastToTerminal(order.branchId, "order_status", {
+            orderId,
+            id: orderId,
+            status: "cancelled"
+        });
+        return { cancelled: true };
     }
     async listBranchOrders(branchId) {
         return prisma.order.findMany({
