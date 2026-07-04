@@ -274,9 +274,11 @@ router.get("/gift-cards/:purchaseId", wrap(async (req) => {
 }));
 
 router.post("/branches/:branchId/delivery-quote", wrap(async (req) => {
-  const { address, orderTotal, postalCode } = req.body ?? {};
+  const { address, orderTotal, postalCode, lat, lng } = req.body ?? {};
   const addressText = String(address ?? "").trim();
   const postcodeText = String(postalCode ?? "").trim();
+  const latNum = Number(lat);
+  const lngNum = Number(lng);
 
   if (!addressText && !postcodeText) {
     throw { code: "INVALID_INPUT", message: "address or postalCode is required" };
@@ -284,7 +286,9 @@ router.post("/branches/:branchId/delivery-quote", wrap(async (req) => {
 
   const total = Number(orderTotal ?? 0);
   return quoteDelivery(req.params.branchId, addressText, total, {
-    postalCode: postcodeText || undefined
+    postalCode: postcodeText || undefined,
+    lat: Number.isFinite(latNum) ? latNum : undefined,
+    lng: Number.isFinite(lngNum) ? lngNum : undefined
   });
 }));
 

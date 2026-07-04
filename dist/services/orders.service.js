@@ -201,7 +201,13 @@ export class OrdersService {
         let deliveryFee = 0;
         let postalCode = rest.postalCode ?? null;
         if (fulfillmentType === "delivery") {
-            const validation = await validateDeliveryOrder(rest.branchId, deliveryAddress, subtotal);
+            const deliveryLat = Number(rest.deliveryLat);
+            const deliveryLng = Number(rest.deliveryLng);
+            const validation = await validateDeliveryOrder(rest.branchId, deliveryAddress, subtotal, {
+                postalCode: rest.postalCode?.trim() || undefined,
+                lat: Number.isFinite(deliveryLat) ? deliveryLat : undefined,
+                lng: Number.isFinite(deliveryLng) ? deliveryLng : undefined
+            });
             deliveryFee = validation.deliveryFee;
             postalCode = validation.postalCode;
         }
@@ -212,14 +218,18 @@ export class OrdersService {
         const isDelivery = fulfillmentType === "delivery";
         let courierToken;
         let courierTokenExpiresAt;
-        let deliveryLat = null;
-        let deliveryLng = null;
+        let deliveryLat = Number.isFinite(Number(rest.deliveryLat))
+            ? Number(rest.deliveryLat)
+            : null;
+        let deliveryLng = Number.isFinite(Number(rest.deliveryLng))
+            ? Number(rest.deliveryLng)
+            : null;
         let courierId = null;
         if (isDelivery) {
             courierToken = uuid();
             courierTokenExpiresAt = new Date(Date.now() + COURIER_TOKEN_VALIDITY_MS);
             courierId = await getGuestCourierId(rest.branchId);
-            // Geocoding runs after kitchen notification — avoids blocking terminal alert
+            // Geocoding runs after kitchen notification when coords were not supplied at checkout
         }
         const paymentMethod = normalizePaymentMethod(rest.paymentMethod);
         const marketingEmail = Boolean(rest.marketingEmail);
@@ -285,11 +295,11 @@ export class OrdersService {
         if (!requiresOnlinePayment(paymentMethod)) {
             broadcastToTerminal(order.branchId, "order:new", payload);
         }
-        if (isDelivery && deliveryAddress) {
+        if (isDelivery && deliveryAddress && (deliveryLat == null || deliveryLng == null)) {
             const geoQuery = postalCode
                 ? `${deliveryAddress}, ${postalCode}, Deutschland`
                 : deliveryAddress;
-            void geocodeAddress(geoQuery).then((geo) => {
+            void geocodeAddress(geoQuery, { postalCode: postalCode ?? undefined }).then((geo) => {
                 if (!geo)
                     return;
                 void prisma.order

@@ -190,7 +190,8 @@ async function matchPostcode(
 async function matchRadiusForBranch(
   settings: DeliverySettings,
   branchId: string,
-  address: string
+  address: string,
+  options?: { postalCode?: string; lat?: number; lng?: number }
 ): Promise<MatchResult | null> {
   if (settings.deliveryMode === "postcodes") return null;
   if (!settings.deliveryRadiusZones.length) return null;
@@ -198,7 +199,11 @@ async function matchRadiusForBranch(
   const branchCoords = await getBranchCoords(branchId);
   if (!branchCoords) return null;
 
-  const geo = await geocodeAddress(address);
+  const geo = await geocodeAddress(address, {
+    postalCode: options?.postalCode,
+    lat: options?.lat,
+    lng: options?.lng
+  });
   if (!geo) return null;
 
   const distanceMeters = haversineDistance(
@@ -225,7 +230,7 @@ export async function quoteDelivery(
   branchId: string,
   address: string,
   orderTotal: number,
-  options?: { postalCode?: string }
+  options?: { postalCode?: string; lat?: number; lng?: number }
 ): Promise<{
   allowed: boolean;
   deliveryFee: number;
@@ -255,7 +260,11 @@ export async function quoteDelivery(
   }
 
   if (!match && settings.deliveryMode !== "postcodes" && fullAddress) {
-    match = await matchRadiusForBranch(settings, branchId, fullAddress);
+    match = await matchRadiusForBranch(settings, branchId, fullAddress, {
+      postalCode: postalCode ?? undefined,
+      lat: options?.lat,
+      lng: options?.lng
+    });
   }
 
   if (!match) {
@@ -327,13 +336,14 @@ export async function quoteDelivery(
 export async function validateDeliveryOrder(
   branchId: string,
   address: string,
-  orderTotal: number
+  orderTotal: number,
+  options?: { postalCode?: string; lat?: number; lng?: number }
 ): Promise<{ deliveryFee: number; postalCode: string }> {
   if (!address?.trim()) {
     throw new Error("Delivery address is required.");
   }
 
-  const quote = await quoteDelivery(branchId, address, orderTotal);
+  const quote = await quoteDelivery(branchId, address, orderTotal, options);
 
   if (!quote.allowed) {
     throw new Error(quote.message ?? "Delivery not available for this address.");

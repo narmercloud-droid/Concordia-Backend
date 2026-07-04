@@ -113,7 +113,7 @@ async function matchPostcode(settings, postalCode) {
         postalCode
     };
 }
-async function matchRadiusForBranch(settings, branchId, address) {
+async function matchRadiusForBranch(settings, branchId, address, options) {
     if (settings.deliveryMode === "postcodes")
         return null;
     if (!settings.deliveryRadiusZones.length)
@@ -121,7 +121,11 @@ async function matchRadiusForBranch(settings, branchId, address) {
     const branchCoords = await getBranchCoords(branchId);
     if (!branchCoords)
         return null;
-    const geo = await geocodeAddress(address);
+    const geo = await geocodeAddress(address, {
+        postalCode: options?.postalCode,
+        lat: options?.lat,
+        lng: options?.lng
+    });
     if (!geo)
         return null;
     const distanceMeters = haversineDistance(branchCoords.lat, branchCoords.lng, geo.lat, geo.lng);
@@ -150,7 +154,11 @@ export async function quoteDelivery(branchId, address, orderTotal, options) {
         match = await matchPostcode(settings, postalCode);
     }
     if (!match && settings.deliveryMode !== "postcodes" && fullAddress) {
-        match = await matchRadiusForBranch(settings, branchId, fullAddress);
+        match = await matchRadiusForBranch(settings, branchId, fullAddress, {
+            postalCode: postalCode ?? undefined,
+            lat: options?.lat,
+            lng: options?.lng
+        });
     }
     if (!match) {
         const maxKm = maxRadiusKm(settings.deliveryRadiusZones);
@@ -202,11 +210,11 @@ export async function quoteDelivery(branchId, address, orderTotal, options) {
         radiusLabel: match.radiusLabel
     };
 }
-export async function validateDeliveryOrder(branchId, address, orderTotal) {
+export async function validateDeliveryOrder(branchId, address, orderTotal, options) {
     if (!address?.trim()) {
         throw new Error("Delivery address is required.");
     }
-    const quote = await quoteDelivery(branchId, address, orderTotal);
+    const quote = await quoteDelivery(branchId, address, orderTotal, options);
     if (!quote.allowed) {
         throw new Error(quote.message ?? "Delivery not available for this address.");
     }

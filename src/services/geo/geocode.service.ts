@@ -2,6 +2,116 @@ import logger from "../../logger.ts";
 
 type GeoPoint = { lat: number; lng: number } | null;
 
+export type GeocodeOptions = {
+  postalCode?: string;
+  lat?: number;
+  lng?: number;
+};
+
+function stripFloorFromAddress(address: string): string {
+  return address
+    .replace(/,\s*((?:\d+\.\s*)?(?:OG|Etage|Stock|Floor|Etag(?:e)?))(?=\s*,|\s*$)/i, "")
+    .replace(/,\s*(?:Wohnung|Whg|Apartment|Apt\.?)[^,]*/i, "")
+    .replace(/\s{2,}/g, " ")
+    .replace(/,\s*,/g, ",")
+    .trim();
+}
+
+function buildGeocodeQueries(address: string, postalCode?: string): string[] {
+  const trimmed = address.trim();
+  if (!trimmed) return [];
+
+  const withoutFloor = stripFloorFromAddress(trimmed);
+  const queries = [trimmed, withoutFloor];
+
+  const postcode = postalCode?.trim() || trimmed.match(/\b(\d{5})\b/)?.[1];
+  const cityMatch = trimmed.match(/\b\d{5}\s+([^,]+?)\s*$/i);
+  const city = cityMatch?.[1]?.trim();
+
+  if (postcode && city) {
+    queries.push(`${postcode} ${city}, Germany`);
+  } else if (postcode) {
+    queries.push(`${postcode}, Germany`);
+  }
+
+  return [...new Set(queries.filter(Boolean))];
+}
+
+async function geocodeViaNominatim(query: string): Promise<GeoPoint> {
+  const url = new URL("https://nominatim.openstreetmap.org/search");
+  url.searchParams.set("q", query);
+  url.searchParams.set("format", "json");
+  url.searchParams.set("limit", "1");
+  url.searchParams.set("countrycodes", "de");
+
+  const res = await fetch(url.toString(), {
+    headers: {
+      "User-Agent": "Concordia-Restaurant-Platform/1.0"
+    }
+  });
+
+  if (!res.ok) return null;
+
+  const results = await res.json();
+  if (!Array.isArray(results) || results.length === 0) return null;
+
+  const lat = Number(results[0].lat);
+  const lng = Number(results[0].lon);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+
+  return { lat, lng };
+}
+
+async function geocodeViaPhoton(query: string, postalCode?: string): Promise<GeoPoint> {
+  const url = new URL("https://photon.komoot.io/api/");
+  url.searchParams.set("q", query);
+  url.searchParams.set("limit", "1");
+  url.searchParams.set("lang", "de");
+
+  const res = await fetch(url.toString());
+  if (!res.ok) return null;
+
+  const payload = await res.json();
+  const feature = Array.isArray(payload?.features) ? payload.features[0] : null;
+  if (!feature) return null;
+
+  const parsed = parsePhotonStreet(feature as Record<string, unknown>);
+  if (!parsed) return null;
+  if (postalCode && parsed.postalCode && parsed.postalCode !== postalCode) return null;
+
+  return { lat: parsed.lat, lng: parsed.lng };
+}
+
+export async function geocodeAddress(
+  address: string,
+  options?: GeocodeOptions
+): Promise<GeoPoint> {
+  if (Number.isFinite(options?.lat) && Number.isFinite(options?.lng)) {
+    return { lat: Number(options!.lat), lng: Number(options!.lng) };
+  }
+
+  if (!address?.trim()) return null;
+
+  const queries = buildGeocodeQueries(address, options?.postalCode);
+
+  try {
+    for (const query of queries) {
+      const point = await geocodeViaNominatim(query);
+      if (point) return point;
+    }
+
+    for (const query of queries) {
+      const point = await geocodeViaPhoton(query, options?.postalCode);
+      if (point) return point;
+    }
+
+    return null;
+  } catch (err) {
+    logger.warn({ err, address }, "Geocoding failed");
+    return null;
+  }
+}
+
 export type AddressSuggestion = {
   label: string;
   street: string;
@@ -10,38 +120,6 @@ export type AddressSuggestion = {
   lat: number;
   lng: number;
 };
-
-export async function geocodeAddress(address: string): Promise<GeoPoint> {
-  if (!address?.trim()) return null;
-
-  try {
-    const url = new URL("https://nominatim.openstreetmap.org/search");
-    url.searchParams.set("q", address);
-    url.searchParams.set("format", "json");
-    url.searchParams.set("limit", "1");
-    url.searchParams.set("countrycodes", "de");
-
-    const res = await fetch(url.toString(), {
-      headers: {
-        "User-Agent": "Concordia-Restaurant-Platform/1.0"
-      }
-    });
-
-    if (!res.ok) return null;
-
-    const results = await res.json();
-    if (!Array.isArray(results) || results.length === 0) return null;
-
-    const lat = Number(results[0].lat);
-    const lng = Number(results[0].lon);
-    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
-
-    return { lat, lng };
-  } catch (err) {
-    logger.warn({ err, address }, "Geocoding failed");
-    return null;
-  }
-}
 
 function parseSuggestion(row: Record<string, unknown>): AddressSuggestion | null {
   const address = row.address as Record<string, unknown> | undefined;
