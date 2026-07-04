@@ -1,5 +1,5 @@
 /**
- * Enforce: 10% website discount on all branches; no free drinks; no other promo/coupon codes.
+ * Enforce: 10% website discount + free drink from €35 on all branches; no promo/coupon codes.
  * Run: node scripts/apply-discount-policy.mjs
  */
 import dotenv from "dotenv";
@@ -33,14 +33,17 @@ async function bustBranchListCache() {
   }
 }
 
+const FREE_DRINK_MESSAGE =
+  "Ab 35 € Bestellwert erhalten Sie ein Getränk gratis (0,33 l Softdrink oder 0,5 l Durstlöscher).";
+
 async function main() {
   const platformRow = await prisma.platformConfig.findUnique({ where: { id: "default" } });
   const currentPlatform = (platformRow?.configJson ?? {}) ;
   const nextPlatform = {
     ...currentPlatform,
     websiteOrderDiscountPct: 10,
-    freeDrinkCheckoutEnabled: false,
-    showFreeDrinkCheckout: false,
+    freeDrinkCheckoutEnabled: true,
+    showFreeDrinkCheckout: true,
     showLoyaltyCheckout: false
   };
 
@@ -63,9 +66,9 @@ async function main() {
       promotions: {
         ...promotions,
         websiteDiscountEnabled: true,
-        freeDrinkEnabled: false,
-        freeDrinkMinOrder: 0,
-        freeDrinkMessage: ""
+        freeDrinkEnabled: true,
+        freeDrinkMinOrder: 35,
+        freeDrinkMessage: FREE_DRINK_MESSAGE
       }
     };
 
@@ -74,7 +77,7 @@ async function main() {
       update: { configJson, version: { increment: 1 } },
       create: { id: `config-${branch.id}`, branchId: branch.id, configJson }
     });
-    console.log(`Branch ${branch.id}: website discount ON, free drink OFF`);
+    console.log(`Branch ${branch.id}: 10% discount ON, free drink from €35 ON`);
   }
 
   const promoResult = await prisma.promoCode.updateMany({
