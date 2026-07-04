@@ -6,13 +6,35 @@ node_modules
 /src/generated/prisma
 uploads/
 
+# Legacy nested Next.js app + build output (customer site lives in concordia-frontend repo)
+frontend/
+
+# Jest / test output (never commit)
+jest-report*.json
+jest-sim-output.json
+jest-memory-test-output.txt
+jest_*.txt
+jest_*.json
+
+# SDK contract test reports (generated locally)
+sdk-tests/report.json
+
+# Python bytecode
+**/__pycache__/
+*.pyc
+
 # Build artifacts / local SDK packaging
 sdks/python/build/
 sdks/python/dist/
 sdks/python/*.egg-info/
 sdks/typescript/dist/
 sdks/typescript/*.tgz
+sdks-admin/python/__pycache__/
 
-# Local dev scripts
+# Local dev / one-off debug scripts
 scripts/find-rolls-item.mjs
 scripts/test-order-rolls.mjs
+scripts/check-branch-config.mjs
+scripts/count-orders-by-branch.mjs
+scripts/debug-dashboard-kempen.mjs
+scripts/test-manager-orders.mjs
