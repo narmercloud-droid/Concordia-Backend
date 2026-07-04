@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pizzeria Concordia Kempen — Sommer-Aktion</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #1a2744;
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      padding: 24px;
+    }
+    .card {
+      width: 1080px;
+      height: 1080px;
+      border-radius: 24px;
+      overflow: hidden;
+      position: relative;
+      background: linear-gradient(165deg, #5eb3f6 0%, #87ceeb 38%, #b8e986 72%, #f7e98e 100%);
+      box-shadow: 0 24px 80px rgba(0,0,0,.35);
+    }
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 120% 80% at 50% 0%, rgba(255,255,255,.45), transparent 55%),
+        radial-gradient(circle at 12% 88%, rgba(255,214,0,.35) 0, transparent 28%),
+        radial-gradient(circle at 88% 92%, rgba(255,214,0,.3) 0, transparent 24%);
+      pointer-events: none;
+    }
+    .inner {
+      position: relative;
+      z-index: 1;
+      height: 100%;
+      padding: 56px 52px 48px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .brand {
+      font-size: 58px;
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      text-shadow: 0 2px 12px rgba(255,255,255,.5);
+    }
+    .brand .pizzeria { color: #1b7a3d; }
+    .brand .name { color: #c41e24; }
+    .badge {
+      margin-top: 22px;
+      background: linear-gradient(135deg, #ff8c00, #ff5e00);
+      color: #fff;
+      font-size: 26px;
+      font-weight: 800;
+      padding: 14px 36px;
+      border-radius: 999px;
+      box-shadow: 0 8px 24px rgba(255,94,0,.35);
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .sub {
+      margin-top: 18px;
+      font-size: 30px;
+      font-weight: 700;
+      color: #1a3d5c;
+    }
+    .benefits {
+      margin-top: 28px;
+      width: 100%;
+      max-width: 820px;
+      display: grid;
+      gap: 12px;
+      text-align: left;
+    }
+    .benefit {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: rgba(255,255,255,.82);
+      border-radius: 16px;
+      padding: 14px 18px;
+      font-size: 24px;
+      font-weight: 600;
+      color: #1f2937;
+      box-shadow: 0 4px 16px rgba(0,0,0,.08);
+    }
+    .benefit span:first-child { flex-shrink: 0; font-size: 26px; }
+    .qr-block {
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      background: rgba(255,255,255,.92);
+      border-radius: 20px;
+      padding: 22px 28px;
+      box-shadow: 0 8px 32px rgba(0,0,0,.12);
+    }
+    .qr-block img {
+      width: 200px;
+      height: 200px;
+      border-radius: 12px;
+      border: 4px solid #fff;
+      box-shadow: 0 4px 16px rgba(0,0,0,.15);
+    }
+    .qr-text { text-align: left; }
+    .qr-text .cta {
+      font-size: 28px;
+      font-weight: 800;
+      color: #c41e24;
+      margin-bottom: 6px;
+    }
+    .qr-text .url {
+      font-size: 17px;
+      font-weight: 600;
+      color: #374151;
+      word-break: break-all;
+      line-height: 1.35;
+    }
+    .qr-text .loc {
+      margin-top: 10px;
+      font-size: 20px;
+      font-weight: 700;
+      color: #1b7a3d;
+    }
+    .footer {
+      margin-top: 18px;
+      font-size: 18px;
+      font-weight: 600;
+      color: rgba(26,39,68,.75);
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="inner">
+      <div class="brand">
+        <span class="pizzeria">Pizzeria</span>
+        <span class="name"> Concordia</span>
+      </div>
+      <div class="badge">Sommer-Aktion in Kempen</div>
+      <div class="sub">Jetzt online bestellen & sparen</div>
+      <div class="benefits">
+        <div class="benefit"><span>✅</span><span>10 % automatischer Rabatt auf Online-Bestellungen</span></div>
+        <div class="benefit"><span>✅</span><span>Gratis Getränk ab 35 € Bestellwert</span></div>
+        <div class="benefit"><span>✅</span><span>Gratis Lieferung in Kempen & Umgebung</span></div>
+        <div class="benefit"><span>✅</span><span>Lieferung & Abholung</span></div>
+      </div>
+      <div class="qr-block">
+        <img src="data:image/png;base64,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" alt="QR Code — Online bestellen" width="200" height="200" />
+        <div class="qr-text">
+          <div class="cta">Jetzt bestellen</div>
+          <div class="url">https://www.concordiapizza.de/branch/concordia-kempen</div>
+          <div class="loc">📍 Concordienplatz 1, Kempen</div>
+        </div>
+      </div>
+      <div class="footer">❤️ Deutsche Herzlichkeit · Italienische Leidenschaft</div>
+    </div>
+  </div>
+</body>
+</html>

@@ -5,7 +5,7 @@ export async function generateOrderQr(orderId, token) {
     return QRCode.toDataURL(payload);
 }
 export async function generateBranchOrderQrPng(branchId, size = 1024) {
-    const url = buildBranchOrderUrl(branchId);
+    const url = buildBranchOrderUrl(branchId, { productionQr: true });
     return QRCode.toBuffer(url, {
         type: "png",
         width: size,
@@ -14,7 +14,7 @@ export async function generateBranchOrderQrPng(branchId, size = 1024) {
     });
 }
 export async function generateBranchOrderQrDataUrl(branchId, size = 512) {
-    const url = buildBranchOrderUrl(branchId);
+    const url = buildBranchOrderUrl(branchId, { productionQr: true });
     return QRCode.toDataURL(url, {
         width: size,
         margin: 2,

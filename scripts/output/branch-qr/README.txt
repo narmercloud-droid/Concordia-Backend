@@ -8,4 +8,4 @@ Straelen:  https://www.concordiapizza.de/branch/concordia-straelen
 
 Regenerate:
   npm run generate:branch-qr
-  npm run generate:branch-qr -- concordia-straelen
+  npm run generate:kempen-facebook-promo

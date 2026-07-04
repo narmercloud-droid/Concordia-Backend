@@ -10,7 +10,7 @@ export async function generateBranchOrderQrPng(
   branchId: string,
   size = 1024
 ): Promise<Buffer> {
-  const url = buildBranchOrderUrl(branchId);
+  const url = buildBranchOrderUrl(branchId, { productionQr: true });
   return QRCode.toBuffer(url, {
     type: "png",
     width: size,
@@ -23,7 +23,7 @@ export async function generateBranchOrderQrDataUrl(
   branchId: string,
   size = 512
 ): Promise<string> {
-  const url = buildBranchOrderUrl(branchId);
+  const url = buildBranchOrderUrl(branchId, { productionQr: true });
   return QRCode.toDataURL(url, {
     width: size,
     margin: 2,

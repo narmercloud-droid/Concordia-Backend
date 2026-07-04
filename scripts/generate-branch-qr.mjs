@@ -10,6 +10,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import QRCode from "qrcode";
+import { KEMPEN_ORDER_URL } from "./kempen-promo-content.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -26,10 +27,12 @@ const BRANCHES = {
 
 const DEFAULT_BRANCH = "concordia-kempen";
 const DEFAULT_SIZE = 1024;
-const SITE_ORIGIN = (process.env.FRONTEND_URL ?? process.env.PUBLIC_SITE_ORIGIN ?? "https://www.concordiapizza.de").replace(
-  /\/$/,
-  ""
-);
+
+/** Production order URLs for print/social QR — never use staging or localhost. */
+const PRODUCTION_BRANCH_ORDER_URLS = {
+  "concordia-kempen": KEMPEN_ORDER_URL,
+  "concordia-straelen": "https://www.concordiapizza.de/branch/concordia-straelen"
+};
 
 function parseArgs(argv) {
   const args = { branchId: DEFAULT_BRANCH, size: DEFAULT_SIZE, out: null };
@@ -47,7 +50,7 @@ function parseArgs(argv) {
 }
 
 function buildBranchOrderUrl(branchId) {
-  return `${SITE_ORIGIN}/branch/${branchId}`;
+  return PRODUCTION_BRANCH_ORDER_URLS[branchId] ?? `https://www.concordiapizza.de/branch/${branchId}`;
 }
 
 async function main() {
@@ -90,12 +93,12 @@ async function main() {
       "Drop the PNG into your flyer (e.g. bottom-right, white background).",
       "Scan target: branch ordering page on concordiapizza.de",
       "",
-      `Kempen:    ${buildBranchOrderUrl("concordia-kempen")}`,
-      `Straelen:  ${buildBranchOrderUrl("concordia-straelen")}`,
+      `Kempen:    ${KEMPEN_ORDER_URL}`,
+      `Straelen:  ${PRODUCTION_BRANCH_ORDER_URLS["concordia-straelen"]}`,
       "",
       "Regenerate:",
       "  npm run generate:branch-qr",
-      "  npm run generate:branch-qr -- concordia-straelen"
+      "  npm run generate:kempen-facebook-promo"
     ].join("\n")
   );
 
