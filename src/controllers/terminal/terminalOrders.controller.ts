@@ -6,6 +6,7 @@ import { resolveBranchByCode } from "../../services/terminal/branchCode.service.
 import { getTerminalDailyReport } from "../../services/terminal/terminalDailyReport.service.ts";
 import { advanceTerminalOrderStatus } from "../../services/terminal/terminalOrderStatus.service.ts";
 import { ordersService } from "../../services/orders.service.ts";
+import { isKitchenReadyOrder } from "../../utils/orderPayment.ts";
 import { env } from "../../config/env.ts";
 import { buildCourierUrl } from "../../utils/customerOrderUrls.ts";
 import { wrap, fail } from "../../contracts/api.js";
@@ -89,7 +90,7 @@ export const getTerminalOrders = wrap(async (req) => {
     orderBy: { createdAt: "desc" }
   });
 
-  return orders.map(enrichOrder);
+  return orders.filter(isKitchenReadyOrder).map(enrichOrder);
 });
 
 export const confirmTerminalOrder = wrap(async (req) => {
@@ -132,6 +133,9 @@ export const getTerminalOrderDetails = wrap(async (req) => {
 
   if (!order) throw fail("NOT_FOUND", "Order not found");
   if (!isWithinBerlinToday(order.createdAt)) {
+    throw fail("NOT_FOUND", "Order not available");
+  }
+  if (!isKitchenReadyOrder(order)) {
     throw fail("NOT_FOUND", "Order not available");
   }
 

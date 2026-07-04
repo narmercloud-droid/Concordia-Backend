@@ -28,6 +28,12 @@ import {
   type PricedOrderLine
 } from "./customer/orderPricing.service.ts";
 import { sendOrderConfirmationEmail } from "./customer/orderConfirmationEmail.service.ts";
+import {
+  isKitchenReadyOrder,
+  isUnpaidOnlineOrder,
+  normalizePaymentMethod,
+  requiresOnlinePayment
+} from "../utils/orderPayment.ts";
 
 const ORDER_ITEMS_INCLUDE = {
   item: true,
@@ -64,21 +70,6 @@ function buildOrderItems(pricedLines: PricedOrderLine[]) {
 }
 
 const COURIER_TOKEN_VALIDITY_MS = 24 * 60 * 60 * 1000;
-
-function normalizePaymentMethod(method?: string) {
-  const value = (method ?? "cash").toLowerCase();
-  if (value === "cash" || value === "cod") return "COD";
-  if (value === "card" || value === "apple_pay" || value === "google_pay") return "CARD";
-  if (value === "paypal") return "PAYPAL";
-  if (value === "klarna") return "KLARNA";
-  if (value === "sepa") return "SEPA";
-  return "COD";
-}
-
-function requiresOnlinePayment(method?: string) {
-  const normalized = normalizePaymentMethod(method);
-  return ["CARD", "PAYPAL", "KLARNA", "SEPA"].includes(normalized);
-}
 
 function enrichOrder(order: any) {
   return {
@@ -440,6 +431,9 @@ export class OrdersService {
     if (order.status !== "pending") {
       throw new Error("Order has already been confirmed");
     }
+    if (!isKitchenReadyOrder(order)) {
+      throw new Error("Payment has not been completed for this order");
+    }
 
     const scheduledFor = order.scheduledFor ? new Date(order.scheduledFor) : null;
     const hasScheduled =
@@ -485,6 +479,29 @@ export class OrdersService {
     broadcastToTerminal(order.branchId, "order:confirmed", payload);
 
     return payload;
+  }
+
+  async cancelUnpaidOnlineOrder(orderId: string) {
+    const order = await prisma.order.findUnique({ where: { id: orderId } });
+    if (!order) throw new Error("Order not found");
+    if (!isUnpaidOnlineOrder(order)) {
+      return { cancelled: false, reason: "not_unpaid_online" as const };
+    }
+    if (order.status !== "pending") {
+      return { cancelled: false, reason: "not_pending" as const };
+    }
+
+    await OrderLifecycleService.updateStatus(orderId, "cancelled", undefined, {
+      paymentStatus: "cancelled"
+    });
+
+    broadcastToTerminal(order.branchId, "order_status", {
+      orderId,
+      id: orderId,
+      status: "cancelled"
+    });
+
+    return { cancelled: true as const };
   }
 
   async listBranchOrders(branchId: string) {

@@ -10,6 +10,9 @@ const router = Router();
 // Customer checkout
 router.post("/", OrdersController.create);
 
+// Abandon PayPal/card checkout before payment completes
+router.post("/:id/cancel-unpaid", OrdersController.cancelUnpaid);
+
 // Customer order tracking
 router.get("/:id/status", OrdersController.getStatus);
 

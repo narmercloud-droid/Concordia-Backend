@@ -52,6 +52,14 @@ export const OrdersController = {
     const updated = await ordersService.courierDelivered(orderId);
     return updated;
   }),
+
+  cancelUnpaid: wrap(async (req: Request) => {
+    try {
+      return await ordersService.cancelUnpaidOnlineOrder(req.params.id);
+    } catch (err: any) {
+      throw fail("INVALID_INPUT", err?.message ?? "Could not cancel order");
+    }
+  }),
 };
 
 
