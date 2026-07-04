@@ -55,6 +55,7 @@
     "profile": "node scripts/profile.js",
     "pm2": "pm2 start ecosystem.config.js",
     "smoke": "node scripts/smoke-test.js",
+    "smoke:checkout": "node scripts/smoke-checkout.mjs",
     "sdk:manifest": "node sdk-tests/generate-manifest.cjs",
     "sdk:test": "node sdk-tests/run-tests.cjs"
   },
