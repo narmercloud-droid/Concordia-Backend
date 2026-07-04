@@ -8,6 +8,9 @@ CREATE TABLE "BranchPaymentSettings" (
     "cardEnabled" BOOLEAN NOT NULL DEFAULT true,
     "applePayEnabled" BOOLEAN NOT NULL DEFAULT true,
     "googlePayEnabled" BOOLEAN NOT NULL DEFAULT true,
+    "paypalClientId" TEXT,
+    "paypalClientSecret" TEXT,
+    "paypalWebhookId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
