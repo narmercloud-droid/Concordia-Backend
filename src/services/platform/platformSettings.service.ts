@@ -252,10 +252,10 @@ export async function getBranchSettingsDetail(branchId: string) {
     deliveryAreas: (config.deliveryAreas as unknown[]) ?? [],
     deliveryRadiusZones: (config.deliveryRadiusZones as unknown[]) ?? [],
     promotions: {
-      freeDrinkMinOrder: Number(promotions.freeDrinkMinOrder ?? 35),
+      freeDrinkMinOrder: Number(promotions.freeDrinkMinOrder ?? 0),
       freeDrinkMessage: String(promotions.freeDrinkMessage ?? ""),
       websiteDiscountEnabled: promotions.websiteDiscountEnabled !== false,
-      freeDrinkEnabled: promotions.freeDrinkEnabled !== false
+      freeDrinkEnabled: promotions.freeDrinkEnabled === true
     },
     printing: {
       printingMode: printing.printingMode,
