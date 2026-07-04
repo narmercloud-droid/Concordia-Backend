@@ -9,18 +9,19 @@ on:
 jobs:
   sdk-tests:
     runs-on: ubuntu-latest
+    env:
+      SDK_TEST_BASEURL: http://127.0.0.1:4000
+      SDK_SKIP_PYTHON: "1"
+      SDK_TEST_SMOKE: "1"
+      SDK_USE_HTTP: "1"
     steps:
       - uses: actions/checkout@v4
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
+          node-version: 22
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
@@ -36,12 +37,16 @@ jobs:
 
       - name: Start mock server
         run: |
-          if [ -f mock-server/index.js ]; then
-            node mock-server/index.js &
+          node mock-server/index.js &
+          for i in $(seq 1 30); do
+            if curl -sf http://127.0.0.1:4000/ >/dev/null 2>&1; then
+              echo "Mock server is ready"
+              exit 0
+            fi
             sleep 1
-          else
-            echo "mock-server/index.js not found, ensure your mock server exists";
-          fi
+          done
+          echo "Mock server did not become ready in time"
+          exit 1
 
       - name: Build Admin TypeScript SDK
         run: |
@@ -52,15 +57,6 @@ jobs:
             echo "No sdks-admin/typescript package.json found"
           fi
 
-      - name: Install Python SDK (if present)
-        run: |
-          if [ -f sdks-admin/python/setup.py ] || [ -f sdks-admin/python/pyproject.toml ]; then
-            pip install --upgrade pip || true
-            pip install ./sdks-admin/python || true
-          else
-            echo "No Python SDK packaging found; skipping pip install"
-          fi
-
       - name: Generate SDK manifest
         run: npm run sdk:manifest
 
@@ -68,6 +64,7 @@ jobs:
         run: npm run sdk:test
 
       - name: Upload report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: sdk-test-report

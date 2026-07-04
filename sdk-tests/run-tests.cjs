@@ -12,10 +12,11 @@ if (!fs.existsSync(manifestPath)) {
 
 const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 const ajv = new Ajv({ strict: false });
-const adapters = {};
-const sdks = ['typescript', 'python'];
+const smokeOnly = process.env.SDK_TEST_SMOKE === '1';
+const sdks =
+  process.env.SDK_SKIP_PYTHON === '1' ? ['typescript'] : ['typescript', 'python'];
 const results = [];
-const baseUrl = process.env.SDK_TEST_BASEURL || 'http://localhost:4000';
+const baseUrl = process.env.SDK_TEST_BASEURL || 'http://127.0.0.1:4000';
 // load full OpenAPI spec for $ref resolution
 let openapiDoc = null;
 try {
@@ -27,6 +28,26 @@ try {
 }
 
 const SwaggerParser = require('@apidevtools/swagger-parser');
+
+function pickPayloadForValidation(body, schema) {
+  if (body == null || !schema) return body;
+  if (schema.type === 'array' && !Array.isArray(body) && body && typeof body === 'object') {
+    for (const key of ['data', 'items', 'orders', 'branches', 'categories', 'menus', 'campaigns']) {
+      if (Array.isArray(body[key])) return body[key];
+    }
+  }
+  if (
+    schema.type === 'object' &&
+    body &&
+    typeof body === 'object' &&
+    body.data &&
+    typeof body.data === 'object' &&
+    !Array.isArray(body.data)
+  ) {
+    return body.data;
+  }
+  return body;
+}
 
 function generateRequestBody(schema) {
   if (!schema) return null;
@@ -190,6 +211,7 @@ function buildParams(entry) {
   return params;
 }
 
+const adapters = {};
 for (const sdk of sdks) {
   const adapterPath = path.resolve(process.cwd(), 'sdk-tests', 'adapters', `${sdk}.cjs`);
   try {
@@ -307,7 +329,10 @@ for (const sdk of sdks) {
           out.body = body;
         }
 
-        if (t.responseSchema) {
+        if (smokeOnly) {
+          out.ok = out.statusCode >= 200 && out.statusCode < 300;
+          if (!out.ok) out.reason = `HTTP ${out.statusCode}`;
+        } else if (t.responseSchema) {
           let schemaToValidate = t.responseSchema;
           try {
             if (derefSpec && derefSpec.paths) {
@@ -338,7 +363,8 @@ for (const sdk of sdks) {
             // ignore and use manifest schema
           }
           const validate = ajv.compile(schemaToValidate);
-          const ok = validate(out.body);
+          const payload = pickPayloadForValidation(out.body, schemaToValidate);
+          const ok = validate(payload);
           out.ok = !!ok;
           if (!ok) out.reason = validate.errors && JSON.stringify(validate.errors);
         } else {

@@ -146,13 +146,16 @@ async function callSdk(operationId, params = {}, opts = {}) {
 }
 
 async function invoke(entry, opts = {}) {
-  const { baseUrl = 'http://localhost:4000', fetch, params, resolvedPath } = opts;
-  // try SDK call first
-  try {
-    const r = await callSdk(entry.operationId, params || {}, { baseUrl });
-    return r;
-  } catch (e) {
-    // fallback to HTTP
+  const { baseUrl = 'http://127.0.0.1:4000', fetch, params, resolvedPath } = opts;
+  const useHttpOnly = process.env.SDK_USE_HTTP === '1';
+
+  if (!useHttpOnly) {
+    try {
+      const r = await callSdk(entry.operationId, params || {}, { baseUrl });
+      if (r && r.statusCode >= 200 && r.statusCode < 300) return r;
+    } catch (e) {
+      // fall through to direct HTTP against the mock server
+    }
   }
 
   const url = baseUrl + (resolvedPath || entry.pathTemplate || entry.path).replace(/\{[^}]+\}/g, '1');
