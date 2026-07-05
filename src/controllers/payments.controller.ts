@@ -155,7 +155,16 @@ export const PaymentsController = {
     try {
       return await createBranchOnboardingLink(branchId, returnUrl, refreshUrl);
     } catch (err: any) {
-      throw fail("PAYMENT_FAILED", err?.message ?? "Could not create Stripe onboarding link");
+      const stripeMessage =
+        typeof err?.raw?.message === "string"
+          ? err.raw.message
+          : typeof err?.message === "string"
+            ? err.message
+            : undefined;
+      throw fail(
+        "PAYMENT_FAILED",
+        stripeMessage ?? err?.message ?? "Could not create Stripe onboarding link"
+      );
     }
   }),
 
