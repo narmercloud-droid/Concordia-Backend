@@ -47,7 +47,8 @@ export const OrdersController = {
     }),
     cancelUnpaid: wrap(async (req) => {
         try {
-            return await ordersService.cancelUnpaidOnlineOrder(req.params.id);
+            const cancelReason = typeof req.body?.reason === "string" ? req.body.reason : undefined;
+            return await ordersService.cancelUnpaidOnlineOrder(req.params.id, cancelReason);
         }
         catch (err) {
             throw fail("INVALID_INPUT", err?.message ?? "Could not cancel order");

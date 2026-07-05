@@ -4,6 +4,7 @@ import { getBerlinTodayRange } from "../../utils/berlinTime.js";
 import { IN_PROGRESS_ORDER_STATUSES } from "../order/orderStatus.constants.js";
 import { isCountableRevenueOrder } from "../admin/revenueReport.service.js";
 import { resolveOrderPaymentMethod } from "../../utils/orderPaymentMethod.js";
+import { checkoutIssuePrismaFilter, getOrderCheckoutTagLabel, resolveOrderCheckoutTag } from "../../utils/orderPayment.js";
 export async function getManagerBranch(branchId) {
     const branch = await prisma.branch.findUnique({
         where: { id: branchId },
@@ -236,6 +237,10 @@ const MANAGER_ORDER_LIST_INCLUDE = {
             variants: { select: { name: true, price: true } },
             extras: { select: { name: true, price: true } }
         }
+    },
+    trackingEvents: {
+        select: { status: true, timestamp: true },
+        orderBy: { timestamp: "asc" }
     }
 };
 const MANAGER_ORDER_DETAIL_INCLUDE = {
@@ -313,9 +318,14 @@ function buildBranchOrderWhere(branchId, filters = {}) {
             }))
         });
     }
+    const checkoutFilter = checkoutIssuePrismaFilter(filters.checkoutIssue);
+    if (checkoutFilter) {
+        and.push(checkoutFilter);
+    }
     return and.length === 1 ? and[0] : { AND: and };
 }
 export function formatManagerOrder(o) {
+    const checkoutTag = resolveOrderCheckoutTag(o);
     return {
         id: o.id,
         trackingToken: o.tracking_token ?? null,
@@ -334,6 +344,8 @@ export function formatManagerOrder(o) {
         giftCardAmount: o.giftCardAmount,
         paymentMethod: resolveOrderPaymentMethod(o),
         paymentStatus: o.paymentStatus,
+        checkoutTag,
+        checkoutTagLabel: checkoutTag ? getOrderCheckoutTagLabel(checkoutTag) : null,
         paypalOrderId: o.paypalOrderId ?? null,
         notes: o.notes,
         scheduledFor: o.scheduledFor,

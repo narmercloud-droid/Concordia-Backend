@@ -419,7 +419,7 @@ export class OrdersService {
         broadcastToTerminal(order.branchId, "order:confirmed", payload);
         return payload;
     }
-    async cancelUnpaidOnlineOrder(orderId) {
+    async cancelUnpaidOnlineOrder(orderId, cancelReason) {
         const order = await prisma.order.findUnique({ where: { id: orderId } });
         if (!order)
             throw new Error("Order not found");
@@ -429,8 +429,17 @@ export class OrdersService {
         if (order.status !== "pending") {
             return { cancelled: false, reason: "not_pending" };
         }
+        const { cancelReasonToTrackingStatus } = await import("../utils/orderPayment.js");
         await OrderLifecycleService.updateStatus(orderId, "cancelled", undefined, {
             paymentStatus: "cancelled"
+        });
+        await prisma.orderTrackingEvent.create({
+            data: {
+                id: randomUUID(),
+                status: cancelReasonToTrackingStatus(cancelReason),
+                timestamp: new Date(),
+                order: { connect: { id: orderId } }
+            }
         });
         broadcastToTerminal(order.branchId, "order_status", {
             orderId,

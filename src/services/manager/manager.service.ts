@@ -4,6 +4,11 @@ import { getBerlinTodayRange } from "../../utils/berlinTime.ts";
 import { IN_PROGRESS_ORDER_STATUSES } from "../order/orderStatus.constants.ts";
 import { isCountableRevenueOrder } from "../admin/revenueReport.service.ts";
 import { resolveOrderPaymentMethod } from "../../utils/orderPaymentMethod.ts";
+import {
+  checkoutIssuePrismaFilter,
+  getOrderCheckoutTagLabel,
+  resolveOrderCheckoutTag
+} from "../../utils/orderPayment.ts";
 
 export async function getManagerBranch(branchId: string) {
   const branch = await prisma.branch.findUnique({
@@ -280,6 +285,7 @@ export async function getBranchOrders(
     search?: string;
     customerType?: "guest" | "registered";
     paymentMethod?: string;
+    checkoutIssue?: string;
     limit?: number;
     offset?: number;
   } = {}
@@ -320,6 +326,10 @@ const MANAGER_ORDER_LIST_INCLUDE = {
       variants: { select: { name: true, price: true } },
       extras: { select: { name: true, price: true } }
     }
+  },
+  trackingEvents: {
+    select: { status: true, timestamp: true },
+    orderBy: { timestamp: "asc" as const }
   }
 };
 
@@ -355,6 +365,7 @@ function buildBranchOrderWhere(
     search?: string;
     customerType?: "guest" | "registered";
     paymentMethod?: string;
+    checkoutIssue?: string;
   } = {}
 ) {
   const and: Array<Record<string, unknown>> = [{ branchId }];
@@ -409,6 +420,11 @@ function buildBranchOrderWhere(
     });
   }
 
+  const checkoutFilter = checkoutIssuePrismaFilter(filters.checkoutIssue);
+  if (checkoutFilter) {
+    and.push(checkoutFilter);
+  }
+
   return and.length === 1 ? and[0] : { AND: and };
 }
 
@@ -454,7 +470,9 @@ export function formatManagerOrder(o: {
     extras?: Array<{ name: string; price: unknown }>;
   }>;
   trackingEvents?: Array<{ status: string; timestamp: Date }>;
+  paidAt?: Date | null;
 }) {
+  const checkoutTag = resolveOrderCheckoutTag(o);
   return {
     id: o.id,
     trackingToken: o.tracking_token ?? null,
@@ -473,6 +491,8 @@ export function formatManagerOrder(o: {
     giftCardAmount: o.giftCardAmount,
     paymentMethod: resolveOrderPaymentMethod(o),
     paymentStatus: o.paymentStatus,
+    checkoutTag,
+    checkoutTagLabel: checkoutTag ? getOrderCheckoutTagLabel(checkoutTag) : null,
     paypalOrderId: o.paypalOrderId ?? null,
     notes: o.notes,
     scheduledFor: o.scheduledFor,
