@@ -16,7 +16,31 @@ export async function syncBranchStripeAccount(branchId) {
         return settings;
     }
     const stripe = getStripe();
-    const account = await stripe.accounts.retrieve(settings.stripeAccountId);
+    let account;
+    try {
+        account = await stripe.accounts.retrieve(settings.stripeAccountId);
+    }
+    catch (err) {
+        // If someone deletes a connected account directly in Stripe, stale IDs in DB
+        // should not break admin settings loading. Reset branch Stripe linkage safely.
+        const maybeStripeError = err;
+        const isMissingAccount = maybeStripeError?.code === "resource_missing" || maybeStripeError?.statusCode === 404;
+        if (!isMissingAccount) {
+            throw err;
+        }
+        return prisma.branchPaymentSettings.update({
+            where: { branchId },
+            data: {
+                stripeAccountId: null,
+                stripeChargesEnabled: false,
+                stripeDetailsSubmitted: false,
+                stripePayoutsEnabled: false,
+                cardEnabled: false,
+                applePayEnabled: false,
+                googlePayEnabled: false
+            }
+        });
+    }
     return prisma.branchPaymentSettings.update({
         where: { branchId },
         data: {

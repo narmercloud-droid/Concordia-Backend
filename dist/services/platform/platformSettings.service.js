@@ -160,7 +160,13 @@ export async function getBranchSettingsDetail(branchId) {
             }
         });
     }
-    const payment = await getBranchPaymentPublic(branchId);
+    let payment = null;
+    try {
+        payment = await getBranchPaymentPublic(branchId);
+    }
+    catch {
+        // Stripe/network issues must not block loading branch profile settings.
+    }
     return {
         id: branch.id,
         name: branch.name,
@@ -200,11 +206,11 @@ export async function getBranchSettingsDetail(branchId) {
         },
         payment: {
             stripeConfigured: isStripeConfigured(),
-            stripeAccountId: payment.stripeAccountId,
-            stripeReady: payment.stripeReady,
-            cardEnabled: payment.cardEnabled,
-            applePayEnabled: payment.applePayEnabled,
-            googlePayEnabled: payment.googlePayEnabled
+            stripeAccountId: payment?.stripeAccountId ?? null,
+            stripeReady: payment?.stripeReady ?? false,
+            cardEnabled: payment?.cardEnabled ?? false,
+            applePayEnabled: payment?.applePayEnabled ?? false,
+            googlePayEnabled: payment?.googlePayEnabled ?? false
         },
         hours: branch.branchHours
     };
