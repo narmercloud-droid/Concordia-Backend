@@ -11,6 +11,7 @@ import {
   updateBranchPayPalSettings
 } from "../services/paypal/branchPayPal.service.ts";
 import { isStripeConfigured } from "../services/stripe/stripeClient.ts";
+import { sanitizeClientErrorMessage } from "../lib/sanitizeErrorMessage.ts";
 import { wrap, fail } from "../contracts/api.js";
 
 export const PaymentsController = {
@@ -163,7 +164,8 @@ export const PaymentsController = {
             : undefined;
       throw fail(
         "PAYMENT_FAILED",
-        stripeMessage ?? err?.message ?? "Could not create Stripe onboarding link"
+        sanitizeClientErrorMessage(stripeMessage ?? err?.message) ??
+          "Could not create Stripe onboarding link"
       );
     }
   }),

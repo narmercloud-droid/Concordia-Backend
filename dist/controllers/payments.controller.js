@@ -2,6 +2,7 @@ import { paymentsService } from "../services/payments.service.js";
 import { createBranchOnboardingLink, getBranchPaymentPublic, syncBranchStripeAccount, updateBranchPaymentFlags } from "../services/stripe/branchStripe.service.js";
 import { getBranchPayPalAdminView, updateBranchPayPalSettings } from "../services/paypal/branchPayPal.service.js";
 import { isStripeConfigured } from "../services/stripe/stripeClient.js";
+import { sanitizeClientErrorMessage } from "../lib/sanitizeErrorMessage.js";
 import { wrap, fail } from "../contracts/api.js";
 export const PaymentsController = {
     getConfig: wrap(async (req) => {
@@ -145,7 +146,13 @@ export const PaymentsController = {
             return await createBranchOnboardingLink(branchId, returnUrl, refreshUrl);
         }
         catch (err) {
-            throw fail("PAYMENT_FAILED", err?.message ?? "Could not create Stripe onboarding link");
+            const stripeMessage = typeof err?.raw?.message === "string"
+                ? err.raw.message
+                : typeof err?.message === "string"
+                    ? err.message
+                    : undefined;
+            throw fail("PAYMENT_FAILED", sanitizeClientErrorMessage(stripeMessage ?? err?.message) ??
+                "Could not create Stripe onboarding link");
         }
     }),
     updateBranchPaymentSettings: wrap(async (req) => {

@@ -25,6 +25,38 @@ export async function getOrCreateBranchPaymentSettings(branchId: string) {
   });
 }
 
+function stripeErrorMessage(err: unknown) {
+  const maybe = err as { message?: string; raw?: { message?: string } } | null;
+  return maybe?.raw?.message ?? maybe?.message ?? "";
+}
+
+function isStaleStripeConnectAccountError(err: unknown) {
+  const maybe = err as { code?: string; statusCode?: number } | null;
+  const message = stripeErrorMessage(err).toLowerCase();
+
+  if (maybe?.code === "resource_missing" || maybe?.statusCode === 404) return true;
+  if (maybe?.code === "account_invalid" || maybe?.statusCode === 403) return true;
+  if (message.includes("does not have access to account")) return true;
+  if (message.includes("application access may have been revoked")) return true;
+
+  return false;
+}
+
+async function clearBranchStripeLinkage(branchId: string) {
+  return prisma.branchPaymentSettings.update({
+    where: { branchId },
+    data: {
+      stripeAccountId: null,
+      stripeChargesEnabled: false,
+      stripeDetailsSubmitted: false,
+      stripePayoutsEnabled: false,
+      cardEnabled: false,
+      applePayEnabled: false,
+      googlePayEnabled: false
+    }
+  });
+}
+
 export async function syncBranchStripeAccount(branchId: string) {
   const settings = await getOrCreateBranchPaymentSettings(branchId);
   if (!settings.stripeAccountId || !isStripeConfigured()) {
@@ -36,28 +68,12 @@ export async function syncBranchStripeAccount(branchId: string) {
   try {
     account = await stripe.accounts.retrieve(settings.stripeAccountId);
   } catch (err) {
-    // If someone deletes a connected account directly in Stripe, stale IDs in DB
-    // should not break admin settings loading. Reset branch Stripe linkage safely.
-    const maybeStripeError = err as { code?: string; statusCode?: number } | null;
-    const isMissingAccount =
-      maybeStripeError?.code === "resource_missing" || maybeStripeError?.statusCode === 404;
-
-    if (!isMissingAccount) {
+    // Stale or inaccessible Connect accounts must not break admin settings loading.
+    if (!isStaleStripeConnectAccountError(err)) {
       throw err;
     }
 
-    return prisma.branchPaymentSettings.update({
-      where: { branchId },
-      data: {
-        stripeAccountId: null,
-        stripeChargesEnabled: false,
-        stripeDetailsSubmitted: false,
-        stripePayoutsEnabled: false,
-        cardEnabled: false,
-        applePayEnabled: false,
-        googlePayEnabled: false
-      }
-    });
+    return clearBranchStripeLinkage(branchId);
   }
 
   return prisma.branchPaymentSettings.update({
