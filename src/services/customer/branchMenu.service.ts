@@ -19,7 +19,7 @@ import { getPresetAddOnGroupsForItem, getPresetAddOnGroupsForCategories } from "
 
 const BRANCHES_CACHE_KEY = "customer:branches:v2";
 const BRANCHES_TTL_SEC = 1800;
-const MENU_CACHE_VERSION = "v4";
+const MENU_CACHE_VERSION = "v5";
 const MENU_TTL_SEC = 1800;
 const ITEM_TTL_SEC = 1800;
 const MENU_LANGS = ["de", "en", "nl", "pl", "ru", "ro", "hi", "ar", "ku", "tr", "ckb"] as const;
