@@ -530,10 +530,17 @@ export function formatManagerOrder(o: {
 export async function getBranchPromotions(branchId: string) {
   const config = await getBranchConfig(branchId);
   const promotions = (config.promotions ?? {}) as Record<string, unknown>;
+  const platform = (await import("../platform/platformSettings.service.ts")).getPlatformConfig();
   return {
     freeDrinkMinOrder: Number(promotions.freeDrinkMinOrder ?? 35),
     freeDrinkMessage: String(promotions.freeDrinkMessage ?? ""),
-    websiteDiscountEnabled: promotions.websiteDiscountEnabled !== false
+    websiteDiscountEnabled: promotions.websiteDiscountEnabled !== false,
+    freeDrinkEnabled: promotions.freeDrinkEnabled !== false,
+    platform: {
+      websiteOrderDiscountPct: platform.websiteOrderDiscountPct,
+      freeDrinkCheckoutEnabled: platform.freeDrinkCheckoutEnabled,
+      showFreeDrinkCheckout: platform.showFreeDrinkCheckout
+    }
   };
 }
 
@@ -543,6 +550,7 @@ export async function updateBranchPromotions(
     freeDrinkMinOrder?: number;
     freeDrinkMessage?: string;
     websiteDiscountEnabled?: boolean;
+    freeDrinkEnabled?: boolean;
   }
 ) {
   const existing = await prisma.branchConfig.findUnique({ where: { branchId } });
@@ -561,6 +569,9 @@ export async function updateBranchPromotions(
         : {}),
       ...(input.websiteDiscountEnabled != null
         ? { websiteDiscountEnabled: input.websiteDiscountEnabled }
+        : {}),
+      ...(input.freeDrinkEnabled != null
+        ? { freeDrinkEnabled: input.freeDrinkEnabled }
         : {})
     }
   };

@@ -260,7 +260,7 @@ export async function getBranchSettingsDetail(branchId: string) {
       freeDrinkMinOrder: Number(promotions.freeDrinkMinOrder ?? 0),
       freeDrinkMessage: String(promotions.freeDrinkMessage ?? ""),
       websiteDiscountEnabled: promotions.websiteDiscountEnabled !== false,
-      freeDrinkEnabled: promotions.freeDrinkEnabled === true
+      freeDrinkEnabled: promotions.freeDrinkEnabled !== false
     },
     printing: {
       printingMode: printing.printingMode,

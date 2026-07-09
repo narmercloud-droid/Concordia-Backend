@@ -211,11 +211,13 @@ export const getPromotions = wrap(async (req: Request) => {
 });
 
 export const updatePromotions = wrap(async (req: Request) => {
-  const { freeDrinkMinOrder, freeDrinkMessage, websiteDiscountEnabled } = req.body ?? {};
+  const { freeDrinkMinOrder, freeDrinkMessage, websiteDiscountEnabled, freeDrinkEnabled } =
+    req.body ?? {};
   return managerService.updateBranchPromotions(branchId(req), {
     freeDrinkMinOrder:
       freeDrinkMinOrder != null ? Number(freeDrinkMinOrder) : undefined,
     freeDrinkMessage,
-    websiteDiscountEnabled
+    websiteDiscountEnabled,
+    freeDrinkEnabled
   });
 });
