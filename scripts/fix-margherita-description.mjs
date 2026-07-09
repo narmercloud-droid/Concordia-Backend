@@ -20,15 +20,15 @@ function cleanDescription(description) {
 }
 
 try {
+  let updated = 0;
+  const branchIds = new Set();
+
   const items = await prisma.menuItem.findMany({
     where: {
       description: { contains: "keine weitere Zutat", mode: "insensitive" }
     },
     select: { id: true, name: true, description: true }
   });
-
-  let updated = 0;
-  const branchIds = new Set();
 
   for (const item of items) {
     const next = cleanDescription(item.description);
@@ -42,15 +42,36 @@ try {
       select: { branchId: true }
     });
     for (const link of links) branchIds.add(link.branchId);
-    console.log(`Updated #${item.id} ${item.name}`);
+    console.log(`Updated menuItem #${item.id} ${item.name}`);
+    updated += 1;
+  }
+
+  const branchItems = await prisma.branchMenuItem.findMany({
+    where: {
+      description: { contains: "keine weitere Zutat", mode: "insensitive" }
+    },
+    select: { id: true, branchId: true, description: true, menuItem: { select: { name: true } } }
+  });
+
+  for (const item of branchItems) {
+    const next = cleanDescription(item.description);
+    if (!next) continue;
+    await prisma.branchMenuItem.update({
+      where: { id: item.id },
+      data: { description: next }
+    });
+    branchIds.add(item.branchId);
+    console.log(`Updated branchMenuItem #${item.id} ${item.menuItem.name} (${item.branchId})`);
     updated += 1;
   }
 
   const redisUrl = String(process.env.REDIS_URL || "").trim();
   if (redisUrl.startsWith("redis://")) {
     const redis = createClient({ url: redisUrl });
+    let connected = false;
     try {
       await redis.connect();
+      connected = true;
       await redis.del("customer:branches:v1", "customer:branches:v2");
       for (const branchId of branchIds) {
         const keys = await redis.keys(`customer:menu:${branchId}:*`);
@@ -62,10 +83,12 @@ try {
     } catch (err) {
       console.warn("Could not clear Redis cache:", err?.message ?? err);
     } finally {
-      try {
-        await redis.quit();
-      } catch {
-        // ignore
+      if (connected) {
+        try {
+          await redis.quit();
+        } catch {
+          // ignore
+        }
       }
     }
   }
