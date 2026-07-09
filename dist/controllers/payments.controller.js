@@ -4,6 +4,12 @@ import { getBranchPayPalAdminView, updateBranchPayPalSettings } from "../service
 import { isStripeConfigured } from "../services/stripe/stripeClient.js";
 import { sanitizeClientErrorMessage } from "../lib/sanitizeErrorMessage.js";
 import { wrap, fail } from "../contracts/api.js";
+function paymentError(err, fallback) {
+    const message = err && typeof err === "object" && "message" in err && typeof err.message === "string"
+        ? err.message
+        : fallback;
+    throw fail("PAYMENT_FAILED", sanitizeClientErrorMessage(message) ?? fallback);
+}
 export const PaymentsController = {
     getConfig: wrap(async (req) => {
         const branchId = typeof req.query.branchId === "string" ? req.query.branchId.trim() : undefined;
@@ -22,7 +28,7 @@ export const PaymentsController = {
             return await paymentsService.createStripePaymentIntent(orderId, authenticatedCustomerId);
         }
         catch (err) {
-            throw fail("PAYMENT_FAILED", err?.message ?? "Could not start card payment");
+            paymentError(err, "Could not start card payment");
         }
     }),
     confirmStripePayment: wrap(async (req) => {
@@ -34,7 +40,7 @@ export const PaymentsController = {
             return await paymentsService.confirmStripePayment(orderId);
         }
         catch (err) {
-            throw fail("PAYMENT_FAILED", err?.message ?? "Could not confirm payment");
+            paymentError(err, "Could not confirm payment");
         }
     }),
     createGiftCardStripePaymentIntent: wrap(async (req) => {
@@ -46,7 +52,7 @@ export const PaymentsController = {
             return await paymentsService.createGiftCardStripePaymentIntent(purchaseId);
         }
         catch (err) {
-            throw fail("PAYMENT_FAILED", err?.message ?? "Could not start gift card payment");
+            paymentError(err, "Could not start gift card payment");
         }
     }),
     confirmGiftCardStripePayment: wrap(async (req) => {
@@ -58,7 +64,7 @@ export const PaymentsController = {
             return await paymentsService.confirmGiftCardStripePayment(purchaseId);
         }
         catch (err) {
-            throw fail("PAYMENT_FAILED", err?.message ?? "Could not confirm gift card payment");
+            paymentError(err, "Could not confirm gift card payment");
         }
     }),
     createPayPalOrder: wrap(async (req) => {
@@ -70,7 +76,7 @@ export const PaymentsController = {
             return await paymentsService.createPayPalOrder(orderId);
         }
         catch (err) {
-            throw fail("PAYMENT_FAILED", err?.message ?? "Could not start card payment");
+            paymentError(err, "Could not start card payment");
         }
     }),
     capturePayPalOrder: wrap(async (req) => {
@@ -82,7 +88,7 @@ export const PaymentsController = {
             return await paymentsService.capturePayPalOrder(orderId);
         }
         catch (err) {
-            throw fail("PAYMENT_FAILED", err?.message ?? "Could not capture payment");
+            paymentError(err, "Could not capture payment");
         }
     }),
     createGiftCardPayPalOrder: wrap(async (req) => {
@@ -94,7 +100,7 @@ export const PaymentsController = {
             return await paymentsService.createGiftCardPayPalOrder(purchaseId);
         }
         catch (err) {
-            throw fail("PAYMENT_FAILED", err?.message ?? "Could not start gift card payment");
+            paymentError(err, "Could not start gift card payment");
         }
     }),
     captureGiftCardPayPalOrder: wrap(async (req) => {
@@ -106,7 +112,7 @@ export const PaymentsController = {
             return await paymentsService.captureGiftCardPayPalOrder(purchaseId);
         }
         catch (err) {
-            throw fail("PAYMENT_FAILED", err?.message ?? "Could not capture gift card payment");
+            paymentError(err, "Could not capture gift card payment");
         }
     }),
     getBranchPaymentStatus: wrap(async (req) => {

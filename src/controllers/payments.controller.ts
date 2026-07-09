@@ -14,6 +14,14 @@ import { isStripeConfigured } from "../services/stripe/stripeClient.ts";
 import { sanitizeClientErrorMessage } from "../lib/sanitizeErrorMessage.ts";
 import { wrap, fail } from "../contracts/api.js";
 
+function paymentError(err: unknown, fallback: string): never {
+  const message =
+    err && typeof err === "object" && "message" in err && typeof err.message === "string"
+      ? err.message
+      : fallback;
+  throw fail("PAYMENT_FAILED", sanitizeClientErrorMessage(message) ?? fallback);
+}
+
 export const PaymentsController = {
   getConfig: wrap(async (req: Request) => {
     const branchId =
@@ -33,8 +41,8 @@ export const PaymentsController = {
       (req as Request & { customer?: { id: string } }).customer?.id ?? null;
     try {
       return await paymentsService.createStripePaymentIntent(orderId, authenticatedCustomerId);
-    } catch (err: any) {
-      throw fail("PAYMENT_FAILED", err?.message ?? "Could not start card payment");
+    } catch (err: unknown) {
+      paymentError(err, "Could not start card payment");
     }
   }),
 
@@ -45,8 +53,8 @@ export const PaymentsController = {
     }
     try {
       return await paymentsService.confirmStripePayment(orderId);
-    } catch (err: any) {
-      throw fail("PAYMENT_FAILED", err?.message ?? "Could not confirm payment");
+    } catch (err: unknown) {
+      paymentError(err, "Could not confirm payment");
     }
   }),
 
@@ -57,8 +65,8 @@ export const PaymentsController = {
     }
     try {
       return await paymentsService.createGiftCardStripePaymentIntent(purchaseId);
-    } catch (err: any) {
-      throw fail("PAYMENT_FAILED", err?.message ?? "Could not start gift card payment");
+    } catch (err: unknown) {
+      paymentError(err, "Could not start gift card payment");
     }
   }),
 
@@ -69,8 +77,8 @@ export const PaymentsController = {
     }
     try {
       return await paymentsService.confirmGiftCardStripePayment(purchaseId);
-    } catch (err: any) {
-      throw fail("PAYMENT_FAILED", err?.message ?? "Could not confirm gift card payment");
+    } catch (err: unknown) {
+      paymentError(err, "Could not confirm gift card payment");
     }
   }),
 
@@ -81,8 +89,8 @@ export const PaymentsController = {
     }
     try {
       return await paymentsService.createPayPalOrder(orderId);
-    } catch (err: any) {
-      throw fail("PAYMENT_FAILED", err?.message ?? "Could not start card payment");
+    } catch (err: unknown) {
+      paymentError(err, "Could not start card payment");
     }
   }),
 
@@ -93,8 +101,8 @@ export const PaymentsController = {
     }
     try {
       return await paymentsService.capturePayPalOrder(orderId);
-    } catch (err: any) {
-      throw fail("PAYMENT_FAILED", err?.message ?? "Could not capture payment");
+    } catch (err: unknown) {
+      paymentError(err, "Could not capture payment");
     }
   }),
 
@@ -105,8 +113,8 @@ export const PaymentsController = {
     }
     try {
       return await paymentsService.createGiftCardPayPalOrder(purchaseId);
-    } catch (err: any) {
-      throw fail("PAYMENT_FAILED", err?.message ?? "Could not start gift card payment");
+    } catch (err: unknown) {
+      paymentError(err, "Could not start gift card payment");
     }
   }),
 
@@ -117,8 +125,8 @@ export const PaymentsController = {
     }
     try {
       return await paymentsService.captureGiftCardPayPalOrder(purchaseId);
-    } catch (err: any) {
-      throw fail("PAYMENT_FAILED", err?.message ?? "Could not capture gift card payment");
+    } catch (err: unknown) {
+      paymentError(err, "Could not capture gift card payment");
     }
   }),
 

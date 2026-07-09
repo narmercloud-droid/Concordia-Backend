@@ -40,5 +40,18 @@ export async function paypalRequest(
     body: body ? JSON.stringify(body) : null
   });
 
-  return res.json();
+  const data = (await res.json()) as Record<string, unknown> & {
+    message?: string;
+    error_description?: string;
+  };
+
+  if (!res.ok) {
+    const message =
+      (typeof data.message === "string" && data.message) ||
+      (typeof data.error_description === "string" && data.error_description) ||
+      `PayPal request failed (${res.status})`;
+    throw new Error(message);
+  }
+
+  return data;
 }

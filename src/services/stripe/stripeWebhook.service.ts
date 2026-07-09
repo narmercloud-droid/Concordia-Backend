@@ -1,5 +1,6 @@
 import type Stripe from "stripe";
 import logger from "../../logger.ts";
+import { prisma } from "../../prisma/client.ts";
 import { OrderLifecycleService } from "../order/orderLifecycle.service.ts";
 import { ordersService } from "../orders.service.ts";
 import { activateGiftCardAfterPayment } from "../customer/giftCard.service.ts";
@@ -10,6 +11,14 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
   const purchaseId = paymentIntent.metadata?.purchaseId;
 
   if (type === "order" && orderId) {
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      select: { paymentStatus: true }
+    });
+    if (order?.paymentStatus === "paid") {
+      return;
+    }
+
     await OrderLifecycleService.updatePaymentStatus(orderId, "paid", {
       paidAt: new Date(),
       transactionId: paymentIntent.id

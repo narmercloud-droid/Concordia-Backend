@@ -1,7 +1,10 @@
 ﻿import { prisma } from "../../prisma/client.ts";
 import { OrderLifecycleService } from "../../services/order/orderLifecycle.service.ts";
+import { ordersService } from "../../services/orders.service.ts";
+import { sendOrderConfirmationEmail } from "../../services/customer/orderConfirmationEmail.service.ts";
 import { listBranchPayPalWebhookIds } from "../../services/paypal/branchPayPal.service.ts";
 import { verifyPayPalWebhookWithAnyId } from "../../utils/paypalVerify.ts";
+import logger from "../../logger.ts";
 
 async function resolveOrderIdFromCaptureEvent(resource: Record<string, unknown>) {
   const customId = resource.custom_id;
@@ -58,6 +61,10 @@ export const paypalWebhookHandler = async (req, res) => {
         paypalCaptureId: resource.id,
         transactionId: resource.id
       });
+      await ordersService.notifyKitchenOrder(orderId);
+      void sendOrderConfirmationEmail(orderId).catch((err) => {
+        logger.warn({ err, orderId }, "Order confirmation email after PayPal webhook failed");
+      });
       return res.sendStatus(200);
     }
 
@@ -73,12 +80,12 @@ export const paypalWebhookHandler = async (req, res) => {
     }
 
     if (type === "PAYMENT.CAPTURE.REFUNDED") {
-      await OrderLifecycleService.updatePaymentStatus(orderId, "REFUNDED");
+      await OrderLifecycleService.updatePaymentStatus(orderId, "refunded");
     }
 
     return res.sendStatus(200);
   } catch (err) {
-    console.error(err);
-    return res.sendStatus(200); // PayPal requires 2xx even on internal errors
+    logger.error({ err }, "PayPal webhook processing failed");
+    return res.sendStatus(500);
   }
 };

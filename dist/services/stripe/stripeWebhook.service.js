@@ -1,4 +1,5 @@
 import logger from "../../logger.js";
+import { prisma } from "../../prisma/client.js";
 import { OrderLifecycleService } from "../order/orderLifecycle.service.js";
 import { ordersService } from "../orders.service.js";
 import { activateGiftCardAfterPayment } from "../customer/giftCard.service.js";
@@ -7,6 +8,13 @@ async function handlePaymentIntentSucceeded(paymentIntent) {
     const orderId = paymentIntent.metadata?.orderId;
     const purchaseId = paymentIntent.metadata?.purchaseId;
     if (type === "order" && orderId) {
+        const order = await prisma.order.findUnique({
+            where: { id: orderId },
+            select: { paymentStatus: true }
+        });
+        if (order?.paymentStatus === "paid") {
+            return;
+        }
         await OrderLifecycleService.updatePaymentStatus(orderId, "paid", {
             paidAt: new Date(),
             transactionId: paymentIntent.id
