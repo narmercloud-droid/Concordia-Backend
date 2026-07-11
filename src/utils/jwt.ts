@@ -25,13 +25,22 @@ export function validateJwtPayload(payload: unknown): asserts payload is AuthJwt
 
   const id = payload.id;
   const role = payload.role;
-  const branchId = payload.branchId;
+  const rawBranchId = payload.branchId;
+  const branchId =
+    rawBranchId === undefined || rawBranchId === null
+      ? null
+      : typeof rawBranchId === "string"
+        ? rawBranchId
+        : invalidBranchId();
 
   if (typeof id !== "string" || !id) throw new Error("Invalid token payload: id");
   if (typeof role !== "string" || !role) throw new Error("Invalid token payload: role");
-  if (branchId !== null && typeof branchId !== "string") {
-    throw new Error("Invalid token payload: branchId");
-  }
+
+  (payload as AuthJwtPayload).branchId = branchId;
+}
+
+function invalidBranchId(): never {
+  throw new Error("Invalid token payload: branchId");
 }
 
 export function signToken(payload: JwtPayload) {
