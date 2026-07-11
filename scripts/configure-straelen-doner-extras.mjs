@@ -37,8 +37,8 @@ const SIDE_OPTIONS = [
 ];
 
 const PAID_EXTRAS = [
-  { name: "Extra Fleisch", price: 1.5 },
-  { name: "Weißkäse", price: 0.5 }
+  { name: "Extra Fleisch", price: 1 },
+  { name: "Weißkäse", price: 1 }
 ];
 
 async function clearItemOptions(itemId) {

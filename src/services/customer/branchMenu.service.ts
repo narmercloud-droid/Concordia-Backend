@@ -8,6 +8,8 @@ import {
 } from "./menuTranslation.service.ts";
 import {
   buildPricesBySize,
+  defaultExtraDisplayPrice,
+  detectItemTypeForPricing,
   itemUsesSizeBasedExtras,
   normalizeSizeKey,
   resolveExtraPrice
@@ -236,7 +238,7 @@ async function enrichCategoriesWithItemOptions(branchId: string, categories: Bas
       options: group.options.map((option) => ({
         id: option.id,
         name: option.name,
-        price: option.price,
+        price: defaultExtraDisplayPrice(option.name, option.price, menuItemName),
         pricesBySize: buildPricesBySize(option.name, option.price, menuItemName)
       }))
     }));
@@ -423,7 +425,7 @@ function mapOptionGroups(item: {
       return {
         id: a.id,
         name: a.name,
-        price: a.price,
+        price: defaultExtraDisplayPrice(a.name, a.price, item.name),
         pricesBySize
       };
     })
@@ -445,7 +447,13 @@ function mapOptionGroups(item: {
     variantGroups,
     addOnGroups,
     extraPricing: sizeBasedExtras
-      ? { sizeBased: true, hint: "Extra prices depend on pizza size (klein / groß)" }
+      ? {
+          sizeBased: true,
+          hint:
+            detectItemTypeForPricing(item.name) === "pizza"
+              ? "Extra prices depend on pizza size (klein / groß)"
+              : "Extras use kleine Pizza prices"
+        }
       : { sizeBased: false }
   };
 }
@@ -530,7 +538,7 @@ async function buildBranchItemForCustomer(
       options: g.options.map((o) => ({
         id: o.id,
         name: o.name,
-        price: o.price,
+        price: defaultExtraDisplayPrice(o.name, o.price, branchItem.menuItem.name),
         pricesBySize: buildPricesBySize(o.name, o.price, branchItem.menuItem.name)
       }))
     }));
@@ -577,12 +585,12 @@ async function buildBranchItemForCustomer(
     required: g.required,
     minSelect: g.minSelect,
     maxSelect: g.maxSelect,
-    options: g.options.map((o) => ({
-      id: o.id,
-      name: o.name,
-      price: o.price,
-      pricesBySize: buildPricesBySize(o.name, o.price, item.name)
-    }))
+      options: g.options.map((o) => ({
+        id: o.id,
+        name: o.name,
+        price: defaultExtraDisplayPrice(o.name, o.price, item.name),
+        pricesBySize: buildPricesBySize(o.name, o.price, item.name)
+      }))
   }));
 
   return applyItemTranslations(

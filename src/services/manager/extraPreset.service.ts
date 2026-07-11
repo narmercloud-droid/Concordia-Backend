@@ -282,7 +282,7 @@ const KEMPEN_DEFAULT_PRESETS = [
       "Ananas", "Artischocken", "Broccoli", "Champignons", "Cherry Tomaten",
       "Knoblauch", "Mais", "Oliven", "Paprika", "Peperoni", "Rucola", "Spargel",
       "Spinat", "Tomaten", "Zwiebeln", "scharfe Peperoni"
-    ].map((name) => ({ name, price: name === "Knoblauch" ? 0 : 1 }))
+    ].map((name) => ({ name, price: name === "Knoblauch" ? 0 : 0.5 }))
   },
   {
     name: "Fleisch & Wurst",
