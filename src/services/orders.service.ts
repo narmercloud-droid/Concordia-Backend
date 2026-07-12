@@ -20,7 +20,10 @@ import {
   findFreeDrinkOption,
   getFreeDrinkOptions
 } from "./customer/freeDrink.service.ts";
-import { syncBranchCustomerFromOrder } from "./customer/branchCustomer.service.ts";
+import {
+  isFirstBranchOrder,
+  syncBranchCustomerFromOrder
+} from "./customer/branchCustomer.service.ts";
 import { persistPushSubscriptionFromOrder } from "./notifications/webPushSubscription.service.ts";
 import { buildCourierUrl, buildOrderReviewUrl, buildOrderTrackingUrl } from "../utils/customerOrderUrls.ts";
 import {
@@ -202,6 +205,17 @@ export class OrdersService {
       const pct = getWebsiteOrderDiscountPct();
       const discountLine = `[PROMO] ${pct}% Online-Rabatt (-${websiteDiscount.toFixed(2)} €)`;
       notes = notes ? `${notes}\n${discountLine}` : discountLine;
+    }
+
+    const firstOrder = await isFirstBranchOrder(
+      rest.branchId,
+      customerPhone,
+      rest.customerId
+    );
+    if (firstOrder) {
+      const welcomeLine =
+        "[ERSTBESTELLUNG] Willkommen! Vielen Dank für Ihre erste Bestellung bei uns!";
+      notes = notes ? `${notes}\n${welcomeLine}` : welcomeLine;
     }
 
     if (promoDiscount > 0 && (promoCodeInput || couponTitle)) {

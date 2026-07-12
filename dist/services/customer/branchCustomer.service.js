@@ -74,6 +74,35 @@ export async function upsertRegisteredBranchCustomer(input) {
         }
     });
 }
+const COMPLETED_ORDER_STATUSES = ["rejected", "cancelled"];
+/** True when this would be the customer's first completed order at the branch. */
+export async function isFirstBranchOrder(branchId, phone, customerId) {
+    const trimmedPhone = phone.trim();
+    const statusFilter = { notIn: [...COMPLETED_ORDER_STATUSES] };
+    if (customerId?.trim()) {
+        const priorByAccount = await prisma.order.count({
+            where: { branchId, customerId: customerId.trim(), status: statusFilter }
+        });
+        if (priorByAccount > 0)
+            return false;
+    }
+    if (trimmedPhone) {
+        const priorByPhone = await prisma.order.count({
+            where: { branchId, customerPhone: trimmedPhone, status: statusFilter }
+        });
+        if (priorByPhone > 0)
+            return false;
+    }
+    const normalizedPhone = normalizeBranchPhone(phone);
+    if (normalizedPhone) {
+        const branchCustomer = await prisma.branchCustomer.findUnique({
+            where: { branchId_phone: { branchId, phone: normalizedPhone } }
+        });
+        if (branchCustomer && branchCustomer.orderCount > 0)
+            return false;
+    }
+    return true;
+}
 export async function syncBranchCustomerFromOrder(input) {
     const phone = normalizeBranchPhone(input.phone);
     const branchId = input.branchId;

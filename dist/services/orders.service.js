@@ -16,7 +16,7 @@ import { validateDiscountCode } from "./customer/discountCode.service.js";
 import { redeemCustomerCoupon } from "./customer/customerCoupon.service.js";
 import { redeemGiftCard } from "./customer/giftCard.service.js";
 import { findFreeDrinkOption, getFreeDrinkOptions } from "./customer/freeDrink.service.js";
-import { syncBranchCustomerFromOrder } from "./customer/branchCustomer.service.js";
+import { isFirstBranchOrder, syncBranchCustomerFromOrder } from "./customer/branchCustomer.service.js";
 import { persistPushSubscriptionFromOrder } from "./notifications/webPushSubscription.service.js";
 import { buildCourierUrl, buildOrderReviewUrl, buildOrderTrackingUrl } from "../utils/customerOrderUrls.js";
 import { validateAndPriceOrderLines } from "./customer/orderPricing.service.js";
@@ -175,6 +175,11 @@ export class OrdersService {
             const pct = getWebsiteOrderDiscountPct();
             const discountLine = `[PROMO] ${pct}% Online-Rabatt (-${websiteDiscount.toFixed(2)} €)`;
             notes = notes ? `${notes}\n${discountLine}` : discountLine;
+        }
+        const firstOrder = await isFirstBranchOrder(rest.branchId, customerPhone, rest.customerId);
+        if (firstOrder) {
+            const welcomeLine = "[ERSTBESTELLUNG] Willkommen! Vielen Dank für Ihre erste Bestellung bei uns!";
+            notes = notes ? `${notes}\n${welcomeLine}` : welcomeLine;
         }
         if (promoDiscount > 0 && (promoCodeInput || couponTitle)) {
             const label = couponTitle ?? promoCodeInput.toUpperCase();
