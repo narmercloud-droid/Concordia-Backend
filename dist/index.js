@@ -104,7 +104,6 @@ import { connectRedis, redisClient } from "./lib/redis.js";
 import { env } from "./config/env.js";
 import inputValidation from "./middleware/inputValidation.js";
 import requireApiKey from "./middleware/apiKey.js";
-import { adminAuth as adminAuthMiddleware } from "./middleware/adminAuth.js";
 import logger from "./utils/logger.js";
 process.on("uncaughtException", (err) => {
     logger.error({ err }, "Uncaught exception — shutting down");
@@ -119,13 +118,6 @@ import rateLimitRedis from "./middleware/rateLimitRedis.js";
 import metricsRoutes from "./routes/metrics.js";
 import { httpRequestsTotal, httpRequestDurationSeconds, errorsTotal } from "./metrics/metrics.js";
 import registry from "./metrics/metrics.js";
-// Fatal error handlers
-process.on("uncaughtException", (err) => {
-    console.error("[FATAL] Uncaught Exception:", err);
-});
-process.on("unhandledRejection", (err) => {
-    console.error("[FATAL] Unhandled Rejection:", err);
-});
 // ---------------------------------------------
 // Express + Socket.IO setup
 // ---------------------------------------------
@@ -411,9 +403,9 @@ app.use("/api/v1/admin/toppings", adminToppingRoutes);
 app.use("/api/v1/admin/extras", adminExtraRoutes);
 app.use("/api/v1/admin/relations", adminRelationRoutes);
 app.use("/api/v1/admin/deals", adminDealRoutes);
-app.use("/api/v1/admin", terminalAdminRoutes);
-app.use("/api/v1/admin", terminalStatusRoutes);
-app.use("/api/v1/admin", orderMonitorRoutes);
+app.use("/api/v1/admin", adminAuth, terminalAdminRoutes);
+app.use("/api/v1/admin", adminAuth, terminalStatusRoutes);
+app.use("/api/v1/admin", adminAuth, orderMonitorRoutes);
 // ---------------------------------------------
 // Routes - Customer operations
 // ---------------------------------------------
@@ -490,13 +482,6 @@ app.get("/metrics-lite", requireApiKey, async (_req, res) => {
 });
 // Metrics endpoint (Prometheus)
 app.use("/metrics", requireApiKey, metricsRoutes);
-// Enforce admin authentication for any admin path as a safety-net
-app.use((req, res, next) => {
-    if (req.path.startsWith("/api/admin") || req.path.startsWith("/admin")) {
-        return adminAuthMiddleware(req, res, next);
-    }
-    next();
-});
 if (env.SENTRY_DSN) {
     Sentry.setupExpressErrorHandler(app);
 }

@@ -2,14 +2,14 @@ import { prisma } from "../../prisma/client.js";
 import { clearCache, deleteCache, getCache, setCache } from "../../lib/redis.js";
 import { deleteSimpleCache, deleteSimpleCacheByPrefix, getSimpleCache, setSimpleCache } from "../../lib/simpleCache.js";
 import { applyItemTranslations, applyMenuTranslations, resolveMenuLanguage } from "./menuTranslation.service.js";
-import { buildPricesBySize, itemUsesSizeBasedExtras, normalizeSizeKey, resolveExtraPrice } from "./extraPricing.service.js";
+import { buildPricesBySize, defaultExtraDisplayPrice, detectItemTypeForPricing, itemUsesSizeBasedExtras, normalizeSizeKey, resolveExtraPrice } from "./extraPricing.service.js";
 import { isFreeDrinkPromoActive } from "../../config/websitePromo.js";
 import { getPlatformConfig } from "../platform/platformSettings.service.js";
 import { getBerlinDayOfWeek, getBerlinTimeString, isWithinBranchHours } from "../../utils/berlinTime.js";
 import { getPresetAddOnGroupsForItem, getPresetAddOnGroupsForCategories } from "../manager/extraPreset.service.js";
-const BRANCHES_CACHE_KEY = "customer:branches:v1";
+const BRANCHES_CACHE_KEY = "customer:branches:v2";
 const BRANCHES_TTL_SEC = 1800;
-const MENU_CACHE_VERSION = "v4";
+const MENU_CACHE_VERSION = "v6";
 const MENU_TTL_SEC = 1800;
 const ITEM_TTL_SEC = 1800;
 const MENU_LANGS = ["de", "en", "nl", "pl", "ru", "ro", "hi", "ar", "ku", "tr", "ckb"];
@@ -161,7 +161,7 @@ async function enrichCategoriesWithItemOptions(branchId, categories) {
             options: group.options.map((option) => ({
                 id: option.id,
                 name: option.name,
-                price: option.price,
+                price: defaultExtraDisplayPrice(option.name, option.price, menuItemName),
                 pricesBySize: buildPricesBySize(option.name, option.price, menuItemName)
             }))
         }));
@@ -313,7 +313,7 @@ function mapOptionGroups(item) {
             return {
                 id: a.id,
                 name: a.name,
-                price: a.price,
+                price: defaultExtraDisplayPrice(a.name, a.price, item.name),
                 pricesBySize
             };
         })
@@ -332,7 +332,12 @@ function mapOptionGroups(item) {
         variantGroups,
         addOnGroups,
         extraPricing: sizeBasedExtras
-            ? { sizeBased: true, hint: "Extra prices depend on pizza size (klein / groß)" }
+            ? {
+                sizeBased: true,
+                hint: detectItemTypeForPricing(item.name) === "pizza"
+                    ? "Extra prices depend on pizza size (klein / groß)"
+                    : "Extras use kleine Pizza prices"
+            }
             : { sizeBased: false }
     };
 }
@@ -394,7 +399,7 @@ async function buildBranchItemForCustomer(branchId, itemId, resolvedLang) {
             options: g.options.map((o) => ({
                 id: o.id,
                 name: o.name,
-                price: o.price,
+                price: defaultExtraDisplayPrice(o.name, o.price, branchItem.menuItem.name),
                 pricesBySize: buildPricesBySize(o.name, o.price, branchItem.menuItem.name)
             }))
         }));
@@ -436,7 +441,7 @@ async function buildBranchItemForCustomer(branchId, itemId, resolvedLang) {
         options: g.options.map((o) => ({
             id: o.id,
             name: o.name,
-            price: o.price,
+            price: defaultExtraDisplayPrice(o.name, o.price, item.name),
             pricesBySize: buildPricesBySize(o.name, o.price, item.name)
         }))
     }));

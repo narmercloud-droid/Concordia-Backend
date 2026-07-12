@@ -57,6 +57,10 @@ else {
         setEx: async (_k, _ttl, _v) => "OK",
         del: async (_k) => 0,
         keys: async (_pattern) => [],
+        scan: async (_cursor, _opts) => ({
+            cursor: 0,
+            keys: []
+        }),
         multi: () => pipelineStub(),
         // Some code may call .on; provide a no-op
         on: (_ev, _cb) => { },
@@ -144,7 +148,13 @@ export const deleteCache = async (key) => {
 export const clearCache = async (pattern) => {
     const start = Date.now();
     try {
-        const keys = await client.keys(pattern);
+        const keys = [];
+        let cursor = 0;
+        do {
+            const result = await client.scan(cursor, { MATCH: pattern, COUNT: 100 });
+            cursor = result.cursor;
+            keys.push(...result.keys);
+        } while (cursor !== 0);
         if (keys.length > 0) {
             await client.del(keys);
         }

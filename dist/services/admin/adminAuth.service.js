@@ -16,8 +16,7 @@ export class AdminAuthService {
                 ...adminData,
                 branchId: data.branchId ?? "",
                 password: hashedPassword,
-                role: data.role || "staff",
-                updatedAt: new Date()
+                role: data.role || "staff"
             }
         });
     }

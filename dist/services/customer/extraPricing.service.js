@@ -3,12 +3,34 @@ export const SIZE_EXTRA_RATES = {
     klein: { standard: 1, premium: 1.5 },
     gross: { standard: 1.5, premium: 2 }
 };
+const GEMUESE_SIZE_RATES = {
+    klein: 0.5,
+    gross: 1
+};
 const PREMIUM_EXTRA_NAMES = new Set([
     "Krabben",
     "Meeresfrüchte",
     "Hähnchenbruststreifen"
 ]);
 const FREE_EXTRA_NAMES = new Set(["Knoblauch"]);
+/** Vegetable toppings — lower price tier on pizzas. */
+const GEMUESE_EXTRA_NAMES = new Set([
+    "Ananas",
+    "Artischocken",
+    "Broccoli",
+    "Champignons",
+    "Cherry Tomaten",
+    "Mais",
+    "Oliven",
+    "Paprika",
+    "Peperoni",
+    "Rucola",
+    "Spargel",
+    "Spinat",
+    "Tomaten",
+    "Zwiebeln",
+    "scharfe Peperoni"
+]);
 /** Extras with fixed klein/gross prices (not tier-based). */
 const FLAT_SIZE_EXTRAS = {
     Lachs: { klein: 1.5, gross: 1.5 }
@@ -30,17 +52,43 @@ export function detectItemTypeForPricing(name) {
         return "calzone";
     if (n.startsWith("pizza "))
         return "pizza";
+    if (n.includes("pizzabrötchen") || n.includes("gefüllte"))
+        return "pizza-rolls";
+    if (n.includes("dönertasche") ||
+        n.includes("donertasche") ||
+        n.includes("döner-teller") ||
+        n.includes("doner-teller")) {
+        return "doner";
+    }
     return "other";
 }
 export function isPremiumExtra(name, basePrice) {
-    if (FREE_EXTRA_NAMES.has(name) || FLAT_SIZE_EXTRAS[name])
+    if (FREE_EXTRA_NAMES.has(name) || FLAT_SIZE_EXTRAS[name] || GEMUESE_EXTRA_NAMES.has(name)) {
         return false;
+    }
     return PREMIUM_EXTRA_NAMES.has(name) || basePrice >= 1.5;
+}
+function isGemueseExtra(name) {
+    return GEMUESE_EXTRA_NAMES.has(name);
+}
+function resolveTierPrice(optionName, basePrice, sizeKey) {
+    if (FREE_EXTRA_NAMES.has(optionName))
+        return 0;
+    const flat = FLAT_SIZE_EXTRAS[optionName];
+    if (flat)
+        return flat[sizeKey];
+    if (isGemueseExtra(optionName))
+        return GEMUESE_SIZE_RATES[sizeKey];
+    const tier = isPremiumExtra(optionName, basePrice) ? "premium" : "standard";
+    return SIZE_EXTRA_RATES[sizeKey][tier];
 }
 export function resolveExtraPrice(optionName, basePrice, sizeName, itemName) {
     const itemType = detectItemTypeForPricing(itemName);
     if (itemType === "pizza-large" || itemType === "calzone") {
         return basePrice;
+    }
+    if (itemType === "pizza-rolls" || itemType === "doner") {
+        return resolveTierPrice(optionName, basePrice, "klein");
     }
     if (itemType !== "pizza" || !sizeName) {
         return basePrice;
@@ -48,31 +96,28 @@ export function resolveExtraPrice(optionName, basePrice, sizeName, itemName) {
     const sizeKey = normalizeSizeKey(sizeName);
     if (!sizeKey)
         return basePrice;
-    if (FREE_EXTRA_NAMES.has(optionName))
-        return 0;
-    const flat = FLAT_SIZE_EXTRAS[optionName];
-    if (flat)
-        return flat[sizeKey];
-    const tier = isPremiumExtra(optionName, basePrice) ? "premium" : "standard";
-    return SIZE_EXTRA_RATES[sizeKey][tier];
+    return resolveTierPrice(optionName, basePrice, sizeKey);
 }
 export function buildPricesBySize(optionName, basePrice, itemName) {
     const itemType = detectItemTypeForPricing(itemName);
+    if (itemType === "pizza-rolls" || itemType === "doner") {
+        const kleinPrice = resolveTierPrice(optionName, basePrice, "klein");
+        return { klein: kleinPrice, gross: kleinPrice };
+    }
     if (itemType !== "pizza")
         return null;
-    if (FREE_EXTRA_NAMES.has(optionName)) {
-        return { klein: 0, gross: 0 };
-    }
-    const flat = FLAT_SIZE_EXTRAS[optionName];
-    if (flat)
-        return { ...flat };
-    const tier = isPremiumExtra(optionName, basePrice) ? "premium" : "standard";
     return {
-        klein: SIZE_EXTRA_RATES.klein[tier],
-        gross: SIZE_EXTRA_RATES.gross[tier]
+        klein: resolveTierPrice(optionName, basePrice, "klein"),
+        gross: resolveTierPrice(optionName, basePrice, "gross")
     };
+}
+export function defaultExtraDisplayPrice(optionName, basePrice, itemName) {
+    const bySize = buildPricesBySize(optionName, basePrice, itemName);
+    if (bySize)
+        return bySize.klein;
+    return basePrice;
 }
 export function itemUsesSizeBasedExtras(itemName) {
     const type = detectItemTypeForPricing(itemName);
-    return type === "pizza";
+    return type === "pizza" || type === "pizza-rolls" || type === "doner";
 }

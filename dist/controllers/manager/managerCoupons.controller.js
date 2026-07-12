@@ -1,20 +1,19 @@
 import { wrap, fail } from "../../contracts/api.js";
 import { createCampaign, listManagerCampaigns, updateCampaign } from "../../services/customer/couponCampaign.service.js";
-function resolveBranchId(req) {
-    return String(req.query.branchId ?? req.body?.branchId ?? "").trim();
+import { resolveManagerBranchId } from "../../middleware/managerAccess.js";
+function branchId(req) {
+    const id = resolveManagerBranchId(req);
+    if (!id)
+        throw fail("INVALID_INPUT", "branchId is required");
+    return id;
 }
 export const ManagerCouponsController = {
     list: wrap(async (req) => {
-        const branchId = resolveBranchId(req);
-        if (!branchId)
-            throw fail("INVALID_INPUT", "branchId is required");
-        const campaigns = await listManagerCampaigns(branchId);
+        const campaigns = await listManagerCampaigns(branchId(req));
         return { campaigns };
     }),
     create: wrap(async (req) => {
-        const branchId = resolveBranchId(req);
-        if (!branchId)
-            throw fail("INVALID_INPUT", "branchId is required");
+        const resolvedBranchId = branchId(req);
         const body = req.body ?? {};
         const title = String(body.title ?? "").trim();
         const discountType = String(body.discountType ?? "percent").trim();
@@ -25,7 +24,7 @@ export const ManagerCouponsController = {
             throw fail("INVALID_INPUT", "discountValue must be positive");
         }
         try {
-            const campaign = await createCampaign(branchId, {
+            const campaign = await createCampaign(resolvedBranchId, {
                 title,
                 description: body.description,
                 discountType,
@@ -44,12 +43,12 @@ export const ManagerCouponsController = {
         }
     }),
     update: wrap(async (req) => {
-        const branchId = resolveBranchId(req);
+        const resolvedBranchId = branchId(req);
         const campaignId = String(req.params.id ?? "").trim();
-        if (!branchId || !campaignId)
-            throw fail("INVALID_INPUT", "branchId and id are required");
+        if (!campaignId)
+            throw fail("INVALID_INPUT", "id is required");
         try {
-            const campaign = await updateCampaign(campaignId, branchId, req.body ?? {});
+            const campaign = await updateCampaign(campaignId, resolvedBranchId, req.body ?? {});
             return { campaign };
         }
         catch (err) {
