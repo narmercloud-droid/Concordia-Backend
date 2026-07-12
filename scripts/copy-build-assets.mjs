@@ -16,3 +16,8 @@ copy(
 
 // Legacy plain-JS modules import from src/ws/ws.js (not emitted by tsc).
 copy(join(root, "src/ws/ws.js"), join(root, "dist/ws/ws.js"));
+
+copy(
+  join(root, "src/data/de-plz-cities.json"),
+  join(root, "dist/data/de-plz-cities.json")
+);

@@ -13,7 +13,12 @@ import {
   isDeliverableAtCoords,
   quoteDelivery
 } from "../../services/customer/deliveryValidation.service.ts";
-import { reverseGeocode, resolveCityFromPostalCode, suggestAddresses } from "../../services/geo/geocode.service.ts";
+import {
+  isKnownGermanPostalCode,
+  reverseGeocode,
+  resolveCityFromPostalCode,
+  suggestAddresses
+} from "../../services/geo/geocode.service.ts";
 import {
   getAlsoPopularItems,
   getBranchBestsellers,
@@ -148,6 +153,9 @@ router.get("/branches/:branchId/postal-code-lookup", wrap(async (req) => {
 
   const city = await resolveCityFromPostalCode(postalCode);
   if (!city) {
+    if (!isKnownGermanPostalCode(postalCode)) {
+      throw { code: "INVALID_POSTAL_CODE", message: "This postal code is not valid in Germany" };
+    }
     throw { code: "NOT_FOUND", message: "Could not resolve city for this postal code" };
   }
 

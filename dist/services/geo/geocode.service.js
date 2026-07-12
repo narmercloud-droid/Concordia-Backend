@@ -1,4 +1,50 @@
+import { readFileSync } from "fs";
+import { dirname, join } from "path";
+import { fileURLToPath } from "url";
 import logger from "../../logger.js";
+let localPlzCityMap = null;
+function getLocalPlzCityMap() {
+    if (!localPlzCityMap) {
+        const dataPath = join(dirname(fileURLToPath(import.meta.url)), "../../data/de-plz-cities.json");
+        localPlzCityMap = JSON.parse(readFileSync(dataPath, "utf8"));
+    }
+    return localPlzCityMap;
+}
+export function isKnownGermanPostalCode(postalCode) {
+    const plz = postalCode.trim();
+    if (!/^\d{5}$/.test(plz))
+        return false;
+    return Boolean(getLocalPlzCityMap()[plz]);
+}
+async function lookupCityFromOpenPlz(plz) {
+    try {
+        const url = new URL("https://openplzapi.org/de/Localities");
+        url.searchParams.set("postalCode", plz);
+        const res = await fetch(url.toString(), {
+            headers: { Accept: "application/json" }
+        });
+        if (!res.ok)
+            return null;
+        const rows = await res.json();
+        if (!Array.isArray(rows) || rows.length === 0)
+            return null;
+        const name = String(rows[0].name ?? "").trim();
+        return name || null;
+    }
+    catch (err) {
+        logger.warn({ err, postalCode: plz }, "OpenPLZ PLZ lookup failed");
+        return null;
+    }
+}
+function cityFromNominatimAddress(address, plz) {
+    if (!address)
+        return null;
+    const responsePostcode = String(address.postcode ?? "").trim();
+    if (responsePostcode && responsePostcode !== plz)
+        return null;
+    const city = String(address.city ?? address.town ?? address.village ?? address.municipality ?? "").trim();
+    return city || null;
+}
 function stripFloorFromAddress(address) {
     return address
         .replace(/,\s*((?:\d+\.\s*)?(?:OG|Etage|Stock|Floor|Etag(?:e)?))(?=\s*,|\s*$)/i, "")
@@ -219,6 +265,12 @@ export async function resolveCityFromPostalCode(postalCode) {
     const plz = postalCode.trim();
     if (!/^\d{5}$/.test(plz))
         return null;
+    const localCity = getLocalPlzCityMap()[plz];
+    if (localCity)
+        return localCity;
+    const openPlzCity = await lookupCityFromOpenPlz(plz);
+    if (openPlzCity)
+        return openPlzCity;
     try {
         const res = await fetch(`https://api.zippopotam.us/de/${plz}`, {
             headers: { Accept: "application/json" }
@@ -238,10 +290,10 @@ export async function resolveCityFromPostalCode(postalCode) {
     try {
         const url = new URL("https://nominatim.openstreetmap.org/search");
         url.searchParams.set("postalcode", plz);
-        url.searchParams.set("country", "Germany");
+        url.searchParams.set("countrycodes", "de");
         url.searchParams.set("format", "json");
         url.searchParams.set("addressdetails", "1");
-        url.searchParams.set("limit", "1");
+        url.searchParams.set("limit", "5");
         const res = await fetch(url.toString(), {
             headers: {
                 "User-Agent": "Concordia-Restaurant-Platform/1.0"
@@ -252,14 +304,17 @@ export async function resolveCityFromPostalCode(postalCode) {
         const results = await res.json();
         if (!Array.isArray(results) || results.length === 0)
             return null;
-        const address = results[0].address;
-        const city = String(address?.city ?? address?.town ?? address?.village ?? address?.municipality ?? "").trim();
-        return city || null;
+        for (const result of results) {
+            const address = result.address;
+            const city = cityFromNominatimAddress(address, plz);
+            if (city)
+                return city;
+        }
     }
     catch (err) {
         logger.warn({ err, postalCode: plz }, "Nominatim PLZ lookup failed");
-        return null;
     }
+    return null;
 }
 export async function suggestAddresses(query, options) {
     const trimmed = query?.trim();
