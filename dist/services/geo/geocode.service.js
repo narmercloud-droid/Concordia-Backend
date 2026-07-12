@@ -215,6 +215,52 @@ export async function reverseGeocode(lat, lng) {
         return null;
     }
 }
+export async function resolveCityFromPostalCode(postalCode) {
+    const plz = postalCode.trim();
+    if (!/^\d{5}$/.test(plz))
+        return null;
+    try {
+        const res = await fetch(`https://api.zippopotam.us/de/${plz}`, {
+            headers: { Accept: "application/json" }
+        });
+        if (res.ok) {
+            const data = (await res.json());
+            const names = (data.places ?? [])
+                .map((p) => String(p["place name"] ?? "").trim())
+                .filter(Boolean);
+            if (names.length > 0)
+                return names[0];
+        }
+    }
+    catch (err) {
+        logger.warn({ err, postalCode: plz }, "Zippopotam PLZ lookup failed");
+    }
+    try {
+        const url = new URL("https://nominatim.openstreetmap.org/search");
+        url.searchParams.set("postalcode", plz);
+        url.searchParams.set("country", "Germany");
+        url.searchParams.set("format", "json");
+        url.searchParams.set("addressdetails", "1");
+        url.searchParams.set("limit", "1");
+        const res = await fetch(url.toString(), {
+            headers: {
+                "User-Agent": "Concordia-Restaurant-Platform/1.0"
+            }
+        });
+        if (!res.ok)
+            return null;
+        const results = await res.json();
+        if (!Array.isArray(results) || results.length === 0)
+            return null;
+        const address = results[0].address;
+        const city = String(address?.city ?? address?.town ?? address?.village ?? address?.municipality ?? "").trim();
+        return city || null;
+    }
+    catch (err) {
+        logger.warn({ err, postalCode: plz }, "Nominatim PLZ lookup failed");
+        return null;
+    }
+}
 export async function suggestAddresses(query, options) {
     const trimmed = query?.trim();
     if (!trimmed || trimmed.length < 2)

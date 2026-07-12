@@ -13,7 +13,7 @@ import {
   isDeliverableAtCoords,
   quoteDelivery
 } from "../../services/customer/deliveryValidation.service.ts";
-import { reverseGeocode, suggestAddresses } from "../../services/geo/geocode.service.ts";
+import { reverseGeocode, resolveCityFromPostalCode, suggestAddresses } from "../../services/geo/geocode.service.ts";
 import {
   getAlsoPopularItems,
   getBranchBestsellers,
@@ -138,6 +138,20 @@ router.get("/branches/:branchId/reverse-geocode", wrap(async (req) => {
   }
 
   return result;
+}));
+
+router.get("/branches/:branchId/postal-code-lookup", wrap(async (req) => {
+  const postalCode = String(req.query.postalCode ?? "").trim();
+  if (!/^\d{5}$/.test(postalCode)) {
+    throw { code: "INVALID_INPUT", message: "A valid 5-digit postal code is required" };
+  }
+
+  const city = await resolveCityFromPostalCode(postalCode);
+  if (!city) {
+    throw { code: "NOT_FOUND", message: "Could not resolve city for this postal code" };
+  }
+
+  return { postalCode, city };
 }));
 
 router.get("/branches/:branchId/address-suggest", wrap(async (req) => {

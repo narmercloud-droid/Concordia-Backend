@@ -2,7 +2,7 @@ import express from "express";
 import { getBranchMenuForCustomer, getBranchItemForCustomer, listBranchesForCustomer, getPlatformPromoForCustomer, peekBranchMenuCache, isCustomerBranchVisible } from "../../services/customer/branchMenu.service.js";
 import { generateTimeSlots } from "../../services/scheduling/scheduling.service.js";
 import { getDeliverySettings, isDeliverableAtCoords, quoteDelivery } from "../../services/customer/deliveryValidation.service.js";
-import { reverseGeocode, suggestAddresses } from "../../services/geo/geocode.service.js";
+import { reverseGeocode, resolveCityFromPostalCode, suggestAddresses } from "../../services/geo/geocode.service.js";
 import { getAlsoPopularItems, getBranchBestsellers, getCartSuggestions } from "../../services/customer/bestsellers.service.js";
 import { validateDiscountCode } from "../../services/customer/discountCode.service.js";
 import { listActiveCampaignsForBranch } from "../../services/customer/couponCampaign.service.js";
@@ -97,6 +97,17 @@ router.get("/branches/:branchId/reverse-geocode", wrap(async (req) => {
         };
     }
     return result;
+}));
+router.get("/branches/:branchId/postal-code-lookup", wrap(async (req) => {
+    const postalCode = String(req.query.postalCode ?? "").trim();
+    if (!/^\d{5}$/.test(postalCode)) {
+        throw { code: "INVALID_INPUT", message: "A valid 5-digit postal code is required" };
+    }
+    const city = await resolveCityFromPostalCode(postalCode);
+    if (!city) {
+        throw { code: "NOT_FOUND", message: "Could not resolve city for this postal code" };
+    }
+    return { postalCode, city };
 }));
 router.get("/branches/:branchId/address-suggest", wrap(async (req) => {
     const q = String(req.query.q ?? "").trim();
