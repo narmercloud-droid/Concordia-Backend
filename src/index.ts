@@ -117,7 +117,6 @@ import { connectRedis, redisClient } from "./lib/redis.ts";
 import { env } from "./config/env.ts";
 import inputValidation from "./middleware/inputValidation.ts";
 import requireApiKey from "./middleware/apiKey.ts";
-import { adminAuth as adminAuthMiddleware } from "./middleware/adminAuth.ts";
 import logger from "./utils/logger.ts";
 
 process.on("uncaughtException", (err) => {
@@ -135,15 +134,6 @@ import cacheMiddleware from "./middleware/cacheMiddleware.ts";
 import metricsRoutes from "./routes/metrics.ts";
 import { httpRequestsTotal, httpRequestDurationSeconds, errorsTotal } from "./metrics/metrics.ts";
 import registry from "./metrics/metrics.ts";
-
-// Fatal error handlers
-process.on("uncaughtException", (err) => {
-  console.error("[FATAL] Uncaught Exception:", err);
-});
-
-process.on("unhandledRejection", (err) => {
-  console.error("[FATAL] Unhandled Rejection:", err);
-});
 
 // ---------------------------------------------
 // Express + Socket.IO setup
@@ -447,9 +437,9 @@ app.use("/api/v1/admin/toppings", adminToppingRoutes);
 app.use("/api/v1/admin/extras", adminExtraRoutes);
 app.use("/api/v1/admin/relations", adminRelationRoutes);
 app.use("/api/v1/admin/deals", adminDealRoutes);
-app.use("/api/v1/admin", terminalAdminRoutes);
-app.use("/api/v1/admin", terminalStatusRoutes);
-app.use("/api/v1/admin", orderMonitorRoutes);
+app.use("/api/v1/admin", adminAuth, terminalAdminRoutes);
+app.use("/api/v1/admin", adminAuth, terminalStatusRoutes);
+app.use("/api/v1/admin", adminAuth, orderMonitorRoutes);
 
 // ---------------------------------------------
 // Routes - Customer operations
@@ -529,14 +519,6 @@ app.get("/metrics-lite", requireApiKey, async (_req, res) => {
 
 // Metrics endpoint (Prometheus)
 app.use("/metrics", requireApiKey, metricsRoutes);
-
-// Enforce admin authentication for any admin path as a safety-net
-app.use((req, res, next) => {
-  if (req.path.startsWith("/api/admin") || req.path.startsWith("/admin")) {
-    return adminAuthMiddleware(req as any, res as any, next as any);
-  }
-  next();
-});
 
 if (env.SENTRY_DSN) {
   Sentry.setupExpressErrorHandler(app);

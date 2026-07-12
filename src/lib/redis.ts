@@ -62,6 +62,10 @@ if (isRedisUrlValid) {
     setEx: async (_k: string, _ttl: number, _v: string) => "OK",
     del: async (_k: string | string[]) => 0,
     keys: async (_pattern: string) => [] as string[],
+    scan: async (_cursor: number, _opts?: { MATCH?: string; COUNT?: number }) => ({
+      cursor: 0,
+      keys: [] as string[]
+    }),
     multi: () => pipelineStub(),
     // Some code may call .on; provide a no-op
     on: (_ev: string, _cb: (...args: any[]) => void) => {},
@@ -149,7 +153,14 @@ export const deleteCache = async (key: string): Promise<void> => {
 export const clearCache = async (pattern: string): Promise<void> => {
   const start = Date.now();
   try {
-    const keys = await client.keys(pattern);
+    const keys: string[] = [];
+    let cursor = 0;
+    do {
+      const result = await client.scan(cursor, { MATCH: pattern, COUNT: 100 });
+      cursor = result.cursor;
+      keys.push(...result.keys);
+    } while (cursor !== 0);
+
     if (keys.length > 0) {
       await client.del(keys);
     }

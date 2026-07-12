@@ -10,7 +10,11 @@ export class OrderMonitorService {
         status: true,
         createdAt: true,
       },
+      where: {
+        createdAt: { gte: new Date(Date.now() - 48 * 60 * 60 * 1000) }
+      },
       orderBy: { createdAt: "desc" },
+      take: 500,
     });
 
     return orders.map((order) => ({

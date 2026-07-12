@@ -84,6 +84,11 @@ model Order {
   review                Review?              @relation("OrderReview")
   riskScore             RiskScore?           @relation("OrderRiskScore")
   terminalEvents        TerminalEvent[]      @relation("OrderTerminalEvents")
+
+  @@index([branchId, createdAt(sort: Desc)])
+  @@index([branchId, status])
+  @@index([customerId])
+  @@index([paymentStatus])
 }
 
 model OrderItem {
