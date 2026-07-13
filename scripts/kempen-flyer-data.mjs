@@ -32,6 +32,7 @@ export const FLYER_PRICES = [
   { match: "Pizza Spargel", klein: 8.5, groß: 10.5 },
   { match: "Pizza Rustica", klein: 8.5, groß: 10.5 },
   { match: "Pizza Bruno", klein: 8.5, groß: 10.5 },
+  { match: "Pizza Enzo", klein: 7.5, groß: 9.5 },
   { match: "Pizza Hähnchen", klein: 8.5, groß: 10.5 },
   { match: "Pizza Chef", klein: 8.5, groß: 11 },
   { match: "Pizza Italia", klein: 8, groß: 10 },

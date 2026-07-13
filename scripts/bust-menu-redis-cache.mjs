@@ -33,6 +33,7 @@ let deleted = 0;
 
 for (const branchId of ["concordia-kempen", "concordia-straelen"]) {
   for (const lang of langs) {
+    deleted += await client.del(`customer:menu:${branchId}:${lang}:v6:json`);
     deleted += await client.del(`customer:menu:${branchId}:${lang}:v3:json`);
   }
   deleted += await client.del(`customer:menu:${branchId}:v1:json`);

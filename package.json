@@ -22,6 +22,7 @@
     "sync:kempen-menu": "node scripts/sync-kempen-menu.mjs",
     "setup:kempen-categories": "node scripts/setup-kempen-categories.mjs",
     "apply:kempen-menu-layout": "node scripts/apply-kempen-menu-layout.mjs",
+    "fix:kempen-flyer-menu": "node scripts/fix-kempen-flyer-menu.mjs",
     "apply:kempen-pizza-extras": "node scripts/apply-kempen-pizza-extras.mjs",
     "apply:kempen-calzones": "node scripts/apply-kempen-calzones.mjs",
     "apply:kempen-pizzabroetchen-extras": "node scripts/apply-kempen-pizzabroetchen-extras.mjs",
