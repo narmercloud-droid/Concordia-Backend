@@ -14,7 +14,12 @@ export function httpStatusFromCode(code: string): number {
     case "VALIDATION_ERROR":
     case "BAD_REQUEST":
     case "INVALID_OPERATION":
+    case "INVALID_POSTAL_CODE":
       return 400;
+    case "PAYMENT_FAILED":
+      return 402;
+    case "SERVICE_UNAVAILABLE":
+      return 503;
     case "NOT_IMPLEMENTED":
       return 501;
     case "INTERNAL_ERROR":

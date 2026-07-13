@@ -37,15 +37,22 @@ export async function isBranchOpenNow(branchId: string, now = new Date()): Promi
 export async function generateTimeSlots(branchId: string, daysAhead = 3) {
   const slots: { label: string; value: string }[] = [];
   const now = new Date();
+  const dayOffsets = Array.from({ length: daysAhead + 1 }, (_, i) => i);
+  const probes = dayOffsets.map((dayOffset) => new Date(now.getTime() + dayOffset * 24 * 60 * 60 * 1000));
+  const dayOfWeeks = [...new Set(probes.map((probe) => getBerlinDayOfWeek(probe)))];
 
-  for (let dayOffset = 0; dayOffset <= daysAhead; dayOffset++) {
-    const probe = new Date(now.getTime() + dayOffset * 24 * 60 * 60 * 1000);
+  const hoursRows = await prisma.branchHours.findMany({
+    where: { branchId, dayOfWeek: { in: dayOfWeeks } }
+  });
+  const hoursByDay = new Map<number, (typeof hoursRows)[number]>(
+    hoursRows.map((row) => [row.dayOfWeek, row])
+  );
+
+  for (const probe of probes) {
     const ymd = berlinYmd(probe);
     const dayOfWeek = getBerlinDayOfWeek(probe);
 
-    const hours = await prisma.branchHours.findUnique({
-      where: { branchId_dayOfWeek: { branchId, dayOfWeek } }
-    });
+    const hours = hoursByDay.get(dayOfWeek);
 
     if (!hours || (hours.openTime === "00:00" && hours.closeTime === "00:00")) continue;
 

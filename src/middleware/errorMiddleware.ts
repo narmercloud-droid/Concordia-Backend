@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { Prisma } from '@prisma/client';
 import { ApiError, ApiResponse } from '../contracts/http.js';
 import { DEFAULT_INTERNAL_ERROR_MESSAGE } from '../contracts/errors.js';
 import { httpStatusFromCode } from '../contracts/httpStatus.js';
@@ -11,6 +12,25 @@ export function errorMiddleware(err: any, req: Request, res: Response, _next: Ne
     const payload: ApiResponse = { success: false, error: apiErr };
     res.status(status).json(payload);
     return;
+  }
+
+  if (err instanceof Prisma.PrismaClientKnownRequestError) {
+    if (err.code === 'P2025') {
+      const payload: ApiResponse = {
+        success: false,
+        error: { code: 'NOT_FOUND', message: 'Record not found' },
+      };
+      res.status(404).json(payload);
+      return;
+    }
+    if (err.code === 'P2002') {
+      const payload: ApiResponse = {
+        success: false,
+        error: { code: 'CONFLICT', message: 'Record already exists' },
+      };
+      res.status(409).json(payload);
+      return;
+    }
   }
 
   // Unexpected error — log and return generic internal error

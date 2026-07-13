@@ -19,6 +19,7 @@ import { findFreeDrinkOption, getFreeDrinkOptions } from "./customer/freeDrink.s
 import { isFirstBranchOrder, syncBranchCustomerFromOrder } from "./customer/branchCustomer.service.js";
 import { persistPushSubscriptionFromOrder } from "./notifications/webPushSubscription.service.js";
 import { buildCourierUrl, buildOrderReviewUrl, buildOrderTrackingUrl } from "../utils/customerOrderUrls.js";
+import { fail } from "../contracts/api.js";
 import { validateAndPriceOrderLines } from "./customer/orderPricing.service.js";
 import { sendOrderConfirmationEmail } from "./customer/orderConfirmationEmail.service.js";
 import { isKitchenReadyOrder, isUnpaidOnlineOrder, normalizePaymentMethod, requiresOnlinePayment } from "../utils/orderPayment.js";
@@ -301,13 +302,28 @@ export class OrdersService {
             });
         }
         if (promoCodeId) {
-            await redeemPromoCode(promoCodeId);
+            try {
+                await redeemPromoCode(promoCodeId);
+            }
+            catch (err) {
+                logger.warn({ err, orderId: order.id, promoCodeId }, "Promo redemption failed after order create");
+            }
         }
         if (giftCardId && giftCardAmount > 0) {
-            await redeemGiftCard(giftCardId, giftCardAmount);
+            try {
+                await redeemGiftCard(giftCardId, giftCardAmount);
+            }
+            catch (err) {
+                logger.warn({ err, orderId: order.id, giftCardId }, "Gift card redemption failed after order create");
+            }
         }
         if (customerCouponId) {
-            await redeemCustomerCoupon(customerCouponId, order.id);
+            try {
+                await redeemCustomerCoupon(customerCouponId, order.id);
+            }
+            catch (err) {
+                logger.warn({ err, orderId: order.id, customerCouponId }, "Coupon redemption failed after order create");
+            }
         }
         await syncBranchCustomerFromOrder({
             branchId: rest.branchId,
@@ -473,7 +489,7 @@ export class OrdersService {
             }
         });
         if (!order) {
-            throw new Error("Order not found");
+            throw fail("NOT_FOUND", "Order not found");
         }
         const latestLocation = await prisma.courierLocation.findFirst({
             where: { orderId: order.id },

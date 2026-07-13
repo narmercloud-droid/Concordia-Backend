@@ -26,6 +26,7 @@ import {
 } from "./customer/branchCustomer.service.ts";
 import { persistPushSubscriptionFromOrder } from "./notifications/webPushSubscription.service.ts";
 import { buildCourierUrl, buildOrderReviewUrl, buildOrderTrackingUrl } from "../utils/customerOrderUrls.ts";
+import { fail } from "../contracts/api.js";
 import {
   validateAndPriceOrderLines,
   type PricedOrderLine
@@ -353,13 +354,25 @@ export class OrdersService {
     }
 
     if (promoCodeId) {
-      await redeemPromoCode(promoCodeId);
+      try {
+        await redeemPromoCode(promoCodeId);
+      } catch (err) {
+        logger.warn({ err, orderId: order.id, promoCodeId }, "Promo redemption failed after order create");
+      }
     }
     if (giftCardId && giftCardAmount > 0) {
-      await redeemGiftCard(giftCardId, giftCardAmount);
+      try {
+        await redeemGiftCard(giftCardId, giftCardAmount);
+      } catch (err) {
+        logger.warn({ err, orderId: order.id, giftCardId }, "Gift card redemption failed after order create");
+      }
     }
     if (customerCouponId) {
-      await redeemCustomerCoupon(customerCouponId, order.id);
+      try {
+        await redeemCustomerCoupon(customerCouponId, order.id);
+      } catch (err) {
+        logger.warn({ err, orderId: order.id, customerCouponId }, "Coupon redemption failed after order create");
+      }
     }
 
     await syncBranchCustomerFromOrder({
@@ -552,7 +565,7 @@ export class OrdersService {
     });
 
     if (!order) {
-      throw new Error("Order not found");
+      throw fail("NOT_FOUND", "Order not found");
     }
 
     const latestLocation = await prisma.courierLocation.findFirst({
