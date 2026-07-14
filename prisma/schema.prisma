@@ -1034,8 +1034,11 @@ model PromoCode {
   maxUses   Int?
   usedCount Int       @default(0)
   isActive  Boolean   @default(true)
+  branchId  String?
   expiresAt DateTime?
   createdAt DateTime  @default(now())
+
+  @@index([branchId, isActive])
 }
 
 model CouponCampaign {

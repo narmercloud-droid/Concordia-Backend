@@ -24,7 +24,8 @@ function calcDiscountAmount(
 
 export async function validatePromoCode(
   code: string,
-  orderTotal: number
+  orderTotal: number,
+  branchId?: string | null
 ): Promise<PromoValidation> {
   const normalized = code.trim();
   if (!normalized) {
@@ -38,6 +39,9 @@ export async function validatePromoCode(
   });
 
   if (!promo) throw new Error("Gutscheincode ungültig");
+  if (promo.branchId && promo.branchId !== branchId) {
+    throw new Error("Gutscheincode gilt nicht für diese Filiale");
+  }
   if (!promo.isActive) throw new Error("Gutscheincode ist nicht mehr gültig");
   if (promo.expiresAt && promo.expiresAt < new Date()) {
     throw new Error("Gutscheincode abgelaufen");

@@ -37,7 +37,7 @@ export async function validateDiscountCode(
   }
 
   try {
-    const promo = await validatePromoCode(code, orderTotal);
+    const promo = await validatePromoCode(code, orderTotal, branchId);
     return { ...promo, kind: "promo" as const };
   } catch {
     const gift = await validateGiftCard(branchId, code, orderTotal);

@@ -142,7 +142,7 @@ export class OrdersService {
 
     const { pricedLines, subtotal } = await validateAndPriceOrderLines(rest.branchId, items);
     const promotions = (branchConfigJson.promotions ?? {}) as Record<string, unknown>;
-    const websiteDiscount = calcWebsiteDiscount(subtotal, promotions);
+    let websiteDiscount = calcWebsiteDiscount(subtotal, promotions);
 
     let promoDiscount = 0;
     let promoCodeId: string | null = null;
@@ -154,23 +154,24 @@ export class OrdersService {
     const customerId = rest.customerId?.trim() || null;
     const promoCodeInput = String(rest.promoCode ?? "").trim();
     const customerCouponIdInput = String(rest.customerCouponId ?? "").trim();
-    const allowAdditionalDiscounts = websiteDiscount <= 0;
 
-    if (allowAdditionalDiscounts && customerCouponIdInput && customerId) {
+    if (customerCouponIdInput && customerId) {
       const discount = await validateDiscountCode(rest.branchId, "", subtotal, {
         customerId,
         customerCouponId: customerCouponIdInput
       });
       if (discount.kind === "customer_coupon") {
+        websiteDiscount = 0;
         promoDiscount = discount.discountAmount;
         customerCouponId = discount.customerCouponId ?? customerCouponIdInput;
         couponFreeDelivery = Boolean(discount.freeDelivery);
         couponTitle = discount.title ?? null;
       }
-    } else if (allowAdditionalDiscounts && promoCodeInput) {
+    } else if (promoCodeInput) {
       const discount = await validateDiscountCode(rest.branchId, promoCodeInput, subtotal, {
         customerId
       });
+      websiteDiscount = 0;
       promoDiscount = discount.discountAmount;
       if (discount.kind === "promo") {
         promoCodeId = discount.promoCodeId ?? null;
