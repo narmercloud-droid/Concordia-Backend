@@ -1,8 +1,8 @@
 import logger from "../../logger.ts";
 import { prisma } from "../../prisma/client.ts";
+import { orderFromEmail } from "../../utils/legalEmail.util.ts";
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const FROM_EMAIL = process.env.CAMPAIGN_FROM_EMAIL || "marketing@concordia.de";
 
 const BRANCH_INBOX: Record<string, string> = {
   "concordia-kempen": "kempen@concordiapizza.de",
@@ -34,6 +34,7 @@ async function sendEmail(to: string, subject: string, html: string, replyTo?: st
     return false;
   }
 
+  const from = orderFromEmail();
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
@@ -41,7 +42,7 @@ async function sendEmail(to: string, subject: string, html: string, replyTo?: st
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      from: FROM_EMAIL,
+      from,
       to,
       reply_to: replyTo,
       subject,
@@ -51,7 +52,7 @@ async function sendEmail(to: string, subject: string, html: string, replyTo?: st
 
   if (!res.ok) {
     const body = await res.text().catch(() => "");
-    logger.error({ to, subject, body }, "Contact email send failed");
+    logger.error({ to, from, subject, status: res.status, body }, "Contact email send failed");
   }
 
   return res.ok;
