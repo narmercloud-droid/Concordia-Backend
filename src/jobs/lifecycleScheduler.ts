@@ -4,7 +4,9 @@ import { autoCompleteStaleOrders } from "../services/order/endOfDayOrderCleanup.
 import { berlinYmd, getBerlinTimeString } from "../utils/berlinTime.ts";
 import logger from "../logger.ts";
 
-const POLL_INTERVAL_MS = Number(process.env.LIFECYCLE_POLL_MS || 60_000); // default 1 minute
+// Default 5 min so Neon Free can scale to zero overnight. Override with
+// LIFECYCLE_POLL_MS=60000 for faster kitchen auto-advance on paid compute.
+const POLL_INTERVAL_MS = Number(process.env.LIFECYCLE_POLL_MS || 300_000);
 let lastEndOfDayCleanupYmd: string | null = null;
 
 async function maybeRunEndOfDayOrderCleanup() {

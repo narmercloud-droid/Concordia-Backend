@@ -635,13 +635,14 @@ async function startServer() {
 
       if (env.NODE_ENV === "production") {
         try {
+          // Neon keep-alive is opt-in (NEON_KEEP_ALIVE=true) — required to stay
+          // within Neon Free CU-hours. Render keep-alive pings `/` (no DB).
           startNeonKeepAlive();
           startRenderKeepAlive();
-          logger.info("Neon keep-alive started");
           const { warmCustomerCaches } = await import("./jobs/cacheWarmup.ts");
           void warmCustomerCaches();
         } catch (e) {
-          logger.warn({ e }, "Failed to start Neon keep-alive");
+          logger.warn({ e }, "Failed to start keep-alive / cache warmup");
         }
       }
 

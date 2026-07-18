@@ -19,7 +19,7 @@ import { getPlatformConfig } from "../platform/platformSettings.service.ts";
 import { getBerlinDayOfWeek, getBerlinTimeString, isWithinBranchHours } from "../../utils/berlinTime.ts";
 import { getPresetAddOnGroupsForItem, getPresetAddOnGroupsForCategories } from "../manager/extraPreset.service.ts";
 
-const BRANCHES_CACHE_KEY = "customer:branches:v2";
+const BRANCHES_CACHE_KEY = "customer:branches:v3";
 const BRANCHES_TTL_SEC = 1800;
 const MENU_CACHE_VERSION = "v6";
 const MENU_TTL_SEC = 1800;

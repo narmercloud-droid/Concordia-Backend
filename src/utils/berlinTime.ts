@@ -28,6 +28,14 @@ export function getBerlinTimeString(date = new Date()): string {
 }
 
 export function isWithinBranchHours(openTime: string, closeTime: string, time: string): boolean {
+  // Seeded "closed" days use 00:00–00:00.
+  if (!openTime || !closeTime || openTime === closeTime) return false;
+
+  // Overnight window (e.g. Sat 11:00 → Sun 04:45): open if after open OR before close.
+  if (closeTime < openTime) {
+    return time >= openTime || time <= closeTime;
+  }
+
   return time >= openTime && time <= closeTime;
 }
 

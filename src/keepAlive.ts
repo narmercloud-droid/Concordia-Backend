@@ -9,7 +9,21 @@ const RENDER_PING_INTERVAL_MS = 5 * 60 * 1000;
 const CACHE_WARM_EVERY_N = 2;
 let neonPingCount = 0;
 
+function envFlagEnabled(name: string): boolean {
+  const raw = process.env[name]?.trim().toLowerCase();
+  return raw === "1" || raw === "true" || raw === "yes";
+}
+
+/**
+ * Keeps Neon compute awake (burns Free CU-hours). Opt-in only:
+ * set NEON_KEEP_ALIVE=true on paid/always-on Neon.
+ */
 export function startNeonKeepAlive() {
+  if (!envFlagEnabled("NEON_KEEP_ALIVE")) {
+    logger.info("Neon keep-alive disabled (set NEON_KEEP_ALIVE=true to enable)");
+    return;
+  }
+
   const run = async () => {
     try {
       await prisma.$queryRaw`SELECT 1`;
@@ -25,32 +39,43 @@ export function startNeonKeepAlive() {
 
   void run();
   setInterval(run, NEON_PING_INTERVAL_MS);
+  logger.info({ intervalMin: NEON_PING_INTERVAL_MS / 60_000 }, "Neon keep-alive started");
 }
 
-/** When deployed on Render, hit our own /health so the web service stays warm overnight. */
+/**
+ * Keeps the Render web service warm. Pings `/` (no DB) by default so Neon can
+ * scale to zero on the Free plan. Set RENDER_KEEP_ALIVE_PATH=/health only if
+ * you intentionally want to wake the database.
+ */
 export function startRenderKeepAlive() {
   const base = process.env.RENDER_EXTERNAL_URL?.replace(/\/$/, "");
   if (!base) {
     return;
   }
 
+  const path = process.env.RENDER_KEEP_ALIVE_PATH?.trim() || "/";
+  const url = `${base}${path.startsWith("/") ? path : `/${path}`}`;
+
   const ping = async () => {
     try {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 10_000);
-      const res = await fetch(`${base}/health`, { signal: controller.signal });
+      const res = await fetch(url, { signal: controller.signal });
       clearTimeout(timeout);
       if (!res.ok) {
-        logger.warn({ status: res.status }, "Render self-ping returned non-OK");
+        logger.warn({ status: res.status, url }, "Render self-ping returned non-OK");
       } else {
-        logger.debug("Render self-ping OK");
+        logger.debug({ url }, "Render self-ping OK");
       }
     } catch (err: unknown) {
-      logger.warn({ err }, "Render self-ping failed");
+      logger.warn({ err, url }, "Render self-ping failed");
     }
   };
 
   void ping();
   setInterval(ping, RENDER_PING_INTERVAL_MS);
-  logger.info({ intervalMin: RENDER_PING_INTERVAL_MS / 60_000 }, "Render self-ping started");
+  logger.info(
+    { intervalMin: RENDER_PING_INTERVAL_MS / 60_000, url },
+    "Render self-ping started"
+  );
 }
