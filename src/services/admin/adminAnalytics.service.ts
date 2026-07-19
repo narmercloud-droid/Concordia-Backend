@@ -232,6 +232,8 @@ export type OrderLocationPoint = {
   count: number;
   revenue: number;
   postalCode: string | null;
+  street: string | null;
+  sampleAddress: string | null;
 };
 
 export type OrderPostalArea = {
@@ -240,6 +242,16 @@ export type OrderPostalArea = {
   revenue: number;
   lat: number | null;
   lng: number | null;
+};
+
+export type OrderStreetArea = {
+  street: string;
+  postalCode: string | null;
+  count: number;
+  revenue: number;
+  lat: number | null;
+  lng: number | null;
+  sampleAddress: string | null;
 };
 
 export type OrderLocationBranch = {
@@ -252,19 +264,32 @@ export type OrderLocationBranch = {
 export type OrderLocationAnalytics = {
   points: OrderLocationPoint[];
   postalAreas: OrderPostalArea[];
+  streetAreas: OrderStreetArea[];
   branches: OrderLocationBranch[];
   meta: {
     days: number;
     deliveryOrders: number;
     withCoords: number;
     postalOnly: number;
+    withStreet: number;
     totalRevenue: number;
   };
 };
 
-function roundCoord(value: number, decimals = 3) {
+/** ~11m precision — street / building block level (not ~110m neighborhood blobs). */
+function roundCoord(value: number, decimals = 4) {
   const factor = 10 ** decimals;
   return Math.round(value * factor) / factor;
+}
+
+function extractStreet(address: string | null | undefined): string | null {
+  if (!address) return null;
+  const first = address.split(",")[0]?.trim() || address.trim();
+  const street = first.replace(/\s+\d+[a-zA-ZäöüÄÖÜß]?(-\d+[a-zA-ZäöüÄÖÜß]?)?\s*$/u, "").trim();
+  if (street.length < 3) return null;
+  // Ignore if it looks like only a PLZ/city fragment
+  if (/^\d{5}\b/.test(street)) return null;
+  return street;
 }
 
 export async function getOrderLocationAnalytics(
@@ -284,6 +309,7 @@ export async function getOrderLocationAnalytics(
       deliveryLat: true,
       deliveryLng: true,
       postalCode: true,
+      deliveryAddress: true,
       orderTotal: true,
       branchId: true
     }
@@ -294,18 +320,36 @@ export async function getOrderLocationAnalytics(
     string,
     { count: number; revenue: number; latSum: number; lngSum: number; coordCount: number }
   >();
+  const streetMap = new Map<
+    string,
+    {
+      street: string;
+      postalCode: string | null;
+      count: number;
+      revenue: number;
+      latSum: number;
+      lngSum: number;
+      coordCount: number;
+      sampleAddress: string | null;
+    }
+  >();
 
   let withCoords = 0;
   let postalOnly = 0;
+  let withStreet = 0;
   let totalRevenue = 0;
 
   for (const order of orders) {
     const revenue = Number(order.orderTotal ?? 0);
     totalRevenue += revenue;
     const postal = order.postalCode?.trim() || null;
+    const address = order.deliveryAddress?.trim() || null;
+    const street = extractStreet(address);
     const lat = Number(order.deliveryLat);
     const lng = Number(order.deliveryLng);
     const hasCoords = Number.isFinite(lat) && Number.isFinite(lng);
+
+    if (street) withStreet += 1;
 
     if (hasCoords) {
       withCoords += 1;
@@ -317,13 +361,17 @@ export async function getOrderLocationAnalytics(
         existing.count += 1;
         existing.revenue = Math.round((existing.revenue + revenue) * 100) / 100;
         if (!existing.postalCode && postal) existing.postalCode = postal;
+        if (!existing.street && street) existing.street = street;
+        if (!existing.sampleAddress && address) existing.sampleAddress = address;
       } else {
         pointMap.set(key, {
           lat: rLat,
           lng: rLng,
           count: 1,
           revenue: Math.round(revenue * 100) / 100,
-          postalCode: postal
+          postalCode: postal,
+          street,
+          sampleAddress: address
         });
       }
     } else if (postal) {
@@ -346,6 +394,30 @@ export async function getOrderLocationAnalytics(
         bucket.coordCount += 1;
       }
       postalMap.set(postal, bucket);
+    }
+
+    if (street) {
+      const key = `${street.toLowerCase()}|${postal ?? ""}`;
+      const bucket = streetMap.get(key) ?? {
+        street,
+        postalCode: postal,
+        count: 0,
+        revenue: 0,
+        latSum: 0,
+        lngSum: 0,
+        coordCount: 0,
+        sampleAddress: address
+      };
+      bucket.count += 1;
+      bucket.revenue += revenue;
+      if (!bucket.postalCode && postal) bucket.postalCode = postal;
+      if (!bucket.sampleAddress && address) bucket.sampleAddress = address;
+      if (hasCoords) {
+        bucket.latSum += lat;
+        bucket.lngSum += lng;
+        bucket.coordCount += 1;
+      }
+      streetMap.set(key, bucket);
     }
   }
 
@@ -376,20 +448,34 @@ export async function getOrderLocationAnalytics(
       postalCode,
       count: bucket.count,
       revenue: Math.round(bucket.revenue * 100) / 100,
-      lat: bucket.coordCount > 0 ? roundCoord(bucket.latSum / bucket.coordCount, 4) : null,
-      lng: bucket.coordCount > 0 ? roundCoord(bucket.lngSum / bucket.coordCount, 4) : null
+      lat: bucket.coordCount > 0 ? roundCoord(bucket.latSum / bucket.coordCount, 5) : null,
+      lng: bucket.coordCount > 0 ? roundCoord(bucket.lngSum / bucket.coordCount, 5) : null
+    }))
+    .sort((a, b) => b.count - a.count);
+
+  const streetAreas: OrderStreetArea[] = [...streetMap.values()]
+    .map((bucket) => ({
+      street: bucket.street,
+      postalCode: bucket.postalCode,
+      count: bucket.count,
+      revenue: Math.round(bucket.revenue * 100) / 100,
+      lat: bucket.coordCount > 0 ? roundCoord(bucket.latSum / bucket.coordCount, 5) : null,
+      lng: bucket.coordCount > 0 ? roundCoord(bucket.lngSum / bucket.coordCount, 5) : null,
+      sampleAddress: bucket.sampleAddress
     }))
     .sort((a, b) => b.count - a.count);
 
   return {
     points: [...pointMap.values()].sort((a, b) => b.count - a.count),
     postalAreas,
+    streetAreas,
     branches,
     meta: {
       days,
       deliveryOrders: orders.length,
       withCoords,
       postalOnly,
+      withStreet,
       totalRevenue: Math.round(totalRevenue * 100) / 100
     }
   };
