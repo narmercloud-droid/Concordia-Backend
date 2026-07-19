@@ -225,3 +225,172 @@ export async function getTopItemsSeries(branchId?: string, limit = 10): Promise<
     values: grouped.map((row) => row._sum.quantity ?? 0)
   };
 }
+
+export type OrderLocationPoint = {
+  lat: number;
+  lng: number;
+  count: number;
+  revenue: number;
+  postalCode: string | null;
+};
+
+export type OrderPostalArea = {
+  postalCode: string;
+  count: number;
+  revenue: number;
+  lat: number | null;
+  lng: number | null;
+};
+
+export type OrderLocationBranch = {
+  id: string;
+  name: string;
+  lat: number | null;
+  lng: number | null;
+};
+
+export type OrderLocationAnalytics = {
+  points: OrderLocationPoint[];
+  postalAreas: OrderPostalArea[];
+  branches: OrderLocationBranch[];
+  meta: {
+    days: number;
+    deliveryOrders: number;
+    withCoords: number;
+    postalOnly: number;
+    totalRevenue: number;
+  };
+};
+
+function roundCoord(value: number, decimals = 3) {
+  const factor = 10 ** decimals;
+  return Math.round(value * factor) / factor;
+}
+
+export async function getOrderLocationAnalytics(
+  days = 90,
+  branchId?: string
+): Promise<OrderLocationAnalytics> {
+  const since = new Date(Date.now() - Math.max(1, days) * 24 * 60 * 60 * 1000);
+
+  const orders = await prisma.order.findMany({
+    where: {
+      createdAt: { gte: since },
+      ...branchFilter(branchId),
+      ...activeOrderFilter,
+      fulfillmentType: "delivery"
+    },
+    select: {
+      deliveryLat: true,
+      deliveryLng: true,
+      postalCode: true,
+      orderTotal: true,
+      branchId: true
+    }
+  });
+
+  const pointMap = new Map<string, OrderLocationPoint>();
+  const postalMap = new Map<
+    string,
+    { count: number; revenue: number; latSum: number; lngSum: number; coordCount: number }
+  >();
+
+  let withCoords = 0;
+  let postalOnly = 0;
+  let totalRevenue = 0;
+
+  for (const order of orders) {
+    const revenue = Number(order.orderTotal ?? 0);
+    totalRevenue += revenue;
+    const postal = order.postalCode?.trim() || null;
+    const lat = Number(order.deliveryLat);
+    const lng = Number(order.deliveryLng);
+    const hasCoords = Number.isFinite(lat) && Number.isFinite(lng);
+
+    if (hasCoords) {
+      withCoords += 1;
+      const rLat = roundCoord(lat);
+      const rLng = roundCoord(lng);
+      const key = `${rLat},${rLng}`;
+      const existing = pointMap.get(key);
+      if (existing) {
+        existing.count += 1;
+        existing.revenue = Math.round((existing.revenue + revenue) * 100) / 100;
+        if (!existing.postalCode && postal) existing.postalCode = postal;
+      } else {
+        pointMap.set(key, {
+          lat: rLat,
+          lng: rLng,
+          count: 1,
+          revenue: Math.round(revenue * 100) / 100,
+          postalCode: postal
+        });
+      }
+    } else if (postal) {
+      postalOnly += 1;
+    }
+
+    if (postal) {
+      const bucket = postalMap.get(postal) ?? {
+        count: 0,
+        revenue: 0,
+        latSum: 0,
+        lngSum: 0,
+        coordCount: 0
+      };
+      bucket.count += 1;
+      bucket.revenue += revenue;
+      if (hasCoords) {
+        bucket.latSum += lat;
+        bucket.lngSum += lng;
+        bucket.coordCount += 1;
+      }
+      postalMap.set(postal, bucket);
+    }
+  }
+
+  const branchRows = await prisma.branch.findMany({
+    where: branchId ? { id: branchId } : undefined,
+    select: {
+      id: true,
+      name: true,
+      BranchConfig: { select: { configJson: true } }
+    },
+    orderBy: { name: "asc" }
+  });
+
+  const branches: OrderLocationBranch[] = branchRows.map((branch) => {
+    const config = (branch.BranchConfig?.configJson ?? {}) as Record<string, unknown>;
+    const lat = Number(config.lat);
+    const lng = Number(config.lng);
+    return {
+      id: branch.id,
+      name: branch.name,
+      lat: Number.isFinite(lat) ? lat : null,
+      lng: Number.isFinite(lng) ? lng : null
+    };
+  });
+
+  const postalAreas: OrderPostalArea[] = [...postalMap.entries()]
+    .map(([postalCode, bucket]) => ({
+      postalCode,
+      count: bucket.count,
+      revenue: Math.round(bucket.revenue * 100) / 100,
+      lat: bucket.coordCount > 0 ? roundCoord(bucket.latSum / bucket.coordCount, 4) : null,
+      lng: bucket.coordCount > 0 ? roundCoord(bucket.lngSum / bucket.coordCount, 4) : null
+    }))
+    .sort((a, b) => b.count - a.count);
+
+  return {
+    points: [...pointMap.values()].sort((a, b) => b.count - a.count),
+    postalAreas,
+    branches,
+    meta: {
+      days,
+      deliveryOrders: orders.length,
+      withCoords,
+      postalOnly,
+      totalRevenue: Math.round(totalRevenue * 100) / 100
+    }
+  };
+}

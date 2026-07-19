@@ -3,6 +3,7 @@ import { wrap } from "../../contracts/api.ts";
 import {
   getBranchPerformanceSeries,
   getCategoryPerformanceSeries,
+  getOrderLocationAnalytics,
   getOrderVolumeSeries,
   getPeakHoursSeries,
   getSalesSeries,
@@ -12,6 +13,12 @@ import { resolveManagerBranchId } from "../../middleware/managerAccess.ts";
 
 function branchIdFromRequest(req: Request) {
   return resolveManagerBranchId(req) ?? undefined;
+}
+
+function daysFromRequest(req: Request, fallback = 90) {
+  const raw = Number(req.query.days);
+  if (!Number.isFinite(raw)) return fallback;
+  return Math.min(365, Math.max(7, Math.round(raw)));
 }
 
 export const AdminAnalyticsController = {
@@ -29,5 +36,9 @@ export const AdminAnalyticsController = {
 
   peakHours: wrap(async (req: Request) => getPeakHoursSeries(branchIdFromRequest(req))),
 
-  topItems: wrap(async (req: Request) => getTopItemsSeries(branchIdFromRequest(req)))
+  topItems: wrap(async (req: Request) => getTopItemsSeries(branchIdFromRequest(req))),
+
+  orderLocations: wrap(async (req: Request) =>
+    getOrderLocationAnalytics(daysFromRequest(req), branchIdFromRequest(req))
+  )
 };

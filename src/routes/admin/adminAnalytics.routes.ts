@@ -9,5 +9,6 @@ router.get("/category-performance", AdminAnalyticsController.categoryPerformance
 router.get("/branch-performance", AdminAnalyticsController.branchPerformance);
 router.get("/peak-hours", AdminAnalyticsController.peakHours);
 router.get("/top-items", AdminAnalyticsController.topItems);
+router.get("/order-locations", AdminAnalyticsController.orderLocations);
 
 export default router;
