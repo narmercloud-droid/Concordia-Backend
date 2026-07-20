@@ -25,6 +25,16 @@ export function calcWebsiteDiscount(
   return Math.round(subtotal * pct) / 100;
 }
 
+/** 10% website discount on cart value not already covered by wallet coupon savings. */
+export function calcWebsiteDiscountAfterCouponSavings(
+  subtotal: number,
+  couponDiscount: number,
+  branchPromotions?: Record<string, unknown> | null
+) {
+  const base = Math.max(0, subtotal - Math.max(0, couponDiscount));
+  return calcWebsiteDiscount(base, branchPromotions);
+}
+
 export function isFreeDrinkPromoActive(
   promotions: Record<string, unknown> | null | undefined,
   subtotal?: number

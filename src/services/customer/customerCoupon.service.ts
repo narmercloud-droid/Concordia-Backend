@@ -267,7 +267,8 @@ export async function validateCustomerCouponForOrder(
     customerCouponIds: stacked.customerCouponIds,
     coupons: stacked.coupons,
     capped: stacked.capped,
-    uncappedDiscountAmount: stacked.uncappedDiscountAmount
+    uncappedDiscountAmount: stacked.uncappedDiscountAmount,
+    websiteDiscountEligibleSubtotal: stacked.websiteDiscountEligibleSubtotal
   };
 }
 
@@ -359,6 +360,7 @@ export async function validateCustomerCouponsForOrder(
     title: coupons.map((c) => c.title).join(" · "),
     discountAmount: Math.round(discountAmount * 100) / 100,
     uncappedDiscountAmount: Math.round(uncappedMoney * 100) / 100,
+    websiteDiscountEligibleSubtotal: Math.max(0, Math.round((orderTotal - discountAmount) * 100) / 100),
     freeDelivery,
     capped,
     cap,

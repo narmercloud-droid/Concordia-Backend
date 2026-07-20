@@ -11,7 +11,7 @@ import { env } from "../config/env.ts";
 import logger from "../logger.ts";
 import { geocodeAddress } from "./geo/geocode.service.ts";
 import { getGuestCourierId } from "./branch/branchCoords.service.ts";
-import { calcWebsiteDiscount, getWebsiteOrderDiscountPct, isFreeDrinkPromoActive } from "../config/websitePromo.ts";
+import { calcWebsiteDiscount, calcWebsiteDiscountAfterCouponSavings, getWebsiteOrderDiscountPct, isFreeDrinkPromoActive } from "../config/websitePromo.ts";
 import { redeemPromoCode } from "./customer/promoCode.service.ts";
 import { validateDiscountCode } from "./customer/discountCode.service.ts";
 import { redeemCustomerCoupon } from "./customer/customerCoupon.service.ts";
@@ -166,8 +166,12 @@ export class OrdersService {
         customerCouponIds: customerCouponIdsInput
       });
       if (discount.kind === "customer_coupon" || discount.kind === "customer_coupon_stack") {
-        websiteDiscount = 0;
         promoDiscount = discount.discountAmount;
+        websiteDiscount = calcWebsiteDiscountAfterCouponSavings(
+          subtotal,
+          promoDiscount,
+          promotions
+        );
         customerCouponIds =
           discount.kind === "customer_coupon_stack"
             ? discount.customerCouponIds
