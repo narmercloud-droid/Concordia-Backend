@@ -8,6 +8,8 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 const BRANCH_ID = "concordia-straelen";
 const CAMPAIGN_ID = "straelen-doner-menu-combo";
+/** Set to null when the offer goes live. */
+const COMING_SOON_VALID_FROM = new Date("2099-01-01T00:00:00.000Z");
 
 async function main() {
   const branch = await prisma.branch.findUnique({ where: { id: BRANCH_ID } });
@@ -22,22 +24,24 @@ async function main() {
       branchId: BRANCH_ID,
       title: "Döner + Pommes + Getränk nach Wahl",
       description:
-        "Dönersandwich, Pommes frites und ein Getränk 0,33 l nach Wahl — alles zusammen für 10 €.",
+        "Dönertasche, Pommes frites und ein Getränk 0,33 l nach Wahl — alles zusammen für 10 €.",
       discountType: "fixed",
       discountValue: 3,
       minOrder: 0,
       newCustomersOnly: false,
       sortOrder: 10,
+      validFrom: COMING_SOON_VALID_FROM,
       isActive: true
     },
     update: {
       branchId: BRANCH_ID,
       title: "Döner + Pommes + Getränk nach Wahl",
       description:
-        "Dönersandwich, Pommes frites und ein Getränk 0,33 l nach Wahl — alles zusammen für 10 €.",
+        "Dönertasche, Pommes frites und ein Getränk 0,33 l nach Wahl — alles zusammen für 10 €.",
       discountType: "fixed",
       discountValue: 3,
       minOrder: 0,
+      validFrom: COMING_SOON_VALID_FROM,
       isActive: true,
       sortOrder: 10
     }

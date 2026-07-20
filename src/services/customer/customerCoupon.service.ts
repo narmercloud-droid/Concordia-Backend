@@ -2,6 +2,7 @@ import { randomBytes, randomUUID } from "crypto";
 import { prisma } from "../../prisma/client.ts";
 import {
   calcCampaignDiscount,
+  isCampaignComingSoon,
   isPlatformPerkCampaignId,
   listActiveCampaignsForBranch
 } from "./couponCampaign.service.ts";
@@ -147,6 +148,9 @@ export async function activateCustomerCoupon(customerId: string, customerCouponI
   if (!row) throw new Error("Coupon not found");
   if (row.status === "redeemed") throw new Error("Coupon already used");
   if (row.status === "expired") throw new Error("Coupon expired");
+  if (isCampaignComingSoon(row.campaign.validFrom)) {
+    throw new Error("This offer is not available yet");
+  }
   if (!row.campaign.branchId) {
     throw new Error("Coupon is not valid for this branch");
   }
@@ -304,6 +308,9 @@ export async function validateCustomerCouponsForOrder(
 
     const campaign = row.campaign;
     if (!campaign.isActive) throw new Error(`Coupon is no longer active: ${campaign.title}`);
+    if (isCampaignComingSoon(campaign.validFrom)) {
+      throw new Error(`Coupon is not available yet: ${campaign.title}`);
+    }
     if (!campaign.branchId || campaign.branchId !== branchId) {
       throw new Error(`Coupon is not valid for this branch: ${campaign.title}`);
     }

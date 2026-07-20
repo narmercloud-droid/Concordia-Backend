@@ -21,6 +21,7 @@ export type CouponCampaignDto = {
   isActive: boolean;
   sortOrder: number;
   alwaysActive?: boolean;
+  comingSoon?: boolean;
   claimed?: boolean;
   customerCouponId?: string | null;
   claimCode?: string | null;
@@ -89,6 +90,10 @@ function isWithinDates(validFrom: Date | null, validUntil: Date | null) {
   if (validFrom && validFrom.getTime() > now) return false;
   if (validUntil && validUntil.getTime() < now) return false;
   return true;
+}
+
+export function isCampaignComingSoon(validFrom: Date | null) {
+  return Boolean(validFrom && validFrom.getTime() > Date.now());
 }
 
 export function calcCampaignDiscount(
@@ -165,6 +170,15 @@ export async function listActiveCampaignsForBranch(
       (row.maxRedemptions == null || row.redemptionCount < row.maxRedemptions)
   );
 
+  const now = Date.now();
+  const upcoming = rows.filter(
+    (row) =>
+      row.validFrom &&
+      row.validFrom.getTime() > now &&
+      (!row.validUntil || row.validUntil.getTime() >= now) &&
+      (row.maxRedemptions == null || row.redemptionCount < row.maxRedemptions)
+  );
+
   let claimedByCampaign = new Map<
     string,
     { id: string; status: string; claimCode: string }
@@ -190,7 +204,16 @@ export async function listActiveCampaignsForBranch(
     };
   });
 
-  return [...platformPerks, ...branchCampaigns];
+  const comingSoonCampaigns = upcoming.map((row) => ({
+    ...mapCampaign(row),
+    comingSoon: true,
+    claimed: false,
+    customerCouponId: null,
+    claimCode: null,
+    status: null
+  }));
+
+  return [...platformPerks, ...branchCampaigns, ...comingSoonCampaigns];
 }
 
 export async function listManagerCampaigns(branchId: string) {
