@@ -20,24 +20,24 @@ async function main() {
     create: {
       id: CAMPAIGN_ID,
       branchId: BRANCH_ID,
-      title: "Döner-Menü — 10 €",
+      title: "Döner + Pommes + Getränk nach Wahl",
       description:
-        "Dönersandwich + Pommes frites + Getränk 0,33 l — alles zusammen für nur 10 €.",
-      discountType: "combo",
-      discountValue: 10,
-      minOrder: 10,
+        "Dönersandwich, Pommes frites und ein Getränk 0,33 l nach Wahl — alles zusammen für 10 €.",
+      discountType: "fixed",
+      discountValue: 3,
+      minOrder: 0,
       newCustomersOnly: false,
       sortOrder: 10,
       isActive: true
     },
     update: {
       branchId: BRANCH_ID,
-      title: "Döner-Menü — 10 €",
+      title: "Döner + Pommes + Getränk nach Wahl",
       description:
-        "Dönersandwich + Pommes frites + Getränk 0,33 l — alles zusammen für nur 10 €.",
-      discountType: "combo",
-      discountValue: 10,
-      minOrder: 10,
+        "Dönersandwich, Pommes frites und ein Getränk 0,33 l nach Wahl — alles zusammen für 10 €.",
+      discountType: "fixed",
+      discountValue: 3,
+      minOrder: 0,
       isActive: true,
       sortOrder: 10
     }
