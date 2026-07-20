@@ -1,4 +1,10 @@
 import { prisma } from "../../prisma/client.ts";
+import {
+  getWebsiteOrderDiscountPct
+} from "../../config/websitePromo.ts";
+
+/** Matches checkout free-drink threshold shown on offers/menu. */
+export const PLATFORM_FREE_DRINK_MIN_ORDER = 35;
 
 export type CouponCampaignDto = {
   id: string;
@@ -14,11 +20,65 @@ export type CouponCampaignDto = {
   newCustomersOnly: boolean;
   isActive: boolean;
   sortOrder: number;
+  alwaysActive?: boolean;
   claimed?: boolean;
   customerCouponId?: string | null;
   claimCode?: string | null;
   status?: string | null;
 };
+
+export function isPlatformPerkCampaignId(id: string) {
+  return id.startsWith("platform:");
+}
+
+/** Always-on branch perks shown as pre-activated coupons (Lidl-style, no codes). */
+export function buildAlwaysActivePlatformPerks(branchId: string): CouponCampaignDto[] {
+  const pct = getWebsiteOrderDiscountPct();
+  const perks: CouponCampaignDto[] = [
+    {
+      id: `platform:online-discount:${branchId}`,
+      branchId,
+      scope: "branch",
+      title: `${pct} % Online-Rabatt`,
+      description: "Automatisch an der Kasse — bei jeder Online-Bestellung über Website oder App.",
+      discountType: "platform_online",
+      discountValue: pct,
+      minOrder: 0,
+      validFrom: null,
+      validUntil: null,
+      newCustomersOnly: false,
+      isActive: true,
+      sortOrder: 0,
+      alwaysActive: true,
+      claimed: true,
+      customerCouponId: null,
+      claimCode: null,
+      status: "activated"
+    },
+    {
+      id: `platform:free-drink:${branchId}`,
+      branchId,
+      scope: "branch",
+      title: "Gratisgetränk",
+      description: "Ab 35 € Bestellwert wählen Sie an der Kasse ein kostenloses Getränk.",
+      discountType: "platform_free_drink",
+      discountValue: 0,
+      minOrder: PLATFORM_FREE_DRINK_MIN_ORDER,
+      validFrom: null,
+      validUntil: null,
+      newCustomersOnly: false,
+      isActive: true,
+      sortOrder: 1,
+      alwaysActive: true,
+      claimed: true,
+      customerCouponId: null,
+      claimCode: null,
+      status: "activated"
+    }
+  ];
+
+  return perks;
+}
 
 function campaignScope(branchId: string | null): "branch" | "platform" {
   return branchId ? "branch" : "platform";
@@ -82,46 +142,9 @@ function mapCampaign(row: {
 
 export async function listActiveCampaignsForBranch(
   branchId: string,
-  customerId?: string | null
+  _customerId?: string | null
 ): Promise<CouponCampaignDto[]> {
-  const rows = await prisma.couponCampaign.findMany({
-    where: {
-      isActive: true,
-      branchId
-    },
-    orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }]
-  });
-
-  const visible = rows.filter(
-    (row) =>
-      isWithinDates(row.validFrom, row.validUntil) &&
-      (row.maxRedemptions == null || row.redemptionCount < row.maxRedemptions)
-  );
-
-  let claimedByCampaign = new Map<
-    string,
-    { id: string; status: string; claimCode: string }
-  >();
-  if (customerId) {
-    const claimed = await prisma.customerCoupon.findMany({
-      where: { customerId, campaignId: { in: visible.map((c) => c.id) } },
-      select: { id: true, campaignId: true, status: true, claimCode: true }
-    });
-    claimedByCampaign = new Map(
-      claimed.map((c) => [c.campaignId, { id: c.id, status: c.status, claimCode: c.claimCode }])
-    );
-  }
-
-  return visible.map((row) => {
-    const claim = claimedByCampaign.get(row.id);
-    return {
-      ...mapCampaign(row),
-      claimed: Boolean(claim),
-      customerCouponId: claim?.id ?? null,
-      claimCode: claim?.claimCode ?? null,
-      status: claim?.status ?? null
-    };
-  });
+  return buildAlwaysActivePlatformPerks(branchId);
 }
 
 export async function listManagerCampaigns(branchId: string) {

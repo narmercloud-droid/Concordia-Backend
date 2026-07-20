@@ -2,6 +2,7 @@ import { randomBytes, randomUUID } from "crypto";
 import { prisma } from "../../prisma/client.ts";
 import {
   calcCampaignDiscount,
+  isPlatformPerkCampaignId,
   listActiveCampaignsForBranch
 } from "./couponCampaign.service.ts";
 
@@ -46,6 +47,9 @@ export async function claimCampaignCoupon(
 ) {
   if (!branchId) {
     throw new Error("branchId is required");
+  }
+  if (isPlatformPerkCampaignId(campaignId)) {
+    throw new Error("This offer is always active and does not need to be saved");
   }
 
   const campaign = await prisma.couponCampaign.findUnique({ where: { id: campaignId } });
@@ -271,6 +275,9 @@ export async function validateCustomerCouponsForOrder(
 ) {
   const ids = [...new Set(customerCouponIds.map((id) => String(id ?? "").trim()).filter(Boolean))];
   if (ids.length === 0) throw new Error("No coupons selected");
+  if (ids.some((id) => isPlatformPerkCampaignId(id))) {
+    throw new Error("Platform perks apply automatically and cannot be redeemed as coupons");
+  }
 
   const rows = await prisma.customerCoupon.findMany({
     where: { id: { in: ids }, customerId },
