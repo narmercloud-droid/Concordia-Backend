@@ -387,6 +387,7 @@ export async function grantWelcomeCoupons(customerId: string, branchId?: string 
   const campaigns = await listActiveCampaignsForBranch(branchId);
   const granted = [];
   for (const campaign of campaigns) {
+    if (isPlatformPerkCampaignId(campaign.id)) continue;
     if (campaign.newCustomersOnly) {
       try {
         const result = await claimCampaignCoupon(customerId, campaign.id, branchId);

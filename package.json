@@ -36,6 +36,7 @@
     "import:straelen-menu": "node scripts/import-straelen-menu.mjs",
     "update:straelen-menu": "node scripts/update-straelen-menu.mjs",
     "activate:straelen": "node scripts/activate-straelen-branch.mjs",
+    "seed:straelen-doner-combo": "node scripts/seed-straelen-doner-combo.mjs",
     "seed:admins": "node scripts/seed-admins.mjs",
     "reset:launch-admins": "node scripts/reset-launch-admins.mjs",
     "clean:straelen-data": "node scripts/clean-straelen-branch-data.mjs",

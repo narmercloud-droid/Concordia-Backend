@@ -106,6 +106,11 @@ export function calcCampaignDiscount(
   if (type === "free_delivery") {
     return 0;
   }
+  if (type === "combo") {
+    // discountValue = bundle price (e.g. €10 menu); savings bring cart down toward that price.
+    const savings = Math.max(0, orderTotal - discountValue);
+    return Math.min(savings, orderTotal);
+  }
   return 0;
 }
 
@@ -142,9 +147,50 @@ function mapCampaign(row: {
 
 export async function listActiveCampaignsForBranch(
   branchId: string,
-  _customerId?: string | null
+  customerId?: string | null
 ): Promise<CouponCampaignDto[]> {
-  return buildAlwaysActivePlatformPerks(branchId);
+  const platformPerks = buildAlwaysActivePlatformPerks(branchId);
+
+  const rows = await prisma.couponCampaign.findMany({
+    where: {
+      isActive: true,
+      branchId
+    },
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }]
+  });
+
+  const visible = rows.filter(
+    (row) =>
+      isWithinDates(row.validFrom, row.validUntil) &&
+      (row.maxRedemptions == null || row.redemptionCount < row.maxRedemptions)
+  );
+
+  let claimedByCampaign = new Map<
+    string,
+    { id: string; status: string; claimCode: string }
+  >();
+  if (customerId) {
+    const claimed = await prisma.customerCoupon.findMany({
+      where: { customerId, campaignId: { in: visible.map((c) => c.id) } },
+      select: { id: true, campaignId: true, status: true, claimCode: true }
+    });
+    claimedByCampaign = new Map(
+      claimed.map((c) => [c.campaignId, { id: c.id, status: c.status, claimCode: c.claimCode }])
+    );
+  }
+
+  const branchCampaigns = visible.map((row) => {
+    const claim = claimedByCampaign.get(row.id);
+    return {
+      ...mapCampaign(row),
+      claimed: Boolean(claim),
+      customerCouponId: claim?.id ?? null,
+      claimCode: claim?.claimCode ?? null,
+      status: claim?.status ?? null
+    };
+  });
+
+  return [...platformPerks, ...branchCampaigns];
 }
 
 export async function listManagerCampaigns(branchId: string) {
