@@ -31,6 +31,7 @@ router.get("/coupons", customerAuth, CustomerCouponsController.listMine);
 router.get("/coupons/available", customerAuth, CustomerCouponsController.listAvailable);
 router.post("/coupons/claim/:campaignId", customerAuth, CustomerCouponsController.claim);
 router.post("/coupons/:id/activate", customerAuth, CustomerCouponsController.activate);
+router.post("/coupons/:id/deactivate", customerAuth, CustomerCouponsController.deactivate);
 router.post("/coupons/validate", customerAuth, CustomerCouponsController.validateForCheckout);
 
 export default router;

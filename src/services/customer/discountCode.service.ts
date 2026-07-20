@@ -1,22 +1,44 @@
 import { validatePromoCode } from "./promoCode.service.ts";
 import { validateGiftCard } from "./giftCard.service.ts";
-import { validateCustomerCouponForOrder } from "./customerCoupon.service.ts";
+import {
+  validateCustomerCouponForOrder,
+  validateCustomerCouponsForOrder
+} from "./customerCoupon.service.ts";
 import { prisma } from "../../prisma/client.ts";
 
 export async function validateDiscountCode(
   branchId: string,
   code: string,
   orderTotal: number,
-  options?: { customerId?: string | null; customerCouponId?: string | null }
+  options?: {
+    customerId?: string | null;
+    customerCouponId?: string | null;
+    customerCouponIds?: string[] | null;
+  }
 ) {
-  if (options?.customerId && options?.customerCouponId) {
-    const coupon = await validateCustomerCouponForOrder(
+  const stackedIds = (options?.customerCouponIds ?? [])
+    .map((id) => String(id ?? "").trim())
+    .filter(Boolean);
+  if (options?.customerId && stackedIds.length > 1) {
+    return validateCustomerCouponsForOrder(
       options.customerId,
-      options.customerCouponId,
+      stackedIds,
       branchId,
       orderTotal
     );
-    return coupon;
+  }
+
+  const singleId =
+    stackedIds[0] ||
+    (options?.customerCouponId ? String(options.customerCouponId).trim() : "");
+
+  if (options?.customerId && singleId) {
+    return validateCustomerCouponForOrder(
+      options.customerId,
+      singleId,
+      branchId,
+      orderTotal
+    );
   }
 
   if (code.startsWith("CC-") && options?.customerId) {

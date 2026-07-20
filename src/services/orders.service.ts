@@ -148,22 +148,30 @@ export class OrdersService {
     let promoCodeId: string | null = null;
     let giftCardId: string | null = null;
     let giftCardAmount = 0;
-    let customerCouponId: string | null = null;
+    let customerCouponIds: string[] = [];
     let couponFreeDelivery = false;
     let couponTitle: string | null = null;
     const customerId = rest.customerId?.trim() || null;
     const promoCodeInput = String(rest.promoCode ?? "").trim();
     const customerCouponIdInput = String(rest.customerCouponId ?? "").trim();
+    const customerCouponIdsInput = Array.isArray(rest.customerCouponIds)
+      ? rest.customerCouponIds.map((id: unknown) => String(id ?? "").trim()).filter(Boolean)
+      : customerCouponIdInput
+        ? [customerCouponIdInput]
+        : [];
 
-    if (customerCouponIdInput && customerId) {
+    if (customerCouponIdsInput.length > 0 && customerId) {
       const discount = await validateDiscountCode(rest.branchId, "", subtotal, {
         customerId,
-        customerCouponId: customerCouponIdInput
+        customerCouponIds: customerCouponIdsInput
       });
-      if (discount.kind === "customer_coupon") {
+      if (discount.kind === "customer_coupon" || discount.kind === "customer_coupon_stack") {
         websiteDiscount = 0;
         promoDiscount = discount.discountAmount;
-        customerCouponId = discount.customerCouponId ?? customerCouponIdInput;
+        customerCouponIds =
+          discount.kind === "customer_coupon_stack"
+            ? discount.customerCouponIds
+            : [discount.customerCouponId];
         couponFreeDelivery = Boolean(discount.freeDelivery);
         couponTitle = discount.title ?? null;
       }
@@ -175,8 +183,13 @@ export class OrdersService {
       promoDiscount = discount.discountAmount;
       if (discount.kind === "promo") {
         promoCodeId = discount.promoCodeId ?? null;
-      } else if (discount.kind === "customer_coupon") {
-        customerCouponId = discount.customerCouponId ?? null;
+      } else if (discount.kind === "customer_coupon" || discount.kind === "customer_coupon_stack") {
+        customerCouponIds =
+          discount.kind === "customer_coupon_stack"
+            ? discount.customerCouponIds
+            : discount.customerCouponId
+              ? [discount.customerCouponId]
+              : [];
         couponFreeDelivery = Boolean(discount.freeDelivery);
         couponTitle = discount.title ?? null;
       } else {
@@ -368,11 +381,16 @@ export class OrdersService {
         logger.warn({ err, orderId: order.id, giftCardId }, "Gift card redemption failed after order create");
       }
     }
-    if (customerCouponId) {
-      try {
-        await redeemCustomerCoupon(customerCouponId, order.id);
-      } catch (err) {
-        logger.warn({ err, orderId: order.id, customerCouponId }, "Coupon redemption failed after order create");
+    if (customerCouponIds.length > 0) {
+      for (const couponId of customerCouponIds) {
+        try {
+          await redeemCustomerCoupon(couponId, order.id);
+        } catch (err) {
+          logger.warn(
+            { err, orderId: order.id, customerCouponId: couponId },
+            "Coupon redemption failed after order create"
+          );
+        }
       }
     }
 
