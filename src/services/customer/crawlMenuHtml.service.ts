@@ -1,5 +1,6 @@
 import { getBranchMenuForCustomer, isCustomerBranchVisible } from "./branchMenu.service.ts";
 import { prisma } from "../../prisma/client.ts";
+import { buildBranchOrderUrl } from "../../utils/customerOrderUrls.ts";
 
 const SITE_ORIGIN = (process.env.PUBLIC_SITE_ORIGIN ?? "https://www.concordiapizza.de").replace(
   /\/$/,
@@ -69,9 +70,9 @@ export function resolveCrawlMenuSlug(slug: string): CrawlMenuSlug | null {
 
 function branchUrls(slug: CrawlMenuSlug, branchId: string) {
   const menuUrl = `${SITE_ORIGIN}/${slug}/menu`;
-  const orderUrl = `${SITE_ORIGIN}/branch/${branchId}`;
-  const pickupUrl = `${SITE_ORIGIN}/branch/${branchId}/checkout?fulfillment=pickup`;
-  const deliveryUrl = `${SITE_ORIGIN}/branch/${branchId}/checkout?fulfillment=delivery`;
+  const orderUrl = buildBranchOrderUrl(branchId);
+  const pickupUrl = `${orderUrl}/checkout?fulfillment=pickup`;
+  const deliveryUrl = `${orderUrl}/checkout?fulfillment=delivery`;
   return { menuUrl, orderUrl, pickupUrl, deliveryUrl };
 }
 

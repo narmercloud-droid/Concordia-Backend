@@ -2,13 +2,12 @@ import { prisma } from "../../prisma/client.js";
 import logger from "../../logger.js";
 import { getBirthdayCandidates, getWinBackCandidates } from "./branchCustomer.service.js";
 import { sendBranchMessage } from "./branchMessaging.service.js";
-import { env } from "../../config/env.js";
+import { buildBranchOrderUrl } from "../../utils/customerOrderUrls.js";
 import { getPlatformConfig } from "../platform/platformSettings.service.js";
 const WINBACK_CODE = () => getPlatformConfig().winbackPromoCode || "WELCOME10";
 const BIRTHDAY_CODE = () => getPlatformConfig().birthdayPromoCode || "BIRTHDAY";
 function orderUrl(branchId) {
-    const base = env.FRONTEND_URL ?? "https://www.concordiapizza.de";
-    return `${base}/customer/branch/${branchId}`;
+    return buildBranchOrderUrl(branchId);
 }
 export async function runWinBackForBranch(branchId) {
     const candidates = await getWinBackCandidates(branchId);

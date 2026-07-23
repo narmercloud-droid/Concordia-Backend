@@ -5,15 +5,14 @@ import {
   getWinBackCandidates
 } from "./branchCustomer.service.ts";
 import { sendBranchMessage } from "./branchMessaging.service.ts";
-import { env } from "../../config/env.ts";
+import { buildBranchOrderUrl } from "../../utils/customerOrderUrls.ts";
 import { getPlatformConfig } from "../platform/platformSettings.service.ts";
 
 const WINBACK_CODE = () => getPlatformConfig().winbackPromoCode || "WELCOME10";
 const BIRTHDAY_CODE = () => getPlatformConfig().birthdayPromoCode || "BIRTHDAY";
 
 function orderUrl(branchId: string) {
-  const base = env.FRONTEND_URL ?? "https://www.concordiapizza.de";
-  return `${base}/customer/branch/${branchId}`;
+  return buildBranchOrderUrl(branchId);
 }
 
 export async function runWinBackForBranch(branchId: string) {

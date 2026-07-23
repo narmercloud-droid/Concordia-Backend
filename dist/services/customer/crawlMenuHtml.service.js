@@ -1,5 +1,6 @@
 import { getBranchMenuForCustomer, isCustomerBranchVisible } from "./branchMenu.service.js";
 import { prisma } from "../../prisma/client.js";
+import { buildBranchOrderUrl } from "../../utils/customerOrderUrls.js";
 const SITE_ORIGIN = (process.env.PUBLIC_SITE_ORIGIN ?? "https://www.concordiapizza.de").replace(/\/$/, "");
 const SCHEMA_DAYS = [
     "Sunday",
@@ -43,9 +44,9 @@ export function resolveCrawlMenuSlug(slug) {
 }
 function branchUrls(slug, branchId) {
     const menuUrl = `${SITE_ORIGIN}/${slug}/menu`;
-    const orderUrl = `${SITE_ORIGIN}/branch/${branchId}`;
-    const pickupUrl = `${SITE_ORIGIN}/branch/${branchId}/checkout?fulfillment=pickup`;
-    const deliveryUrl = `${SITE_ORIGIN}/branch/${branchId}/checkout?fulfillment=delivery`;
+    const orderUrl = buildBranchOrderUrl(branchId);
+    const pickupUrl = `${orderUrl}/checkout?fulfillment=pickup`;
+    const deliveryUrl = `${orderUrl}/checkout?fulfillment=delivery`;
     return { menuUrl, orderUrl, pickupUrl, deliveryUrl };
 }
 function buildOpeningHoursSpec(hours) {
