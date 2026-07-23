@@ -18,9 +18,9 @@ router.post("/calculate", customerAuth, async (req, res) => {
       paymentMethod
     );
 
-    res.tson(result);
+    res.json(result);
   } catch (err) {
-    res.status(400).tson({ error: err.message });
+    res.status(400).json({ error: err.message });
   }
 });
 
@@ -37,9 +37,9 @@ router.post("/finalize", customerAuth, async (req, res) => {
       orderId
     );
 
-    res.tson({ success: true });
+    res.json({ success: true });
   } catch (err) {
-    res.status(400).tson({ error: err.message });
+    res.status(400).json({ error: err.message });
   }
 });
 

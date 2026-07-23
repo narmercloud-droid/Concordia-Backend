@@ -40,8 +40,14 @@ export const PaymentsController = {
     const authenticatedCustomerId =
       (req as Request & { customer?: { id: string } }).customer?.id ?? null;
     try {
+      const { assertOrderPaymentAccess, loadOrderForPaymentAccess } = await import(
+        "../services/payments/orderPaymentAccess.ts"
+      );
+      const order = await loadOrderForPaymentAccess(orderId);
+      assertOrderPaymentAccess(req, order);
       return await paymentsService.createStripePaymentIntent(orderId, authenticatedCustomerId);
     } catch (err: unknown) {
+      if (err && typeof err === "object" && "code" in err) throw err;
       paymentError(err, "Could not start card payment");
     }
   }),
@@ -52,8 +58,14 @@ export const PaymentsController = {
       throw fail("INVALID_INPUT", "orderId is required");
     }
     try {
+      const { assertOrderPaymentAccess, loadOrderForPaymentAccess } = await import(
+        "../services/payments/orderPaymentAccess.ts"
+      );
+      const order = await loadOrderForPaymentAccess(orderId);
+      assertOrderPaymentAccess(req, order);
       return await paymentsService.confirmStripePayment(orderId);
     } catch (err: unknown) {
+      if (err && typeof err === "object" && "code" in err) throw err;
       paymentError(err, "Could not confirm payment");
     }
   }),
@@ -88,8 +100,14 @@ export const PaymentsController = {
       throw fail("INVALID_INPUT", "orderId is required");
     }
     try {
+      const { assertOrderPaymentAccess, loadOrderForPaymentAccess } = await import(
+        "../services/payments/orderPaymentAccess.ts"
+      );
+      const order = await loadOrderForPaymentAccess(orderId);
+      assertOrderPaymentAccess(req, order);
       return await paymentsService.createPayPalOrder(orderId);
     } catch (err: unknown) {
+      if (err && typeof err === "object" && "code" in err) throw err;
       paymentError(err, "Could not start card payment");
     }
   }),
@@ -100,9 +118,31 @@ export const PaymentsController = {
       throw fail("INVALID_INPUT", "orderId is required");
     }
     try {
+      const { assertOrderPaymentAccess, loadOrderForPaymentAccess } = await import(
+        "../services/payments/orderPaymentAccess.ts"
+      );
+      const order = await loadOrderForPaymentAccess(orderId);
+      assertOrderPaymentAccess(req, order);
       return await paymentsService.capturePayPalOrder(orderId);
     } catch (err: unknown) {
+      if (err && typeof err === "object" && "code" in err) throw err;
       paymentError(err, "Could not capture payment");
+    }
+  }),
+
+  reconcileOrderPayment: wrap(async (req: Request) => {
+    const orderId = String(req.params.id ?? req.body?.orderId ?? "").trim();
+    if (!orderId) throw fail("INVALID_INPUT", "orderId is required");
+    try {
+      const { assertOrderPaymentAccess, loadOrderForPaymentAccess } = await import(
+        "../services/payments/orderPaymentAccess.ts"
+      );
+      const order = await loadOrderForPaymentAccess(orderId);
+      assertOrderPaymentAccess(req, order);
+      return await paymentsService.reconcileOrderPayment(orderId);
+    } catch (err: unknown) {
+      if (err && typeof err === "object" && "code" in err) throw err;
+      paymentError(err, "Could not reconcile payment");
     }
   }),
 

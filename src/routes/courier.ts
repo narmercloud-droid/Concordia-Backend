@@ -3,6 +3,8 @@ import express from "express";
 const { Router } = express;
 import { prisma } from "../prisma/client.ts";
 import { OrderLifecycleService } from "../services/order/orderLifecycle.service.ts";
+import { courierAuth } from "../middleware/courierAuth.ts";
+import { adminAuth } from "../middleware/adminAuth.ts";
 
 const router = Router();
 
@@ -15,17 +17,17 @@ async function resolveCourierId(courierReference: string) {
   return courier?.id ?? null;
 }
 
-router.post("/location", async (req, res) => {
+router.post("/location", courierAuth, async (req, res) => {
   const { courierId, orderId, latitude, longitude, accuracy } = req.body;
 
   if (!courierId || !orderId || latitude == null || longitude == null) {
-    return (res as any).status(400).tson({ error: "courierId, orderId, latitude and longitude are required" });
+    return res.status(400).json({ error: "courierId, orderId, latitude and longitude are required" });
   }
 
   try {
     const resolvedCourierId = await resolveCourierId(courierId);
     if (!resolvedCourierId) {
-      return (res as any).status(404).tson({ error: "Courier not found" });
+      return res.status(404).json({ error: "Courier not found" });
     }
 
     const courierLocation = await prisma.courierLocation.create({
@@ -41,41 +43,41 @@ router.post("/location", async (req, res) => {
 
     const order = await prisma.order.findUnique({ where: { id: orderId } });
     if (!order) {
-      return (res as any).status(404).tson({ error: "Order not found" });
+      return res.status(404).json({ error: "Order not found" });
     }
 
     if (order.status !== "out_for_delivery") {
       await OrderLifecycleService.updateStatus(orderId, "out_for_delivery");
     }
 
-    return (res as any).tson({ success: true, courierLocation });
+    return res.json({ success: true, courierLocation });
   } catch (err: any) {
-    return (res as any).status(500).tson({ error: err.message || "Failed to save courier location" });
+    return res.status(500).json({ error: err.message || "Failed to save courier location" });
   }
 });
 
-router.post("/status", async (req, res) => {
+router.post("/status", courierAuth, async (req, res) => {
   const { orderId, status } = req.body;
 
   if (!orderId || !status) {
-    return (res as any).status(400).tson({ error: "orderId and status are required" });
+    return res.status(400).json({ error: "orderId and status are required" });
   }
 
   try {
     const updated = await OrderLifecycleService.updateStatus(orderId, status);
-    return (res as any).tson({ success: true, order: updated });
+    return res.json({ success: true, order: updated });
   } catch (err: any) {
-    return (res as any).status(500).tson({ error: err.message || "Failed to create order tracking event" });
+    return res.status(500).json({ error: err.message || "Failed to create order tracking event" });
   }
 });
 
-router.get("/orders/:courierId", async (req, res) => {
+router.get("/orders/:courierId", adminAuth, async (req, res) => {
   const { courierId } = req.params;
 
   try {
     const resolvedCourierId = await resolveCourierId(courierId);
     if (!resolvedCourierId) {
-      return (res as any).status(404).tson({ error: "Courier not found" });
+      return res.status(404).json({ error: "Courier not found" });
     }
 
     const locations = await prisma.courierLocation.findMany({
@@ -96,11 +98,10 @@ router.get("/orders/:courierId", async (req, res) => {
       include: { items: true }
     });
 
-    return (res as any).tson({ orders: activeOrders });
+    return res.json({ orders: activeOrders });
   } catch (err: any) {
-    return (res as any).status(500).tson({ error: err.message || "Failed to fetch courier orders" });
+    return res.status(500).json({ error: err.message || "Failed to fetch courier orders" });
   }
 });
 
 export default router;
-

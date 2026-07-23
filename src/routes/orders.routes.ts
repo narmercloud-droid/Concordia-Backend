@@ -4,6 +4,7 @@ import { OrdersController } from "../controllers/orders.controller.ts";
 import { adminAuth } from "../middleware/adminAuth.ts";
 import { adminRole } from "../middleware/adminRole.ts";
 import { courierAuth } from "../middleware/courierAuth.ts";
+import { optionalCustomerAuth } from "../middleware/optionalCustomerAuth.ts";
 
 const router = Router();
 
@@ -11,7 +12,7 @@ const router = Router();
 router.post("/", OrdersController.create);
 
 // Abandon PayPal/card checkout before payment completes
-router.post("/:id/cancel-unpaid", OrdersController.cancelUnpaid);
+router.post("/:id/cancel-unpaid", optionalCustomerAuth, OrdersController.cancelUnpaid);
 
 // Customer order tracking
 router.get("/:id/status", OrdersController.getStatus);
@@ -19,7 +20,7 @@ router.get("/:id/status", OrdersController.getStatus);
 // Branch orders
 router.get("/branch/:branchId", adminAuth, adminRole("manager"), OrdersController.listBranchOrders);
 
-// Terminal updates order status
+// Manager updates order status
 router.put("/:id/status", adminAuth, adminRole("manager"), OrdersController.updateStatus);
 
 // Courier flow
@@ -28,10 +29,3 @@ router.post("/courier/picked-up", courierAuth, OrdersController.courierPickedUp)
 router.post("/courier/delivered", courierAuth, OrdersController.courierDelivered);
 
 export default router;
-
-
-
-
-
-
-

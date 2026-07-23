@@ -444,5 +444,100 @@ export const paymentsService = {
 
     const activation = await activateGiftCardAfterPayment(purchaseId, capture.id);
     return { success: true, code: activation.code, captureId: capture.id };
+  },
+
+  /**
+   * Reconcile local paymentStatus with Stripe/PayPal.
+   * If PSP shows settled → mark paid + notify kitchen.
+   */
+  async reconcileOrderPayment(orderId: string) {
+    const order = await prisma.order.findUnique({ where: { id: orderId } });
+    if (!order) throw new Error("Order not found");
+
+    if (order.paymentStatus === "paid") {
+      return {
+        settled: true as const,
+        alreadyPaid: true as const,
+        provider: null as string | null
+      };
+    }
+
+    if (order.paymentIntentId) {
+      const payment = await getBranchPaymentPublic(order.branchId);
+      if (payment.stripeAccountId) {
+        const intent = await confirmStripePaymentIntent(
+          order.paymentIntentId,
+          payment.stripeAccountId
+        );
+        if (intent.status === "succeeded") {
+          await OrderLifecycleService.updatePaymentStatus(orderId, "paid", {
+            paidAt: new Date(),
+            transactionId: intent.id
+          });
+          await ordersService.notifyKitchenOrder(orderId);
+          void sendOrderConfirmationEmail(orderId).catch((err) => {
+            logger.warn({ err, orderId }, "Order confirmation email after reconcile failed");
+          });
+          return {
+            settled: true as const,
+            alreadyPaid: false as const,
+            provider: "stripe" as const
+          };
+        }
+        return {
+          settled: false as const,
+          alreadyPaid: false as const,
+          provider: "stripe" as const,
+          status: intent.status
+        };
+      }
+    }
+
+    if (order.paypalOrderId) {
+      try {
+        const credentials = await requireBranchPayPal(order.branchId);
+        const paypalOrder = await fetchPayPalOrder(order.paypalOrderId, credentials);
+        if (paypalOrder.status === "COMPLETED") {
+          const capture = getPayPalCapture(paypalOrder);
+          if (capture?.id) {
+            await markOrderPaidFromPayPalCapture(orderId, capture.id, true);
+            return {
+              settled: true as const,
+              alreadyPaid: false as const,
+              provider: "paypal" as const
+            };
+          }
+        }
+        if (paypalOrder.status === "APPROVED") {
+          // Attempt capture so confirm-failure after approve can recover
+          try {
+            const result = await paymentsService.capturePayPalOrder(orderId);
+            if (result.success) {
+              return {
+                settled: true as const,
+                alreadyPaid: Boolean(result.alreadyPaid),
+                provider: "paypal" as const
+              };
+            }
+          } catch (err) {
+            logger.warn({ err, orderId }, "PayPal capture during reconcile failed");
+          }
+        }
+        return {
+          settled: false as const,
+          alreadyPaid: false as const,
+          provider: "paypal" as const,
+          status: paypalOrder.status
+        };
+      } catch (err) {
+        logger.warn({ err, orderId }, "PayPal reconcile lookup failed");
+      }
+    }
+
+    return {
+      settled: false as const,
+      alreadyPaid: false as const,
+      provider: null as string | null
+    };
   }
 };

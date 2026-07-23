@@ -11,10 +11,14 @@ import {
   updateTerminalBranchStatus,
   updateTerminalOrderStatus
 } from "../../controllers/terminal/terminalOrders.controller.ts";
+import { validateTerminalToken } from "../../middleware/terminalAuth.ts";
 
 const router = Router();
 
 router.post("/activate", activateTerminalByCode);
+
+router.use(validateTerminalToken);
+
 router.get("/orders", getTerminalOrders);
 router.get("/daily-report", getTerminalDailyReportHandler);
 router.get("/branch/status", getTerminalBranchStatus);
@@ -25,4 +29,3 @@ router.post("/orders/:id/reject", rejectTerminalOrder);
 router.post("/orders/:id/status", updateTerminalOrderStatus);
 
 export default router;
-

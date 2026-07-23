@@ -18,12 +18,12 @@ router.get("/rewards", LoyaltyController.listRewards);
 // Manager
 router.post("/rewards", adminAuth, adminRole("manager"), async (req, res) => {
   const reward = await prisma.reward.create({ data: req.body });
-  res.tson(reward);
+  res.json(reward);
 });
 
 router.post("/promo", adminAuth, adminRole("manager"), async (req, res) => {
   const promo = await prisma.promoCode.create({ data: req.body });
-  res.tson(promo);
+  res.json(promo);
 });
 
 export default router;

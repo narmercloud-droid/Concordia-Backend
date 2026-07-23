@@ -10,7 +10,7 @@ router.get("/orders/:branchId", async (req, res) => {
   const { branchId } = req.params;
 
   if (!branchId) {
-    return (res as any).status(400).tson({ error: "Branch ID is required" });
+    return (res as any).status(400).json({ error: "Branch ID is required" });
   }
 
   try {
@@ -32,9 +32,9 @@ router.get("/orders/:branchId", async (req, res) => {
       }
     });
 
-    return (res as any).tson({ orders });
+    return (res as any).json({ orders });
   } catch (err: any) {
-    return (res as any).status(500).tson({ error: err.message || "Unable to fetch branch orders" });
+    return (res as any).status(500).json({ error: err.message || "Unable to fetch branch orders" });
   }
 });
 
@@ -43,18 +43,18 @@ router.post("/orders/:id/status", async (req, res) => {
   const { status } = req.body;
 
   if (!id || !status) {
-    return (res as any).status(400).tson({ error: "Order ID and status are required" });
+    return (res as any).status(400).json({ error: "Order ID and status are required" });
   }
 
   if (!ALLOWED_STATUSES.includes(status)) {
-    return (res as any).status(400).tson({ error: "Invalid status value" });
+    return (res as any).status(400).json({ error: "Invalid status value" });
   }
 
   try {
     const order = await OrderLifecycleService.updateStatus(id, status);
-    return (res as any).tson({ order });
+    return (res as any).json({ order });
   } catch (err: any) {
-    return (res as any).status(500).tson({ error: err.message || "Unable to update order status" });
+    return (res as any).status(500).json({ error: err.message || "Unable to update order status" });
   }
 });
 
@@ -63,14 +63,14 @@ router.post("/orders/:id/assign-courier", async (req, res) => {
   const { courierId } = req.body;
 
   if (!id || !courierId) {
-    return (res as any).status(400).tson({ error: "Order ID and courierId are required" });
+    return (res as any).status(400).json({ error: "Order ID and courierId are required" });
   }
 
   try {
     const order = await OrderLifecycleService.assignCourier(id, courierId);
-    return (res as any).tson({ order });
+    return (res as any).json({ order });
   } catch (err: any) {
-    return (res as any).status(500).tson({ error: err.message || "Unable to assign courier" });
+    return (res as any).status(500).json({ error: err.message || "Unable to assign courier" });
   }
 });
 

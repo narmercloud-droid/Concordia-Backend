@@ -51,7 +51,7 @@ router.get("/order/:tracking_token", async (req, res) => {
     });
 
     if (!order) {
-      return res.status(404).tson({ error: "Order not found" });
+      return res.status(404).json({ error: "Order not found" });
     }
 
     // Build timeline based on order status
@@ -76,9 +76,9 @@ router.get("/order/:tracking_token", async (req, res) => {
       timeline,
     };
 
-    res.tson(response);
+    res.json(response);
   } catch (err: any) {
-    res.status(500).tson({ error: err.message });
+    res.status(500).json({ error: err.message });
   }
 });
 

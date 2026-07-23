@@ -24,13 +24,13 @@ router.get("/orders/stream", validateTerminalToken, TerminalController.ordersStr
 // New terminal observability routes
 router.post("/heartbeat", terminalAuth, async (req, res) => {
   await updateTerminalHeartbeat(req.terminal);
-  return res.tson({ ok: true });
+  return res.json({ ok: true });
 });
 
 router.post("/error", terminalAuth, async (req, res) => {
   const { message, severity } = req.body;
   await reportTerminalError(req.terminal, message, severity);
-  return res.tson({ ok: true });
+  return res.json({ ok: true });
 });
 
 router.post("/orders/:orderId/accept", terminalAuth, acceptOrder);

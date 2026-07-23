@@ -93,21 +93,41 @@ export const OrderLifecycleController = {
   // Confirm external payment and finalize wallet deduction
   confirmExternalPayment: wrap(async (req: Request) => {
     const { orderId, transactionId } = req.body;
-    const customerId = req.body.customerId;
+    const authCustomerId =
+      (req as Request & { customer?: { id?: string }; user?: { id?: string } }).customer?.id ??
+      (req as Request & { user?: { id?: string } }).user?.id;
+
+    if (!authCustomerId) {
+      throw fail("UNAUTHORIZED", "Customer authentication required");
+    }
+    if (!orderId || typeof orderId !== "string") {
+      throw fail("INVALID_INPUT", "orderId is required");
+    }
+    if (!transactionId || typeof transactionId !== "string") {
+      throw fail("INVALID_INPUT", "transactionId is required");
+    }
 
     const order = await prisma.order.findUnique({ where: { id: orderId } });
-    if (!order) throw fail('NOT_FOUND', 'Order not found');
+    if (!order) throw fail("NOT_FOUND", "Order not found");
+    if (order.customerId && order.customerId !== authCustomerId) {
+      throw fail("FORBIDDEN", "You do not have access to this order");
+    }
 
-    // Deduct wallet portion
-    await WalletService.deductFunds(customerId, Number(order.walletUsed as any), orderId);
+    // Prefer PSP reconcile over trusting client transactionId
+    const { paymentsService } = await import("../../services/payments.service.ts");
+    const reconciled = await paymentsService.reconcileOrderPayment(orderId);
+    if (reconciled.settled) {
+      const walletUsed = Number(order.walletUsed as any) || 0;
+      if (walletUsed > 0) {
+        await WalletService.deductFunds(authCustomerId, walletUsed, orderId);
+      }
+      return { success: true, settled: true, provider: reconciled.provider };
+    }
 
-    // Mark order as paid
-    await OrderLifecycleService.updatePaymentStatus(orderId, "PAID", {
-      transactionId,
-      paidAt: new Date()
-    });
-
-    return { success: true };
+    throw fail(
+      "PAYMENT_FAILED",
+      "Payment could not be verified with the payment provider. Use Stripe/PayPal confirm endpoints."
+    );
   }),
 
   // Mark order as preparing

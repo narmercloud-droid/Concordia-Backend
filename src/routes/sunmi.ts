@@ -10,16 +10,16 @@ const printer = new SunmiPrinter();
 router.get("/status", (_req, res) => {
   void _req;
   const connected = !!(printer as any).printer;
-  res.tson({ success: true, connected, message: connected ? "Sunmi printer connected" : "No Sunmi printer" });
+  res.json({ success: true, connected, message: connected ? "Sunmi printer connected" : "No Sunmi printer" });
 });
 
 router.post("/print", async (req, res, next) => {
   try {
     const { orderId } = req.body || {};
-    if (!orderId) return res.status(400).tson({ error: "Missing orderId in body" });
+    if (!orderId) return res.status(400).json({ error: "Missing orderId in body" });
 
     await PrintService.printOrder(orderId);
-    res.tson({ success: true, orderId });
+    res.json({ success: true, orderId });
   } catch (err: any) {
     next(err);
   }

@@ -6,11 +6,7 @@ declare global {
       terminal?: any;
       io?: any;
     }
-    interface Response {
-      tson?: (body: any) => void;
-    }
   }
 }
 
 export {};
-

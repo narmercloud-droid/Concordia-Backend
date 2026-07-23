@@ -15,12 +15,29 @@ router.post(
   optionalCustomerAuth,
   PaymentsController.createStripePaymentIntent
 );
-router.post("/stripe/confirm", PaymentsController.confirmStripePayment);
+router.post(
+  "/stripe/confirm",
+  optionalCustomerAuth,
+  PaymentsController.confirmStripePayment
+);
 router.post("/gift-card/stripe/create-intent", PaymentsController.createGiftCardStripePaymentIntent);
 router.post("/gift-card/stripe/confirm", PaymentsController.confirmGiftCardStripePayment);
 
-router.post("/paypal/create-order", PaymentsController.createPayPalOrder);
-router.post("/paypal/capture", PaymentsController.capturePayPalOrder);
+router.post(
+  "/paypal/create-order",
+  optionalCustomerAuth,
+  PaymentsController.createPayPalOrder
+);
+router.post(
+  "/paypal/capture",
+  optionalCustomerAuth,
+  PaymentsController.capturePayPalOrder
+);
+router.post(
+  "/orders/:id/reconcile",
+  optionalCustomerAuth,
+  PaymentsController.reconcileOrderPayment
+);
 router.post("/gift-card/paypal/create-order", PaymentsController.createGiftCardPayPalOrder);
 router.post("/gift-card/paypal/capture", PaymentsController.captureGiftCardPayPalOrder);
 

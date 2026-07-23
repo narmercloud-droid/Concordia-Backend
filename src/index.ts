@@ -125,8 +125,9 @@ process.on("uncaughtException", (err) => {
 });
 
 process.on("unhandledRejection", (reason) => {
-  logger.error({ err: reason }, "Unhandled rejection — shutting down");
-  process.exit(1);
+  logger.error({ err: reason }, "Unhandled rejection — logged (process continues)");
+  // Do not exit on every rejection: a stray promise must not kill payment confirmation mid-flight.
+  // Uncaught exceptions still terminate via the handler above.
 });
 import { startNeonKeepAlive, startRenderKeepAlive } from "./keepAlive.ts";
 import rateLimitRedis from "./middleware/rateLimitRedis.ts";
@@ -257,10 +258,6 @@ app.use(express.json());
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 app.use((req: Request, res: Response, next: NextFunction) => {
-  if (typeof (res as any).tson !== "function") {
-    (res as any).tson = (payload: any) => res.json(payload);
-  }
-
   const start = Date.now();
   res.on("finish", () => {
     logger.info(
@@ -288,7 +285,7 @@ if (env.SENTRY_DSN) {
 
 // Root health-check
 app.get("/", (_req, res) => {
-  res.tson({
+  res.json({
     status: "online",
     service: "Concordia Backend",
     version: "1.0.0",

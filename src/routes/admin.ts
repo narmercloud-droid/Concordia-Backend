@@ -268,7 +268,7 @@ router.get("/opening-hours", (_req, res) => {
   }
 
   const holidayOverrides = loadHolidayOverrides();
-  res.tson({ success: true, branches, holidayOverrides });
+  res.json({ success: true, branches, holidayOverrides });
 });
 
 router.post("/opening-hours", (req, res) => {
@@ -286,7 +286,7 @@ router.post("/opening-hours", (req, res) => {
   } = req.body || {};
   const allowed = loadAllowedBranches();
   if (!branchId && !copySourceBranchId && !copyTargetBranchId) {
-    return res.status(400).tson({ success: false, error: "Invalid payload" });
+    return res.status(400).json({ success: false, error: "Invalid payload" });
   }
 
   let branches: Record<string, any> = {};
@@ -300,47 +300,47 @@ router.post("/opening-hours", (req, res) => {
     const sourceId = copySourceBranchId ?? branchId;
     const targetId = copyTargetBranchId ?? branchId;
     if (!sourceId || !targetId || !allowed.includes(sourceId) || !allowed.includes(targetId)) {
-      return res.status(400).tson({ success: false, error: "Invalid payload" });
+      return res.status(400).json({ success: false, error: "Invalid payload" });
     }
     cleaned[targetId] = { hours: [...cleaned[sourceId].hours] };
     fs.writeFileSync(hoursFile, JSON.stringify(cleaned, null, 2));
-    return res.tson({ success: true, updated: { branchId: targetId, hours: cleaned[targetId].hours, changedDays: [...WEEK_DAYS] } });
+    return res.json({ success: true, updated: { branchId: targetId, hours: cleaned[targetId].hours, changedDays: [...WEEK_DAYS] } });
   }
 
   if (!branchId) {
-    return res.status(400).tson({ success: false, error: "Invalid payload" });
+    return res.status(400).json({ success: false, error: "Invalid payload" });
   }
   if (!allowed.includes(branchId)) {
-    return res.status(400).tson({ success: false, error: "Invalid payload" });
+    return res.status(400).json({ success: false, error: "Invalid payload" });
   }
 
   if (hours) {
     const hoursError = getHoursArrayValidationError(hours);
     if (hoursError) {
-      return res.status(400).tson({ success: false, error: hoursError });
+      return res.status(400).json({ success: false, error: hoursError });
     }
     const normalizedHours = sortWeeklyHours(hours);
     cleaned[branchId] = { hours: normalizedHours };
     fs.writeFileSync(hoursFile, JSON.stringify(cleaned, null, 2));
-    return res.tson({ success: true, updated: { branchId, hours: normalizedHours, changedDays: [...WEEK_DAYS] } });
+    return res.json({ success: true, updated: { branchId, hours: normalizedHours, changedDays: [...WEEK_DAYS] } });
   }
 
   const updateDaysError = validateUpdateDays(updateDays);
   if (updateDaysError) {
-    return res.status(400).tson({ success: false, error: updateDaysError });
+    return res.status(400).json({ success: false, error: updateDaysError });
   }
 
   if (open !== undefined && !isValidTime(open)) {
-    return res.status(400).tson({ success: false, error: `Invalid time format: ${String(open)}` });
+    return res.status(400).json({ success: false, error: `Invalid time format: ${String(open)}` });
   }
   if (close !== undefined && !isValidTime(close)) {
-    return res.status(400).tson({ success: false, error: `Invalid time format: ${String(close)}` });
+    return res.status(400).json({ success: false, error: `Invalid time format: ${String(close)}` });
   }
   if (closed !== undefined && typeof closed !== 'boolean') {
-    return res.status(400).tson({ success: false, error: "Closed must be a boolean." });
+    return res.status(400).json({ success: false, error: "Closed must be a boolean." });
   }
   if (open === undefined && close === undefined && closed === undefined && relativeOpenMinutes === undefined && relativeCloseMinutes === undefined) {
-    return res.status(400).tson({ success: false, error: "At least one update field (open, close, closed, relativeOpenMinutes, relativeCloseMinutes) is required." });
+    return res.status(400).json({ success: false, error: "At least one update field (open, close, closed, relativeOpenMinutes, relativeCloseMinutes) is required." });
   }
 
   const currentHours = cleaned[branchId].hours.length === 7 ? cleaned[branchId].hours : makeWeeklyHours();
@@ -354,19 +354,19 @@ router.post("/opening-hours", (req, res) => {
   cleaned[branchId] = { hours: sortWeeklyHours(partialResult.hours) };
   fs.writeFileSync(hoursFile, JSON.stringify(cleaned, null, 2));
 
-  res.tson({ success: true, updated: { branchId, hours: cleaned[branchId].hours, changedDays: partialResult.changedDays } });
+  res.json({ success: true, updated: { branchId, hours: cleaned[branchId].hours, changedDays: partialResult.changedDays } });
 });
 
 router.get("/holiday-overrides", (req, res) => {
   const branchId = req.query.branchId as string | undefined;
   const allowed = loadAllowedBranches();
   if (branchId && !allowed.includes(branchId)) {
-    return res.status(400).tson({ success: false, error: "Invalid branchId" });
+    return res.status(400).json({ success: false, error: "Invalid branchId" });
   }
 
   const overrides = loadHolidayOverrides();
   const filtered = branchId ? overrides.filter((override) => override.branchId === branchId) : overrides;
-  res.tson({ success: true, holidayOverrides: filtered });
+  res.json({ success: true, holidayOverrides: filtered });
 });
 
 router.post("/holiday-overrides", (req, res) => {
@@ -374,10 +374,10 @@ router.post("/holiday-overrides", (req, res) => {
   const allowed = loadAllowedBranches();
   const error = validateHolidayOverridePayload(payload);
   if (error) {
-    return res.status(400).tson({ success: false, error });
+    return res.status(400).json({ success: false, error });
   }
   if (!allowed.includes(payload.branchId)) {
-    return res.status(400).tson({ success: false, error: "Invalid branchId" });
+    return res.status(400).json({ success: false, error: "Invalid branchId" });
   }
 
   const overrides = loadHolidayOverrides();
@@ -396,7 +396,7 @@ router.post("/holiday-overrides", (req, res) => {
     overrides.push(overrideRecord);
   }
   saveHolidayOverrides(overrides);
-  res.tson({ success: true, holidayOverride: overrideRecord });
+  res.json({ success: true, holidayOverride: overrideRecord });
 });
 
 router.put("/holiday-overrides", (req, res) => {
@@ -404,16 +404,16 @@ router.put("/holiday-overrides", (req, res) => {
   const allowed = loadAllowedBranches();
   const error = validateHolidayOverridePayload(payload);
   if (error) {
-    return res.status(400).tson({ success: false, error });
+    return res.status(400).json({ success: false, error });
   }
   if (!allowed.includes(payload.branchId)) {
-    return res.status(400).tson({ success: false, error: "Invalid branchId" });
+    return res.status(400).json({ success: false, error: "Invalid branchId" });
   }
 
   const overrides = loadHolidayOverrides();
   const existingIndex = overrides.findIndex((item) => item.branchId === payload.branchId && item.date === payload.date);
   if (existingIndex < 0) {
-    return res.status(404).tson({ success: false, error: "Holiday override not found." });
+    return res.status(404).json({ success: false, error: "Holiday override not found." });
   }
 
   const overrideRecord = {
@@ -426,23 +426,23 @@ router.put("/holiday-overrides", (req, res) => {
 
   overrides[existingIndex] = overrideRecord;
   saveHolidayOverrides(overrides);
-  res.tson({ success: true, holidayOverride: overrideRecord });
+  res.json({ success: true, holidayOverride: overrideRecord });
 });
 
 router.delete("/holiday-overrides", (req, res) => {
   const payload = req.body || {};
   const allowed = loadAllowedBranches();
   if (!payload.branchId || !payload.date) {
-    return res.status(400).tson({ success: false, error: "branchId and date are required." });
+    return res.status(400).json({ success: false, error: "branchId and date are required." });
   }
   if (!allowed.includes(payload.branchId)) {
-    return res.status(400).tson({ success: false, error: "Invalid branchId" });
+    return res.status(400).json({ success: false, error: "Invalid branchId" });
   }
 
   const overrides = loadHolidayOverrides();
   const remaining = overrides.filter((item) => !(item.branchId === payload.branchId && item.date === payload.date));
   saveHolidayOverrides(remaining);
-  res.tson({ success: true, holidayOverride: { branchId: payload.branchId, date: payload.date } });
+  res.json({ success: true, holidayOverride: { branchId: payload.branchId, date: payload.date } });
 });
 
 // ----------------------
@@ -451,24 +451,24 @@ router.delete("/holiday-overrides", (req, res) => {
 
 router.get("/delivery-zones", (_req, res) => {
   if (!fs.existsSync(zonesFile)) {
-    return res.tson({ success: true, zones: [] });
+    return res.json({ success: true, zones: [] });
   }
 
   const data = JSON.parse(fs.readFileSync(zonesFile, "utf8"));
-  res.tson({ success: true, zones: data });
+  res.json({ success: true, zones: data });
 });
 
 router.post("/delivery-zones", (req, res) => {
   fs.writeFileSync(zonesFile, JSON.stringify(req.body, null, 2));
-  res.tson({ success: true, updated: req.body });
+  res.json({ success: true, updated: req.body });
 });
 
 router.get("/me", (req, res) => {
   const user = (req as any).user;
   if (!user) {
-    return res.status(401).tson({ error: "Unauthorized" });
+    return res.status(401).json({ error: "Unauthorized" });
   }
-  res.tson({ user });
+  res.json({ user });
 });
 
 // ----------------------

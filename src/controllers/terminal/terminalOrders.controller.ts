@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto";
+import { randomBytes, randomUUID } from "node:crypto";
 import { prisma } from "../../prisma/client.ts";
 import { broadcastToTerminal } from "../../services/realtime/realtime.service.ts";
 import { OrderLifecycleService } from "../../services/order/orderLifecycle.service.ts";
@@ -7,11 +7,34 @@ import { getTerminalDailyReport } from "../../services/terminal/terminalDailyRep
 import { advanceTerminalOrderStatus } from "../../services/terminal/terminalOrderStatus.service.ts";
 import { ordersService } from "../../services/orders.service.ts";
 import { isKitchenReadyOrder } from "../../utils/orderPayment.ts";
-import { env } from "../../config/env.ts";
 import { buildCourierUrl } from "../../utils/customerOrderUrls.ts";
 import { wrap, fail } from "../../contracts/api.js";
 import { isApiError } from "../../contracts/http.js";
 import { getBerlinTodayRange, isWithinBerlinToday } from "../../utils/berlinTime.ts";
+
+function terminalBranchId(req: { user?: { branchId?: string }; query?: Record<string, unknown>; body?: Record<string, unknown> }) {
+  const branchId = req.user?.branchId;
+  if (!branchId) throw fail("UNAUTHORIZED", "Terminal authentication required");
+
+  const requested =
+    (req.query?.branchId != null ? String(req.query.branchId) : "") ||
+    (req.body?.branchId != null ? String(req.body.branchId) : "");
+  if (requested && requested !== branchId) {
+    throw fail("FORBIDDEN", "Branch does not match terminal credentials");
+  }
+  return branchId;
+}
+
+async function assertOrderInTerminalBranch(orderId: string, branchId: string) {
+  const order = await prisma.order.findUnique({ where: { id: orderId } });
+  if (!order) throw fail("NOT_FOUND", "Order not found");
+  if (order.branchId !== branchId) throw fail("FORBIDDEN", "Order does not belong to this terminal branch");
+  return order;
+}
+
+function newActivationToken() {
+  return randomBytes(32).toString("hex");
+}
 
 function mapOrderLine(line: any) {
   return {
@@ -46,28 +69,59 @@ export const activateTerminalByCode = wrap(async (req) => {
   const resolved = await resolveBranchByCode(String(branchCode));
   if (!resolved) throw fail("NOT_FOUND", "Invalid branch code");
 
+  const deviceId = req.body?.deviceId != null ? String(req.body.deviceId).trim() : "";
+  const terminalName = deviceId
+    ? `device:${deviceId}`
+    : `branch:${resolved.branch.id}:default`;
+
   if (resolved.activationCode) {
     await prisma.activationCode.update({
       where: { id: resolved.activationCode.id },
-      data: { used: true, usedAt: new Date(), deviceId: req.body?.deviceId ?? null }
+      data: { used: true, usedAt: new Date(), deviceId: deviceId || null }
+    });
+  }
+
+  let terminal = await prisma.terminal.findFirst({
+    where: { branchId: resolved.branch.id, name: terminalName }
+  });
+
+  if (!terminal) {
+    terminal = await prisma.terminal.create({
+      data: {
+        id: randomUUID(),
+        name: terminalName,
+        activation_token: newActivationToken(),
+        branchId: resolved.branch.id,
+        isOnline: true,
+        lastSeen: new Date()
+      }
+    });
+  } else {
+    terminal = await prisma.terminal.update({
+      where: { id: terminal.id },
+      data: {
+        isOnline: true,
+        lastSeen: new Date()
+      }
     });
   }
 
   return {
     branchId: resolved.branch.id,
     branchName: resolved.branch.name,
-    terminalCode: String(branchCode).trim().toUpperCase()
+    terminalCode: String(branchCode).trim().toUpperCase(),
+    terminalId: terminal.id,
+    activationToken: terminal.activation_token
   };
 });
 
 export const getTerminalOrders = wrap(async (req) => {
-  const { branchId } = req.query;
-  if (!branchId) throw fail("INVALID_INPUT", "branchId is required");
+  const branchId = terminalBranchId(req);
 
   const today = getBerlinTodayRange();
   const orders = await prisma.order.findMany({
     where: {
-      branchId: String(branchId),
+      branchId,
       createdAt: {
         gte: today.start,
         lt: today.end
@@ -95,6 +149,8 @@ export const getTerminalOrders = wrap(async (req) => {
 
 export const confirmTerminalOrder = wrap(async (req) => {
   const { id } = req.params;
+  const branchId = terminalBranchId(req);
+  await assertOrderInTerminalBranch(id, branchId);
   const prepMinutes = Number(req.body?.prepMinutes ?? req.body?.prep_minutes);
 
   try {
@@ -109,6 +165,7 @@ export const confirmTerminalOrder = wrap(async (req) => {
 
 export const getTerminalOrderDetails = wrap(async (req) => {
   const { id } = req.params;
+  const branchId = terminalBranchId(req);
 
   const order = await prisma.order.findUnique({
     where: { id },
@@ -132,6 +189,7 @@ export const getTerminalOrderDetails = wrap(async (req) => {
   });
 
   if (!order) throw fail("NOT_FOUND", "Order not found");
+  if (order.branchId !== branchId) throw fail("FORBIDDEN", "Order does not belong to this terminal branch");
   if (!isWithinBerlinToday(order.createdAt)) {
     throw fail("NOT_FOUND", "Order not available");
   }
@@ -154,9 +212,8 @@ export const acceptOrder = wrap(async (req) => {
 });
 
 export const getTerminalDailyReportHandler = wrap(async (req) => {
-  const { branchId } = req.query;
-  if (!branchId) throw fail("INVALID_INPUT", "branchId is required");
-  return getTerminalDailyReport(String(branchId));
+  const branchId = terminalBranchId(req);
+  return getTerminalDailyReport(branchId);
 });
 
 export const rejectOrder = wrap(async (req) => {
@@ -171,10 +228,10 @@ export const rejectOrder = wrap(async (req) => {
 
 export const rejectTerminalOrder = wrap(async (req) => {
   const { id } = req.params;
+  const branchId = terminalBranchId(req);
   const reason = String(req.body?.reason ?? req.body?.rejectReason ?? "").trim() || null;
 
-  const order = await prisma.order.findUnique({ where: { id } });
-  if (!order) throw fail("NOT_FOUND", "Order not found");
+  const order = await assertOrderInTerminalBranch(id, branchId);
   if (!["pending", "new", "assigned", "acknowledged"].includes(order.status)) {
     throw fail("INVALID_INPUT", "Order cannot be rejected in its current state");
   }
@@ -200,15 +257,14 @@ function readBranchConfig(configJson: unknown) {
 }
 
 export const getTerminalBranchStatus = wrap(async (req) => {
-  const { branchId } = req.query;
-  if (!branchId) throw fail("INVALID_INPUT", "branchId is required");
+  const branchId = terminalBranchId(req);
 
   const config = await prisma.branchConfig.findUnique({
-    where: { branchId: String(branchId) }
+    where: { branchId }
   });
   const json = readBranchConfig(config?.configJson);
   return {
-    branchId: String(branchId),
+    branchId,
     status: String(json.status ?? "live"),
     ordersPaused: Boolean(json.ordersPaused ?? false)
   };
@@ -226,13 +282,13 @@ const TERMINAL_STATUS_TARGETS = new Set([
 
 export const updateTerminalOrderStatus = wrap(async (req) => {
   const { id } = req.params;
+  const branchId = terminalBranchId(req);
   const status = String(req.body?.status ?? "").trim();
   if (!status || !TERMINAL_STATUS_TARGETS.has(status)) {
     throw fail("INVALID_INPUT", "Invalid terminal order status");
   }
 
-  const order = await prisma.order.findUnique({ where: { id } });
-  if (!order) throw fail("NOT_FOUND", "Order not found");
+  const order = await assertOrderInTerminalBranch(id, branchId);
 
   let updated;
   try {
@@ -256,8 +312,7 @@ export const updateTerminalOrderStatus = wrap(async (req) => {
 });
 
 export const updateTerminalBranchStatus = wrap(async (req) => {
-  const branchId = String(req.body?.branchId ?? "");
-  if (!branchId) throw fail("INVALID_INPUT", "branchId is required");
+  const branchId = terminalBranchId(req);
 
   const ordersPaused = Boolean(req.body?.ordersPaused);
   const existing = await prisma.branchConfig.findUnique({ where: { branchId } });

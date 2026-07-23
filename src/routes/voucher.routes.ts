@@ -8,9 +8,9 @@ const router = Router();
 router.get("/validate/:code", customerAuth, async (req, res) => {
   try {
     const voucher = await VoucherService.validate(req.params.code);
-    res.tson(voucher);
+    res.json(voucher);
   } catch (err) {
-    res.status(400).tson({ error: err.message });
+    res.status(400).json({ error: err.message });
   }
 });
 
@@ -18,9 +18,9 @@ router.post("/redeem", customerAuth, async (req, res) => {
   try {
     const { code } = req.body;
     const result = await VoucherService.redeem(code, req.customer.id);
-    res.tson(result);
+    res.json(result);
   } catch (err) {
-    res.status(400).tson({ error: err.message });
+    res.status(400).json({ error: err.message });
   }
 });
 

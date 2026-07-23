@@ -15,7 +15,7 @@
     "prestart": "node scripts/prestart-migrate.mjs",
     "start": "node --enable-source-maps dist/index.js",
     "start:worker": "node dist/worker.js",
-    "start:dev": "nest start --watch",
+    "start:dev": "tsx watch src/index.ts",
     "seed": "ts-node-esm prisma/seed.ts",
     "seed:concordia": "node scripts/seed-concordia.mjs",
     "apply:branch-delivery-zones": "node scripts/apply-branch-delivery-zones.mjs",

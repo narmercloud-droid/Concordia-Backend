@@ -8,7 +8,7 @@ router.get("/track/:token", async (req, res) => {
   const { token } = req.params;
 
   if (!token) {
-    return res.status(400).tson({ error: "Tracking token is required" });
+    return res.status(400).json({ error: "Tracking token is required" });
   }
 
   try {
@@ -25,7 +25,7 @@ router.get("/track/:token", async (req, res) => {
     });
 
     if (!order) {
-      return res.status(404).tson({ error: "Order not found" });
+      return res.status(404).json({ error: "Order not found" });
     }
 
     const latestLocation = await prisma.courierLocation.findFirst({
@@ -38,7 +38,7 @@ router.get("/track/:token", async (req, res) => {
       orderBy: { timestamp: "asc" }
     });
 
-    res.tson({
+    res.json({
       order: {
         id: order.id,
         status: order.status,
@@ -53,14 +53,14 @@ router.get("/track/:token", async (req, res) => {
       timeline
     });
   } catch (err: any) {
-    res.status(500).tson({ error: err.message || "Unable to fetch tracking info" });
+    res.status(500).json({ error: err.message || "Unable to fetch tracking info" });
   }
 });
 
 router.get("/track/order/:orderId", async (req, res) => {
   const { orderId } = req.params;
   if (!orderId) {
-    return res.status(400).tson({ error: "Order ID is required" });
+    return res.status(400).json({ error: "Order ID is required" });
   }
 
   try {
@@ -70,12 +70,12 @@ router.get("/track/order/:orderId", async (req, res) => {
     });
 
     if (!order) {
-      return res.status(404).tson({ error: "Order not found" });
+      return res.status(404).json({ error: "Order not found" });
     }
 
-    res.tson(order);
+    res.json(order);
   } catch (err: any) {
-    res.status(500).tson({ error: err.message || "Unable to fetch order" });
+    res.status(500).json({ error: err.message || "Unable to fetch order" });
   }
 });
 

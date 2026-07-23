@@ -33,11 +33,11 @@ export const cacheRoute = (ttl: number = 60) => {
       if (cachedResponse) {
         trackApiCacheHit(routeLabel);
         res.set("X-Cache", "HIT");
-        return res.tson(JSON.parse(cachedResponse));
+        return res.json(JSON.parse(cachedResponse));
       }
 
-      const originalJson = res.tson.bind(res);
-      res.tson = (data: any) => {
+      const originalJson = res.json.bind(res);
+      res.json = (data: any) => {
         try {
           if (res.statusCode >= 200 && res.statusCode < 300) {
             setCache(cacheKey, JSON.stringify(data), ttl).catch(console.error);

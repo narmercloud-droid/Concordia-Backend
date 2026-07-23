@@ -542,6 +542,18 @@ export class OrdersService {
       return { cancelled: false, reason: "not_pending" as const };
     }
 
+    // Never cancel if PSP already collected funds
+    try {
+      const { paymentsService } = await import("./payments.service.ts");
+      const reconciled = await paymentsService.reconcileOrderPayment(orderId);
+      if (reconciled.settled) {
+        return { cancelled: false, reason: "already_paid" as const };
+      }
+    } catch (err) {
+      logger.warn({ err, orderId }, "Payment reconcile before cancel failed — refusing cancel");
+      return { cancelled: false, reason: "reconcile_failed" as const };
+    }
+
     const { cancelReasonToTrackingStatus } = await import("../utils/orderPayment.ts");
 
     await OrderLifecycleService.updateStatus(orderId, "cancelled", undefined, {
